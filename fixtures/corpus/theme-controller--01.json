@@ -1,0 +1,17 @@
+{
+  "id": "theme-controller--01",
+  "component": "theme-controller",
+  "title": "Theme Controller using a checkbox",
+  "html": "<input type=\"checkbox\" value=\"synthwave\" class=\"checkbox theme-controller\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "theme-controller"
+      ],
+      "tailwind": []
+    }
+  ]
+}

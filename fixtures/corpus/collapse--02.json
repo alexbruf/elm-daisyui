@@ -1,0 +1,41 @@
+{
+  "id": "collapse--02",
+  "component": "collapse",
+  "title": "Collapse with checkbox and close on click outside",
+  "html": "<div class=\"collapse bg-base-100 border border-base-300\">\n  <input id=\"collapse-1-toggle\" type=\"checkbox\" class=\"peer\" />\n  <label for=\"collapse-1-toggle\" class=\"fixed inset-0 hidden peer-checked:block\"></label>\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm z-1\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "collapse"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "collapse-title"
+      ],
+      "tailwind": [
+        "font-semibold"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "collapse-content"
+      ],
+      "tailwind": [
+        "text-sm",
+        "z-1"
+      ]
+    }
+  ]
+}

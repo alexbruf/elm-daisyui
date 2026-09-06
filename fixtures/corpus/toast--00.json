@@ -1,0 +1,25 @@
+{
+  "id": "toast--00",
+  "component": "toast",
+  "title": "toast with alert inside",
+  "html": "<div class=\"toast\">\n  <div class=\"alert alert-info\">\n    <span>New message arrived.</span>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "toast"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-info"
+      ],
+      "tailwind": []
+    }
+  ]
+}

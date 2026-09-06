@@ -1,0 +1,37 @@
+{
+  "id": "aura--08",
+  "component": "aura",
+  "title": "Aura with custom color",
+  "html": "<div class=\"aura text-orange-600\">\n    <div class=\"card bg-base-100 text-base-content\">\n    <div class=\"card-body\">\n      <p>This card has custom color aura</p>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "aura"
+      ],
+      "tailwind": [
+        "text-orange-600"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "text-base-content"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    }
+  ]
+}

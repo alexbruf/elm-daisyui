@@ -1,0 +1,17 @@
+{
+  "id": "theme-controller--00",
+  "component": "theme-controller",
+  "title": "Theme Controller using a toggle",
+  "html": "<input type=\"checkbox\" value=\"synthwave\" class=\"toggle theme-controller\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "theme-controller",
+        "toggle"
+      ],
+      "tailwind": []
+    }
+  ]
+}

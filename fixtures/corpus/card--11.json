@@ -1,0 +1,67 @@
+{
+  "id": "card--11",
+  "component": "card",
+  "title": "Centered card with neutral color",
+  "html": "<div class=\"card bg-neutral text-neutral-content w-96\">\n  <div class=\"card-body items-center text-center\">\n    <h2 class=\"card-title\">Cookies!</h2>\n    <p>We are using cookies for no reason.</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Accept</button>\n      <button class=\"btn btn-ghost\">Deny</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-neutral",
+        "text-neutral-content",
+        "w-96"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": [
+        "items-center",
+        "text-center"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "0/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": []
+    }
+  ]
+}

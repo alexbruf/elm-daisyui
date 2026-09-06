@@ -1,0 +1,17 @@
+{
+  "id": "kbd--02",
+  "component": "kbd",
+  "title": "In text",
+  "html": "Press\n<kbd class=\"kbd kbd-sm\">F</kbd>\nto pay respects.",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-sm"
+      ],
+      "tailwind": []
+    }
+  ]
+}

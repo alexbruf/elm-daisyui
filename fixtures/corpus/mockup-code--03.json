@@ -1,0 +1,18 @@
+{
+  "id": "mockup-code--03",
+  "component": "mockup-code",
+  "title": "Long line will scroll",
+  "html": "<div class=\"mockup-code w-full\">\n  <pre\n    data-prefix=\"~\"><code>Magnam dolore beatae necessitatibus nemopsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-code"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    }
+  ]
+}

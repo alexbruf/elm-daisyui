@@ -1,0 +1,16 @@
+{
+  "id": "avatar--06",
+  "component": "avatar",
+  "title": "Avatar with ring",
+  "html": "<div class=\"avatar\">\n  <div class=\"ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/spiderperson@192.webp\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    }
+  ]
+}

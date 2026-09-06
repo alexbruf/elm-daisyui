@@ -1,0 +1,56 @@
+{
+  "id": "modal--07",
+  "component": "modal",
+  "title": "Modal using checkbox",
+  "html": "<!-- The button to open modal -->\n<label for=\"my_modal_6\" class=\"btn\">open modal</label>\n\n<!-- Put this part before </body> tag -->\n<input type=\"checkbox\" id=\"my_modal_6\" class=\"modal-toggle\" />\n<div class=\"modal\" role=\"dialog\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">This modal works with a hidden checkbox!</p>\n    <div class=\"modal-action\">\n      <label for=\"my_modal_6\" class=\"btn\">Close!</label>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "modal-toggle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "modal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "div",
+      "daisy": [
+        "modal-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0/2",
+      "tag": "div",
+      "daisy": [
+        "modal-action"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0/2/0",
+      "tag": "label",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

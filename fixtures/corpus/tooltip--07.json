@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--07",
+  "component": "tooltip",
+  "title": "Primary color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-primary\" data-tip=\"primary\">\n  <button class=\"btn btn-primary\">primary</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-open",
+        "tooltip-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

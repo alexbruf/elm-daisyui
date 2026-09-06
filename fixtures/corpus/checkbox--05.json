@@ -1,0 +1,16 @@
+{
+  "id": "checkbox--05",
+  "component": "checkbox",
+  "title": "Indeterminate",
+  "html": "<!-- You can make a checkbox indeterminate using JS -->\n<script>\n  document.getElementById(\"my-checkbox\").indeterminate = true\n</script>\n<input type=\"checkbox\" class=\"checkbox\" id=\"my-checkbox\" />",
+  "elements": [
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "checkbox"
+      ],
+      "tailwind": []
+    }
+  ]
+}

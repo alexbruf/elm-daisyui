@@ -1,0 +1,36 @@
+{
+  "id": "card--06",
+  "component": "card",
+  "title": "Card with bottom image",
+  "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card Title</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n  </div>\n  <figure>\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp\"\n      alt=\"Shoes\" />\n  </figure>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "w-96",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    }
+  ]
+}

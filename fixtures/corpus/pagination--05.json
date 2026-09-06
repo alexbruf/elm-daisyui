@@ -1,0 +1,56 @@
+{
+  "id": "pagination--05",
+  "component": "pagination",
+  "title": "Using radio inputs",
+  "html": "<div class=\"join\">\n  <input\n    class=\"join-item btn btn-square\"\n    type=\"radio\"\n    name=\"options\"\n    aria-label=\"1\"\n    checked=\"checked\" />\n  <input class=\"join-item btn btn-square\" type=\"radio\" name=\"options\" aria-label=\"2\" />\n  <input class=\"join-item btn btn-square\" type=\"radio\" name=\"options\" aria-label=\"3\" />\n  <input class=\"join-item btn btn-square\" type=\"radio\" name=\"options\" aria-label=\"4\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-square",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-square",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-square",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-square",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

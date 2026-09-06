@@ -1,0 +1,52 @@
+{
+  "id": "indicator--03",
+  "component": "indicator",
+  "title": "for tab",
+  "html": "<div class=\"tabs tabs-lift\">\n  <a class=\"tab\">Messages</a>\n  <a class=\"indicator tab tab-active\">\n    Notifications\n    <span class=\"indicator-item badge\">8</span>\n  </a>\n  <a class=\"tab\">Requests</a>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lift"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "a",
+      "daisy": [
+        "indicator",
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    }
+  ]
+}

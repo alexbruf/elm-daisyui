@@ -1,0 +1,40 @@
+{
+  "id": "file-input--02",
+  "component": "file-input",
+  "title": "With fieldset and label",
+  "html": "<fieldset class=\"fieldset\">\n  <legend class=\"fieldset-legend\">Pick a file</legend>\n  <input type=\"file\" class=\"file-input\" />\n  <label class=\"label\">Max size 2MB</label>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "file-input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

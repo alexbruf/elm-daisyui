@@ -1,0 +1,115 @@
+{
+  "id": "stat--04",
+  "component": "stat",
+  "title": "Vertical",
+  "html": "<div class=\"stats stats-vertical shadow\">\n  <div class=\"stat\">\n    <div class=\"stat-title\">Downloads</div>\n    <div class=\"stat-value\">31K</div>\n    <div class=\"stat-desc\">Jan 1st - Feb 1st</div>\n  </div>\n\n  <div class=\"stat\">\n    <div class=\"stat-title\">New Users</div>\n    <div class=\"stat-value\">4,200</div>\n    <div class=\"stat-desc\">↗︎ 400 (22%)</div>\n  </div>\n\n  <div class=\"stat\">\n    <div class=\"stat-title\">New Registers</div>\n    <div class=\"stat-value\">1,200</div>\n    <div class=\"stat-desc\">↘︎ 90 (14%)</div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stats",
+        "stats-vertical"
+      ],
+      "tailwind": [
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": []
+    }
+  ]
+}

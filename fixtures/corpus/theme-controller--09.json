@@ -1,0 +1,118 @@
+{
+  "id": "theme-controller--09",
+  "component": "theme-controller",
+  "title": "Theme Controller using a dropdown",
+  "html": "<div class=\"dropdown mb-72\">\n  <div tabindex=\"0\" role=\"button\" class=\"btn m-1\">\n    Theme\n    <svg\n      width=\"12px\"\n      height=\"12px\"\n      class=\"inline-block h-2 w-2 fill-current opacity-60\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n      viewBox=\"0 0 2048 2048\">\n      <path d=\"M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z\"></path>\n    </svg>\n  </div>\n  <ul tabindex=\"-1\" class=\"dropdown-content bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl\">\n    <li>\n      <input\n        type=\"radio\"\n        name=\"theme-dropdown\"\n        class=\"theme-controller w-full btn btn-sm btn-block btn-ghost justify-start\"\n        aria-label=\"Default\"\n        value=\"default\" />\n    </li>\n    <li>\n      <input\n        type=\"radio\"\n        name=\"theme-dropdown\"\n        class=\"theme-controller w-full btn btn-sm btn-block btn-ghost justify-start\"\n        aria-label=\"Retro\"\n        value=\"retro\" />\n    </li>\n    <li>\n      <input\n        type=\"radio\"\n        name=\"theme-dropdown\"\n        class=\"theme-controller w-full btn btn-sm btn-block btn-ghost justify-start\"\n        aria-label=\"Cyberpunk\"\n        value=\"cyberpunk\" />\n    </li>\n    <li>\n      <input\n        type=\"radio\"\n        name=\"theme-dropdown\"\n        class=\"theme-controller w-full btn btn-sm btn-block btn-ghost justify-start\"\n        aria-label=\"Valentine\"\n        value=\"valentine\" />\n    </li>\n    <li>\n      <input\n        type=\"radio\"\n        name=\"theme-dropdown\"\n        class=\"theme-controller w-full btn btn-sm btn-block btn-ghost justify-start\"\n        aria-label=\"Aqua\"\n        value=\"aqua\" />\n    </li>\n  </ul>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "dropdown"
+      ],
+      "tailwind": [
+        "mb-72"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": [
+        "m-1"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "ul",
+      "daisy": [
+        "dropdown-content"
+      ],
+      "tailwind": [
+        "bg-base-300",
+        "rounded-box",
+        "z-1",
+        "w-52",
+        "p-2",
+        "shadow-2xl"
+      ]
+    },
+    {
+      "path": "0/1/0/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-block",
+        "btn-ghost",
+        "btn-sm",
+        "theme-controller"
+      ],
+      "tailwind": [
+        "w-full",
+        "justify-start"
+      ]
+    },
+    {
+      "path": "0/1/1/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-block",
+        "btn-ghost",
+        "btn-sm",
+        "theme-controller"
+      ],
+      "tailwind": [
+        "w-full",
+        "justify-start"
+      ]
+    },
+    {
+      "path": "0/1/2/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-block",
+        "btn-ghost",
+        "btn-sm",
+        "theme-controller"
+      ],
+      "tailwind": [
+        "w-full",
+        "justify-start"
+      ]
+    },
+    {
+      "path": "0/1/3/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-block",
+        "btn-ghost",
+        "btn-sm",
+        "theme-controller"
+      ],
+      "tailwind": [
+        "w-full",
+        "justify-start"
+      ]
+    },
+    {
+      "path": "0/1/4/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-block",
+        "btn-ghost",
+        "btn-sm",
+        "theme-controller"
+      ],
+      "tailwind": [
+        "w-full",
+        "justify-start"
+      ]
+    }
+  ]
+}

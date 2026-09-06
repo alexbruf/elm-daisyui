@@ -1,0 +1,53 @@
+{
+  "id": "steps--02",
+  "component": "steps",
+  "title": "responsive (vertical on small screen, horizontal on large screen)",
+  "html": "<ul class=\"steps steps-vertical lg:steps-horizontal\">\n  <li class=\"step step-primary\">Register</li>\n  <li class=\"step step-primary\">Choose plan</li>\n  <li class=\"step\">Purchase</li>\n  <li class=\"step\">Receive Product</li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "steps",
+        "steps-vertical"
+      ],
+      "tailwind": [
+        "lg:$$steps-horizontal"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    }
+  ]
+}

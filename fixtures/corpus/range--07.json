@@ -1,0 +1,17 @@
+{
+  "id": "range--07",
+  "component": "range",
+  "title": "Warning color",
+  "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-warning\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-warning"
+      ],
+      "tailwind": []
+    }
+  ]
+}

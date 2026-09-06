@@ -1,0 +1,19 @@
+{
+  "id": "breadcrumbs--02",
+  "component": "breadcrumbs",
+  "title": "Breadcrumbs with max-width",
+  "html": "<div class=\"breadcrumbs max-w-xs text-sm\">\n  <ul>\n    <li>Long text 1</li>\n    <li>Long text 2</li>\n    <li>Long text 3</li>\n    <li>Long text 4</li>\n    <li>Long text 5</li>\n  </ul>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "breadcrumbs"
+      ],
+      "tailwind": [
+        "max-w-xs",
+        "text-sm"
+      ]
+    }
+  ]
+}

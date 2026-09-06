@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--10",
+  "component": "tooltip",
+  "title": "Info color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-info\" data-tip=\"info\">\n  <button class=\"btn btn-info\">info</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-info",
+        "tooltip-open"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-info"
+      ],
+      "tailwind": []
+    }
+  ]
+}

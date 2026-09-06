@@ -1,0 +1,16 @@
+{
+  "id": "input--07",
+  "component": "input",
+  "title": "Disabled",
+  "html": "<input type=\"text\" placeholder=\"You can't touch this\" class=\"input\" disabled />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

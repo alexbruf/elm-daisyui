@@ -1,0 +1,53 @@
+{
+  "id": "pagination--00",
+  "component": "pagination",
+  "title": "Pagination with an active button",
+  "html": "<div class=\"join\">\n  <button class=\"join-item btn\">1</button>\n  <button class=\"join-item btn btn-active\">2</button>\n  <button class=\"join-item btn\">3</button>\n  <button class=\"join-item btn\">4</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-active",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

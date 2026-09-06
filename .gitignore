@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+elm-stuff/
+.claude/
+vendor/daisyui/node_modules/
+vendor/daisyui/packages/*/node_modules/
+vendor/daisyui/packages/logs/
+e2e/test-results/
+e2e/playwright-report/
+*.log
+vendor/daisyui/

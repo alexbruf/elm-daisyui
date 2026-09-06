@@ -1,0 +1,24 @@
+{
+  "id": "tooltip--00",
+  "component": "tooltip",
+  "title": "Tooltip",
+  "html": "<div class=\"tooltip\" data-tip=\"hello\">\n  <button class=\"btn\">Hover me</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "checkbox--00",
+  "component": "checkbox",
+  "title": "Checkbox",
+  "html": "<input type=\"checkbox\" checked=\"checked\" class=\"checkbox\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "checkbox"
+      ],
+      "tailwind": []
+    }
+  ]
+}

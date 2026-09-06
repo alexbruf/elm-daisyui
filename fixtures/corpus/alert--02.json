@@ -1,0 +1,17 @@
+{
+  "id": "alert--02",
+  "component": "alert",
+  "title": "Success color",
+  "html": "<div role=\"alert\" class=\"alert alert-success\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 shrink-0 stroke-current\" fill=\"none\" viewBox=\"0 0 24 24\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\" />\n  </svg>\n  <span>Your purchase has been confirmed!</span>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

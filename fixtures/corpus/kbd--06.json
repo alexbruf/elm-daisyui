@@ -1,0 +1,40 @@
+{
+  "id": "kbd--06",
+  "component": "kbd",
+  "title": "Arrow Keys",
+  "html": "<div class=\"flex w-full justify-center\">\n  <kbd class=\"kbd\">▲</kbd>\n</div>\n<div class=\"flex w-full justify-center gap-12\">\n  <kbd class=\"kbd\">◀︎</kbd>\n  <kbd class=\"kbd\">▶︎</kbd>\n</div>\n<div class=\"flex w-full justify-center\">\n  <kbd class=\"kbd\">▼</kbd>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "badge--06",
+  "component": "badge",
+  "title": "neutral badge with outline or dash style",
+  "html": "<div class=\"bg-white p-6\">\n  <div class=\"badge badge-neutral badge-outline\">Outline</div>\n  <div class=\"badge badge-neutral badge-dash\">Dash</div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-neutral",
+        "badge-outline"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-neutral"
+      ],
+      "tailwind": []
+    }
+  ]
+}

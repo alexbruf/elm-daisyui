@@ -1,0 +1,48 @@
+{
+  "id": "alert--07",
+  "component": "alert",
+  "title": "Alert dash style",
+  "html": "<div role=\"alert\" class=\"alert alert-info alert-dash\">\n  <span>12 unread messages. Tap to see.</span>\n</div>\n<div role=\"alert\" class=\"alert alert-success alert-dash\">\n  <span>Your purchase has been confirmed!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-warning alert-dash\">\n  <span>Warning: Invalid email address!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-error alert-dash\">\n  <span>Error! Task failed successfully.</span>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-dash",
+        "alert-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-dash",
+        "alert-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-dash",
+        "alert-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-dash",
+        "alert-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

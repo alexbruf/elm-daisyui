@@ -1,0 +1,48 @@
+{
+  "id": "hover-gallery--01",
+  "component": "hover-gallery",
+  "title": "Hover Gallery in a card",
+  "html": "<div class=\"card card-sm bg-base-200 max-w-60 shadow\">\n  <figure class=\"hover-gallery\">\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-1.webp\" />\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-2.webp\" />\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-3.webp\" />\n    <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-4.webp\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title flex justify-between\">\n      daisyUI Hat\n      <span class=\"font-normal\">$25</span>\n    </h2>\n    <p>High Quality classic cap hat with stitch logo</p>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-sm"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "max-w-60",
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "figure",
+      "daisy": [
+        "hover-gallery"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": [
+        "flex",
+        "justify-between"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "loading--04",
+  "component": "loading",
+  "title": "Loading bars",
+  "html": "<span class=\"loading loading-bars loading-xs\"></span>\n<span class=\"loading loading-bars loading-sm\"></span>\n<span class=\"loading loading-bars loading-md\"></span>\n<span class=\"loading loading-bars loading-lg\"></span>\n<span class=\"loading loading-bars loading-xl\"></span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-bars",
+        "loading-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-bars",
+        "loading-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-bars",
+        "loading-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-bars",
+        "loading-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-bars",
+        "loading-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

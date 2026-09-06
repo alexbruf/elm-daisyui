@@ -1,0 +1,48 @@
+{
+  "id": "modal--00",
+  "component": "modal",
+  "title": "Dialog modal",
+  "html": "<!-- Open the modal using ID.showModal() method -->\n<button class=\"btn\" onclick=\"my_modal_1.showModal()\">open modal</button>\n<dialog id=\"my_modal_1\" class=\"modal\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click the button below to close</p>\n    <div class=\"modal-action\">\n      <form method=\"dialog\">\n        <!-- if there is a button in form, it will close the modal -->\n        <button class=\"btn\">Close</button>\n      </form>\n    </div>\n  </div>\n</dialog>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "dialog",
+      "daisy": [
+        "modal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "modal-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0/2",
+      "tag": "div",
+      "daisy": [
+        "modal-action"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0/2/0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

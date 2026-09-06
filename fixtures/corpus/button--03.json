@@ -1,0 +1,80 @@
+{
+  "id": "button--03",
+  "component": "button",
+  "title": "Buttons colors",
+  "html": "<button class=\"btn btn-neutral\">Neutral</button>\n<button class=\"btn btn-primary\">Primary</button>\n<button class=\"btn btn-secondary\">Secondary</button>\n<button class=\"btn btn-accent\">Accent</button>\n<button class=\"btn btn-info\">Info</button>\n<button class=\"btn btn-success\">Success</button>\n<button class=\"btn btn-warning\">Warning</button>\n<button class=\"btn btn-error\">Error</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

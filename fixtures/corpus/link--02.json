@@ -1,0 +1,17 @@
+{
+  "id": "link--02",
+  "component": "link",
+  "title": "Primary color",
+  "html": "<a class=\"link link-primary\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "mask--06",
+  "component": "mask",
+  "title": "Diamond",
+  "html": "<img\n  class=\"mask mask-diamond\"\n  alt=\"Diamond CSS mask\"\n  src=\"https://img.daisyui.com/images/stock/photo-1567653418876-5bb0e566e1c2.webp\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "img",
+      "daisy": [
+        "mask",
+        "mask-diamond"
+      ],
+      "tailwind": []
+    }
+  ]
+}

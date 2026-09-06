@@ -1,0 +1,328 @@
+{
+  "id": "rating--05",
+  "component": "rating",
+  "title": "Sizes",
+  "html": "<!-- xs -->\n<div class=\"rating rating-xs\">\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-5\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- sm -->\n<div class=\"rating rating-sm\">\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-6\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- md -->\n<div class=\"rating rating-md\">\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-7\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- lg -->\n<div class=\"rating rating-lg\">\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-8\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>\n<!-- xl -->\n<div class=\"rating rating-xl\">\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-9\" class=\"mask mask-star-2 bg-orange-400\" aria-label=\"5 star\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "rating",
+        "rating-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "rating",
+        "rating-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "1/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "1/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "1/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "1/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "rating",
+        "rating-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "2/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "2/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "2/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "2/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "rating",
+        "rating-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "3/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "3/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "3/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "3/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "rating",
+        "rating-xl"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "4/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "4/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "4/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "4/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    }
+  ]
+}

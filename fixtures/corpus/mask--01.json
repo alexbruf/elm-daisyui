@@ -1,0 +1,17 @@
+{
+  "id": "mask--01",
+  "component": "mask",
+  "title": "Heart",
+  "html": "<img\n  class=\"mask mask-heart\"\n  alt=\"Heart CSS mask\"\n  src=\"https://img.daisyui.com/images/stock/photo-1567653418876-5bb0e566e1c2.webp\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "img",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": []
+    }
+  ]
+}

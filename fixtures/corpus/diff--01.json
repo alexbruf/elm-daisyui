@@ -1,0 +1,42 @@
+{
+  "id": "diff--01",
+  "component": "diff",
+  "title": "Diff text",
+  "html": "<figure class=\"diff aspect-16/9\" tabindex=\"0\">\n  <div class=\"diff-item-1\" role=\"img\" tabindex=\"0\">\n    <div class=\"bg-primary text-primary-content grid place-content-center text-9xl font-black\">\n      DAISY\n    </div>\n  </div>\n  <div class=\"diff-item-2\" role=\"img\">\n    <div class=\"bg-base-200 grid place-content-center text-9xl font-black\">DAISY</div>\n  </div>\n  <div class=\"diff-resizer\"></div>\n</figure>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "figure",
+      "daisy": [
+        "diff"
+      ],
+      "tailwind": [
+        "aspect-16/9"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "diff-item-1"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "diff-item-2"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "diff-resizer"
+      ],
+      "tailwind": []
+    }
+  ]
+}

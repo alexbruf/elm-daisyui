@@ -1,0 +1,61 @@
+{
+  "id": "swap--05",
+  "component": "swap",
+  "title": "Activate using class name instead of checkbox",
+  "html": "<label class=\"swap text-6xl\">\n  <div class=\"swap-on\">🥵</div>\n  <div class=\"swap-off\">🥶</div>\n</label>\n<label class=\"swap swap-active text-6xl\">\n  <div class=\"swap-on\">🥳</div>\n  <div class=\"swap-off\">😭</div>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "swap"
+      ],
+      "tailwind": [
+        "text-6xl"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "swap-on"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "swap-off"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "label",
+      "daisy": [
+        "swap",
+        "swap-active"
+      ],
+      "tailwind": [
+        "text-6xl"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "swap-on"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "div",
+      "daisy": [
+        "swap-off"
+      ],
+      "tailwind": []
+    }
+  ]
+}

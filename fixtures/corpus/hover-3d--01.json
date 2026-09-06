@@ -1,0 +1,42 @@
+{
+  "id": "hover-3d--01",
+  "component": "hover-3d",
+  "title": "3D card hover effect",
+  "html": "<a href=\"#\" class=\"hover-3d my-12 mx-2 cursor-pointer\">\n  \n  <!-- content -->\n  <div class=\"card w-96 bg-black text-white bg-[radial-gradient(circle_at_bottom_left,#ffffff04_35%,transparent_36%),radial-gradient(circle_at_top_right,#ffffff04_35%,transparent_36%)] bg-size-[4.95em_4.95em]\">\n    <div class=\"card-body\">\n      <div class=\"flex justify-between mb-10\">\n        <div class=\"font-bold\">BANK OF LATVERIA</div>\n        <div class=\"text-5xl opacity-10\">❁</div>\n      </div>\n      <div class=\"text-lg mb-4 opacity-40\">0210 8820 1150 0222</div>\n      <div class=\"flex justify-between\">\n        <div>\n          <div class=\"text-xs opacity-20\">CARD HOLDER</div>\n          <div>VICTOR VON D.</div>\n        </div>\n        <div>\n          <div class=\"text-xs opacity-20\">EXPIRES</div>\n          <div>29/08</div>\n        </div>\n      </div>\n    </div>\n  </div>\n  \n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "hover-3d"
+      ],
+      "tailwind": [
+        "my-12",
+        "mx-2",
+        "cursor-pointer"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "w-96",
+        "bg-black",
+        "text-white",
+        "bg-[radial-gradient(circle_at_bottom_left,#ffffff04_35%,transparent_36%),radial-gradient(circle_at_top_right,#ffffff04_35%,transparent_36%)]",
+        "bg-size-[4.95em_4.95em]"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    }
+  ]
+}

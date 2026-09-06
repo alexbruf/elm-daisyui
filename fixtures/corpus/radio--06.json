@@ -1,0 +1,26 @@
+{
+  "id": "radio--06",
+  "component": "radio",
+  "title": "Success color",
+  "html": "<input type=\"radio\" name=\"radio-7\" class=\"radio radio-success\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-7\" class=\"radio radio-success\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

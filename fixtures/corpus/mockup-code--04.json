@@ -1,0 +1,18 @@
+{
+  "id": "mockup-code--04",
+  "component": "mockup-code",
+  "title": "Without prefix",
+  "html": "<div class=\"mockup-code w-full\">\n  <pre><code>without prefix</code></pre>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-code"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "textarea--00",
+  "component": "textarea",
+  "title": "Textarea",
+  "html": "<textarea class=\"textarea\" placeholder=\"Bio\"></textarea>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "textarea",
+      "daisy": [
+        "textarea"
+      ],
+      "tailwind": []
+    }
+  ]
+}

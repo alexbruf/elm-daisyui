@@ -1,0 +1,24 @@
+{
+  "id": "toggle--04",
+  "component": "toggle",
+  "title": "Disabled",
+  "html": "<input type=\"checkbox\" class=\"toggle\" disabled />\n<input type=\"checkbox\" class=\"toggle\" disabled checked=\"checked\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "toggle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "toggle"
+      ],
+      "tailwind": []
+    }
+  ]
+}

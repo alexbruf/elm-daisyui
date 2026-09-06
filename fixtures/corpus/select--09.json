@@ -1,0 +1,17 @@
+{
+  "id": "select--09",
+  "component": "select",
+  "title": "Warning color",
+  "html": "<select class=\"select select-warning\">\n  <option disabled selected>Pick an OS</option>\n  <option>Windows</option>\n  <option>MacOS</option>\n  <option>Linux</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-warning"
+      ],
+      "tailwind": []
+    }
+  ]
+}

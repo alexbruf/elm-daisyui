@@ -1,0 +1,64 @@
+{
+  "id": "tooltip--05",
+  "component": "tooltip",
+  "title": "Left",
+  "html": "<div class=\"tooltip tooltip-open tooltip-left tooltip-start\" data-tip=\"hello\">\n  <button class=\"btn\">Left start</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-left\" data-tip=\"hello\">\n  <button class=\"btn\">Left</button>\n</div>\n<div class=\"tooltip tooltip-open tooltip-left tooltip-end\" data-tip=\"hello\">\n  <button class=\"btn\">Left end</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-left",
+        "tooltip-open",
+        "tooltip-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-left",
+        "tooltip-open"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-end",
+        "tooltip-left",
+        "tooltip-open"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

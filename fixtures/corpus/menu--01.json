@@ -1,0 +1,21 @@
+{
+  "id": "menu--01",
+  "component": "menu",
+  "title": "Responsive: vertical on small screen, horizontal on large screen",
+  "html": "<ul class=\"menu menu-vertical lg:menu-horizontal bg-base-200 rounded-box\">\n  <li><a>Item 1</a></li>\n  <li><a>Item 2</a></li>\n  <li><a>Item 3</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-vertical",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "lg:$$menu-horizontal",
+        "bg-base-200"
+      ]
+    }
+  ]
+}

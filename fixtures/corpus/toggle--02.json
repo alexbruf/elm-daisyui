@@ -1,0 +1,53 @@
+{
+  "id": "toggle--02",
+  "component": "toggle",
+  "title": "Sizes",
+  "html": "<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-xs\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-sm\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-md\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-lg\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-xl\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

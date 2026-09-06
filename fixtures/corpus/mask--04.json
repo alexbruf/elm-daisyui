@@ -1,0 +1,17 @@
+{
+  "id": "mask--04",
+  "component": "mask",
+  "title": "Decagon",
+  "html": "<img\n  class=\"mask mask-decagon\"\n  alt=\"Decagon CSS mask\"\n  src=\"https://img.daisyui.com/images/stock/photo-1567653418876-5bb0e566e1c2.webp\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "img",
+      "daisy": [
+        "mask",
+        "mask-decagon"
+      ],
+      "tailwind": []
+    }
+  ]
+}

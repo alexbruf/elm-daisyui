@@ -1,0 +1,16 @@
+{
+  "id": "text-rotate--00",
+  "component": "text-rotate",
+  "title": "Text Rotate",
+  "html": "<span class=\"text-rotate\">\n  <span>\n    <span>ONE</span>\n    <span>TWO</span>\n    <span>THREE</span>\n  </span>\n</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "text-rotate"
+      ],
+      "tailwind": []
+    }
+  ]
+}

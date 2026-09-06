@@ -1,0 +1,17 @@
+{
+  "id": "select--07",
+  "component": "select",
+  "title": "Info color",
+  "html": "<select class=\"select select-info\">\n  <option disabled selected>Pick a Framework</option>\n  <option>React</option>\n  <option>Vue</option>\n  <option>Angular</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-info"
+      ],
+      "tailwind": []
+    }
+  ]
+}

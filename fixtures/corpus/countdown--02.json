@@ -1,0 +1,19 @@
+{
+  "id": "countdown--02",
+  "component": "countdown",
+  "title": "Clock countdown",
+  "html": "<span class=\"countdown font-mono text-2xl\">\n  <span style=\"--value:10;\" aria-live=\"polite\" aria-label=\"10\">10</span>\n  h\n  <span style=\"--value:24;\" aria-live=\"polite\" aria-label=\"24\">24</span>\n  m\n  <span style=\"--value:59;\" aria-live=\"polite\" aria-label=\"59\">59</span>\n  s\n</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": [
+        "font-mono",
+        "text-2xl"
+      ]
+    }
+  ]
+}

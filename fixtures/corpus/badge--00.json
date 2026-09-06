@@ -1,0 +1,16 @@
+{
+  "id": "badge--00",
+  "component": "badge",
+  "title": "Badge",
+  "html": "<span class=\"badge\">Badge</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "badge"
+      ],
+      "tailwind": []
+    }
+  ]
+}

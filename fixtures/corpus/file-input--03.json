@@ -1,0 +1,53 @@
+{
+  "id": "file-input--03",
+  "component": "file-input",
+  "title": "Sizes",
+  "html": "<input type=\"file\" class=\"file-input file-input-xs\" />\n\n<input type=\"file\" class=\"file-input file-input-sm\" />\n\n<input type=\"file\" class=\"file-input file-input-md\" />\n\n<input type=\"file\" class=\"file-input file-input-lg\" />\n\n<input type=\"file\" class=\"file-input file-input-xl\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

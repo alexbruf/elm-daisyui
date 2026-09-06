@@ -1,0 +1,50 @@
+{
+  "id": "navbar--02",
+  "component": "navbar",
+  "title": "Navbar with icon at start and end",
+  "html": "<div class=\"navbar bg-base-100 shadow-sm\">\n  <div class=\"flex-none\">\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"Menu\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"inline-block h-5 w-5 stroke-current\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h16M4 18h16\"></path> </svg>\n    </button>\n  </div>\n  <div class=\"flex-1\">\n    <a class=\"btn btn-ghost text-xl\">daisyUI</a>\n  </div>\n  <div class=\"flex-none\">\n    <button class=\"btn btn-square btn-ghost\">\n      <svg aria-label=\"More\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"inline-block h-5 w-5 stroke-current\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z\"></path> </svg>\n    </button>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost",
+        "btn-square"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost",
+        "btn-square"
+      ],
+      "tailwind": []
+    }
+  ]
+}

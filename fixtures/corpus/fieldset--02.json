@@ -1,0 +1,79 @@
+{
+  "id": "fieldset--02",
+  "component": "fieldset",
+  "title": "Fieldset with multiple inputs",
+  "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Page details</legend>\n\n  <label class=\"label\">Title</label>\n  <input type=\"text\" class=\"input\" placeholder=\"My awesome page\" />\n\n  <label class=\"label\">Slug</label>\n  <input type=\"text\" class=\"input\" placeholder=\"my-awesome-page\" />\n\n  <label class=\"label\">Author</label>\n  <input type=\"text\" class=\"input\" placeholder=\"Name\" />\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "border-base-300",
+        "rounded-box",
+        "w-xs",
+        "border",
+        "p-4"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/6",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

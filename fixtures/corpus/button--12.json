@@ -1,0 +1,25 @@
+{
+  "id": "button--12",
+  "component": "button",
+  "title": "Disabled buttons",
+  "html": "<button class=\"btn\" disabled=\"disabled\">Disabled using attribute</button>\n<button class=\"btn btn-disabled\" tabindex=\"-1\" role=\"button\" aria-disabled=\"true\">\n  Disabled using class name\n</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-disabled"
+      ],
+      "tailwind": []
+    }
+  ]
+}

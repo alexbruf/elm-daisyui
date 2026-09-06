@@ -1,0 +1,16 @@
+{
+  "id": "input--00",
+  "component": "input",
+  "title": "Text input",
+  "html": "<input type=\"text\" placeholder=\"Type here\" class=\"input\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

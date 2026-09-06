@@ -1,0 +1,57 @@
+{
+  "id": "fieldset--03",
+  "component": "fieldset",
+  "title": "Fieldset with multiple join items",
+  "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Settings</legend>\n  <div class=\"join\">\n    <input type=\"text\" class=\"input join-item\" placeholder=\"Product name\" />\n    <button class=\"btn join-item\">save</button>\n  </div>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "border-base-300",
+        "rounded-box",
+        "w-xs",
+        "border",
+        "p-4"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

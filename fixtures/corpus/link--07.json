@@ -1,0 +1,17 @@
+{
+  "id": "link--07",
+  "component": "link",
+  "title": "Warning color",
+  "html": "<a class=\"link link-warning\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-warning"
+      ],
+      "tailwind": []
+    }
+  ]
+}

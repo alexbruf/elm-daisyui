@@ -1,0 +1,66 @@
+{
+  "id": "theme-controller--07",
+  "component": "theme-controller",
+  "title": "Theme Controller using a radio input",
+  "html": "<fieldset class=\"fieldset\">\n  <label class=\"flex gap-2 cursor-pointer items-center\">\n    <input type=\"radio\" name=\"theme-radios\" class=\"radio radio-sm theme-controller\" value=\"default\"/>\n    Default\n  </label>\n  <label class=\"flex gap-2 cursor-pointer items-center\">\n    <input type=\"radio\" name=\"theme-radios\" class=\"radio radio-sm theme-controller\" value=\"retro\"/>\n    Retro\n  </label>\n  <label class=\"flex gap-2 cursor-pointer items-center\">\n    <input type=\"radio\" name=\"theme-radios\" class=\"radio radio-sm theme-controller\" value=\"cyberpunk\"/>\n    Cyberpunk\n  </label>\n  <label class=\"flex gap-2 cursor-pointer items-center\">\n    <input type=\"radio\" name=\"theme-radios\" class=\"radio radio-sm theme-controller\" value=\"valentine\"/>\n    Valentine\n  </label>\n  <label class=\"flex gap-2 cursor-pointer items-center\">\n    <input type=\"radio\" name=\"theme-radios\" class=\"radio radio-sm theme-controller\" value=\"aqua\"/>\n    Aqua\n  </label>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-sm",
+        "theme-controller"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-sm",
+        "theme-controller"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-sm",
+        "theme-controller"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3/0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-sm",
+        "theme-controller"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4/0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-sm",
+        "theme-controller"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "radial-progress--00",
+  "component": "radial-progress",
+  "title": "Radial progress",
+  "html": "<div class=\"radial-progress\" style=\"--value:70;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "radial-progress"
+      ],
+      "tailwind": []
+    }
+  ]
+}

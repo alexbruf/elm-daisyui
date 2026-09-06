@@ -1,0 +1,92 @@
+{
+  "id": "aura--11",
+  "component": "aura",
+  "title": "Aura sizes",
+  "html": "<div class=\"aura aura-xs\">\n  <button class=\"btn\">XS</button>\n</div>\n<div class=\"aura aura-sm\">\n  <button class=\"btn\">SM</button>\n</div>\n<div class=\"aura\">\n  <button class=\"btn\">MD</button>\n</div>\n<div class=\"aura aura-lg\">\n  <button class=\"btn\">LG</button>\n</div>\n<div class=\"aura aura-xl\">\n  <button class=\"btn\">XL</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "aura",
+        "aura-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "aura",
+        "aura-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "aura"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "aura",
+        "aura-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "aura",
+        "aura-xl"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

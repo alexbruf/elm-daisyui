@@ -1,0 +1,79 @@
+{
+  "id": "steps--04",
+  "component": "steps",
+  "title": "With data-content",
+  "html": "<ul class=\"steps\">\n  <li data-content=\"?\" class=\"step step-neutral\">Step 1</li>\n  <li data-content=\"!\" class=\"step step-neutral\">Step 2</li>\n  <li data-content=\"✓\" class=\"step step-neutral\">Step 3</li>\n  <li data-content=\"✕\" class=\"step step-neutral\">Step 4</li>\n  <li data-content=\"★\" class=\"step step-neutral\">Step 5</li>\n  <li data-content=\"\" class=\"step step-neutral\">Step 6</li>\n  <li data-content=\"●\" class=\"step step-neutral\">Step 7</li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "steps"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/6",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    }
+  ]
+}

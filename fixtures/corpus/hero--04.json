@@ -1,0 +1,46 @@
+{
+  "id": "hero--04",
+  "component": "hero",
+  "title": "Hero with overlay image",
+  "html": "<div\n  class=\"hero min-h-screen\"\n  style=\"background-image: url(https://img.daisyui.com/images/stock/photo-1507358522600-9f71e620c44e.webp);\"\n>\n  <div class=\"hero-overlay\"></div>\n  <div class=\"hero-content text-neutral-content text-center\">\n    <div class=\"max-w-md\">\n      <h1 class=\"mb-5 text-5xl font-bold\">Hello there</h1>\n      <p class=\"mb-5\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n      <button class=\"btn btn-primary\">Get Started</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "hero"
+      ],
+      "tailwind": [
+        "min-h-screen"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "hero-overlay"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "hero-content"
+      ],
+      "tailwind": [
+        "text-neutral-content",
+        "text-center"
+      ]
+    },
+    {
+      "path": "0/1/0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

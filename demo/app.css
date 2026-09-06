@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: all;
+}
+
+/*
+ * vite-plugin-elm compiles Elm in-memory (dev server transform, or inlined
+ * into the JS bundle at build time) — it never writes a `.elm.js`/`.html`
+ * file to disk. That means Tailwind's content scanner has no build artifact
+ * to see class names in.
+ *
+ * Fix: point @source directly at the Elm *source* files that contain the
+ * daisyUI class-name string literals. Tailwind 4's scanner is
+ * extension-agnostic — it treats any file @source points at as plain text
+ * and looks for class-like tokens, so it finds e.g. "btn-primary" inside an
+ * Elm string literal (`btn-primary`, `"btn-primary"`, case branches of
+ * `colorToClass`, etc.) just as well as inside HTML/JS.
+ *
+ * - Daisy/Render.elm is the only module allowed to emit class strings
+ *   (CLAUDE.md), so its literals + the fixed `tokens` table cover layout
+ *   classes.
+ * - Daisy/Schema (aggregate + per-component modules) holds every generated
+ *   `<group>ToClass` function, i.e. every daisyUI class string used by the
+ *   tree/render layer.
+ * - ./src covers the demo app's own Elm/JS/HTML for anything demo-specific.
+ */
+@source "../src/Daisy/Render.elm";
+@source "../src/Daisy/Schema";
+@source "../src/Daisy/Schema.elm";
+@source "./src";

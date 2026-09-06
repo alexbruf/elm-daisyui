@@ -1,0 +1,80 @@
+{
+  "id": "textarea--03",
+  "component": "textarea",
+  "title": "Textarea colors",
+  "html": "<textarea placeholder=\"Primary\" class=\"textarea textarea-primary\"></textarea>\n<textarea placeholder=\"Secondary\" class=\"textarea textarea-secondary\"></textarea>\n<textarea placeholder=\"Accent\" class=\"textarea textarea-accent\"></textarea>\n<textarea placeholder=\"Neutral\" class=\"textarea textarea-neutral\"></textarea>\n<textarea placeholder=\"Info\" class=\"textarea textarea-info\"></textarea>\n<textarea placeholder=\"Success\" class=\"textarea textarea-success\"></textarea>\n<textarea placeholder=\"Warning\" class=\"textarea textarea-warning\"></textarea>\n<textarea placeholder=\"Error\" class=\"textarea textarea-error\"></textarea>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

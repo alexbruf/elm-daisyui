@@ -1,0 +1,61 @@
+{
+  "id": "join--03",
+  "component": "join",
+  "title": "With extra elements in the group",
+  "html": "<div class=\"join\">\n  <div>\n    <div>\n      <input class=\"input join-item\" placeholder=\"Search\" />\n    </div>\n  </div>\n  <select class=\"select join-item\">\n    <option disabled selected>Filter</option>\n    <option>Sci-fi</option>\n    <option>Drama</option>\n    <option>Action</option>\n  </select>\n  <div class=\"indicator\">\n    <span class=\"indicator-item badge badge-secondary\">new</span>\n    <button class=\"btn join-item\">Search</button>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0/0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "select",
+      "daisy": [
+        "join-item",
+        "select"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-secondary",
+        "indicator-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

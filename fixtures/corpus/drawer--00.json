@@ -1,0 +1,70 @@
+{
+  "id": "drawer--00",
+  "component": "drawer",
+  "title": "Drawer sidebar",
+  "html": "<div class=\"drawer\">\n  <input id=\"my-drawer-1\" type=\"checkbox\" class=\"drawer-toggle\" />\n  <div class=\"drawer-content\">\n    <!-- Page content here -->\n    <label for=\"my-drawer-1\" class=\"btn drawer-button\">Open drawer</label>\n  </div>\n  <div class=\"drawer-side\">\n    <label for=\"my-drawer-1\" aria-label=\"close sidebar\" class=\"drawer-overlay\"></label>\n    <ul class=\"menu bg-base-200 min-h-full w-80 p-4\">\n      <!-- Sidebar content here -->\n      <li><a>Sidebar Item 1</a></li>\n      <li><a>Sidebar Item 2</a></li>\n    </ul>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "drawer"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "drawer-toggle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "drawer-content"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "label",
+      "daisy": [
+        "btn",
+        "drawer-button"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "drawer-side"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "label",
+      "daisy": [
+        "drawer-overlay"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/1",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "min-h-full",
+        "w-80",
+        "p-4"
+      ]
+    }
+  ]
+}

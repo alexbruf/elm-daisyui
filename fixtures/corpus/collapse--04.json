@@ -1,0 +1,36 @@
+{
+  "id": "collapse--04",
+  "component": "collapse",
+  "title": "Without border and background color",
+  "html": "<div tabindex=\"0\" class=\"collapse\">\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "collapse"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "collapse-title"
+      ],
+      "tailwind": [
+        "font-semibold"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "collapse-content"
+      ],
+      "tailwind": [
+        "text-sm"
+      ]
+    }
+  ]
+}

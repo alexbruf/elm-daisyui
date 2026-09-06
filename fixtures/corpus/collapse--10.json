@@ -1,0 +1,41 @@
+{
+  "id": "collapse--10",
+  "component": "collapse",
+  "title": "Custom colors for collapse that works with focus",
+  "html": "<div\n  tabindex=\"0\"\n  class=\"bg-primary text-primary-content focus:bg-secondary focus:text-secondary-content collapse\"\n>\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "collapse"
+      ],
+      "tailwind": [
+        "bg-primary",
+        "text-primary-content",
+        "focus:bg-secondary",
+        "focus:text-secondary-content"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "collapse-title"
+      ],
+      "tailwind": [
+        "font-semibold"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "collapse-content"
+      ],
+      "tailwind": [
+        "text-sm"
+      ]
+    }
+  ]
+}

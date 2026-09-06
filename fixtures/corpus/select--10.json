@@ -1,0 +1,17 @@
+{
+  "id": "select--10",
+  "component": "select",
+  "title": "Error color",
+  "html": "<select class=\"select select-error\">\n  <option disabled selected>Pick an AI Model</option>\n  <option>GPT-4</option>\n  <option>Claude</option>\n  <option>Llama</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

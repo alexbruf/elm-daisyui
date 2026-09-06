@@ -1,0 +1,78 @@
+{
+  "id": "badge--05",
+  "component": "badge",
+  "title": "Badge with dash style",
+  "html": "<div class=\"badge badge-dash badge-primary\">Primary</div>\n<div class=\"badge badge-dash badge-secondary\">Secondary</div>\n<div class=\"badge badge-dash badge-accent\">Accent</div>\n<div class=\"badge badge-dash badge-info\">Info</div>\n<div class=\"badge badge-dash badge-success\">Success</div>\n<div class=\"badge badge-dash badge-warning\">Warning</div>\n<div class=\"badge badge-dash badge-error\">Error</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-accent",
+        "badge-dash"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-dash",
+        "badge-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

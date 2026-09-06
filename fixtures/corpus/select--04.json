@@ -1,0 +1,17 @@
+{
+  "id": "select--04",
+  "component": "select",
+  "title": "Secondary color",
+  "html": "<select class=\"select select-secondary\">\n  <option disabled selected>Pick a language</option>\n  <option>Zig</option>\n  <option>Go</option>\n  <option>Rust</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-secondary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "validator--02",
+  "component": "validator",
+  "title": "Password requirement validator",
+  "html": "<input type=\"password\" class=\"input validator\" required placeholder=\"Password\" minlength=\"8\" \n  pattern=\"(?=.*\\\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}\" \n  title=\"Must be more than 8 characters, including number, lowercase letter, uppercase letter\" />\n<p class=\"validator-hint\">\n  Must be more than 8 characters, including\n  <br/>At least one number\n  <br/>At least one lowercase letter\n  <br/>At least one uppercase letter\n</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

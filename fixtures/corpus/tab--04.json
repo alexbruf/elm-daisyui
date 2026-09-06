@@ -1,0 +1,41 @@
+{
+  "id": "tab--04",
+  "component": "tab",
+  "title": "tabs-box using radio inputs",
+  "html": "<!-- name of each tab group should be unique -->\n<div class=\"tabs tabs-box\">\n  <input type=\"radio\" name=\"my_tabs_1\" class=\"tab\" aria-label=\"Tab 1\" />\n  <input type=\"radio\" name=\"my_tabs_1\" class=\"tab\" aria-label=\"Tab 2\" checked=\"checked\" />\n  <input type=\"radio\" name=\"my_tabs_1\" class=\"tab\" aria-label=\"Tab 3\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    }
+  ]
+}

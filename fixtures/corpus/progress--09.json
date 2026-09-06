@@ -1,0 +1,18 @@
+{
+  "id": "progress--09",
+  "component": "progress",
+  "title": "Indeterminate (without value)",
+  "html": "<progress class=\"progress w-56\"></progress>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "progress",
+      "daisy": [
+        "progress"
+      ],
+      "tailwind": [
+        "w-56"
+      ]
+    }
+  ]
+}

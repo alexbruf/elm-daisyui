@@ -1,0 +1,28 @@
+{
+  "id": "tooltip--15",
+  "component": "tooltip",
+  "title": "Responsive tooltip position",
+  "html": "<div class=\"tooltip tooltip-start md:tooltip-right md:tooltip-center\" data-tip=\"hello\">\n  <button class=\"btn\">Hover me</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-start"
+      ],
+      "tailwind": [
+        "md:$$tooltip-right",
+        "md:$$tooltip-center"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

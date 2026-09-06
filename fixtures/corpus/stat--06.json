@@ -1,0 +1,112 @@
+{
+  "id": "stat--06",
+  "component": "stat",
+  "title": "With custom colors and button",
+  "html": "<div class=\"stats bg-base-100 border-base-300 border\">\n  <div class=\"stat\">\n    <div class=\"stat-title\">Account balance</div>\n    <div class=\"stat-value\">$89,400</div>\n    <div class=\"stat-actions\">\n      <button class=\"btn btn-xs btn-success\">Add funds</button>\n    </div>\n  </div>\n\n  <div class=\"stat\">\n    <div class=\"stat-title\">Current balance</div>\n    <div class=\"stat-value\">$89,400</div>\n    <div class=\"stat-actions\">\n      <button class=\"btn btn-xs\">Withdrawal</button>\n      <button class=\"btn btn-xs\">Deposit</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stats"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "border"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "stat-actions"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-success",
+        "btn-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2",
+      "tag": "div",
+      "daisy": [
+        "stat-actions"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    }
+  ]
+}

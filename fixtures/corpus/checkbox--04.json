@@ -1,0 +1,24 @@
+{
+  "id": "checkbox--04",
+  "component": "checkbox",
+  "title": "Disabled",
+  "html": "<input type=\"checkbox\" class=\"checkbox\" disabled />\n<input type=\"checkbox\" class=\"checkbox\" disabled checked=\"checked\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "checkbox"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "checkbox"
+      ],
+      "tailwind": []
+    }
+  ]
+}

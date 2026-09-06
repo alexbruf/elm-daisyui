@@ -1,0 +1,28 @@
+{
+  "id": "status--03",
+  "component": "status",
+  "title": "Status with ping animation",
+  "html": "<div class=\"inline-grid *:[grid-area:1/1]\">\n  <div class=\"status status-error animate-ping\"></div>\n  <div class=\"status status-error\"></div>\n</div> Server is down",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-error"
+      ],
+      "tailwind": [
+        "animate-ping"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

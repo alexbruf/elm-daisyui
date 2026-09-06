@@ -1,0 +1,24 @@
+{
+  "id": "radial-progress--04",
+  "component": "radial-progress",
+  "title": "Custom size and custom thickness",
+  "html": "<div class=\"radial-progress\" style=\"--value:70; --size:12rem; --thickness: 2px;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>\n<div class=\"radial-progress\" style=\"--value:70; --size:12rem; --thickness: 2rem;\" aria-valuenow=\"70\" role=\"progressbar\">70%</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "radial-progress"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "radial-progress"
+      ],
+      "tailwind": []
+    }
+  ]
+}

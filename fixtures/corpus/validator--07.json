@@ -1,0 +1,25 @@
+{
+  "id": "validator--07",
+  "component": "validator",
+  "title": "Number input requirement validator",
+  "html": "<input type=\"number\" class=\"input validator\" required placeholder=\"Type a number between 1 to 10\" \nmin=\"1\" max=\"10\"\n  title=\"Must be between be 1 to 10\" />\n<p class=\"validator-hint\">Must be between be 1 to 10</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

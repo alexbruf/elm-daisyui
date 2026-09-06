@@ -1,0 +1,17 @@
+{
+  "id": "link--08",
+  "component": "link",
+  "title": "Error color",
+  "html": "<a class=\"link link-error\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

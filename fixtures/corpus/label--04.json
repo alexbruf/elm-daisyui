@@ -1,0 +1,25 @@
+{
+  "id": "label--04",
+  "component": "label",
+  "title": "Floating Label",
+  "html": "<label class=\"floating-label\">\n  <span>Your Email</span>\n  <input type=\"text\" placeholder=\"mail@site.com\" class=\"input input-md\" />\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "floating-label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-md"
+      ],
+      "tailwind": []
+    }
+  ]
+}

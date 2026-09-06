@@ -1,0 +1,35 @@
+{
+  "id": "aura--03",
+  "component": "aura",
+  "title": "Aura rainbow",
+  "html": "<div class=\"aura aura-rainbow\">\n  <div class=\"card bg-base-100\">\n    <div class=\"card-body\">\n      <p>This card has rainbow aura</p>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "aura",
+        "aura-rainbow"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-100"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    }
+  ]
+}

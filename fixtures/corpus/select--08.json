@@ -1,0 +1,17 @@
+{
+  "id": "select--08",
+  "component": "select",
+  "title": "Success color",
+  "html": "<select class=\"select select-success\">\n  <option disabled selected>Pick a Runtime</option>\n  <option>npm</option>\n  <option>Bun</option>\n  <option>yarn</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

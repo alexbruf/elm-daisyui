@@ -1,0 +1,26 @@
+{
+  "id": "indicator--00",
+  "component": "indicator",
+  "title": "Status Indicator",
+  "html": "<div class=\"indicator\">\n  <span class=\"indicator-item status status-success\"></span>\n  <div class=\"bg-base-300 grid h-32 w-32 place-items-center\">content</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "indicator-item",
+        "status",
+        "status-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

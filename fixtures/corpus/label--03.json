@@ -1,0 +1,24 @@
+{
+  "id": "label--03",
+  "component": "label",
+  "title": "Label for date input",
+  "html": "<label class=\"input\">\n  <span class=\"label\">Publish date</span>\n  <input type=\"date\" />\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

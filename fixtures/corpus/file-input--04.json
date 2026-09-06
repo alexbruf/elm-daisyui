@@ -1,0 +1,80 @@
+{
+  "id": "file-input--04",
+  "component": "file-input",
+  "title": "Primary color",
+  "html": "<input type=\"file\" class=\"file-input file-input-primary\" />\n<input type=\"file\" class=\"file-input file-input-secondary\" />\n<input type=\"file\" class=\"file-input file-input-accent\" />\n<input type=\"file\" class=\"file-input file-input-neutral\" />\n<input type=\"file\" class=\"file-input file-input-info\" />\n<input type=\"file\" class=\"file-input file-input-success\" />\n<input type=\"file\" class=\"file-input file-input-warning\" />\n<input type=\"file\" class=\"file-input file-input-error\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "input",
+      "daisy": [
+        "file-input",
+        "file-input-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

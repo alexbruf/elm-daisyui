@@ -1,0 +1,32 @@
+{
+  "id": "swap--00",
+  "component": "swap",
+  "title": "Swap text",
+  "html": "<label class=\"swap\">\n  <input type=\"checkbox\" />\n  <div class=\"swap-on\">ON</div>\n  <div class=\"swap-off\">OFF</div>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "swap"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "swap-on"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "swap-off"
+      ],
+      "tailwind": []
+    }
+  ]
+}

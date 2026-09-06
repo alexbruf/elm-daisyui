@@ -1,0 +1,41 @@
+{
+  "id": "navbar--03",
+  "component": "navbar",
+  "title": "Navbar with menu and submenu",
+  "html": "<div class=\"navbar bg-base-100 shadow-sm\">\n  <div class=\"flex-1\">\n    <a class=\"btn btn-ghost text-xl\">daisyUI</a>\n  </div>\n  <div class=\"flex-none\">\n    <ul class=\"menu menu-horizontal px-1\">\n      <li><a>Link</a></li>\n      <li>\n        <details>\n          <summary>Parent</summary>\n          <ul class=\"bg-base-100 rounded-t-none p-2\">\n            <li><a>Link 1</a></li>\n            <li><a>Link 2</a></li>\n          </ul>\n        </details>\n      </li>\n    </ul>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-horizontal"
+      ],
+      "tailwind": [
+        "px-1"
+      ]
+    }
+  ]
+}

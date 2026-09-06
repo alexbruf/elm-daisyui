@@ -1,0 +1,73 @@
+{
+  "id": "rating--03",
+  "component": "rating",
+  "title": "mask-heart with multiple colors",
+  "html": "<div class=\"rating gap-1\">\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-red-400\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-orange-400\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-yellow-400\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-lime-400\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-3\" class=\"mask mask-heart bg-green-400\" aria-label=\"5 star\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "rating"
+      ],
+      "tailwind": [
+        "gap-1"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": [
+        "bg-red-400"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": [
+        "bg-orange-400"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": [
+        "bg-yellow-400"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": [
+        "bg-lime-400"
+      ]
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": [
+        "bg-green-400"
+      ]
+    }
+  ]
+}

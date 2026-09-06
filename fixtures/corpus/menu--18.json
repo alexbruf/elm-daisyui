@@ -1,0 +1,27 @@
+{
+  "id": "menu--18",
+  "component": "menu",
+  "title": "Menu with active item",
+  "html": "<ul class=\"menu bg-base-200 w-56\">\n  <li><a>Item 1</a></li>\n  <li><a class=\"menu-active\">Item 2</a></li>\n  <li><a>Item 3</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "w-56"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "a",
+      "daisy": [
+        "menu-active"
+      ],
+      "tailwind": []
+    }
+  ]
+}

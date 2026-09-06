@@ -1,0 +1,16 @@
+{
+  "id": "input--08",
+  "component": "input",
+  "title": "Text input with data list suggestion",
+  "html": "<input type=\"text\" class=\"input\" placeholder=\"Which browser do you use\" list=\"browsers\" />\n<datalist id=\"browsers\">\n  <option value=\"Chrome\"></option>\n  <option value=\"Firefox\"></option>\n  <option value=\"Safari\"></option>\n  <option value=\"Opera\"></option>\n  <option value=\"Edge\"></option>\n</datalist>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

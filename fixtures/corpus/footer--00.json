@@ -1,0 +1,144 @@
+{
+  "id": "footer--00",
+  "component": "footer",
+  "title": "Footer (vertical by default, horizontal for sm and up)",
+  "html": "<footer class=\"footer sm:footer-horizontal bg-neutral text-neutral-content p-10\">\n  <nav>\n    <h6 class=\"footer-title\">Services</h6>\n    <a class=\"link link-hover\">Branding</a>\n    <a class=\"link link-hover\">Design</a>\n    <a class=\"link link-hover\">Marketing</a>\n    <a class=\"link link-hover\">Advertisement</a>\n  </nav>\n  <nav>\n    <h6 class=\"footer-title\">Company</h6>\n    <a class=\"link link-hover\">About us</a>\n    <a class=\"link link-hover\">Contact</a>\n    <a class=\"link link-hover\">Jobs</a>\n    <a class=\"link link-hover\">Press kit</a>\n  </nav>\n  <nav>\n    <h6 class=\"footer-title\">Legal</h6>\n    <a class=\"link link-hover\">Terms of use</a>\n    <a class=\"link link-hover\">Privacy policy</a>\n    <a class=\"link link-hover\">Cookie policy</a>\n  </nav>\n</footer>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "footer",
+      "daisy": [
+        "footer"
+      ],
+      "tailwind": [
+        "sm:$$footer-horizontal",
+        "bg-neutral",
+        "text-neutral-content",
+        "p-10"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "h6",
+      "daisy": [
+        "footer-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/3",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/4",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "h6",
+      "daisy": [
+        "footer-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/3",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/4",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "h6",
+      "daisy": [
+        "footer-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/1",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/2",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/3",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "kbd--04",
+  "component": "kbd",
+  "title": "Function Keys",
+  "html": "<kbd class=\"kbd\">⌘</kbd>\n<kbd class=\"kbd\">⌥</kbd>\n<kbd class=\"kbd\">⇧</kbd>\n<kbd class=\"kbd\">⌃</kbd>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    }
+  ]
+}

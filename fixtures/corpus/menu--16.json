@@ -1,0 +1,66 @@
+{
+  "id": "menu--16",
+  "component": "menu",
+  "title": "Collapsible submenu that works with class names",
+  "html": "<ul class=\"menu bg-base-200 rounded-box w-56\">\n  <li><a>Item 1</a></li>\n  <li>\n    <span class=\"menu-dropdown-toggle\">Parent</span>\n    <ul class=\"menu-dropdown\">\n      <li><a>Submenu 1</a></li>\n      <li><a>Submenu 2</a></li>\n    </ul>\n  </li>\n</ul>\n<ul class=\"menu bg-base-200 rounded-box w-56\">\n  <li><a>Item 1</a></li>\n  <li>\n    <span class=\"menu-dropdown-toggle menu-dropdown-show\">Parent</span>\n    <ul class=\"menu-dropdown menu-dropdown-show\">\n      <li><a>Submenu 1</a></li>\n      <li><a>Submenu 2</a></li>\n    </ul>\n  </li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "w-56"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "span",
+      "daisy": [
+        "menu-dropdown-toggle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "ul",
+      "daisy": [
+        "menu-dropdown"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "rounded-box",
+        "w-56"
+      ]
+    },
+    {
+      "path": "1/1/0",
+      "tag": "span",
+      "daisy": [
+        "menu-dropdown-show",
+        "menu-dropdown-toggle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1/1",
+      "tag": "ul",
+      "daisy": [
+        "menu-dropdown",
+        "menu-dropdown-show"
+      ],
+      "tailwind": []
+    }
+  ]
+}

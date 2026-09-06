@@ -1,0 +1,53 @@
+{
+  "id": "badge--01",
+  "component": "badge",
+  "title": "Badge sizes",
+  "html": "<div class=\"badge badge-xs\">Xsmall</div>\n<div class=\"badge badge-sm\">Small</div>\n<div class=\"badge badge-md\">Medium</div>\n<div class=\"badge badge-lg\">Large</div>\n<div class=\"badge badge-xl\">Xlarge</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

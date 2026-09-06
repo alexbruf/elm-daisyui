@@ -1,0 +1,36 @@
+{
+  "id": "join--04",
+  "component": "join",
+  "title": "Custom border radius",
+  "html": "<div class=\"join\">\n  <input class=\"input join-item\" placeholder=\"Email\" />\n  <button class=\"btn join-item rounded-r-full\">Subscribe</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": [
+        "rounded-r-full"
+      ]
+    }
+  ]
+}

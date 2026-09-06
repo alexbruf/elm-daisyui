@@ -1,0 +1,19 @@
+{
+  "id": "stack--00",
+  "component": "stack",
+  "title": "3 divs in a stack",
+  "html": "<div class=\"stack h-20 w-32\">\n  <div class=\"bg-primary text-primary-content grid place-content-center rounded-box\">1</div>\n  <div class=\"bg-accent text-accent-content grid place-content-center rounded-box\">2</div>\n  <div class=\"bg-secondary text-secondary-content grid place-content-center rounded-box\">\n    3\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stack"
+      ],
+      "tailwind": [
+        "h-20",
+        "w-32"
+      ]
+    }
+  ]
+}

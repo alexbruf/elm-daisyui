@@ -1,0 +1,42 @@
+{
+  "id": "textarea--02",
+  "component": "textarea",
+  "title": "With form control and labels",
+  "html": "<fieldset class=\"fieldset\">\n  <legend class=\"fieldset-legend\">Your bio</legend>\n  <textarea class=\"textarea h-24\" placeholder=\"Bio\"></textarea>\n  <div class=\"label\">Optional</div>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "textarea",
+      "daisy": [
+        "textarea"
+      ],
+      "tailwind": [
+        "h-24"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

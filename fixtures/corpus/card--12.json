@@ -1,0 +1,48 @@
+{
+  "id": "card--12",
+  "component": "card",
+  "title": "Card with action on top",
+  "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <div class=\"card-body\">\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-square btn-sm\">\n        <svg\n          aria-label=\"Close\"\n          xmlns=\"http://www.w3.org/2000/svg\"\n          class=\"h-6 w-6\"\n          fill=\"none\"\n          viewBox=\"0 0 24 24\"\n          stroke=\"currentColor\">\n          <path\n            stroke-linecap=\"round\"\n            stroke-linejoin=\"round\"\n            stroke-width=\"2\"\n            d=\"M6 18L18 6M6 6l12 12\" />\n        </svg>\n      </button>\n    </div>\n    <p>We are using cookies for no reason.</p>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "w-96",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "0/0/0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-sm",
+        "btn-square"
+      ],
+      "tailwind": []
+    }
+  ]
+}

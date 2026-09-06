@@ -1,0 +1,182 @@
+{
+  "id": "tab--05",
+  "component": "tab",
+  "title": "Sizes",
+  "html": "\n<div role=\"tablist\" class=\"tabs tabs-lift tabs-xs\">\n  <a role=\"tab\" class=\"tab\">Xsmall</a>\n  <a role=\"tab\" class=\"tab tab-active\">Xsmall</a>\n  <a role=\"tab\" class=\"tab\">Xsmall</a>\n</div>\n\n<div role=\"tablist\" class=\"tabs tabs-lift tabs-sm\">\n  <a role=\"tab\" class=\"tab\">Small</a>\n  <a role=\"tab\" class=\"tab tab-active\">Small</a>\n  <a role=\"tab\" class=\"tab\">Small</a>\n</div>\n\n<div role=\"tablist\" class=\"tabs tabs-lift\">\n  <a role=\"tab\" class=\"tab\">Medium</a>\n  <a role=\"tab\" class=\"tab tab-active\">Medium</a>\n  <a role=\"tab\" class=\"tab\">Medium</a>\n</div>\n\n<div role=\"tablist\" class=\"tabs tabs-lift tabs-lg\">\n  <a role=\"tab\" class=\"tab\">Large</a>\n  <a role=\"tab\" class=\"tab tab-active\">Large</a>\n  <a role=\"tab\" class=\"tab\">Large</a>\n</div>\n\n<div role=\"tablist\" class=\"tabs tabs-lift tabs-xl\">\n  <a role=\"tab\" class=\"tab\">Xlarge</a>\n  <a role=\"tab\" class=\"tab tab-active\">Xlarge</a>\n  <a role=\"tab\" class=\"tab\">Xlarge</a>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lift",
+        "tabs-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "a",
+      "daisy": [
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lift",
+        "tabs-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "a",
+      "daisy": [
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lift"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/1",
+      "tag": "a",
+      "daisy": [
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lg",
+        "tabs-lift"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/1",
+      "tag": "a",
+      "daisy": [
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lift",
+        "tabs-xl"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/1",
+      "tag": "a",
+      "daisy": [
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "avatar--00",
+  "component": "avatar",
+  "title": "Avatar",
+  "html": "<div class=\"avatar\">\n  <div class=\"w-24 rounded\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/batperson@192.webp\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    }
+  ]
+}

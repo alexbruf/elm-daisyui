@@ -1,0 +1,123 @@
+{
+  "id": "card--15",
+  "component": "card",
+  "title": "Selectable cards",
+  "html": "<div class=\"flex flex-wrap items-start gap-3\">\n  <label class=\"card bg-accent text-accent-content\">\n    <input type=\"checkbox\" name=\"card-urgent-1\" />\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Urgent</h2>\n      <p>Same day delivery</p>\n    </div>\n  </label>\n\n  <div class=\"join bg-base-300 rounded-selector\">\n    <label class=\"join-item card\">\n      <input type=\"radio\" value=\"sm\" name=\"card-size-1\" />\n      <div class=\"card-body\">\n        <h2 class=\"card-title\">Size SM</h2>\n        <p>Available</p>\n      </div>\n    </label>\n\n    <label class=\"join-item card\">\n      <input type=\"radio\" value=\"md\" name=\"card-size-1\" disabled />\n      <div class=\"card-body opacity-60\">\n        <h2 class=\"card-title\">Size MD</h2>\n        <p>Not available</p>\n      </div>\n    </label>\n\n    <label class=\"join-item card\">\n      <input type=\"radio\" value=\"lg\" name=\"card-size-1\" />\n      <div class=\"card-body\">\n        <h2 class=\"card-title\">Size LG</h2>\n        <p>Short supply</p>\n      </div>\n    </label>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "label",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-accent",
+        "text-accent-content"
+      ]
+    },
+    {
+      "path": "0/0/1",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": [
+        "bg-base-300",
+        "rounded-selector"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "label",
+      "daisy": [
+        "card",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/1",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/1/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "label",
+      "daisy": [
+        "card",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1/1",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": [
+        "opacity-60"
+      ]
+    },
+    {
+      "path": "0/1/1/1/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2",
+      "tag": "label",
+      "daisy": [
+        "card",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2/1",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2/1/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    }
+  ]
+}

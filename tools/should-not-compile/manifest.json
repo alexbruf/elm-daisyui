@@ -1,0 +1,21 @@
+{
+  "Reject/CardInCard.elm": ["TYPE MISMATCH"],
+  "Reject/SectionInBlock.elm": ["TYPE MISMATCH"],
+  "Reject/SixSections.elm": ["TOO MANY ARGS"],
+  "Reject/ButtonPrimaryColor.elm": ["TYPE MISMATCH"],
+  "Reject/TwoCtas.elm": ["NAME CLASH"],
+  "Reject/ModalInsideBlock.elm": ["TYPE MISMATCH"],
+  "Reject/CardBodyOutsideCard.elm": ["TYPE MISMATCH"],
+  "Reject/TwoSizesOnButton.elm": ["TYPE MISMATCH"],
+  "Reject/DrawerInsideSection.elm": ["TYPE MISMATCH"],
+  "Reject/ToastInsideBlock.elm": ["TYPE MISMATCH"],
+  "Reject/RawHtmlAsLeaf.elm": ["TYPE MISMATCH"],
+  "Reject/TailwindClassInConfig.elm": ["TYPE MISMATCH"],
+  "Reject/ZeroSections.elm": ["TYPE MISMATCH"],
+  "Reject/PageWithoutCta.elm": ["TYPE MISMATCH"],
+  "Reject/PartRenderedStandalone.elm": ["TYPE MISMATCH"],
+  "Reject/BlockInsideLeaf.elm": ["TYPE MISMATCH"],
+  "Reject/SectionInsideSection.elm": ["TYPE MISMATCH"],
+  "Reject/DropdownAsNode.elm": ["NAMING ERROR"],
+  "Reject/TooltipAsNode.elm": ["NAMING ERROR"]
+}

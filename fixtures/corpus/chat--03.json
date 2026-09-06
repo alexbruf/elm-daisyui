@@ -1,0 +1,78 @@
+{
+  "id": "chat--03",
+  "component": "chat",
+  "title": "Chat with header and footer",
+  "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-header\">\n    Obi-Wan Kenobi\n    <time class=\"text-xs opacity-50\">2 hours ago</time>\n  </div>\n  <div class=\"chat-bubble\">You were the Chosen One!</div>\n  <div class=\"chat-footer opacity-50\">Seen</div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-header\">\n    Obi-Wan Kenobi\n    <time class=\"text-xs opacity-50\">2 hour ago</time>\n  </div>\n  <div class=\"chat-bubble\">I loved you.</div>\n  <div class=\"chat-footer opacity-50\">Delivered</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "chat-header"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "chat-footer"
+      ],
+      "tailwind": [
+        "opacity-50"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "chat-header"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/2",
+      "tag": "div",
+      "daisy": [
+        "chat-footer"
+      ],
+      "tailwind": [
+        "opacity-50"
+      ]
+    }
+  ]
+}

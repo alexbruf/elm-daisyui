@@ -1,0 +1,43 @@
+{
+  "id": "badge--11",
+  "component": "badge",
+  "title": "Badge in a button",
+  "html": "<button class=\"btn\">\n  Inbox <div class=\"badge badge-sm\">+99</div>\n</button>\n\n<button class=\"btn\">\n  Inbox <div class=\"badge badge-sm badge-secondary\">+99</div>\n</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-secondary",
+        "badge-sm"
+      ],
+      "tailwind": []
+    }
+  ]
+}

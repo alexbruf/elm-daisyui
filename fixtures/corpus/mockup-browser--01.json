@@ -1,0 +1,37 @@
+{
+  "id": "mockup-browser--01",
+  "component": "mockup-browser",
+  "title": "browser mockup with background color",
+  "html": "<div class=\"mockup-browser bg-base-100 w-full border border-base-300\">\n  <div class=\"mockup-browser-toolbar\">\n    <div class=\"input\">https://daisyui.com</div>\n  </div>\n  <div class=\"grid place-content-center h-80\">Hello!</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-browser"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "w-full",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "mockup-browser-toolbar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "tooltip--01",
+  "component": "tooltip",
+  "title": "Tooltip with tooltip-content",
+  "html": "<div class=\"tooltip\">\n  <div class=\"tooltip-content\">\n    <div class=\"animate-bounce text-orange-400 -rotate-10 text-2xl font-black\">Wow!</div>\n  </div>\n  <button class=\"btn\">Hover me</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "tooltip-content"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

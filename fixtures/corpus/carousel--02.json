@@ -1,0 +1,75 @@
+{
+  "id": "carousel--02",
+  "component": "carousel",
+  "title": "Snap to end",
+  "html": "<div class=\"carousel carousel-end rounded-box\">\n  <div class=\"carousel-item\">\n    <img src=\"https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp\" alt=\"Drink\" />\n  </div>\n  <div class=\"carousel-item\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.webp\"\n      alt=\"Drink\" />\n  </div>\n  <div class=\"carousel-item\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp\"\n      alt=\"Drink\" />\n  </div>\n  <div class=\"carousel-item\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1494253109108-2e30c049369b.webp\"\n      alt=\"Drink\" />\n  </div>\n  <div class=\"carousel-item\">\n    <img src=\"https://img.daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.webp\" alt=\"Drink\" />\n  </div>\n  <div class=\"carousel-item\">\n    <img src=\"https://img.daisyui.com/images/stock/photo-1559181567-c3190ca9959b.webp\" alt=\"Drink\" />\n  </div>\n  <div class=\"carousel-item\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.webp\"\n      alt=\"Drink\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "carousel",
+        "carousel-end"
+      ],
+      "tailwind": [
+        "rounded-box"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/6",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

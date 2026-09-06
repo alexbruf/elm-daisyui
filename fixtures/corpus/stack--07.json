@@ -1,0 +1,97 @@
+{
+  "id": "stack--07",
+  "component": "stack",
+  "title": "stacked cards",
+  "html": "<div class=\"stack\">\n  <div class=\"card shadow-md bg-base-100\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Notification 1</h2>\n      <p>You have 3 unread messages. Tap here to see.</p>\n    </div>\n  </div>\n  <div class=\"card shadow-md bg-base-100\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Notification 2</h2>\n      <p>You have 3 unread messages. Tap here to see.</p>\n    </div>\n  </div>\n  <div class=\"card shadow-md bg-base-100\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Notification 3</h2>\n      <p>You have 3 unread messages. Tap here to see.</p>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stack"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "shadow-md",
+        "bg-base-100"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "shadow-md",
+        "bg-base-100"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "shadow-md",
+        "bg-base-100"
+      ]
+    },
+    {
+      "path": "0/2/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    }
+  ]
+}

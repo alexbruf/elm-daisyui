@@ -1,0 +1,38 @@
+{
+  "id": "hero--00",
+  "component": "hero",
+  "title": "Centered hero",
+  "html": "<div class=\"hero bg-base-200 min-h-screen\">\n  <div class=\"hero-content text-center\">\n    <div class=\"max-w-md\">\n      <h1 class=\"text-5xl font-bold\">Hello there</h1>\n      <p class=\"py-6\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n      <button class=\"btn btn-primary\">Get Started</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "hero"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "min-h-screen"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "hero-content"
+      ],
+      "tailwind": [
+        "text-center"
+      ]
+    },
+    {
+      "path": "0/0/0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

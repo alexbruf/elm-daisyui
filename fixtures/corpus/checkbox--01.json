@@ -1,0 +1,47 @@
+{
+  "id": "checkbox--01",
+  "component": "checkbox",
+  "title": "With fieldset and label",
+  "html": "<fieldset class=\"fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4\">\n  <legend class=\"fieldset-legend\">Login options</legend>\n  <label class=\"label\">\n    <input type=\"checkbox\" checked=\"checked\" class=\"checkbox\" />\n    Remember me\n  </label>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "rounded-box",
+        "w-64",
+        "border",
+        "p-4"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "input",
+      "daisy": [
+        "checkbox"
+      ],
+      "tailwind": []
+    }
+  ]
+}

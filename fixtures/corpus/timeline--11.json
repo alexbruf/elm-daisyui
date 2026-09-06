@@ -1,0 +1,62 @@
+{
+  "id": "timeline--11",
+  "component": "timeline",
+  "title": "Vertical timeline without icons",
+  "html": "<ul class=\"timeline timeline-vertical\">\n  <li>\n    <div class=\"timeline-start timeline-box\">First Macintosh computer</div>\n    <hr />\n  </li>\n  <li>\n    <hr />\n    <div class=\"timeline-end timeline-box\">iMac</div>\n    <hr />\n  </li>\n  <li>\n    <hr />\n    <div class=\"timeline-start timeline-box\">iPod</div>\n    <hr />\n  </li>\n  <li>\n    <hr />\n    <div class=\"timeline-end timeline-box\">iPhone</div>\n    <hr />\n  </li>\n  <li>\n    <hr />\n    <div class=\"timeline-start timeline-box\">Apple Watch</div>\n  </li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "timeline",
+        "timeline-vertical"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "timeline-box",
+        "timeline-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "div",
+      "daisy": [
+        "timeline-box",
+        "timeline-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/1",
+      "tag": "div",
+      "daisy": [
+        "timeline-box",
+        "timeline-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3/1",
+      "tag": "div",
+      "daisy": [
+        "timeline-box",
+        "timeline-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4/1",
+      "tag": "div",
+      "daisy": [
+        "timeline-box",
+        "timeline-start"
+      ],
+      "tailwind": []
+    }
+  ]
+}

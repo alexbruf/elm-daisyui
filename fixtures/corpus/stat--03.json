@@ -1,0 +1,124 @@
+{
+  "id": "stat--03",
+  "component": "stat",
+  "title": "Centered items",
+  "html": "<div class=\"stats shadow\">\n  <div class=\"stat place-items-center\">\n    <div class=\"stat-title\">Downloads</div>\n    <div class=\"stat-value\">31K</div>\n    <div class=\"stat-desc\">From January 1st to February 1st</div>\n  </div>\n\n  <div class=\"stat place-items-center\">\n    <div class=\"stat-title\">Users</div>\n    <div class=\"stat-value text-secondary\">4,200</div>\n    <div class=\"stat-desc text-secondary\">↗︎ 40 (2%)</div>\n  </div>\n\n  <div class=\"stat place-items-center\">\n    <div class=\"stat-title\">New Registers</div>\n    <div class=\"stat-value\">1,200</div>\n    <div class=\"stat-desc\">↘︎ 90 (14%)</div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stats"
+      ],
+      "tailwind": [
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": [
+        "place-items-center"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": [
+        "place-items-center"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": [
+        "text-secondary"
+      ]
+    },
+    {
+      "path": "0/1/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": [
+        "text-secondary"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": [
+        "place-items-center"
+      ]
+    },
+    {
+      "path": "0/2/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "file-input--00",
+  "component": "file-input",
+  "title": "File input",
+  "html": "<input type=\"file\" class=\"file-input\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "file-input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

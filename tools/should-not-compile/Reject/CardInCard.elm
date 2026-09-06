@@ -1,0 +1,20 @@
+-- Tries: nest a second Card inside the first Card's `body` (its only List
+-- child slot, via CardParts.body : List (Leaf msg)).
+-- Proves: cards cannot be nested. `Card` is a `Block` constructor, never a
+-- `Leaf`, so it cannot occupy any part of `CardParts` -- there is no slot in
+-- the tree where a card can hold another card.
+
+
+module Reject.CardInCard exposing (value)
+
+import Daisy.Tree as Tree exposing (..)
+
+
+value : Block msg
+value =
+    Card defaultCardConfig
+        { figure = Nothing
+        , title = Just "Outer"
+        , body = [ Card defaultCardConfig emptyCardParts ]
+        , actions = []
+        }

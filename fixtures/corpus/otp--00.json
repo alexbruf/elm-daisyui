@@ -1,0 +1,16 @@
+{
+  "id": "otp--00",
+  "component": "otp",
+  "title": "OTP",
+  "html": "<label class=\"otp\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "otp"
+      ],
+      "tailwind": []
+    }
+  ]
+}

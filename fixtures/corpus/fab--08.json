@@ -1,0 +1,68 @@
+{
+  "id": "fab--08",
+  "component": "fab",
+  "title": "FAB Flower without a main action button",
+  "html": "<div class=\"fab fab-flower\">\n  <!-- a focusable div with tabindex is necessary to work on all browsers. role=\"button\" is necessary for accessibility -->\n  <div tabindex=\"0\" role=\"button\" class=\"btn btn-lg btn-circle btn-primary\">F</div>\n\n  <!-- buttons that show up when FAB is open -->\n  <button class=\"btn btn-lg btn-circle\">A</button>\n  <button class=\"btn btn-lg btn-circle\">B</button>\n  <button class=\"btn btn-lg btn-circle\">C</button>\n  <button class=\"btn btn-lg btn-circle\">D</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "fab",
+        "fab-flower"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "status--04",
+  "component": "status",
+  "title": "Status with bounce animation",
+  "html": "<div class=\"status status-info animate-bounce\"></div> Unread messages",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-info"
+      ],
+      "tailwind": [
+        "animate-bounce"
+      ]
+    }
+  ]
+}

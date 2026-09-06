@@ -1,0 +1,46 @@
+{
+  "id": "tab--12",
+  "component": "tab",
+  "title": "Tabs with custom color",
+  "html": "<div role=\"tablist\" class=\"tabs tabs-lift\">\n  <a role=\"tab\" class=\"tab\">Tab 1</a>\n  <a role=\"tab\" class=\"tab tab-active text-primary [--tab-bg:orange] [--tab-border-color:red]\"> Tab 2</a>\n  <a role=\"tab\" class=\"tab\">Tab 3</a>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-lift"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "a",
+      "daisy": [
+        "tab",
+        "tab-active"
+      ],
+      "tailwind": [
+        "text-primary",
+        "[--tab-bg:orange]",
+        "[--tab-border-color:red]"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "a",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    }
+  ]
+}

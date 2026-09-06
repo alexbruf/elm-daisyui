@@ -1,0 +1,24 @@
+{
+  "id": "label--01",
+  "component": "label",
+  "title": "Label for input at the end",
+  "html": "<label class=\"input\">\n  <input type=\"text\" placeholder=\"domain name\" />\n  <span class=\"label\">.com</span>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "span",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

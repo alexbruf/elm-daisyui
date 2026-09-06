@@ -1,0 +1,16 @@
+{
+  "id": "toggle--00",
+  "component": "toggle",
+  "title": "Toggle (switch)",
+  "html": "<input type=\"checkbox\" checked=\"checked\" class=\"toggle\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "toggle"
+      ],
+      "tailwind": []
+    }
+  ]
+}

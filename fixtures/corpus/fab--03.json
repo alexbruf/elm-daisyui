@@ -1,0 +1,54 @@
+{
+  "id": "fab--03",
+  "component": "fab",
+  "title": "FAB and Speed Dial with rectangle buttons",
+  "html": "<div class=\"fab\">\n  <!-- a focusable div with tabindex is necessary to work on all browsers. role=\"button\" is necessary for accessibility -->\n  <div tabindex=\"0\" role=\"button\" class=\"btn btn-lg btn-circle btn-success\">F</div>\n\n  <!-- buttons that show up when FAB is open -->\n  <button class=\"btn btn-lg\">Button A</button>\n  <button class=\"btn btn-lg\">Button B</button>\n  <button class=\"btn btn-lg\">Button C</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "fab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg",
+        "btn-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg"
+      ],
+      "tailwind": []
+    }
+  ]
+}

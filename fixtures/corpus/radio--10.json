@@ -1,0 +1,24 @@
+{
+  "id": "radio--10",
+  "component": "radio",
+  "title": "Disabled",
+  "html": "<input type=\"radio\" name=\"radio-11\" class=\"radio\" disabled checked=\"checked\" />\n<input type=\"radio\" name=\"radio-11\" class=\"radio\" disabled />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio"
+      ],
+      "tailwind": []
+    }
+  ]
+}

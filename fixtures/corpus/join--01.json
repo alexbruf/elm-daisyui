@@ -1,0 +1,44 @@
+{
+  "id": "join--01",
+  "component": "join",
+  "title": "Group items vertically",
+  "html": "<div class=\"join join-vertical\">\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join",
+        "join-vertical"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

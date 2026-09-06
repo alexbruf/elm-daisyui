@@ -1,0 +1,16 @@
+{
+  "id": "input--13",
+  "component": "input",
+  "title": "Search input with icon",
+  "html": "<label class=\"input\">\n  <svg class=\"h-[1em] opacity-50\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"2.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <circle cx=\"11\" cy=\"11\" r=\"8\"></circle>\n      <path d=\"m21 21-4.3-4.3\"></path>\n    </g>\n  </svg>\n  <input type=\"search\" required placeholder=\"Search\" />\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

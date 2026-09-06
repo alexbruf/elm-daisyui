@@ -1,0 +1,36 @@
+{
+  "id": "mockup-browser--00",
+  "component": "mockup-browser",
+  "title": "browser mockup with border",
+  "html": "<div class=\"mockup-browser border border-base-300 w-full\">\n  <div class=\"mockup-browser-toolbar\">\n    <div class=\"input\">https://daisyui.com</div>\n  </div>\n  <div class=\"grid place-content-center border-t border-base-300 h-80\">Hello!</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-browser"
+      ],
+      "tailwind": [
+        "border",
+        "border-base-300",
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "mockup-browser-toolbar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

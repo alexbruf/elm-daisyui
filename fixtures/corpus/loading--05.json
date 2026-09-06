@@ -1,0 +1,58 @@
+{
+  "id": "loading--05",
+  "component": "loading",
+  "title": "Loading infinity",
+  "html": "<span class=\"loading loading-infinity loading-xs\"></span>\n<span class=\"loading loading-infinity loading-sm\"></span>\n<span class=\"loading loading-infinity loading-md\"></span>\n<span class=\"loading loading-infinity loading-lg\"></span>\n<span class=\"loading loading-infinity loading-xl\"></span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-infinity",
+        "loading-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-infinity",
+        "loading-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-infinity",
+        "loading-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-infinity",
+        "loading-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-infinity",
+        "loading-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

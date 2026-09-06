@@ -1,0 +1,16 @@
+{
+  "id": "textarea--05",
+  "component": "textarea",
+  "title": "Disabled",
+  "html": "<textarea class=\"textarea\" placeholder=\"Bio\" disabled></textarea>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "textarea",
+      "daisy": [
+        "textarea"
+      ],
+      "tailwind": []
+    }
+  ]
+}

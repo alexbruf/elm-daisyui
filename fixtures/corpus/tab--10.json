@@ -1,0 +1,77 @@
+{
+  "id": "tab--10",
+  "component": "tab",
+  "title": "radio tabs-box + tab content",
+  "html": "<!-- name of each tab group should be unique -->\n<div class=\"tabs tabs-box\">\n  <input type=\"radio\" name=\"my_tabs_6\" class=\"tab\" aria-label=\"Tab 1\" />\n  <div class=\"tab-content bg-base-100 border-base-300 p-6\">Tab content 1</div>\n\n  <input type=\"radio\" name=\"my_tabs_6\" class=\"tab\" aria-label=\"Tab 2\" checked=\"checked\" />\n  <div class=\"tab-content bg-base-100 border-base-300 p-6\">Tab content 2</div>\n\n  <input type=\"radio\" name=\"my_tabs_6\" class=\"tab\" aria-label=\"Tab 3\" />\n  <div class=\"tab-content bg-base-100 border-base-300 p-6\">Tab content 3</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tabs",
+        "tabs-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "tab-content"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "p-6"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "tab-content"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "p-6"
+      ]
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "tab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "div",
+      "daisy": [
+        "tab-content"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "p-6"
+      ]
+    }
+  ]
+}

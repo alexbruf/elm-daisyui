@@ -1,0 +1,253 @@
+{
+  "id": "pagination--01",
+  "component": "pagination",
+  "title": "Sizes",
+  "html": "<div class=\"join\">\n  <button class=\"join-item btn btn-xs\">1</button>\n  <button class=\"join-item btn btn-xs btn-active\">2</button>\n  <button class=\"join-item btn btn-xs\">3</button>\n  <button class=\"join-item btn btn-xs\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-sm\">1</button>\n  <button class=\"join-item btn btn-sm btn-active\">2</button>\n  <button class=\"join-item btn btn-sm\">3</button>\n  <button class=\"join-item btn btn-sm\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-md\">1</button>\n  <button class=\"join-item btn btn-md btn-active\">2</button>\n  <button class=\"join-item btn btn-md\">3</button>\n  <button class=\"join-item btn btn-md\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-lg\">1</button>\n  <button class=\"join-item btn btn-lg btn-active\">2</button>\n  <button class=\"join-item btn btn-lg\">3</button>\n  <button class=\"join-item btn btn-lg\">4</button>\n</div>\n<div class=\"join\">\n  <button class=\"join-item btn btn-xl\">1</button>\n  <button class=\"join-item btn btn-xl btn-active\">2</button>\n  <button class=\"join-item btn btn-xl\">3</button>\n  <button class=\"join-item btn btn-xl\">4</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-active",
+        "btn-xs",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-sm",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-active",
+        "btn-sm",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-sm",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-sm",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-md",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-active",
+        "btn-md",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-md",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-md",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-active",
+        "btn-lg",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xl",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-active",
+        "btn-xl",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xl",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xl",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

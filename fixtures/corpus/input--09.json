@@ -1,0 +1,16 @@
+{
+  "id": "input--09",
+  "component": "input",
+  "title": "Date input",
+  "html": "<input type=\"date\" class=\"input\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

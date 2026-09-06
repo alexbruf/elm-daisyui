@@ -1,0 +1,27 @@
+{
+  "id": "validator--04",
+  "component": "validator",
+  "title": "Phone Number requirement validator",
+  "html": "<input type=\"tel\" class=\"input validator tabular-nums\" required placeholder=\"Phone\" \n  pattern=\"[0-9]*\" minlength=\"10\" maxlength=\"10\" title=\"Must be 10 digits\" />\n<p class=\"validator-hint\">Must be 10 digits</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": [
+        "tabular-nums"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

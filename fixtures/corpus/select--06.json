@@ -1,0 +1,17 @@
+{
+  "id": "select--06",
+  "component": "select",
+  "title": "Neutral color",
+  "html": "<select class=\"select select-neutral\">\n  <option disabled selected>Server location</option>\n  <option>North America</option>\n  <option>EU west</option>\n  <option>South East Asia</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-neutral"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "mockup-code--05",
+  "component": "mockup-code",
+  "title": "With color",
+  "html": "<div class=\"mockup-code bg-primary text-primary-content w-full\">\n  <pre><code>can be any color!</code></pre>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-code"
+      ],
+      "tailwind": [
+        "bg-primary",
+        "text-primary-content",
+        "w-full"
+      ]
+    }
+  ]
+}

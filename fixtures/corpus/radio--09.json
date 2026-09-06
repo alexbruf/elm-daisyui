@@ -1,0 +1,26 @@
+{
+  "id": "radio--09",
+  "component": "radio",
+  "title": "Error color",
+  "html": "<input type=\"radio\" name=\"radio-10\" class=\"radio radio-error\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-10\" class=\"radio radio-error\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-error"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

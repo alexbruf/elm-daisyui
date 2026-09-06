@@ -1,0 +1,74 @@
+{
+  "id": "label--06",
+  "component": "label",
+  "title": "Responsive Size Floating Label",
+  "html": "<label class=\"floating-label\">\n  <input type=\"text\" placeholder=\"Input\" class=\"input input-xs sm:input-sm md:input-md lg:input-lg xl:input-xl\" value=\"Placeholder\" />\n  <span>Input</span>\n</label>\n\n<label class=\"floating-label\">\n  <textarea placeholder=\"Textarea\" class=\"textarea textarea-xs sm:textarea-sm md:textarea-md lg:textarea-lg xl:textarea-xl\">Placeholder</textarea>\n  <span>Textarea</span>\n</label>\n\n<label class=\"floating-label\">\n  <select class=\"select select-xs sm:select-sm md:select-md lg:select-lg xl:select-xl\">\n    <option disabled selected>Placeholder</option>\n    <option>Option</option>\n  </select>\n  <span>Select</span>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "floating-label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-xs"
+      ],
+      "tailwind": [
+        "sm:$$input-sm",
+        "md:$$input-md",
+        "lg:$$input-lg",
+        "xl:$$input-xl"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "label",
+      "daisy": [
+        "floating-label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-xs"
+      ],
+      "tailwind": [
+        "sm:$$textarea-sm",
+        "md:$$textarea-md",
+        "lg:$$textarea-lg",
+        "xl:$$textarea-xl"
+      ]
+    },
+    {
+      "path": "2",
+      "tag": "label",
+      "daisy": [
+        "floating-label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-xs"
+      ],
+      "tailwind": [
+        "sm:$$select-sm",
+        "md:$$select-md",
+        "lg:$$select-lg",
+        "xl:$$select-xl"
+      ]
+    }
+  ]
+}

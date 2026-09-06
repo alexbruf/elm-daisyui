@@ -1,0 +1,24 @@
+{
+  "id": "avatar--02",
+  "component": "avatar",
+  "title": "Avatar rounded",
+  "html": "<div class=\"avatar\">\n  <div class=\"w-24 rounded-xl\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/yellingwoman@192.webp\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-24 rounded-full\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/yellingcat@192.webp\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    }
+  ]
+}

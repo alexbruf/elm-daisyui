@@ -1,0 +1,80 @@
+{
+  "id": "input--05",
+  "component": "input",
+  "title": "Input colors",
+  "html": "<input type=\"text\" placeholder=\"neutral\" class=\"input input-neutral\" />\n<input type=\"text\" placeholder=\"Primary\" class=\"input input-primary\" />\n<input type=\"text\" placeholder=\"Secondary\" class=\"input input-secondary\" />\n<input type=\"text\" placeholder=\"Accent\" class=\"input input-accent\" />\n\n<input type=\"text\" placeholder=\"Info\" class=\"input input-info\" />\n<input type=\"text\" placeholder=\"Success\" class=\"input input-success\" />\n<input type=\"text\" placeholder=\"Warning\" class=\"input input-warning\" />\n<input type=\"text\" placeholder=\"Error\" class=\"input input-error\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

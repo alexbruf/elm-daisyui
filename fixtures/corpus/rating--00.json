@@ -1,0 +1,61 @@
+{
+  "id": "rating--00",
+  "component": "rating",
+  "title": "Rating",
+  "html": "<div class=\"rating\">\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-1\" class=\"mask mask-star\" aria-label=\"5 star\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "rating"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    }
+  ]
+}

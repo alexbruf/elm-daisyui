@@ -1,0 +1,16 @@
+{
+  "id": "status--00",
+  "component": "status",
+  "title": "Status",
+  "html": "<span class=\"status\"></span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "status"
+      ],
+      "tailwind": []
+    }
+  ]
+}

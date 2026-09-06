@@ -1,0 +1,22 @@
+{
+  "id": "footer--04",
+  "component": "footer",
+  "title": "Footer with copyright text",
+  "html": "<footer class=\"footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4\">\n  <aside>\n    <p>Copyright © {new Date().getFullYear()} - All right reserved by ACME Industries Ltd</p>\n  </aside>\n</footer>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "footer",
+      "daisy": [
+        "footer",
+        "footer-center"
+      ],
+      "tailwind": [
+        "sm:$$footer-horizontal",
+        "bg-base-300",
+        "text-base-content",
+        "p-4"
+      ]
+    }
+  ]
+}

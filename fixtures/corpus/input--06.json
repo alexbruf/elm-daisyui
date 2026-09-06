@@ -1,0 +1,53 @@
+{
+  "id": "input--06",
+  "component": "input",
+  "title": "Sizes",
+  "html": "<input type=\"text\" placeholder=\"Xsmall\" class=\"input input-xs\" />\n<input type=\"text\" placeholder=\"Small\" class=\"input input-sm\" />\n<input type=\"text\" placeholder=\"Medium\" class=\"input input-md\" />\n<input type=\"text\" placeholder=\"Large\" class=\"input input-lg\" />\n<input type=\"text\" placeholder=\"Xlarge\" class=\"input input-xl\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

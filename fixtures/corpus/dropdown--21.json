@@ -1,0 +1,49 @@
+{
+  "id": "dropdown--21",
+  "component": "dropdown",
+  "title": "Card as dropdown",
+  "html": "<div class=\"dropdown\">\n  <div tabindex=\"0\" role=\"button\" class=\"btn m-1\">Click</div>\n  <div\n    tabindex=\"0\"\n    class=\"dropdown-content card card-sm bg-base-100 z-1 w-64 shadow-md\">\n    <div class=\"card-body\">\n      <p>This is a card. You can use any element as a dropdown.</p>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "dropdown"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": [
+        "m-1"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-sm",
+        "dropdown-content"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "z-1",
+        "w-64",
+        "shadow-md"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    }
+  ]
+}

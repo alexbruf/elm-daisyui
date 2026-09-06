@@ -1,0 +1,53 @@
+{
+  "id": "otp--03",
+  "component": "otp",
+  "title": "OTP with different sizes",
+  "html": "<label class=\"otp otp-xs\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-sm\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-md\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-lg\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>\n\n<label class=\"otp otp-xl\">\n  <span></span>\n  <span></span>\n  <span></span>\n  <span></span>\n  <input type=\"text\" autocomplete=\"one-time-code\" inputmode=\"numeric\" maxlength=\"4\" pattern=\"[0-9]{4}\" required />\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "otp",
+        "otp-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "label",
+      "daisy": [
+        "otp",
+        "otp-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "label",
+      "daisy": [
+        "otp",
+        "otp-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "label",
+      "daisy": [
+        "otp",
+        "otp-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "label",
+      "daisy": [
+        "otp",
+        "otp-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

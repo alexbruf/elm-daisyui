@@ -1,0 +1,48 @@
+{
+  "id": "divider--03",
+  "component": "divider",
+  "title": "responsive (lg:divider-horizontal)",
+  "html": "<div class=\"flex w-full flex-col lg:flex-row\">\n  <div class=\"card bg-base-300 rounded-box grid h-32 grow place-items-center\">content</div>\n  <div class=\"divider lg:divider-horizontal\">OR</div>\n  <div class=\"card bg-base-300 rounded-box grid h-32 grow place-items-center\">content</div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-300",
+        "rounded-box",
+        "grid",
+        "h-32",
+        "grow",
+        "place-items-center"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "divider"
+      ],
+      "tailwind": [
+        "lg:$$divider-horizontal"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-300",
+        "rounded-box",
+        "grid",
+        "h-32",
+        "grow",
+        "place-items-center"
+      ]
+    }
+  ]
+}

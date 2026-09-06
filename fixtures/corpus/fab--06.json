@@ -1,0 +1,27 @@
+{
+  "id": "fab--06",
+  "component": "fab",
+  "title": "A single FAB (Floating Action Button)",
+  "html": "<div class=\"fab\">\n  <button class=\"btn btn-lg btn-circle btn-primary\">F</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "fab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

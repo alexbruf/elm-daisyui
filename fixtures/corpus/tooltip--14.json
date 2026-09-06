@@ -1,0 +1,16 @@
+{
+  "id": "tooltip--14",
+  "component": "tooltip",
+  "title": "Responsive tooltip. only show for large screen",
+  "html": "<div class=\"lg:tooltip\" data-tip=\"hello\">\n  <button class=\"btn\">Hover me</button>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

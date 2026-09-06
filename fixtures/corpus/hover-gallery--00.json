@@ -1,0 +1,18 @@
+{
+  "id": "hover-gallery--00",
+  "component": "hover-gallery",
+  "title": "Hover Gallery",
+  "html": "<figure class=\"hover-gallery max-w-60\">\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-1.webp\" />\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-2.webp\" />\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-3.webp\" />\n  <img alt=\"Tailwind CSS image hover gallery\" src=\"https://img.daisyui.com/images/stock/daisyui-hat-4.webp\" />\n</figure>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "figure",
+      "daisy": [
+        "hover-gallery"
+      ],
+      "tailwind": [
+        "max-w-60"
+      ]
+    }
+  ]
+}

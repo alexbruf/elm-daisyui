@@ -1,0 +1,88 @@
+{
+  "id": "divider--04",
+  "component": "divider",
+  "title": "Divider with colors",
+  "html": "<div class=\"flex w-full flex-col\">\n  <div class=\"divider\">Default</div>\n  <div class=\"divider divider-neutral\">Neutral</div>\n  <div class=\"divider divider-primary\">Primary</div>\n  <div class=\"divider divider-secondary\">Secondary</div>\n  <div class=\"divider divider-accent\">Accent</div>\n  <div class=\"divider divider-success\">Success</div>\n  <div class=\"divider divider-warning\">Warning</div>\n  <div class=\"divider divider-info\">Info</div>\n  <div class=\"divider divider-error\">Error</div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "divider"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/6",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/7",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/8",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

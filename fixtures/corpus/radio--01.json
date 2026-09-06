@@ -1,0 +1,53 @@
+{
+  "id": "radio--01",
+  "component": "radio",
+  "title": "Radio sizes",
+  "html": "<input type=\"radio\" name=\"radio-2\" class=\"radio radio-xs\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-sm\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-md\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-lg\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-2\" class=\"radio radio-xl\" checked=\"checked\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

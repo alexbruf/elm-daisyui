@@ -1,0 +1,26 @@
+{
+  "id": "radio--02",
+  "component": "radio",
+  "title": "Neutral color",
+  "html": "<input type=\"radio\" name=\"radio-3\" class=\"radio radio-neutral\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-3\" class=\"radio radio-neutral\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-neutral"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "select--13",
+  "component": "select",
+  "title": "Using OS native style for the options dropdown",
+  "html": "<select class=\"select appearance-none\">\n  <option disabled selected>Pick a color</option>\n  <option>Crimson</option>\n  <option>Amber</option>\n  <option>Velvet</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select"
+      ],
+      "tailwind": [
+        "appearance-none"
+      ]
+    }
+  ]
+}

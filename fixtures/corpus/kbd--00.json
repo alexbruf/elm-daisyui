@@ -1,0 +1,16 @@
+{
+  "id": "kbd--00",
+  "component": "kbd",
+  "title": "Kbd",
+  "html": "<kbd class=\"kbd\">K</kbd>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    }
+  ]
+}

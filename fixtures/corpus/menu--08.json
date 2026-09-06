@@ -1,0 +1,36 @@
+{
+  "id": "menu--08",
+  "component": "menu",
+  "title": "Menu with disabled items",
+  "html": "<ul class=\"menu bg-base-200 rounded-box w-56\">\n  <li><a>Enabled item</a></li>\n  <li class=\"menu-disabled\"><button disabled>disabled item</button></li>\n  <li class=\"menu-disabled\"><a role=\"link\" aria-disabled=\"true\">disabled item</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "w-56"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "li",
+      "daisy": [
+        "menu-disabled"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "li",
+      "daisy": [
+        "menu-disabled"
+      ],
+      "tailwind": []
+    }
+  ]
+}

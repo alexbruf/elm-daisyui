@@ -1,0 +1,20 @@
+{
+  "id": "mockup-window--01",
+  "component": "mockup-window",
+  "title": "window mockup with background color",
+  "html": "<div class=\"mockup-window bg-base-100 border border-base-300\">\n  <div class=\"grid place-content-center h-80\">Hello!</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-window"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border",
+        "border-base-300"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": "checkbox--02",
+  "component": "checkbox",
+  "title": "Sizes",
+  "html": "<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-xs\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-sm\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-md\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-lg\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-xl\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

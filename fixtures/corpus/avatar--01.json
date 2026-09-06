@@ -1,0 +1,40 @@
+{
+  "id": "avatar--01",
+  "component": "avatar",
+  "title": "Avatar in custom sizes",
+  "html": "<div class=\"avatar\">\n  <div class=\"w-32 rounded\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/superperson@192.webp\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-20 rounded\">\n    <img\n      src=\"https://img.daisyui.com/images/profile/demo/superperson@192.webp\"\n      alt=\"Tailwind-CSS-Avatar-component\"\n    />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-16 rounded\">\n    <img\n      src=\"https://img.daisyui.com/images/profile/demo/superperson@192.webp\"\n      alt=\"Tailwind-CSS-Avatar-component\"\n    />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"w-8 rounded\">\n    <img\n      src=\"https://img.daisyui.com/images/profile/demo/superperson@192.webp\"\n      alt=\"Tailwind-CSS-Avatar-component\"\n    />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    }
+  ]
+}

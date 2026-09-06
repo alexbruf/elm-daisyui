@@ -1,0 +1,17 @@
+{
+  "id": "mask--05",
+  "component": "mask",
+  "title": "Pentagon",
+  "html": "<img\n  class=\"mask mask-pentagon\"\n  alt=\"Pentagon CSS mask\"\n  src=\"https://img.daisyui.com/images/stock/photo-1567653418876-5bb0e566e1c2.webp\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "img",
+      "daisy": [
+        "mask",
+        "mask-pentagon"
+      ],
+      "tailwind": []
+    }
+  ]
+}

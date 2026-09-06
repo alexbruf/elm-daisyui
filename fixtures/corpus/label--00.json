@@ -1,0 +1,24 @@
+{
+  "id": "label--00",
+  "component": "label",
+  "title": "Label for input",
+  "html": "<label class=\"input\">\n  <span class=\"label\">https://</span>\n  <input type=\"text\" placeholder=\"URL\" />\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

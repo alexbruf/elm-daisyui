@@ -1,0 +1,40 @@
+{
+  "id": "input--03",
+  "component": "input",
+  "title": "With fieldset and fieldset-legend",
+  "html": "<fieldset class=\"fieldset\">\n  <legend class=\"fieldset-legend\">What is your name?</legend>\n  <input type=\"text\" class=\"input\" placeholder=\"Type here\" />\n  <p class=\"label\">Optional</p>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "p",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

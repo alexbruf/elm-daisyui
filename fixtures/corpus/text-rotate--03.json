@@ -1,0 +1,19 @@
+{
+  "id": "text-rotate--03",
+  "component": "text-rotate",
+  "title": "Rotating 3 words with custom duration",
+  "html": "<span class=\"text-rotate text-7xl duration-6000\">\n  <span class=\"justify-items-center\">\n  <span>BLAZING</span>\n  <span class=\"font-bold italic px-2\">FAST ▶︎▶︎</span>\n  </span>\n</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "text-rotate"
+      ],
+      "tailwind": [
+        "text-7xl",
+        "duration-6000"
+      ]
+    }
+  ]
+}

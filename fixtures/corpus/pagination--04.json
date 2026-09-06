@@ -1,0 +1,39 @@
+{
+  "id": "pagination--04",
+  "component": "pagination",
+  "title": "Nex/Prev outline buttons with equal width",
+  "html": "<div class=\"join grid grid-cols-2\">\n  <button class=\"join-item btn btn-outline\">Previous page</button>\n  <button class=\"join-item btn btn-outline\">Next</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": [
+        "grid",
+        "grid-cols-2"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-outline",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-outline",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "id": "megamenu--05",
+  "component": "megamenu",
+  "title": "Megamenu in different sizes",
+  "html": "<div class=\"megamenu megamenu-xs p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"f1\">One</button>\n  <div id=\"f1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"f2\">Two</button>\n  <div id=\"f2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"f3\">Three</button>\n  <div id=\"f3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-sm p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"g1\">One</button>\n  <div id=\"g1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"g2\">Two</button>\n  <div id=\"g2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"g3\">Three</button>\n  <div id=\"g3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-md p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"h1\">One</button>\n  <div id=\"h1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"h2\">Two</button>\n  <div id=\"h2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"h3\">Three</button>\n  <div id=\"h3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-lg p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"i1\">One</button>\n  <div id=\"i1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"i2\">Two</button>\n  <div id=\"i2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"i3\">Three</button>\n  <div id=\"i3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>\n<div class=\"megamenu megamenu-xl p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"j1\">One</button>\n  <div id=\"j1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button popovertarget=\"j2\">Two</button>\n  <div id=\"j2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n\n  <button popovertarget=\"j3\">Three</button>\n  <div id=\"j3\" popover>\n    <div class=\"p-4\">Content for the third item</div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "megamenu",
+        "megamenu-xs"
+      ],
+      "tailwind": [
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "megamenu",
+        "megamenu-sm"
+      ],
+      "tailwind": [
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "megamenu",
+        "megamenu-md"
+      ],
+      "tailwind": [
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "2/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "megamenu",
+        "megamenu-lg"
+      ],
+      "tailwind": [
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "3/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "megamenu",
+        "megamenu-xl"
+      ],
+      "tailwind": [
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "4/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    }
+  ]
+}

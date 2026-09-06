@@ -1,0 +1,18 @@
+{
+  "id": "mockup-code--01",
+  "component": "mockup-code",
+  "title": "Multi line",
+  "html": "<div class=\"mockup-code w-full\">\n  <pre data-prefix=\"$\"><code>npm i daisyui</code></pre>\n  <pre data-prefix=\">\" class=\"text-warning\"><code>installing...</code></pre>\n  <pre data-prefix=\">\" class=\"text-success\"><code>Done!</code></pre>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-code"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    }
+  ]
+}

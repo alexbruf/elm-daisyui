@@ -1,0 +1,114 @@
+{
+  "id": "fab--10",
+  "component": "fab",
+  "title": "FAB and Flower Speed Dial with tooltip",
+  "html": "<div class=\"fab fab-flower\">\n  <!-- a focusable div with tabindex is necessary to work on all browsers. role=\"button\" is necessary for accessibility -->\n  <div tabindex=\"0\" role=\"button\" class=\"btn btn-lg btn-info btn-circle\">F</div>\n\n  <!-- Main Action button replaces the original button when FAB is open -->\n  <button class=\"fab-main-action btn btn-circle btn-lg btn-success\">M</button>\n\n  <!-- buttons that show up when FAB is open -->\n  <div class=\"tooltip tooltip-left\" data-tip=\"Label A\">\n    <button class=\"btn btn-lg btn-circle\">A</button>\n  </div>\n  <div class=\"tooltip tooltip-left\" data-tip=\"Label B\">\n    <button class=\"btn btn-lg btn-circle\">B</button>\n  </div>\n  <div class=\"tooltip\" data-tip=\"Label C\">\n    <button class=\"btn btn-lg btn-circle\">C</button>\n  </div>\n  <div class=\"tooltip\" data-tip=\"Label D\">\n    <button class=\"btn btn-lg btn-circle\">D</button>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "fab",
+        "fab-flower"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-info",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg",
+        "btn-success",
+        "fab-main-action"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-left"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-left"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "div",
+      "daisy": [
+        "tooltip"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "div",
+      "daisy": [
+        "tooltip"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    }
+  ]
+}

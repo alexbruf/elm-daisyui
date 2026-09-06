@@ -1,0 +1,48 @@
+{
+  "id": "alert--06",
+  "component": "alert",
+  "title": "Alert outline style",
+  "html": "<div role=\"alert\" class=\"alert alert-info alert-outline\">\n  <span>12 unread messages. Tap to see.</span>\n</div>\n<div role=\"alert\" class=\"alert alert-success alert-outline\">\n  <span>Your purchase has been confirmed!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-warning alert-outline\">\n  <span>Warning: Invalid email address!</span>\n</div>\n<div role=\"alert\" class=\"alert alert-error alert-outline\">\n  <span>Error! Task failed successfully.</span>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-info",
+        "alert-outline"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-outline",
+        "alert-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-outline",
+        "alert-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-error",
+        "alert-outline"
+      ],
+      "tailwind": []
+    }
+  ]
+}

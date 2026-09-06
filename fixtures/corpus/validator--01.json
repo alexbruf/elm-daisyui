@@ -1,0 +1,25 @@
+{
+  "id": "validator--01",
+  "component": "validator",
+  "title": "Validator and validator-hint",
+  "html": "<input class=\"input validator\" type=\"email\" required placeholder=\"mail@site.com\" />\n<div class=\"validator-hint\">Enter valid email address</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

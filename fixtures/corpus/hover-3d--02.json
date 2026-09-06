@@ -1,0 +1,32 @@
+{
+  "id": "hover-3d--02",
+  "component": "hover-3d",
+  "title": "3D hover effect for image gallery",
+  "html": "<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"w-60 rounded-2xl\">\n    <img src=\"https://img.daisyui.com/images/stock/card-1.webp?x\" alt=\"Tailwind CSS 3D card\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>\n\n<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"w-60 rounded-2xl\">\n    <img src=\"https://img.daisyui.com/images/stock/card-2.webp?x\" alt=\"Tailwind CSS 3D hover\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>\n\n<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"w-60 rounded-2xl\">\n    <img src=\"https://img.daisyui.com/images/stock/card-3.webp?x\" alt=\"Tailwind CSS 3D hover\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "hover-3d"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "hover-3d"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "hover-3d"
+      ],
+      "tailwind": []
+    }
+  ]
+}

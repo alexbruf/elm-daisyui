@@ -1,0 +1,34 @@
+{
+  "id": "mockup-phone--01",
+  "component": "mockup-phone",
+  "title": "With color and wallpaper",
+  "html": "<div class=\"mockup-phone border-[#ff8938]\">\n  <div class=\"mockup-phone-camera\"></div>\n  <div class=\"mockup-phone-display\">\n    <img alt=\"wallpaper\" src=\"https://img.daisyui.com/images/stock/453966.webp\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-phone"
+      ],
+      "tailwind": [
+        "border-[#ff8938]"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "mockup-phone-camera"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "mockup-phone-display"
+      ],
+      "tailwind": []
+    }
+  ]
+}

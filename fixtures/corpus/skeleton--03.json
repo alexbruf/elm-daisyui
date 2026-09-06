@@ -1,0 +1,17 @@
+{
+  "id": "skeleton--03",
+  "component": "skeleton",
+  "title": "skeleton-text - animated gradient text",
+  "html": "<span class=\"skeleton skeleton-text\">AI is thinking harder...</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "skeleton",
+        "skeleton-text"
+      ],
+      "tailwind": []
+    }
+  ]
+}

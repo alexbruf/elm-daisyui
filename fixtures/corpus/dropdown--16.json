@@ -1,0 +1,44 @@
+{
+  "id": "dropdown--16",
+  "component": "dropdown",
+  "title": "Dropdown right / aligns to end of button vertically",
+  "html": "<div class=\"dropdown dropdown-right dropdown-end\">\n  <div tabindex=\"0\" role=\"button\" class=\"btn m-1\">Click ➡️</div>\n  <ul tabindex=\"-1\" class=\"dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm\">\n    <li><a>Item 1</a></li>\n    <li><a>Item 2</a></li>\n  </ul>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "dropdown",
+        "dropdown-end",
+        "dropdown-right"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": [
+        "m-1"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "ul",
+      "daisy": [
+        "dropdown-content",
+        "menu"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "rounded-box",
+        "z-1",
+        "w-52",
+        "p-2",
+        "shadow-sm"
+      ]
+    }
+  ]
+}

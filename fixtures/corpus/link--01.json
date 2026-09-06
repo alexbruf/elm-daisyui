@@ -1,0 +1,16 @@
+{
+  "id": "link--01",
+  "component": "link",
+  "title": "Link",
+  "html": "<p>\n  Tailwind CSS resets the style of links by default.\n  <br />\n  Add \"link\" class to make it look like a\n  <a class=\"link\">normal link</a>\n  again.\n</p>",
+  "elements": [
+    {
+      "path": "0/1",
+      "tag": "a",
+      "daisy": [
+        "link"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "collapse--11",
+  "component": "collapse",
+  "title": "Custom colors for collapse that works with checkbox",
+  "html": "<div class=\"bg-base-100 border-base-300 collapse border\">\n  <input type=\"checkbox\" class=\"peer\" />\n  <div\n    class=\"collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content\"\n  >\n    How do I create an account?\n  </div>\n  <div\n    class=\"collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content\"\n  >\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "collapse"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "border"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "collapse-title"
+      ],
+      "tailwind": [
+        "bg-primary",
+        "text-primary-content",
+        "peer-checked:bg-secondary",
+        "peer-checked:text-secondary-content"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "collapse-content"
+      ],
+      "tailwind": [
+        "bg-primary",
+        "text-primary-content",
+        "peer-checked:bg-secondary",
+        "peer-checked:text-secondary-content"
+      ]
+    }
+  ]
+}

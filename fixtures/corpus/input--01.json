@@ -1,0 +1,60 @@
+{
+  "id": "input--01",
+  "component": "input",
+  "title": "Text input with text label inside",
+  "html": "<label class=\"input\">\n  <svg class=\"h-[1em] opacity-50\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"2.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <circle cx=\"11\" cy=\"11\" r=\"8\"></circle>\n      <path d=\"m21 21-4.3-4.3\"></path>\n    </g>\n  </svg>\n  <input type=\"search\" class=\"grow\" placeholder=\"Search\" />\n  <kbd class=\"kbd kbd-sm\">⌘</kbd>\n  <kbd class=\"kbd kbd-sm\">K</kbd>\n</label>\n<label class=\"input\">\n  <svg class=\"h-[1em] opacity-50\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"2.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"></path>\n      <path d=\"M14 2v4a2 2 0 0 0 2 2h4\"></path>\n    </g>\n  </svg>\n  <input type=\"text\" class=\"grow\" placeholder=\"index.php\" />\n</label>\n<label class=\"input\">\n  Path\n  <input type=\"text\" class=\"grow\" placeholder=\"src/app/\" />\n  <span class=\"badge badge-neutral badge-xs\">Optional</span>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "label",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/1",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-neutral",
+        "badge-xs"
+      ],
+      "tailwind": []
+    }
+  ]
+}

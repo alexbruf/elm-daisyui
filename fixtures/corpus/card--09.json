@@ -1,0 +1,55 @@
+{
+  "id": "card--09",
+  "component": "card",
+  "title": "Card with no image",
+  "html": "<div class=\"card bg-base-100 w-96 shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Card title!</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "w-96",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "0/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

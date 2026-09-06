@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--09",
+  "component": "tooltip",
+  "title": "Accent color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-accent\" data-tip=\"accent\">\n  <button class=\"btn btn-accent\">accent</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-accent",
+        "tooltip-open"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-accent"
+      ],
+      "tailwind": []
+    }
+  ]
+}

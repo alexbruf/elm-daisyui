@@ -1,0 +1,26 @@
+{
+  "id": "radio--05",
+  "component": "radio",
+  "title": "Accent color",
+  "html": "<input type=\"radio\" name=\"radio-6\" class=\"radio radio-accent\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-6\" class=\"radio radio-accent\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-accent"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "mask--13",
+  "component": "mask",
+  "title": "Triangle-4 (pointing right)",
+  "html": "<img\n  class=\"mask mask-triangle-4\"\n  alt=\"Triangle-4 CSS mask\"\n  src=\"https://img.daisyui.com/images/stock/photo-1567653418876-5bb0e566e1c2.webp\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "img",
+      "daisy": [
+        "mask",
+        "mask-triangle-4"
+      ],
+      "tailwind": []
+    }
+  ]
+}

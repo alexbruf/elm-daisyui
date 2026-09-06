@@ -1,0 +1,52 @@
+{
+  "id": "skeleton--02",
+  "component": "skeleton",
+  "title": "Skeleton - rectangle with content",
+  "html": "<div class=\"flex w-52 flex-col gap-4\">\n  <div class=\"skeleton h-32 w-full\"></div>\n  <div class=\"skeleton h-4 w-28\"></div>\n  <div class=\"skeleton h-4 w-full\"></div>\n  <div class=\"skeleton h-4 w-full\"></div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-32",
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-4",
+        "w-28"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-4",
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-4",
+        "w-full"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "megamenu--04",
+  "component": "megamenu",
+  "title": "megamenu without arrows",
+  "html": "<div class=\"megamenu p-2 border border-base-300\">\n  <span class=\"megamenu-active\"></span>\n\n  <button class=\"after:content-none\" popovertarget=\"e1\">One</button>\n  <div id=\"e1\" popover>\n    <div class=\"p-4\">Content for the first item</div>\n  </div>\n\n  <button class=\"after:content-none\" popovertarget=\"e2\">Two</button>\n  <div id=\"e2\" popover>\n    <div class=\"p-4\">Content for the second item</div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "megamenu"
+      ],
+      "tailwind": [
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    }
+  ]
+}

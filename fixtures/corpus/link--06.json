@@ -1,0 +1,17 @@
+{
+  "id": "link--06",
+  "component": "link",
+  "title": "Info color",
+  "html": "<a class=\"link link-info\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-info"
+      ],
+      "tailwind": []
+    }
+  ]
+}

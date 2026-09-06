@@ -1,0 +1,62 @@
+{
+  "id": "indicator--06",
+  "component": "indicator",
+  "title": "A button as an indicator for a card",
+  "html": "<div class=\"indicator\">\n  <div class=\"indicator-item indicator-bottom\">\n    <button class=\"btn btn-primary\">Apply</button>\n  </div>\n  <div class=\"card border-base-300 border shadow-sm\">\n    <div class=\"card-body\">\n      <h2 class=\"card-title\">Job Title</h2>\n      <p>Rerum reiciendis beatae tenetur excepturi</p>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "indicator-bottom",
+        "indicator-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "border-base-300",
+        "border",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "button--09",
+  "component": "button",
+  "title": "Buttons ghost and button link",
+  "html": "<button class=\"btn btn-ghost\">Ghost</button>\n<button class=\"btn btn-link\">Link</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-link"
+      ],
+      "tailwind": []
+    }
+  ]
+}

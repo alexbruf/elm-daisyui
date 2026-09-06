@@ -1,0 +1,40 @@
+{
+  "id": "modal--05",
+  "component": "modal",
+  "title": "Popover modal",
+  "html": "<!-- The button's popovertarget attribute points to the modal's ID. ID must be unique for each modal -->\n<button class=\"btn\" popovertarget=\"my-modal-1\">Open</button>\n\n<div class=\"modal\" id=\"my-modal-1\" popover>\n  <div class=\"modal-box\">\n    <h3 class=\"font-bold text-lg\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click the button below to close</p>\n    <div class=\"modal-action\">\n      <button popovertarget=\"my-modal-1\" popovertargetaction=\"hide\">close</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "modal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "modal-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0/2",
+      "tag": "div",
+      "daisy": [
+        "modal-action"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "input--11",
+  "component": "input",
+  "title": "datetime-local input",
+  "html": "<input type=\"datetime-local\" class=\"input\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

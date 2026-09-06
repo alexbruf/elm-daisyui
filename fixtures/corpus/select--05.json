@@ -1,0 +1,17 @@
+{
+  "id": "select--05",
+  "component": "select",
+  "title": "Accent color",
+  "html": "<select class=\"select select-accent\">\n  <option selected disabled>Color scheme</option>\n  <option>Light mode</option>\n  <option>Dark mode</option>\n  <option>System</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-accent"
+      ],
+      "tailwind": []
+    }
+  ]
+}

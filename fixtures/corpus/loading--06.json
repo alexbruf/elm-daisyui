@@ -1,0 +1,96 @@
+{
+  "id": "loading--06",
+  "component": "loading",
+  "title": "Loading with colors",
+  "html": "<span class=\"loading loading-spinner text-primary\"></span>\n<span class=\"loading loading-spinner text-secondary\"></span>\n<span class=\"loading loading-spinner text-accent\"></span>\n<span class=\"loading loading-spinner text-neutral\"></span>\n<span class=\"loading loading-spinner text-info\"></span>\n<span class=\"loading loading-spinner text-success\"></span>\n<span class=\"loading loading-spinner text-warning\"></span>\n<span class=\"loading loading-spinner text-error\"></span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-primary"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-secondary"
+      ]
+    },
+    {
+      "path": "2",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-accent"
+      ]
+    },
+    {
+      "path": "3",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-neutral"
+      ]
+    },
+    {
+      "path": "4",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-info"
+      ]
+    },
+    {
+      "path": "5",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-success"
+      ]
+    },
+    {
+      "path": "6",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-warning"
+      ]
+    },
+    {
+      "path": "7",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": [
+        "text-error"
+      ]
+    }
+  ]
+}

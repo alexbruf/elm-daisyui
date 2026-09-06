@@ -1,0 +1,47 @@
+{
+  "id": "modal--02",
+  "component": "modal",
+  "title": "Dialog modal with a close button at corner",
+  "html": "<!-- You can open the modal using ID.showModal() method -->\n<button class=\"btn\" onclick=\"my_modal_3.showModal()\">open modal</button>\n<dialog id=\"my_modal_3\" class=\"modal\">\n  <div class=\"modal-box\">\n    <form method=\"dialog\">\n      <button class=\"btn btn-sm btn-circle btn-ghost absolute right-2 top-2\">✕</button>\n    </form>\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click on ✕ button to close</p>\n  </div>\n</dialog>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "dialog",
+      "daisy": [
+        "modal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "modal-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0/0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-ghost",
+        "btn-sm"
+      ],
+      "tailwind": [
+        "absolute",
+        "right-2",
+        "top-2"
+      ]
+    }
+  ]
+}

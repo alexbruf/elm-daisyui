@@ -1,0 +1,80 @@
+{
+  "id": "checkbox--03",
+  "component": "checkbox",
+  "title": "Colors",
+  "html": "<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-primary\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-secondary\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-accent\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-neutral\" />\n\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-info\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-success\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-warning\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"checkbox checkbox-error\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "checkbox-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

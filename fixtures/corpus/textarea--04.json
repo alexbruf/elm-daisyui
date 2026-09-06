@@ -1,0 +1,53 @@
+{
+  "id": "textarea--04",
+  "component": "textarea",
+  "title": "Sizes",
+  "html": "<textarea placeholder=\"Bio\" class=\"textarea textarea-xs\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-sm\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-md\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-lg\"></textarea>\n\n<textarea placeholder=\"Bio\" class=\"textarea textarea-xl\"></textarea>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "textarea",
+      "daisy": [
+        "textarea",
+        "textarea-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "radio--04",
+  "component": "radio",
+  "title": "Secondary color",
+  "html": "<input type=\"radio\" name=\"radio-5\" class=\"radio radio-secondary\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-5\" class=\"radio radio-secondary\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-secondary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

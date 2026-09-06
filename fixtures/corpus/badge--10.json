@@ -1,0 +1,62 @@
+{
+  "id": "badge--10",
+  "component": "badge",
+  "title": "Badge in a text",
+  "html": "<h1 class=\"text-xl font-semibold\">\n  Heading 1 <span class=\"badge badge-xl\">Badge</span>\n</h1>\n\n<h2 class=\"text-lg font-semibold\">\n  Heading 2 <span class=\"badge badge-lg\">Badge</span>\n</h2>\n\n<h3 class=\"text-base font-semibold\">\n  Heading 3 <span class=\"badge badge-md\">Badge</span>\n</h3>\n\n<h4 class=\"text-sm font-semibold\">\n  Heading 4 <span class=\"badge badge-sm\">Badge</span>\n</h4>\n\n<h5 class=\"text-xs font-semibold\">\n  Heading 5 <span class=\"badge badge-xs\">Badge</span>\n</h5>\n\n<p class=\"text-xs\">\n  Paragraph <span class=\"badge badge-xs\">Badge</span>\n</p>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-xl"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-xs"
+      ],
+      "tailwind": []
+    }
+  ]
+}

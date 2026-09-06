@@ -1,0 +1,27 @@
+{
+  "id": "input--14",
+  "component": "input",
+  "title": "Email input with icon and validator",
+  "html": "<label class=\"input validator\">\n  <svg class=\"h-[1em] opacity-50\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"2.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"></rect>\n      <path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"></path>\n    </g>\n  </svg>\n  <input type=\"email\" placeholder=\"mail@site.com\" required />\n</label>\n<div class=\"validator-hint hidden\">Enter valid email address</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": [
+        "hidden"
+      ]
+    }
+  ]
+}

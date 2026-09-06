@@ -1,0 +1,40 @@
+{
+  "id": "modal--01",
+  "component": "modal",
+  "title": "Dialog modal, closes when clicked outside",
+  "html": "<!-- Open the modal using ID.showModal() method -->\n<button class=\"btn\" onclick=\"my_modal_2.showModal()\">open modal</button>\n<dialog id=\"my_modal_2\" class=\"modal\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">Press ESC key or click outside to close</p>\n  </div>\n  <form method=\"dialog\" class=\"modal-backdrop\">\n    <button>close</button>\n  </form>\n</dialog>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "dialog",
+      "daisy": [
+        "modal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "modal-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "form",
+      "daisy": [
+        "modal-backdrop"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "select--14",
+  "component": "select",
+  "title": "Select with custom dropdown height",
+  "html": "<select class=\"select [&::picker(select)]:max-h-26\">\n  <option disabled selected>Pick a color</option>\n  <option>Crimson</option>\n  <option>Amber</option>\n  <option>Velvet</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select"
+      ],
+      "tailwind": [
+        "[&::picker(select)]:max-h-26"
+      ]
+    }
+  ]
+}

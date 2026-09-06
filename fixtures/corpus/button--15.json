@@ -1,0 +1,17 @@
+{
+  "id": "button--15",
+  "component": "button",
+  "title": "Button block",
+  "html": "<button class=\"btn btn-block\">block</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-block"
+      ],
+      "tailwind": []
+    }
+  ]
+}

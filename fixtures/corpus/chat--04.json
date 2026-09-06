@@ -1,0 +1,152 @@
+{
+  "id": "chat--04",
+  "component": "chat",
+  "title": "Chat Bubble with colors",
+  "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-primary\">What kind of nonsense is this</div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-secondary\">\n    Put me on the Council and not make me a Master!??\n  </div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-accent\">\n    That's never been done in the history of the Jedi.\n  </div>\n</div>\n<div class=\"chat chat-start\">\n  <div class=\"chat-bubble chat-bubble-neutral\">It's insulting!</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-info\">Calm down, Anakin.</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-success\">You have been given a great honor.</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-warning\">To be on the Council at your age.</div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble chat-bubble-error\">It's never happened before.</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble",
+        "chat-bubble-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

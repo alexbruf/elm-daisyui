@@ -1,0 +1,27 @@
+{
+  "id": "indicator--04",
+  "component": "indicator",
+  "title": "for avatar",
+  "html": "<div class=\"avatar indicator\">\n  <span class=\"indicator-item badge badge-secondary\">Justice</span>\n  <div class=\"h-20 w-20 rounded-lg\">\n    <img\n      alt=\"Tailwind CSS examples\"\n      src=\"https://img.daisyui.com/images/profile/demo/batperson@192.webp\"\n    />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-secondary",
+        "indicator-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

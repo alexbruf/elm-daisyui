@@ -1,0 +1,87 @@
+{
+  "id": "button--06",
+  "component": "button",
+  "title": "Dash buttons",
+  "html": "<button class=\"btn btn-dash\">Default</button>\n<button class=\"btn btn-dash btn-primary\">Primary</button>\n<button class=\"btn btn-dash btn-secondary\">Secondary</button>\n<button class=\"btn btn-dash btn-accent\">Accent</button>\n<button class=\"btn btn-dash btn-info\">Info</button>\n<button class=\"btn btn-dash btn-success\">Success</button>\n<button class=\"btn btn-dash btn-warning\">Warning</button>\n<button class=\"btn btn-dash btn-error\">Error</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash",
+        "btn-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-accent",
+        "btn-dash"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash",
+        "btn-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash",
+        "btn-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash",
+        "btn-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-dash",
+        "btn-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

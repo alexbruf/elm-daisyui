@@ -1,0 +1,22 @@
+{
+  "id": "button--02",
+  "component": "button",
+  "title": "Responsive button",
+  "html": "<button class=\"btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl\">Responsive</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": [
+        "sm:$$btn-sm",
+        "md:$$btn-md",
+        "lg:$$btn-lg",
+        "xl:$$btn-xl"
+      ]
+    }
+  ]
+}

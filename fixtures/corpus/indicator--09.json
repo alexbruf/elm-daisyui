@@ -1,0 +1,27 @@
+{
+  "id": "indicator--09",
+  "component": "indicator",
+  "title": "indicator-top (default) indicator-center",
+  "html": "<div class=\"indicator\">\n  <span class=\"indicator-item indicator-center badge badge-secondary\"></span>\n  <div class=\"bg-base-300 grid h-32 w-32 place-items-center\">content</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-secondary",
+        "indicator-center",
+        "indicator-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

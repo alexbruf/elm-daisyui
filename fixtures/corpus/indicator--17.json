@@ -1,0 +1,115 @@
+{
+  "id": "indicator--17",
+  "component": "indicator",
+  "title": "multiple indicators",
+  "html": "<div class=\"indicator\">\n  <span class=\"indicator-item indicator-top indicator-start badge\">↖︎</span>\n  <span class=\"indicator-item indicator-top indicator-center badge\">↑</span>\n  <span class=\"indicator-item indicator-top indicator-end badge\">↗︎</span>\n  <span class=\"indicator-item indicator-middle indicator-start badge\">←</span>\n  <span class=\"indicator-item indicator-middle indicator-center badge\">●</span>\n  <span class=\"indicator-item indicator-middle indicator-end badge\">→</span>\n  <span class=\"indicator-item indicator-bottom indicator-start badge\">↙︎</span>\n  <span class=\"indicator-item indicator-bottom indicator-center badge\">↓</span>\n  <span class=\"indicator-item indicator-bottom indicator-end badge\">↘︎</span>\n  <div class=\"bg-base-300 grid h-32 w-60 place-items-center\">Box</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-item",
+        "indicator-start",
+        "indicator-top"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-center",
+        "indicator-item",
+        "indicator-top"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-end",
+        "indicator-item",
+        "indicator-top"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-item",
+        "indicator-middle",
+        "indicator-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-center",
+        "indicator-item",
+        "indicator-middle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-end",
+        "indicator-item",
+        "indicator-middle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/6",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-bottom",
+        "indicator-item",
+        "indicator-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/7",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-bottom",
+        "indicator-center",
+        "indicator-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/8",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-bottom",
+        "indicator-end",
+        "indicator-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

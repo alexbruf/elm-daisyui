@@ -1,0 +1,32 @@
+{
+  "id": "input--04",
+  "component": "input",
+  "title": "With fieldset and label",
+  "html": "<fieldset class=\"fieldset\">\n  <label class=\"label\" for=\"name\">Name</label>\n  <input type=\"text\" id=\"name\" class=\"input\" placeholder=\"Name\" />\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

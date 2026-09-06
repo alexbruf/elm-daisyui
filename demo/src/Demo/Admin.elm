@@ -1,0 +1,303 @@
+module Demo.Admin exposing (Config, page)
+
+{-| The admin dashboard demo (SPEC.md step 7, row "Admin").
+
+Dashboard shell, four `Stat` tiles in a four-column `Grid`, one `Chart Line`,
+one `Table` with badges and a per-row action button, one `Toast` overlay shown
+after the page CTA fires, and a `ThemeSelect` switcher in the navbar.
+
+Built only from `Daisy.Tree` / `Daisy.Chart` / `Daisy.Schema.*` constructors —
+this module imports no `Html`, so every class on the page comes from
+`Daisy.Render`.
+
+The page is parameterised by the caller's `msg` type rather than importing
+`Main`, which would be a cycle. [`Config`](#Config) carries the slice of the
+router's model this page reads plus the constructors it fires.
+
+@docs Config, page
+
+-}
+
+import Daisy.Chart as DChart
+import Daisy.Schema.Alert as SAlert
+import Daisy.Schema.Badge as SBadge
+import Daisy.Schema.Button as SButton
+import Daisy.Schema.Menu as SMenu
+import Daisy.Schema.Table as STable
+import Daisy.Tree as Tree
+    exposing
+        ( Block(..)
+        , Leaf(..)
+        , MenuItem(..)
+        , MenuSpec
+        , NavbarParts
+        , Overlay(..)
+        , Page(..)
+        , Row
+        , Section(..)
+        , Sections(..)
+        , Shell(..)
+        , StatItem
+        , Theme(..)
+        , ThemePresentation(..)
+        )
+
+
+{-| What the admin page needs from the router.
+-}
+type alias Config msg =
+    { theme : Theme
+    , lastMsg : String
+    , toastVisible : Bool
+    , onNavigate : String -> msg
+    , onTheme : Theme -> msg
+    , onExport : msg
+    , onRowAction : String -> msg
+    }
+
+
+{-| The whole admin dashboard as one `Page`.
+-}
+page : Config msg -> Page msg
+page config =
+    Page
+        { shell =
+            Dashboard
+                { sidebar = sidebar config
+                , navbar = navbar config
+                }
+        , sections =
+            Sections4
+                headerSection
+                statsSection
+                chartSection
+                (ordersSection config)
+        , cta = Tree.cta "Export report" config.onExport
+        , overlays =
+            if config.toastVisible then
+                [ toastOverlay ]
+
+            else
+                []
+        , theme = config.theme
+        , dock = Nothing
+        , fab = Nothing
+        }
+
+
+
+-- SHELL ---------------------------------------------------------------------
+
+
+sidebar : Config msg -> MenuSpec msg
+sidebar config =
+    { config = { defaultMenu | size = Just SMenu.Lg }
+    , items =
+        [ navItem "Overview" "/" (config.onNavigate "/") True
+        , navItem "Analytics" "/analytics" (config.onNavigate "/analytics") False
+        , navItem "Settings" "/settings" (config.onNavigate "/settings") False
+        ]
+    }
+
+
+defaultMenu : Tree.MenuConfig
+defaultMenu =
+    Tree.defaultMenuConfig
+
+
+{-| A sidebar entry. It carries both a real `href` (so it is a focusable link
+that `Browser.application` intercepts as a `UrlRequest`) and an `onClick` that
+pushes the same url, so navigation works with either.
+-}
+navItem : String -> String -> msg -> Bool -> MenuItem msg
+navItem label path onClick active =
+    MenuItem
+        { label = label
+        , icon = Nothing
+        , badge = Nothing
+        , active = active
+        , disabled = False
+        , focus = False
+        , title = False
+        , href = Just path
+        , onClick = Just onClick
+        , submenu = []
+        }
+
+
+navbar : Config msg -> NavbarParts msg
+navbar config =
+    { start = [ Text "Revenue overview" ]
+    , center = []
+    , end = [ themeSwitcher config ]
+    }
+
+
+{-| The switcher offers a short list rather than all 35 themes: `ThemeSelect`
+renders one sibling control per theme, so the full set would not fit in a
+navbar. The `?theme=` URL parameter (handled in `Main`) still reaches every
+theme, which is what the Tier C themes sweep uses.
+-}
+themeSwitcher : Config msg -> Leaf msg
+themeSwitcher config =
+    ThemeSelect
+        { themes = [ Light, Dark, Corporate, Nord ]
+        , current = config.theme
+        , presentation = ThemeAsSelect
+        , onSelect = Just config.onTheme
+        }
+
+
+
+-- SECTIONS ------------------------------------------------------------------
+
+
+headerSection : Section msg
+headerSection =
+    Stack Tree.defaultStackConfig
+        [ Prose
+            [ Text "Revenue, orders and account health across every channel, refreshed hourly." ]
+        ]
+
+
+statsSection : Section msg
+statsSection =
+    Grid { columns = Tree.Cols4 }
+        [ statBlock "Revenue (MTD)" "$248,930" "18.2% vs last month"
+        , statBlock "Orders" "3,412" "402 awaiting fulfilment"
+        , statBlock "Active users" "12,847" "1,204 new this week"
+        , statBlock "Refund rate" "1.8%" "0.4 points below target"
+        ]
+
+
+statBlock : String -> String -> String -> Block msg
+statBlock title value desc =
+    let
+        base : StatItem msg
+        base =
+            Tree.emptyStatItem title value
+    in
+    Stat Tree.defaultStatConfig [ { base | desc = Just desc } ]
+
+
+chartSection : Section msg
+chartSection =
+    Stack Tree.defaultStackConfig
+        [ Prose [ Text "Net revenue vs. operating cost, last twelve months (thousands USD)." ]
+        , Chart DChart.Line revenueSeries
+        ]
+
+
+revenueSeries : DChart.ChartData
+revenueSeries =
+    { xLabels =
+        [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+    , series =
+        [ { name = "Net revenue"
+          , color = DChart.Primary
+          , points = [ 142, 151, 149, 168, 181, 176, 193, 205, 214, 226, 239, 249 ]
+          }
+        , { name = "Operating cost"
+          , color = DChart.Secondary
+          , points = [ 98, 101, 104, 109, 112, 115, 118, 121, 124, 128, 131, 134 ]
+          }
+        ]
+    }
+
+
+{-| A one-column `Grid` rather than a `Stack`: grid children stretch to the
+band width, whereas `Section.Stack` aligns on the cross axis (`Align` has no
+stretch), which would shrink the table to its content.
+-}
+ordersSection : Config msg -> Section msg
+ordersSection config =
+    Grid { columns = Tree.Cols1 }
+        [ Prose [ Text "Most recent orders" ]
+        , Table
+            { size = Nothing, modifiers = [ STable.Zebra ] }
+            (headerRow :: List.map (orderRow config) orders)
+        , debugPane config
+        ]
+
+
+{-| The debug pane the Tier C "interaction" spec reads. Always present, always
+exactly `last-msg: <constructor name of the last Msg the router handled>`.
+-}
+debugPane : Config msg -> Block msg
+debugPane config =
+    Prose [ Text ("last-msg: " ++ config.lastMsg) ]
+
+
+headerRow : Row msg
+headerRow =
+    { header = True
+    , cells =
+        [ Text "Order"
+        , Text "Customer"
+        , Text "State"
+        , Text "Total"
+        , Text "Action"
+        ]
+    }
+
+
+type alias Order =
+    { reference : String
+    , customer : String
+    , state : String
+    , tone : SBadge.Color
+    , total : String
+    }
+
+
+orders : List Order
+orders =
+    [ Order "AC-10432" "Nadia Kowalski" "Paid" SBadge.Success "$1,240.00"
+    , Order "AC-10431" "Bright Harbour Ltd" "Pending" SBadge.Warning "$18,905.00"
+    , Order "AC-10429" "Tomás Ferreira" "Paid" SBadge.Success "$312.50"
+    , Order "AC-10427" "Halcyon Studio" "Refunded" SBadge.Error "$2,180.00"
+    , Order "AC-10425" "Meridian Foods" "Paid" SBadge.Success "$7,640.00"
+    ]
+
+
+orderRow : Config msg -> Order -> Row msg
+orderRow config order =
+    { header = False
+    , cells =
+        [ Text order.reference
+        , Text order.customer
+        , Badge
+            { color = Just order.tone
+            , style = Nothing
+            , size = Nothing
+            , tooltip = Nothing
+            }
+            order.state
+        , Text order.total
+        , Button
+            { defaultButton
+                | style = Just SButton.Ghost
+                , size = Just SButton.Xs
+                , onClick = Just (config.onRowAction order.reference)
+            }
+            "View"
+        ]
+    }
+
+
+defaultButton : Tree.ButtonConfig msg
+defaultButton =
+    Tree.defaultButtonConfig
+
+
+
+-- OVERLAY -------------------------------------------------------------------
+
+
+toastOverlay : Overlay msg
+toastOverlay =
+    Toast Tree.defaultToastConfig
+        [ Alert
+            { color = Just SAlert.Success, style = Nothing, direction = Nothing }
+            [ Text "Report queued — we will email the CSV when it is ready." ]
+        ]

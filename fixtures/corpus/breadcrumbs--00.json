@@ -1,0 +1,18 @@
+{
+  "id": "breadcrumbs--00",
+  "component": "breadcrumbs",
+  "title": "Breadcrumbs",
+  "html": "<div class=\"breadcrumbs text-sm\">\n  <ul>\n    <li><a>Home</a></li>\n    <li><a>Documents</a></li>\n    <li>Add Document</li>\n  </ul>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "breadcrumbs"
+      ],
+      "tailwind": [
+        "text-sm"
+      ]
+    }
+  ]
+}

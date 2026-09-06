@@ -1,0 +1,17 @@
+{
+  "id": "theme-controller--03",
+  "component": "theme-controller",
+  "title": "Theme Controller using a toggle with text",
+  "html": "<label class=\"flex cursor-pointer gap-2\">\n  <span>Current</span>\n  <input type=\"checkbox\" value=\"synthwave\" class=\"toggle theme-controller\" />\n  <span>Synthwave</span>\n</label>",
+  "elements": [
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "theme-controller",
+        "toggle"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "radial-progress--03",
+  "component": "radial-progress",
+  "title": "With background color and border",
+  "html": "<div\n  class=\"radial-progress bg-primary text-primary-content border-primary border-4\"\n  style=\"--value:70;\" aria-valuenow=\"70\" role=\"progressbar\">\n  70%\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "radial-progress"
+      ],
+      "tailwind": [
+        "bg-primary",
+        "text-primary-content",
+        "border-primary",
+        "border-4"
+      ]
+    }
+  ]
+}

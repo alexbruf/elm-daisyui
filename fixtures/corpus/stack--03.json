@@ -1,0 +1,82 @@
+{
+  "id": "stack--03",
+  "component": "stack",
+  "title": "stacked cards (top direction)",
+  "html": "<div class=\"stack stack-top size-28\">\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">A</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">B</div>\n  </div>\n  <div class=\"border-base-content card bg-base-100 border text-center\">\n    <div class=\"card-body\">C</div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stack",
+        "stack-top"
+      ],
+      "tailwind": [
+        "size-28"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "border-base-content",
+        "bg-base-100",
+        "border",
+        "text-center"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "border-base-content",
+        "bg-base-100",
+        "border",
+        "text-center"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "border-base-content",
+        "bg-base-100",
+        "border",
+        "text-center"
+      ]
+    },
+    {
+      "path": "0/2/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    }
+  ]
+}

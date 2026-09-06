@@ -1,0 +1,24 @@
+{
+  "id": "aura--01",
+  "component": "aura",
+  "title": "Aura around a button",
+  "html": "<div class=\"aura\">\n  <button class=\"btn\">button with aura</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "aura"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

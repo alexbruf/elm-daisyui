@@ -1,0 +1,115 @@
+{
+  "id": "validator--11",
+  "component": "validator",
+  "title": "Form requirement validator",
+  "html": "<form class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <fieldset class=\"fieldset\">\n    <label class=\"label\">Email</label>\n    <input type=\"email\" class=\"input validator\" placeholder=\"Email\" required />\n    <p class=\"validator-hint hidden\">Required</p>\n  </fieldset>\n\n  <label class=\"fieldset\">\n    <span class=\"label\">Password</span>\n    <input type=\"password\" class=\"input validator\" placeholder=\"Password\" required />\n    <span class=\"validator-hint hidden\">Required</span>\n  </label>\n\n  <button class=\"btn btn-neutral mt-4\" type=\"submit\">Login</button>\n  <button class=\"btn btn-ghost mt-1\" type=\"reset\">Reset</button>\n</form>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "form",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "border-base-300",
+        "rounded-box",
+        "w-xs",
+        "border",
+        "p-4"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": [
+        "hidden"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "label",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "span",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2",
+      "tag": "span",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": [
+        "hidden"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-neutral"
+      ],
+      "tailwind": [
+        "mt-4"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "mt-1"
+      ]
+    }
+  ]
+}

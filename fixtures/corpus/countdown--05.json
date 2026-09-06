@@ -1,0 +1,52 @@
+{
+  "id": "countdown--05",
+  "component": "countdown",
+  "title": "Large text with labels under",
+  "html": "<div class=\"grid auto-cols-max grid-flow-col gap-5 text-center\">\n  <div class=\"flex flex-col\">\n    <span class=\"countdown font-mono text-5xl\">\n      <span style=\"--value:15;\" aria-live=\"polite\" aria-label=\"15\">15</span>\n    </span>\n    days\n  </div>\n  <div class=\"flex flex-col\">\n    <span class=\"countdown font-mono text-5xl\">\n      <span style=\"--value:10;\" aria-live=\"polite\" aria-label=\"10\">10</span>\n    </span>\n    hours\n  </div>\n  <div class=\"flex flex-col\">\n    <span class=\"countdown font-mono text-5xl\">\n      <span style=\"--value:24;\" aria-live=\"polite\" aria-label=\"24\">24</span>\n    </span>\n    min\n  </div>\n  <div class=\"flex flex-col\">\n    <span class=\"countdown font-mono text-5xl\">\n      <span style=\"--value:59;\" aria-live=\"polite\" aria-label=\"59\">59</span>\n    </span>\n    sec\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0/0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": [
+        "font-mono",
+        "text-5xl"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": [
+        "font-mono",
+        "text-5xl"
+      ]
+    },
+    {
+      "path": "0/2/0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": [
+        "font-mono",
+        "text-5xl"
+      ]
+    },
+    {
+      "path": "0/3/0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": [
+        "font-mono",
+        "text-5xl"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "id": "rating--04",
+  "component": "rating",
+  "title": "mask-star-2 with green-500 color",
+  "html": "<div class=\"rating\">\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"2 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-4\" class=\"mask mask-star-2 bg-green-500\" aria-label=\"5 star\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "rating"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    }
+  ]
+}

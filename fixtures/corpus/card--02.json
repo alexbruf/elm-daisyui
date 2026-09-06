@@ -1,0 +1,248 @@
+{
+  "id": "card--02",
+  "component": "card",
+  "title": "Card sizes",
+  "html": "<div class=\"card w-96 bg-base-100 card-xs shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Xsmall Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-sm shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Small Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-md shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Medium Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-lg shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Large Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>\n\n<div class=\"card w-96 bg-base-100 card-xl shadow-sm\">\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">Xlarge Card</h2>\n    <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>\n    <div class=\"justify-end card-actions\">\n      <button class=\"btn btn-primary\">Buy Now</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-xs"
+      ],
+      "tailwind": [
+        "w-96",
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "0/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-sm"
+      ],
+      "tailwind": [
+        "w-96",
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "1/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-md"
+      ],
+      "tailwind": [
+        "w-96",
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "2/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "2/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-lg"
+      ],
+      "tailwind": [
+        "w-96",
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "3/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "3/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-xl"
+      ],
+      "tailwind": [
+        "w-96",
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "4/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "4/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

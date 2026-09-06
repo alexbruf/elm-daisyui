@@ -1,0 +1,16 @@
+{
+  "id": "range--00",
+  "component": "range",
+  "title": "Range",
+  "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "range"
+      ],
+      "tailwind": []
+    }
+  ]
+}

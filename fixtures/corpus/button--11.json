@@ -1,0 +1,64 @@
+{
+  "id": "button--11",
+  "component": "button",
+  "title": "Buttons with any HTML tags",
+  "html": "<a role=\"button\" class=\"btn\">Link</a>\n<button type=\"submit\" class=\"btn\">Button</button>\n<input type=\"button\" value=\"Input\" class=\"btn\" />\n<input type=\"submit\" value=\"Submit\" class=\"btn\" />\n<input type=\"radio\" aria-label=\"Radio\" class=\"btn\" />\n<input type=\"checkbox\" aria-label=\"Checkbox\" class=\"btn\" />\n<input type=\"reset\" value=\"Reset\" class=\"btn\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

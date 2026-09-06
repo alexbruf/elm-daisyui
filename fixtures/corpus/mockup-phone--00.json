@@ -1,0 +1,37 @@
+{
+  "id": "mockup-phone--00",
+  "component": "mockup-phone",
+  "title": "iPhone mockup",
+  "html": "<div class=\"mockup-phone\">\n  <div class=\"mockup-phone-camera\"></div>\n  <div class=\"mockup-phone-display text-white grid place-content-center bg-neutral-900\">\n    It's Glowtime.\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "mockup-phone"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "mockup-phone-camera"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "mockup-phone-display"
+      ],
+      "tailwind": [
+        "text-white",
+        "grid",
+        "place-content-center",
+        "bg-neutral-900"
+      ]
+    }
+  ]
+}

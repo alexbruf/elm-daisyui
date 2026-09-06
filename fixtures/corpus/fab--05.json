@@ -1,0 +1,76 @@
+{
+  "id": "fab--05",
+  "component": "fab",
+  "title": "FAB and Speed Dial with labels and fab-main-action Button",
+  "html": "<div class=\"fab\">\n  <!-- a focusable div with tabindex is necessary to work on all browsers. role=\"button\" is necessary for accessibility -->\n  <div tabindex=\"0\" role=\"button\" class=\"btn btn-lg btn-circle btn-primary\">F</div>\n\n  <!-- Main Action button replaces the original button when FAB is open -->\n  <div class=\"fab-main-action\">\n    Main Action <button class=\"btn btn-circle btn-secondary btn-lg\">M</button>\n  </div>\n\n  <!-- buttons that show up when FAB is open -->\n  <div>Label A <button class=\"btn btn-lg btn-circle\">A</button></div>\n  <div>Label B <button class=\"btn btn-lg btn-circle\">B</button></div>\n  <div>Label C <button class=\"btn btn-lg btn-circle\">C</button></div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "fab"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "fab-main-action"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg",
+        "btn-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-lg"
+      ],
+      "tailwind": []
+    }
+  ]
+}

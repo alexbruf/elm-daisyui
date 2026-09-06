@@ -1,0 +1,17 @@
+{
+  "id": "link--09",
+  "component": "link",
+  "title": "Show underline only on hover",
+  "html": "<a class=\"link link-hover\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    }
+  ]
+}

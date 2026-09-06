@@ -1,0 +1,48 @@
+{
+  "id": "modal--08",
+  "component": "modal",
+  "title": "Modal that closes when clicked outside",
+  "html": "<!-- The button to open modal -->\n<label for=\"my_modal_7\" class=\"btn\">open modal</label>\n\n<!-- Put this part before </body> tag -->\n<input type=\"checkbox\" id=\"my_modal_7\" class=\"modal-toggle\" />\n<div class=\"modal\" role=\"dialog\">\n  <div class=\"modal-box\">\n    <h3 class=\"text-lg font-bold\">Hello!</h3>\n    <p class=\"py-4\">This modal works with a hidden checkbox!</p>\n  </div>\n  <label class=\"modal-backdrop\" for=\"my_modal_7\">Close</label>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "modal-toggle"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "modal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "div",
+      "daisy": [
+        "modal-box"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/1",
+      "tag": "label",
+      "daisy": [
+        "modal-backdrop"
+      ],
+      "tailwind": []
+    }
+  ]
+}

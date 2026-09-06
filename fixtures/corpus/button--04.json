@@ -1,0 +1,87 @@
+{
+  "id": "button--04",
+  "component": "button",
+  "title": "Soft buttons",
+  "html": "<button class=\"btn btn-soft\">Default</button>\n<button class=\"btn btn-soft btn-primary\">Primary</button>\n<button class=\"btn btn-soft btn-secondary\">Secondary</button>\n<button class=\"btn btn-soft btn-accent\">Accent</button>\n<button class=\"btn btn-soft btn-info\">Info</button>\n<button class=\"btn btn-soft btn-success\">Success</button>\n<button class=\"btn btn-soft btn-warning\">Warning</button>\n<button class=\"btn btn-soft btn-error\">Error</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-soft"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary",
+        "btn-soft"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-secondary",
+        "btn-soft"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-accent",
+        "btn-soft"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-info",
+        "btn-soft"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-soft",
+        "btn-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-soft",
+        "btn-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-error",
+        "btn-soft"
+      ],
+      "tailwind": []
+    }
+  ]
+}

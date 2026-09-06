@@ -1,0 +1,53 @@
+{
+  "id": "kbd--01",
+  "component": "kbd",
+  "title": "Kbd sizes",
+  "html": "<kbd class=\"kbd kbd-xs\">Xsmall</kbd>\n<kbd class=\"kbd kbd-sm\">Small</kbd>\n<kbd class=\"kbd kbd-md\">Medium</kbd>\n<kbd class=\"kbd kbd-lg\">Large</kbd>\n<kbd class=\"kbd kbd-xl\">Xlarge</kbd>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "kbd",
+      "daisy": [
+        "kbd",
+        "kbd-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

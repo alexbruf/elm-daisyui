@@ -1,0 +1,42 @@
+{
+  "id": "chat--00",
+  "component": "chat",
+  "title": "chat-start and chat-end",
+  "html": "<div class=\"chat chat-start\">\n  <div class=\"chat-bubble\">\n    It's over Anakin,\n    <br />\n    I have the high ground.\n  </div>\n</div>\n<div class=\"chat chat-end\">\n  <div class=\"chat-bubble\">You underestimate my power!</div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "chat",
+        "chat-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "chat-bubble"
+      ],
+      "tailwind": []
+    }
+  ]
+}

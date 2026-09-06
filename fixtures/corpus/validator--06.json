@@ -1,0 +1,25 @@
+{
+  "id": "validator--06",
+  "component": "validator",
+  "title": "Date input requirement validator",
+  "html": "<input type=\"date\" class=\"input validator\" required placeholder=\"Pick a date in 2025\" \nmin=\"2025-01-01\" max=\"2025-12-31\"\n  title=\"Must be valid URL\" />\n<p class=\"validator-hint\">Must be 2025</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

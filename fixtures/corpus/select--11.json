@@ -1,0 +1,53 @@
+{
+  "id": "select--11",
+  "component": "select",
+  "title": "Sizes",
+  "html": "<select class=\"select select-xs\">\n  <option disabled selected>Xsmall</option>\n  <option>Xsmall Apple</option>\n  <option>Xsmall Orange</option>\n  <option>Xsmall Tomato</option>\n</select>\n<select class=\"select select-sm\">\n  <option disabled selected>Small</option>\n  <option>Small Apple</option>\n  <option>Small Orange</option>\n  <option>Small Tomato</option>\n</select>\n<select class=\"select select-md\">\n  <option disabled selected>Medium</option>\n  <option>Medium Apple</option>\n  <option>Medium Orange</option>\n  <option>Medium Tomato</option>\n</select>\n<select class=\"select select-lg\">\n  <option disabled selected>Large</option>\n  <option>Large Apple</option>\n  <option>Large Orange</option>\n  <option>Large Tomato</option>\n</select>\n<select class=\"select select-xl\">\n  <option disabled selected>Xlarge</option>\n  <option>Xlarge Apple</option>\n  <option>Xlarge Orange</option>\n  <option>Xlarge Tomato</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

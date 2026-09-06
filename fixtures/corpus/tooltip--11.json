@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--11",
+  "component": "tooltip",
+  "title": "Success color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-success\" data-tip=\"success\">\n  <button class=\"btn btn-success\">success</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-open",
+        "tooltip-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

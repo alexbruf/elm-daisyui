@@ -1,0 +1,25 @@
+{
+  "id": "tooltip--02",
+  "component": "tooltip",
+  "title": "Force open",
+  "html": "<div class=\"tooltip tooltip-open\" data-tip=\"hello\">\n  <button class=\"btn\">Force open</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-open"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

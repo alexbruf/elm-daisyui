@@ -1,0 +1,63 @@
+{
+  "id": "megamenu--00",
+  "component": "megamenu",
+  "title": "Responsive megamenu with small vertical menus",
+  "html": "<!-- popovertarget must match the ID of the corresponding popover, and each ID must be unique -->\n<button class=\"btn sm:hidden\" popovertarget=\"my-megamenu-1\">Menu</button>\n\n<div class=\"megamenu max-sm:megamenu-vertical p-2 border border-base-300\" id=\"my-megamenu-1\" popover>\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"a1\">Services</button>\n  <div id=\"a1\" popover>\n    <ul class=\"menu\">\n      <li><a>Enterprise</a></li>\n      <li><a>CRM software</a></li>\n      <li><a>Security</a></li>\n      <li><a>Consulting</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"a2\">AI</button>\n  <div id=\"a2\" popover>\n    <ul class=\"menu\">\n      <li><a>AI infrastructure</a></li>\n      <li><a>Image generation</a></li>\n      <li><a>MCP servers</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"a3\">Cloud Solutions</button>\n  <div id=\"a3\" popover>\n    <ul class=\"menu\">\n      <li><a>Cloud computing</a></li>\n      <li><a>Storage solutions</a></li>\n      <li><a>Database services</a></li>\n      <li><a>CDN performance</a></li>\n    </ul>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": [
+        "sm:hidden"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "megamenu"
+      ],
+      "tailwind": [
+        "max-sm:$$megamenu-vertical",
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/2/0",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/4/0",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/6/0",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": []
+    }
+  ]
+}

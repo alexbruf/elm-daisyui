@@ -1,0 +1,74 @@
+{
+  "id": "fieldset--04",
+  "component": "fieldset",
+  "title": "Login form with fieldset",
+  "html": "<fieldset class=\"fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4\">\n  <legend class=\"fieldset-legend\">Login</legend>\n\n  <label class=\"label\">Email</label>\n  <input type=\"email\" class=\"input\" placeholder=\"Email\" />\n\n  <label class=\"label\">Password</label>\n  <input type=\"password\" class=\"input\" placeholder=\"Password\" />\n\n  <button class=\"btn btn-neutral mt-4\">Login</button>\n</fieldset>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "border-base-300",
+        "rounded-box",
+        "w-xs",
+        "border",
+        "p-4"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "legend",
+      "daisy": [
+        "fieldset-legend"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/5",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-neutral"
+      ],
+      "tailwind": [
+        "mt-4"
+      ]
+    }
+  ]
+}

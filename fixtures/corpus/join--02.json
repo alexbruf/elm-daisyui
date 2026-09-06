@@ -1,0 +1,46 @@
+{
+  "id": "join--02",
+  "component": "join",
+  "title": "Responsive: it's vertical on small screen and horizontal on large screen",
+  "html": "<div class=\"join join-vertical lg:join-horizontal\">\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join",
+        "join-vertical"
+      ],
+      "tailwind": [
+        "lg:$$join-horizontal"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

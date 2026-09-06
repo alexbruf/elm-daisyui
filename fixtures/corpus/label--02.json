@@ -1,0 +1,24 @@
+{
+  "id": "label--02",
+  "component": "label",
+  "title": "Label for select",
+  "html": "<label class=\"select\">\n  <span class=\"label\">Type</span>\n  <select>\n    <option>Personal</option>\n    <option>Business</option>\n  </select>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "select"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    }
+  ]
+}

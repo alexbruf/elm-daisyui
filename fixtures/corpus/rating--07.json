@@ -1,0 +1,146 @@
+{
+  "id": "rating--07",
+  "component": "rating",
+  "title": "half stars",
+  "html": "<div class=\"rating rating-lg rating-half\">\n  <input type=\"radio\" name=\"rating-11\" class=\"rating-hidden\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"0.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"1 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"1.5 star\" checked=\"checked\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"2 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"2.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"3 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"3.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"4 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-1 bg-green-500\" aria-label=\"4.5 star\" />\n  <input type=\"radio\" name=\"rating-11\" class=\"mask mask-star-2 mask-half-2 bg-green-500\" aria-label=\"5 star\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "rating",
+        "rating-half",
+        "rating-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "rating-hidden"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-1",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-2",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-1",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/4",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-2",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/5",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-1",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/6",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-2",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/7",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-1",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/8",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-2",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/9",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-1",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    },
+    {
+      "path": "0/10",
+      "tag": "input",
+      "daisy": [
+        "mask",
+        "mask-half-2",
+        "mask-star-2"
+      ],
+      "tailwind": [
+        "bg-green-500"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--13",
+  "component": "tooltip",
+  "title": "Error color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-error\" data-tip=\"error\">\n  <button class=\"btn btn-error\">error</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-error",
+        "tooltip-open"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "loading--03",
+  "component": "loading",
+  "title": "Loading ball",
+  "html": "<span class=\"loading loading-ball loading-xs\"></span>\n<span class=\"loading loading-ball loading-sm\"></span>\n<span class=\"loading loading-ball loading-md\"></span>\n<span class=\"loading loading-ball loading-lg\"></span>\n<span class=\"loading loading-ball loading-xl\"></span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-ball",
+        "loading-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-ball",
+        "loading-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-ball",
+        "loading-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-ball",
+        "loading-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-ball",
+        "loading-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

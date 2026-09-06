@@ -1,0 +1,52 @@
+{
+  "id": "button--01",
+  "component": "button",
+  "title": "Button sizes",
+  "html": "<button class=\"btn btn-xs\">Xsmall</button>\n<button class=\"btn btn-sm\">Small</button>\n<button class=\"btn\">Medium</button>\n<button class=\"btn btn-lg\">Large</button>\n<button class=\"btn btn-xl\">Xlarge</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "navbar--08",
+  "component": "navbar",
+  "title": "Responsive (collapse on small screen, full content on large screen)",
+  "html": "<div class=\"max-lg:collapse bg-base-200 lg:mb-48 shadow-sm w-full rounded-md\">\n  <input id=\"navbar-1-toggle\" class=\"peer hidden\" type=\"checkbox\" />\n  <label for=\"navbar-1-toggle\" class=\"fixed inset-0 hidden max-lg:peer-checked:block\"></label>\n  <div class=\"collapse-title navbar\">\n    <div class=\"navbar-start\">\n      <label for=\"navbar-1-toggle\" class=\"btn btn-ghost lg:hidden\">\n        <svg aria-label=\"Menu\" xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h8m-8 6h16\" /></svg>\n      </label>\n      <button class=\"btn btn-ghost text-xl\">daisyUI</button>\n    </div>\n    <div class=\"navbar-center hidden lg:flex\">\n      <ul class=\"menu menu-horizontal px-1\">\n        <li><button>Item 1</button></li>\n        <li>\n          <details>\n            <summary>Parent</summary>\n            <ul class=\"p-2 bg-base-100 w-40 z-1\">\n              <li><button>Submenu 1</button></li>\n              <li><button>Submenu 2</button></li>\n            </ul>\n          </details>\n        </li>\n        <li><button>Item 3</button></li>\n      </ul>\n    </div>\n    <div class=\"navbar-end\">\n      <input type=\"text\" placeholder=\"Search\" class=\"input w-64 lg:w-auto\" />\n    </div>\n  </div>\n\n  <div class=\"collapse-content lg:hidden z-1\">\n    <ul class=\"menu\">\n      <li><button>Item 1</button></li>\n      <li>\n        <button>Parent</button>\n        <ul>\n          <li><button>Submenu 1</button></li>\n          <li><button>Submenu 2</button></li>\n        </ul>\n      </li>\n      <li><button>Item 3</button></li>\n    </ul>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "collapse-title",
+        "navbar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0",
+      "tag": "div",
+      "daisy": [
+        "navbar-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/0/0",
+      "tag": "label",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "lg:hidden"
+      ]
+    },
+    {
+      "path": "0/2/0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "0/2/1",
+      "tag": "div",
+      "daisy": [
+        "navbar-center"
+      ],
+      "tailwind": [
+        "hidden",
+        "lg:flex"
+      ]
+    },
+    {
+      "path": "0/2/1/0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-horizontal"
+      ],
+      "tailwind": [
+        "px-1"
+      ]
+    },
+    {
+      "path": "0/2/2",
+      "tag": "div",
+      "daisy": [
+        "navbar-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2/2/0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": [
+        "w-64",
+        "lg:w-auto"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "collapse-content"
+      ],
+      "tailwind": [
+        "lg:hidden",
+        "z-1"
+      ]
+    },
+    {
+      "path": "0/3/0",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": []
+    }
+  ]
+}

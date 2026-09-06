@@ -1,0 +1,7004 @@
+[
+  {
+    "id": "accordion--00",
+    "component": "accordion",
+    "title": "Accordion using radio inputs",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "accordion--01",
+    "component": "accordion",
+    "title": "Accordion using details",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "accordion--02",
+    "component": "accordion",
+    "title": "Accordion with arrow icon",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-arrow",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "accordion--03",
+    "component": "accordion",
+    "title": "Accordion with plus/minus icon",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-plus",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "accordion--04",
+    "component": "accordion",
+    "title": "Using Accordion and Join together",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-arrow",
+      "collapse-content",
+      "collapse-title",
+      "join",
+      "join-item",
+      "join-vertical"
+    ]
+  },
+  {
+    "id": "alert--00",
+    "component": "alert",
+    "title": "Alert",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "alert"
+    ]
+  },
+  {
+    "id": "alert--01",
+    "component": "alert",
+    "title": "Info color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "alert",
+      "alert-info"
+    ]
+  },
+  {
+    "id": "alert--02",
+    "component": "alert",
+    "title": "Success color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "alert",
+      "alert-success"
+    ]
+  },
+  {
+    "id": "alert--03",
+    "component": "alert",
+    "title": "Warning color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "alert",
+      "alert-warning"
+    ]
+  },
+  {
+    "id": "alert--04",
+    "component": "alert",
+    "title": "Error color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "alert",
+      "alert-error"
+    ]
+  },
+  {
+    "id": "alert--05",
+    "component": "alert",
+    "title": "Alert soft style",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "alert",
+      "alert-error",
+      "alert-info",
+      "alert-soft",
+      "alert-success",
+      "alert-warning"
+    ]
+  },
+  {
+    "id": "alert--06",
+    "component": "alert",
+    "title": "Alert outline style",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "alert",
+      "alert-error",
+      "alert-info",
+      "alert-outline",
+      "alert-success",
+      "alert-warning"
+    ]
+  },
+  {
+    "id": "alert--07",
+    "component": "alert",
+    "title": "Alert dash style",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "alert",
+      "alert-dash",
+      "alert-error",
+      "alert-info",
+      "alert-success",
+      "alert-warning"
+    ]
+  },
+  {
+    "id": "alert--08",
+    "component": "alert",
+    "title": "Alert with buttons + responsive",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-vertical",
+      "btn",
+      "btn-primary",
+      "btn-sm"
+    ]
+  },
+  {
+    "id": "alert--09",
+    "component": "alert",
+    "title": "Alert with title and description",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "alert",
+      "alert-vertical",
+      "btn",
+      "btn-sm"
+    ]
+  },
+  {
+    "id": "aura--00",
+    "component": "aura",
+    "title": "Aura",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--01",
+    "component": "aura",
+    "title": "Aura around a button",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "aura",
+      "btn"
+    ]
+  },
+  {
+    "id": "aura--02",
+    "component": "aura",
+    "title": "Aura dual",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-dual",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--03",
+    "component": "aura",
+    "title": "Aura rainbow",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-rainbow",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--04",
+    "component": "aura",
+    "title": "Aura holo",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-holo",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--05",
+    "component": "aura",
+    "title": "Aura glow",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-glow",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--06",
+    "component": "aura",
+    "title": "Aura gold",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-gold",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--07",
+    "component": "aura",
+    "title": "Aura silver",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-silver",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--08",
+    "component": "aura",
+    "title": "Aura with custom color",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--09",
+    "component": "aura",
+    "title": "Aura with custom color and custom background color",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--10",
+    "component": "aura",
+    "title": "Aura rainbow around a pricing card",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "aura",
+      "aura-rainbow",
+      "badge",
+      "badge-warning",
+      "badge-xs",
+      "btn",
+      "btn-block",
+      "btn-primary",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "aura--11",
+    "component": "aura",
+    "title": "Aura sizes",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "aura",
+      "aura-lg",
+      "aura-sm",
+      "aura-xl",
+      "aura-xs",
+      "btn"
+    ]
+  },
+  {
+    "id": "aura--12",
+    "component": "aura",
+    "title": "Aura with custom animation duration",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "aura",
+      "aura-rainbow",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "avatar--00",
+    "component": "avatar",
+    "title": "Avatar",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "avatar"
+    ]
+  },
+  {
+    "id": "avatar--01",
+    "component": "avatar",
+    "title": "Avatar in custom sizes",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "avatar"
+    ]
+  },
+  {
+    "id": "avatar--02",
+    "component": "avatar",
+    "title": "Avatar rounded",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "avatar"
+    ]
+  },
+  {
+    "id": "avatar--03",
+    "component": "avatar",
+    "title": "Avatar with mask",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "avatar",
+      "mask",
+      "mask-heart",
+      "mask-hexagon-2",
+      "mask-squircle"
+    ]
+  },
+  {
+    "id": "avatar--04",
+    "component": "avatar",
+    "title": "Avatar group",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "avatar",
+      "avatar-group"
+    ]
+  },
+  {
+    "id": "avatar--05",
+    "component": "avatar",
+    "title": "Avatar group with counter",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "avatar",
+      "avatar-group",
+      "avatar-placeholder"
+    ]
+  },
+  {
+    "id": "avatar--06",
+    "component": "avatar",
+    "title": "Avatar with ring",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "avatar"
+    ]
+  },
+  {
+    "id": "avatar--07",
+    "component": "avatar",
+    "title": "Avatar with presence indicator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "avatar",
+      "avatar-offline",
+      "avatar-online"
+    ]
+  },
+  {
+    "id": "avatar--08",
+    "component": "avatar",
+    "title": "Avatar placeholder",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "avatar",
+      "avatar-online",
+      "avatar-placeholder"
+    ]
+  },
+  {
+    "id": "badge--00",
+    "component": "badge",
+    "title": "Badge",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "badge"
+    ]
+  },
+  {
+    "id": "badge--01",
+    "component": "badge",
+    "title": "Badge sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "badge",
+      "badge-lg",
+      "badge-md",
+      "badge-sm",
+      "badge-xl",
+      "badge-xs"
+    ]
+  },
+  {
+    "id": "badge--02",
+    "component": "badge",
+    "title": "Badge with colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "badge",
+      "badge-accent",
+      "badge-error",
+      "badge-info",
+      "badge-neutral",
+      "badge-primary",
+      "badge-secondary",
+      "badge-success",
+      "badge-warning"
+    ]
+  },
+  {
+    "id": "badge--03",
+    "component": "badge",
+    "title": "Badge with soft style",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "badge",
+      "badge-accent",
+      "badge-error",
+      "badge-info",
+      "badge-primary",
+      "badge-secondary",
+      "badge-soft",
+      "badge-success",
+      "badge-warning"
+    ]
+  },
+  {
+    "id": "badge--04",
+    "component": "badge",
+    "title": "Badge with outline style",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "badge",
+      "badge-accent",
+      "badge-error",
+      "badge-info",
+      "badge-outline",
+      "badge-primary",
+      "badge-secondary",
+      "badge-success",
+      "badge-warning"
+    ]
+  },
+  {
+    "id": "badge--05",
+    "component": "badge",
+    "title": "Badge with dash style",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "badge",
+      "badge-accent",
+      "badge-dash",
+      "badge-error",
+      "badge-info",
+      "badge-primary",
+      "badge-secondary",
+      "badge-success",
+      "badge-warning"
+    ]
+  },
+  {
+    "id": "badge--06",
+    "component": "badge",
+    "title": "neutral badge with outline or dash style",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-dash",
+      "badge-neutral",
+      "badge-outline"
+    ]
+  },
+  {
+    "id": "badge--07",
+    "component": "badge",
+    "title": "Badge ghost",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "badge",
+      "badge-ghost"
+    ]
+  },
+  {
+    "id": "badge--08",
+    "component": "badge",
+    "title": "Empty badge",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "badge",
+      "badge-lg",
+      "badge-md",
+      "badge-primary",
+      "badge-sm",
+      "badge-xs"
+    ]
+  },
+  {
+    "id": "badge--09",
+    "component": "badge",
+    "title": "Badge with icon",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "badge",
+      "badge-error",
+      "badge-info",
+      "badge-success",
+      "badge-warning"
+    ]
+  },
+  {
+    "id": "badge--10",
+    "component": "badge",
+    "title": "Badge in a text",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "badge",
+      "badge-lg",
+      "badge-md",
+      "badge-sm",
+      "badge-xl",
+      "badge-xs"
+    ]
+  },
+  {
+    "id": "badge--11",
+    "component": "badge",
+    "title": "Badge in a button",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "badge-sm",
+      "btn"
+    ]
+  },
+  {
+    "id": "breadcrumbs--00",
+    "component": "breadcrumbs",
+    "title": "Breadcrumbs",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "breadcrumbs"
+    ]
+  },
+  {
+    "id": "breadcrumbs--01",
+    "component": "breadcrumbs",
+    "title": "Breadcrumbs with icons",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "breadcrumbs"
+    ]
+  },
+  {
+    "id": "breadcrumbs--02",
+    "component": "breadcrumbs",
+    "title": "Breadcrumbs with max-width",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "breadcrumbs"
+    ]
+  },
+  {
+    "id": "button--00",
+    "component": "button",
+    "title": "Button",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "btn"
+    ]
+  },
+  {
+    "id": "button--01",
+    "component": "button",
+    "title": "Button sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-lg",
+      "btn-sm",
+      "btn-xl",
+      "btn-xs"
+    ]
+  },
+  {
+    "id": "button--02",
+    "component": "button",
+    "title": "Responsive button",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "btn",
+      "btn-xs"
+    ]
+  },
+  {
+    "id": "button--03",
+    "component": "button",
+    "title": "Buttons colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "btn",
+      "btn-accent",
+      "btn-error",
+      "btn-info",
+      "btn-neutral",
+      "btn-primary",
+      "btn-secondary",
+      "btn-success",
+      "btn-warning"
+    ]
+  },
+  {
+    "id": "button--04",
+    "component": "button",
+    "title": "Soft buttons",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "btn",
+      "btn-accent",
+      "btn-error",
+      "btn-info",
+      "btn-primary",
+      "btn-secondary",
+      "btn-soft",
+      "btn-success",
+      "btn-warning"
+    ]
+  },
+  {
+    "id": "button--05",
+    "component": "button",
+    "title": "Outline buttons",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "btn",
+      "btn-accent",
+      "btn-error",
+      "btn-info",
+      "btn-outline",
+      "btn-primary",
+      "btn-secondary",
+      "btn-success",
+      "btn-warning"
+    ]
+  },
+  {
+    "id": "button--06",
+    "component": "button",
+    "title": "Dash buttons",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "btn",
+      "btn-accent",
+      "btn-dash",
+      "btn-error",
+      "btn-info",
+      "btn-primary",
+      "btn-secondary",
+      "btn-success",
+      "btn-warning"
+    ]
+  },
+  {
+    "id": "button--07",
+    "component": "button",
+    "title": "neutral button with outline or dash style",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-dash",
+      "btn-neutral",
+      "btn-outline"
+    ]
+  },
+  {
+    "id": "button--08",
+    "component": "button",
+    "title": "Active buttons",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "btn",
+      "btn-accent",
+      "btn-active",
+      "btn-error",
+      "btn-info",
+      "btn-primary",
+      "btn-secondary",
+      "btn-success",
+      "btn-warning"
+    ]
+  },
+  {
+    "id": "button--09",
+    "component": "button",
+    "title": "Buttons ghost and button link",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-link"
+    ]
+  },
+  {
+    "id": "button--10",
+    "component": "button",
+    "title": "Wide button",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "btn",
+      "btn-wide"
+    ]
+  },
+  {
+    "id": "button--11",
+    "component": "button",
+    "title": "Buttons with any HTML tags",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn"
+    ]
+  },
+  {
+    "id": "button--12",
+    "component": "button",
+    "title": "Disabled buttons",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-disabled"
+    ]
+  },
+  {
+    "id": "button--13",
+    "component": "button",
+    "title": "Square button and circle button",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-square"
+    ]
+  },
+  {
+    "id": "button--14",
+    "component": "button",
+    "title": "Button with Icon",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn"
+    ]
+  },
+  {
+    "id": "button--15",
+    "component": "button",
+    "title": "Button block",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "btn",
+      "btn-block"
+    ]
+  },
+  {
+    "id": "button--16",
+    "component": "button",
+    "title": "Button with loading spinner",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "btn-square",
+      "loading",
+      "loading-spinner"
+    ]
+  },
+  {
+    "id": "button--17",
+    "component": "button",
+    "title": "Login buttons",
+    "elementCount": 15,
+    "daisyClassSet": [
+      "btn"
+    ]
+  },
+  {
+    "id": "calendar--00",
+    "component": "calendar",
+    "title": "Cally calendar example",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "cally"
+    ]
+  },
+  {
+    "id": "calendar--01",
+    "component": "calendar",
+    "title": "Cally date picker example",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "cally",
+      "dropdown",
+      "input"
+    ]
+  },
+  {
+    "id": "card--00",
+    "component": "card",
+    "title": "Card",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--01",
+    "component": "card",
+    "title": "Pricing Card",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "badge",
+      "badge-warning",
+      "badge-xs",
+      "btn",
+      "btn-block",
+      "btn-primary",
+      "card",
+      "card-body"
+    ]
+  },
+  {
+    "id": "card--02",
+    "component": "card",
+    "title": "Card sizes",
+    "elementCount": 25,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-lg",
+      "card-md",
+      "card-sm",
+      "card-title",
+      "card-xl",
+      "card-xs"
+    ]
+  },
+  {
+    "id": "card--03",
+    "component": "card",
+    "title": "Card with a card-border",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-border",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--04",
+    "component": "card",
+    "title": "Card with a dash border",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-dash",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--05",
+    "component": "card",
+    "title": "Card with badge",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "badge",
+      "badge-outline",
+      "badge-secondary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--06",
+    "component": "card",
+    "title": "Card with bottom image",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--07",
+    "component": "card",
+    "title": "Card with centered content and paddings",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--08",
+    "component": "card",
+    "title": "Card with image overlay",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title",
+      "image-full"
+    ]
+  },
+  {
+    "id": "card--09",
+    "component": "card",
+    "title": "Card with no image",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--10",
+    "component": "card",
+    "title": "Card with custom color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--11",
+    "component": "card",
+    "title": "Centered card with neutral color",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--12",
+    "component": "card",
+    "title": "Card with action on top",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "btn-sm",
+      "btn-square",
+      "card",
+      "card-actions",
+      "card-body"
+    ]
+  },
+  {
+    "id": "card--13",
+    "component": "card",
+    "title": "Card with image on side",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-side",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--14",
+    "component": "card",
+    "title": "Responsive card (vertical on small screen, horizontal on large screen)",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-title"
+    ]
+  },
+  {
+    "id": "card--15",
+    "component": "card",
+    "title": "Selectable cards",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "card-title",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "carousel--00",
+    "component": "carousel",
+    "title": "Snap to start (default)",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--01",
+    "component": "carousel",
+    "title": "Snap to center",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-center",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--02",
+    "component": "carousel",
+    "title": "Snap to end",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-end",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--03",
+    "component": "carousel",
+    "title": "Carousel with full width items",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--04",
+    "component": "carousel",
+    "title": "Vertical carousel",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-item",
+      "carousel-vertical"
+    ]
+  },
+  {
+    "id": "carousel--05",
+    "component": "carousel",
+    "title": "Carousel with half width items",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--06",
+    "component": "carousel",
+    "title": "Full-bleed carousel",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "carousel",
+      "carousel-center",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--07",
+    "component": "carousel",
+    "title": "Carousel with indicator buttons",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "btn",
+      "btn-xs",
+      "carousel",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "carousel--08",
+    "component": "carousel",
+    "title": "Carousel with next/prev buttons",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "carousel",
+      "carousel-item"
+    ]
+  },
+  {
+    "id": "chat--00",
+    "component": "chat",
+    "title": "chat-start and chat-end",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "chat",
+      "chat-bubble",
+      "chat-end",
+      "chat-start"
+    ]
+  },
+  {
+    "id": "chat--01",
+    "component": "chat",
+    "title": "Chat with image",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "avatar",
+      "chat",
+      "chat-bubble",
+      "chat-image",
+      "chat-start"
+    ]
+  },
+  {
+    "id": "chat--02",
+    "component": "chat",
+    "title": "Chat with image, header and footer",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "avatar",
+      "chat",
+      "chat-bubble",
+      "chat-end",
+      "chat-footer",
+      "chat-header",
+      "chat-image",
+      "chat-start"
+    ]
+  },
+  {
+    "id": "chat--03",
+    "component": "chat",
+    "title": "Chat with header and footer",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "chat",
+      "chat-bubble",
+      "chat-footer",
+      "chat-header",
+      "chat-start"
+    ]
+  },
+  {
+    "id": "chat--04",
+    "component": "chat",
+    "title": "Chat Bubble with colors",
+    "elementCount": 16,
+    "daisyClassSet": [
+      "chat",
+      "chat-bubble",
+      "chat-bubble-accent",
+      "chat-bubble-error",
+      "chat-bubble-info",
+      "chat-bubble-neutral",
+      "chat-bubble-primary",
+      "chat-bubble-secondary",
+      "chat-bubble-success",
+      "chat-bubble-warning",
+      "chat-end",
+      "chat-start"
+    ]
+  },
+  {
+    "id": "checkbox--00",
+    "component": "checkbox",
+    "title": "Checkbox",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "checkbox"
+    ]
+  },
+  {
+    "id": "checkbox--01",
+    "component": "checkbox",
+    "title": "With fieldset and label",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "checkbox",
+      "fieldset",
+      "fieldset-legend",
+      "label"
+    ]
+  },
+  {
+    "id": "checkbox--02",
+    "component": "checkbox",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "checkbox",
+      "checkbox-lg",
+      "checkbox-md",
+      "checkbox-sm",
+      "checkbox-xl",
+      "checkbox-xs"
+    ]
+  },
+  {
+    "id": "checkbox--03",
+    "component": "checkbox",
+    "title": "Colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "checkbox",
+      "checkbox-accent",
+      "checkbox-error",
+      "checkbox-info",
+      "checkbox-neutral",
+      "checkbox-primary",
+      "checkbox-secondary",
+      "checkbox-success",
+      "checkbox-warning"
+    ]
+  },
+  {
+    "id": "checkbox--04",
+    "component": "checkbox",
+    "title": "Disabled",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "checkbox"
+    ]
+  },
+  {
+    "id": "checkbox--05",
+    "component": "checkbox",
+    "title": "Indeterminate",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "checkbox"
+    ]
+  },
+  {
+    "id": "checkbox--06",
+    "component": "checkbox",
+    "title": "Checkbox with custom colors",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "checkbox"
+    ]
+  },
+  {
+    "id": "collapse--00",
+    "component": "collapse",
+    "title": "Collapse with focus",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--01",
+    "component": "collapse",
+    "title": "Collapse with checkbox",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--02",
+    "component": "collapse",
+    "title": "Collapse with checkbox and close on click outside",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--03",
+    "component": "collapse",
+    "title": "Collapse using details and summary tag",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--04",
+    "component": "collapse",
+    "title": "Without border and background color",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--05",
+    "component": "collapse",
+    "title": "With arrow icon",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-arrow",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--06",
+    "component": "collapse",
+    "title": "With arrow plus/minus icon",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-plus",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--07",
+    "component": "collapse",
+    "title": "Moving collapse icon to the start",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-arrow",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--08",
+    "component": "collapse",
+    "title": "Force open",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-open",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--09",
+    "component": "collapse",
+    "title": "Force close",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-close",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--10",
+    "component": "collapse",
+    "title": "Custom colors for collapse that works with focus",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "collapse--11",
+    "component": "collapse",
+    "title": "Custom colors for collapse that works with checkbox",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "collapse",
+      "collapse-content",
+      "collapse-title"
+    ]
+  },
+  {
+    "id": "countdown--00",
+    "component": "countdown",
+    "title": "Countdown",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "countdown--01",
+    "component": "countdown",
+    "title": "Large text with 2 digits",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "countdown--02",
+    "component": "countdown",
+    "title": "Clock countdown",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "countdown--03",
+    "component": "countdown",
+    "title": "Clock countdown with colons",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "countdown--04",
+    "component": "countdown",
+    "title": "Large text with labels",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "countdown--05",
+    "component": "countdown",
+    "title": "Large text with labels under",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "countdown--06",
+    "component": "countdown",
+    "title": "In boxes",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "countdown"
+    ]
+  },
+  {
+    "id": "diff--00",
+    "component": "diff",
+    "title": "Diff",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "diff",
+      "diff-item-1",
+      "diff-item-2",
+      "diff-resizer"
+    ]
+  },
+  {
+    "id": "diff--01",
+    "component": "diff",
+    "title": "Diff text",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "diff",
+      "diff-item-1",
+      "diff-item-2",
+      "diff-resizer"
+    ]
+  },
+  {
+    "id": "divider--00",
+    "component": "divider",
+    "title": "Divider",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "card",
+      "divider"
+    ]
+  },
+  {
+    "id": "divider--01",
+    "component": "divider",
+    "title": "Divider horizontal",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "card",
+      "divider",
+      "divider-horizontal"
+    ]
+  },
+  {
+    "id": "divider--02",
+    "component": "divider",
+    "title": "Divider with no text",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "card",
+      "divider"
+    ]
+  },
+  {
+    "id": "divider--03",
+    "component": "divider",
+    "title": "responsive (lg:divider-horizontal)",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "card",
+      "divider"
+    ]
+  },
+  {
+    "id": "divider--04",
+    "component": "divider",
+    "title": "Divider with colors",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "divider",
+      "divider-accent",
+      "divider-error",
+      "divider-info",
+      "divider-neutral",
+      "divider-primary",
+      "divider-secondary",
+      "divider-success",
+      "divider-warning"
+    ]
+  },
+  {
+    "id": "divider--05",
+    "component": "divider",
+    "title": "Divider in different positions",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "divider",
+      "divider-end",
+      "divider-start"
+    ]
+  },
+  {
+    "id": "divider--06",
+    "component": "divider",
+    "title": "Divider in different positions (horizontal)",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "divider",
+      "divider-end",
+      "divider-horizontal",
+      "divider-start"
+    ]
+  },
+  {
+    "id": "dock--00",
+    "component": "dock",
+    "title": "Dock",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-label"
+    ]
+  },
+  {
+    "id": "dock--01",
+    "component": "dock",
+    "title": "Dock Extra Small size",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-xs"
+    ]
+  },
+  {
+    "id": "dock--02",
+    "component": "dock",
+    "title": "Dock Small size",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-sm"
+    ]
+  },
+  {
+    "id": "dock--03",
+    "component": "dock",
+    "title": "Dock Medium size",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-label",
+      "dock-md"
+    ]
+  },
+  {
+    "id": "dock--04",
+    "component": "dock",
+    "title": "Dock Large size",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-label",
+      "dock-lg"
+    ]
+  },
+  {
+    "id": "dock--05",
+    "component": "dock",
+    "title": "Dock Extra Large size",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-label",
+      "dock-xl"
+    ]
+  },
+  {
+    "id": "dock--06",
+    "component": "dock",
+    "title": "Dock with custom colors",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "dock",
+      "dock-active",
+      "dock-label"
+    ]
+  },
+  {
+    "id": "drawer--00",
+    "component": "drawer",
+    "title": "Drawer sidebar",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "drawer",
+      "drawer-button",
+      "drawer-content",
+      "drawer-overlay",
+      "drawer-side",
+      "drawer-toggle",
+      "menu"
+    ]
+  },
+  {
+    "id": "drawer--01",
+    "component": "drawer",
+    "title": "Navbar menu for desktop + sidebar drawer for mobile",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "drawer",
+      "drawer-button",
+      "drawer-content",
+      "drawer-overlay",
+      "drawer-side",
+      "drawer-toggle",
+      "menu",
+      "menu-horizontal",
+      "navbar"
+    ]
+  },
+  {
+    "id": "drawer--02",
+    "component": "drawer",
+    "title": "Responsive: Sidebar is always visible on large screen, can be toggled on small screen",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "drawer",
+      "drawer-button",
+      "drawer-content",
+      "drawer-overlay",
+      "drawer-side",
+      "drawer-toggle",
+      "menu"
+    ]
+  },
+  {
+    "id": "drawer--03",
+    "component": "drawer",
+    "title": "Responsive collapsible Icon-only drawer sidebar. Using is-drawer-close and is-drawer-open",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "drawer",
+      "drawer-button",
+      "drawer-content",
+      "drawer-overlay",
+      "drawer-side",
+      "drawer-toggle",
+      "is-drawer-close:$$tooltip",
+      "is-drawer-close:$$tooltip-right",
+      "is-drawer-close:hidden",
+      "is-drawer-close:overflow-visible",
+      "is-drawer-close:w-14",
+      "is-drawer-open:w-64",
+      "menu",
+      "navbar"
+    ]
+  },
+  {
+    "id": "drawer--04",
+    "component": "drawer",
+    "title": "Drawer sidebar that opens from right side of page",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "drawer",
+      "drawer-button",
+      "drawer-content",
+      "drawer-end",
+      "drawer-overlay",
+      "drawer-side",
+      "drawer-toggle",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--00",
+    "component": "dropdown",
+    "title": "Dropdown using details and summary",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "dropdown--01",
+    "component": "dropdown",
+    "title": "Dropdown using popover API and anchor positioning",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--02",
+    "component": "dropdown",
+    "title": "Dropdown menu",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--03",
+    "component": "dropdown",
+    "title": "Dropdown / aligns to start of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-start",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--04",
+    "component": "dropdown",
+    "title": "Dropdown / aligns to end of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--05",
+    "component": "dropdown",
+    "title": "Dropdown / aligns to center of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-center",
+      "dropdown-content",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--06",
+    "component": "dropdown",
+    "title": "Dropdown top",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-top",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--07",
+    "component": "dropdown",
+    "title": "Dropdown top / aligns to center of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-center",
+      "dropdown-content",
+      "dropdown-top",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--08",
+    "component": "dropdown",
+    "title": "Dropdown top / aligns to end of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "dropdown-top",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--09",
+    "component": "dropdown",
+    "title": "Dropdown bottom (default)",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-bottom",
+      "dropdown-content",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--10",
+    "component": "dropdown",
+    "title": "Dropdown bottom (default) / aligns to center of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-bottom",
+      "dropdown-center",
+      "dropdown-content",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--11",
+    "component": "dropdown",
+    "title": "Dropdown bottom (default) / aligns to end of button horizontally",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-bottom",
+      "dropdown-content",
+      "dropdown-end",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--12",
+    "component": "dropdown",
+    "title": "Dropdown left",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-left",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--13",
+    "component": "dropdown",
+    "title": "Dropdown left / aligns to center of button vertically",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-center",
+      "dropdown-content",
+      "dropdown-left",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--14",
+    "component": "dropdown",
+    "title": "Dropdown left / aligns to end of button vertically",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "dropdown-left",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--15",
+    "component": "dropdown",
+    "title": "Dropdown right",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-right",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--16",
+    "component": "dropdown",
+    "title": "Dropdown right / aligns to end of button vertically",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "dropdown-right",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--17",
+    "component": "dropdown",
+    "title": "Dropdown right / aligns to center of button vertically",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-center",
+      "dropdown-content",
+      "dropdown-right",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--18",
+    "component": "dropdown",
+    "title": "Dropdown on hover",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-hover",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--19",
+    "component": "dropdown",
+    "title": "Force open",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-open",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--20",
+    "component": "dropdown",
+    "title": "Force close",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "dropdown",
+      "dropdown-close",
+      "dropdown-content",
+      "menu"
+    ]
+  },
+  {
+    "id": "dropdown--21",
+    "component": "dropdown",
+    "title": "Card as dropdown",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "card",
+      "card-body",
+      "card-sm",
+      "dropdown",
+      "dropdown-content"
+    ]
+  },
+  {
+    "id": "dropdown--22",
+    "component": "dropdown",
+    "title": "Dropdown in navbar",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "menu",
+      "navbar"
+    ]
+  },
+  {
+    "id": "dropdown--23",
+    "component": "dropdown",
+    "title": "Helper dropdown",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-ghost",
+      "btn-xs",
+      "card",
+      "card-body",
+      "card-sm",
+      "card-title",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end"
+    ]
+  },
+  {
+    "id": "fab--00",
+    "component": "fab",
+    "title": "FAB and Speed Dial (vertical)",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-primary",
+      "fab"
+    ]
+  },
+  {
+    "id": "fab--01",
+    "component": "fab",
+    "title": "FAB and Speed Dial with SVG icons",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-secondary",
+      "fab"
+    ]
+  },
+  {
+    "id": "fab--02",
+    "component": "fab",
+    "title": "FAB and Speed Dial with labels",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-success",
+      "fab"
+    ]
+  },
+  {
+    "id": "fab--03",
+    "component": "fab",
+    "title": "FAB and Speed Dial with rectangle buttons",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-success",
+      "fab"
+    ]
+  },
+  {
+    "id": "fab--04",
+    "component": "fab",
+    "title": "FAB and Speed Dial with labels and fab-close button",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-error",
+      "btn-info",
+      "btn-lg",
+      "fab",
+      "fab-close"
+    ]
+  },
+  {
+    "id": "fab--05",
+    "component": "fab",
+    "title": "FAB and Speed Dial with labels and fab-main-action Button",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-primary",
+      "btn-secondary",
+      "fab",
+      "fab-main-action"
+    ]
+  },
+  {
+    "id": "fab--06",
+    "component": "fab",
+    "title": "A single FAB (Floating Action Button)",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-primary",
+      "fab"
+    ]
+  },
+  {
+    "id": "fab--07",
+    "component": "fab",
+    "title": "FAB Flower and Speed Dial",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-success",
+      "fab",
+      "fab-flower",
+      "fab-main-action"
+    ]
+  },
+  {
+    "id": "fab--08",
+    "component": "fab",
+    "title": "FAB Flower without a main action button",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-primary",
+      "fab",
+      "fab-flower"
+    ]
+  },
+  {
+    "id": "fab--09",
+    "component": "fab",
+    "title": "FAB and Flower Speed Dial with SVG icons",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-lg",
+      "btn-primary",
+      "fab",
+      "fab-flower",
+      "fab-main-action"
+    ]
+  },
+  {
+    "id": "fab--10",
+    "component": "fab",
+    "title": "FAB and Flower Speed Dial with tooltip",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-info",
+      "btn-lg",
+      "btn-success",
+      "fab",
+      "fab-flower",
+      "fab-main-action",
+      "tooltip",
+      "tooltip-left"
+    ]
+  },
+  {
+    "id": "fieldset--00",
+    "component": "fieldset",
+    "title": "Fieldset fieldset-legend and label",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "fieldset--01",
+    "component": "fieldset",
+    "title": "Fieldset with background and border",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "fieldset--02",
+    "component": "fieldset",
+    "title": "Fieldset with multiple inputs",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "fieldset--03",
+    "component": "fieldset",
+    "title": "Fieldset with multiple join items",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "fieldset",
+      "fieldset-legend",
+      "input",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "fieldset--04",
+    "component": "fieldset",
+    "title": "Login form with fieldset",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "btn",
+      "btn-neutral",
+      "fieldset",
+      "fieldset-legend",
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "file-input--00",
+    "component": "file-input",
+    "title": "File input",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "file-input"
+    ]
+  },
+  {
+    "id": "file-input--01",
+    "component": "file-input",
+    "title": "File input ghost",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "file-input",
+      "file-input-ghost"
+    ]
+  },
+  {
+    "id": "file-input--02",
+    "component": "file-input",
+    "title": "With fieldset and label",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "file-input",
+      "label"
+    ]
+  },
+  {
+    "id": "file-input--03",
+    "component": "file-input",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "file-input",
+      "file-input-lg",
+      "file-input-md",
+      "file-input-sm",
+      "file-input-xl",
+      "file-input-xs"
+    ]
+  },
+  {
+    "id": "file-input--04",
+    "component": "file-input",
+    "title": "Primary color",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "file-input",
+      "file-input-accent",
+      "file-input-error",
+      "file-input-info",
+      "file-input-neutral",
+      "file-input-primary",
+      "file-input-secondary",
+      "file-input-success",
+      "file-input-warning"
+    ]
+  },
+  {
+    "id": "file-input--05",
+    "component": "file-input",
+    "title": "Disabled",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "file-input"
+    ]
+  },
+  {
+    "id": "filter--00",
+    "component": "filter",
+    "title": "Filter using HTML form, radio buttons and reset button",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-square",
+      "filter"
+    ]
+  },
+  {
+    "id": "filter--01",
+    "component": "filter",
+    "title": "Filter without HTML form",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "filter",
+      "filter-reset"
+    ]
+  },
+  {
+    "id": "filter--02",
+    "component": "filter",
+    "title": "Filter using HTML form, checkboxes, and a reset button",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-square",
+      "filter"
+    ]
+  },
+  {
+    "id": "footer--00",
+    "component": "footer",
+    "title": "Footer (vertical by default, horizontal for sm and up)",
+    "elementCount": 15,
+    "daisyClassSet": [
+      "footer",
+      "footer-title",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "footer--01",
+    "component": "footer",
+    "title": "Footer with a logo section",
+    "elementCount": 15,
+    "daisyClassSet": [
+      "footer",
+      "footer-title",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "footer--02",
+    "component": "footer",
+    "title": "Footer with a form",
+    "elementCount": 19,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "footer",
+      "footer-title",
+      "input",
+      "join",
+      "join-item",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "footer--03",
+    "component": "footer",
+    "title": "Footer with logo and social icons",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "footer",
+      "footer-title"
+    ]
+  },
+  {
+    "id": "footer--04",
+    "component": "footer",
+    "title": "Footer with copyright text",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "footer",
+      "footer-center"
+    ]
+  },
+  {
+    "id": "footer--05",
+    "component": "footer",
+    "title": "Footer with copyright text and social icons",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "footer"
+    ]
+  },
+  {
+    "id": "footer--06",
+    "component": "footer",
+    "title": "Footer with links and social icons",
+    "elementCount": 12,
+    "daisyClassSet": [
+      "footer",
+      "footer-title",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "footer--07",
+    "component": "footer",
+    "title": "Footer with 2 rows",
+    "elementCount": 30,
+    "daisyClassSet": [
+      "footer",
+      "footer-title",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "footer--08",
+    "component": "footer",
+    "title": "Centered footer with logo and social icons",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "footer",
+      "footer-center",
+      "footer-horizontal"
+    ]
+  },
+  {
+    "id": "footer--09",
+    "component": "footer",
+    "title": "Centered footer with social icons",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "footer",
+      "footer-center",
+      "footer-horizontal",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "footer--10",
+    "component": "footer",
+    "title": "Two footer",
+    "elementCount": 16,
+    "daisyClassSet": [
+      "footer",
+      "footer-title",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "hero--00",
+    "component": "hero",
+    "title": "Centered hero",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "hero",
+      "hero-content"
+    ]
+  },
+  {
+    "id": "hero--01",
+    "component": "hero",
+    "title": "Hero with figure",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "hero",
+      "hero-content"
+    ]
+  },
+  {
+    "id": "hero--02",
+    "component": "hero",
+    "title": "Hero with figure but reverse order",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "hero",
+      "hero-content"
+    ]
+  },
+  {
+    "id": "hero--03",
+    "component": "hero",
+    "title": "Hero with form",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "btn",
+      "btn-neutral",
+      "card",
+      "card-body",
+      "fieldset",
+      "hero",
+      "hero-content",
+      "input",
+      "label",
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "hero--04",
+    "component": "hero",
+    "title": "Hero with overlay image",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "hero",
+      "hero-content",
+      "hero-overlay"
+    ]
+  },
+  {
+    "id": "hover-3d--00",
+    "component": "hover-3d",
+    "title": "3D image hover effect",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "hover-3d"
+    ]
+  },
+  {
+    "id": "hover-3d--01",
+    "component": "hover-3d",
+    "title": "3D card hover effect",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "hover-3d"
+    ]
+  },
+  {
+    "id": "hover-3d--02",
+    "component": "hover-3d",
+    "title": "3D hover effect for image gallery",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "hover-3d"
+    ]
+  },
+  {
+    "id": "hover-gallery--00",
+    "component": "hover-gallery",
+    "title": "Hover Gallery",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "hover-gallery"
+    ]
+  },
+  {
+    "id": "hover-gallery--01",
+    "component": "hover-gallery",
+    "title": "Hover Gallery in a card",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "card-sm",
+      "card-title",
+      "hover-gallery"
+    ]
+  },
+  {
+    "id": "indicator--00",
+    "component": "indicator",
+    "title": "Status Indicator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "indicator",
+      "indicator-item",
+      "status",
+      "status-success"
+    ]
+  },
+  {
+    "id": "indicator--01",
+    "component": "indicator",
+    "title": "Badge as indicator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-primary",
+      "indicator",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--02",
+    "component": "indicator",
+    "title": "for button",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "btn",
+      "indicator",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--03",
+    "component": "indicator",
+    "title": "for tab",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "badge",
+      "indicator",
+      "indicator-item",
+      "tab",
+      "tab-active",
+      "tabs",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "indicator--04",
+    "component": "indicator",
+    "title": "for avatar",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "avatar",
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--05",
+    "component": "indicator",
+    "title": "for an input",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "badge",
+      "indicator",
+      "indicator-item",
+      "input"
+    ]
+  },
+  {
+    "id": "indicator--06",
+    "component": "indicator",
+    "title": "A button as an indicator for a card",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "card",
+      "card-body",
+      "card-title",
+      "indicator",
+      "indicator-bottom",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--07",
+    "component": "indicator",
+    "title": "in center of an image",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "indicator",
+      "indicator-center",
+      "indicator-item",
+      "indicator-middle"
+    ]
+  },
+  {
+    "id": "indicator--08",
+    "component": "indicator",
+    "title": "indicator-top (default) indicator-start",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-item",
+      "indicator-start"
+    ]
+  },
+  {
+    "id": "indicator--09",
+    "component": "indicator",
+    "title": "indicator-top (default) indicator-center",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-center",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--10",
+    "component": "indicator",
+    "title": "indicator-top (default) indicator-end (default)",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--11",
+    "component": "indicator",
+    "title": "indicator-middle indicator-start",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-item",
+      "indicator-middle",
+      "indicator-start"
+    ]
+  },
+  {
+    "id": "indicator--12",
+    "component": "indicator",
+    "title": "indicator-middle indicator-center",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-center",
+      "indicator-item",
+      "indicator-middle"
+    ]
+  },
+  {
+    "id": "indicator--13",
+    "component": "indicator",
+    "title": "indicator-middle indicator-end (default)",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-item",
+      "indicator-middle"
+    ]
+  },
+  {
+    "id": "indicator--14",
+    "component": "indicator",
+    "title": "indicator-bottom indicator-start",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-bottom",
+      "indicator-item",
+      "indicator-start"
+    ]
+  },
+  {
+    "id": "indicator--15",
+    "component": "indicator",
+    "title": "indicator-bottom indicator-center",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-bottom",
+      "indicator-center",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--16",
+    "component": "indicator",
+    "title": "indicator-bottom indicator-end (default)",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-bottom",
+      "indicator-item"
+    ]
+  },
+  {
+    "id": "indicator--17",
+    "component": "indicator",
+    "title": "multiple indicators",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "badge",
+      "indicator",
+      "indicator-bottom",
+      "indicator-center",
+      "indicator-end",
+      "indicator-item",
+      "indicator-middle",
+      "indicator-start",
+      "indicator-top"
+    ]
+  },
+  {
+    "id": "indicator--18",
+    "component": "indicator",
+    "title": "Responsive",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "indicator",
+      "indicator-item",
+      "indicator-start"
+    ]
+  },
+  {
+    "id": "input--00",
+    "component": "input",
+    "title": "Text input",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--01",
+    "component": "input",
+    "title": "Text input with text label inside",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "badge",
+      "badge-neutral",
+      "badge-xs",
+      "input",
+      "kbd",
+      "kbd-sm"
+    ]
+  },
+  {
+    "id": "input--02",
+    "component": "input",
+    "title": "Ghost style",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input",
+      "input-ghost"
+    ]
+  },
+  {
+    "id": "input--03",
+    "component": "input",
+    "title": "With fieldset and fieldset-legend",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "input--04",
+    "component": "input",
+    "title": "With fieldset and label",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "fieldset",
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "input--05",
+    "component": "input",
+    "title": "Input colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "input",
+      "input-accent",
+      "input-error",
+      "input-info",
+      "input-neutral",
+      "input-primary",
+      "input-secondary",
+      "input-success",
+      "input-warning"
+    ]
+  },
+  {
+    "id": "input--06",
+    "component": "input",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "input",
+      "input-lg",
+      "input-md",
+      "input-sm",
+      "input-xl",
+      "input-xs"
+    ]
+  },
+  {
+    "id": "input--07",
+    "component": "input",
+    "title": "Disabled",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--08",
+    "component": "input",
+    "title": "Text input with data list suggestion",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--09",
+    "component": "input",
+    "title": "Date input",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--10",
+    "component": "input",
+    "title": "Time input",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--11",
+    "component": "input",
+    "title": "datetime-local input",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--12",
+    "component": "input",
+    "title": "Username text input with icon and validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "input--13",
+    "component": "input",
+    "title": "Search input with icon",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input"
+    ]
+  },
+  {
+    "id": "input--14",
+    "component": "input",
+    "title": "Email input with icon and validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "input--15",
+    "component": "input",
+    "title": "Email input with icon, validator, button, join",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "btn-neutral",
+      "input",
+      "join",
+      "join-item",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "input--16",
+    "component": "input",
+    "title": "Password input with icon and validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "input--17",
+    "component": "input",
+    "title": "Number input with validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "input--18",
+    "component": "input",
+    "title": "Telephone number input with icon and validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "input--19",
+    "component": "input",
+    "title": "URL with icon and validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "join--00",
+    "component": "join",
+    "title": "Join",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "join--01",
+    "component": "join",
+    "title": "Group items vertically",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "join",
+      "join-item",
+      "join-vertical"
+    ]
+  },
+  {
+    "id": "join--02",
+    "component": "join",
+    "title": "Responsive: it's vertical on small screen and horizontal on large screen",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "join",
+      "join-item",
+      "join-vertical"
+    ]
+  },
+  {
+    "id": "join--03",
+    "component": "join",
+    "title": "With extra elements in the group",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "badge",
+      "badge-secondary",
+      "btn",
+      "indicator",
+      "indicator-item",
+      "input",
+      "join",
+      "join-item",
+      "select"
+    ]
+  },
+  {
+    "id": "join--04",
+    "component": "join",
+    "title": "Custom border radius",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "input",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "join--05",
+    "component": "join",
+    "title": "Join radio inputs with btn style",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "kbd--00",
+    "component": "kbd",
+    "title": "Kbd",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "kbd"
+    ]
+  },
+  {
+    "id": "kbd--01",
+    "component": "kbd",
+    "title": "Kbd sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "kbd",
+      "kbd-lg",
+      "kbd-md",
+      "kbd-sm",
+      "kbd-xl",
+      "kbd-xs"
+    ]
+  },
+  {
+    "id": "kbd--02",
+    "component": "kbd",
+    "title": "In text",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "kbd",
+      "kbd-sm"
+    ]
+  },
+  {
+    "id": "kbd--03",
+    "component": "kbd",
+    "title": "Key combination",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "kbd"
+    ]
+  },
+  {
+    "id": "kbd--04",
+    "component": "kbd",
+    "title": "Function Keys",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "kbd"
+    ]
+  },
+  {
+    "id": "kbd--05",
+    "component": "kbd",
+    "title": "A full keyboard",
+    "elementCount": 27,
+    "daisyClassSet": [
+      "kbd"
+    ]
+  },
+  {
+    "id": "kbd--06",
+    "component": "kbd",
+    "title": "Arrow Keys",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "kbd"
+    ]
+  },
+  {
+    "id": "label--00",
+    "component": "label",
+    "title": "Label for input",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "label--01",
+    "component": "label",
+    "title": "Label for input at the end",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "label--02",
+    "component": "label",
+    "title": "Label for select",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "label",
+      "select"
+    ]
+  },
+  {
+    "id": "label--03",
+    "component": "label",
+    "title": "Label for date input",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "label"
+    ]
+  },
+  {
+    "id": "label--04",
+    "component": "label",
+    "title": "Floating Label",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "floating-label",
+      "input",
+      "input-md"
+    ]
+  },
+  {
+    "id": "label--05",
+    "component": "label",
+    "title": "Floating Label with Different Sizes",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "floating-label",
+      "input",
+      "input-lg",
+      "input-md",
+      "input-sm",
+      "input-xl",
+      "input-xs"
+    ]
+  },
+  {
+    "id": "label--06",
+    "component": "label",
+    "title": "Responsive Size Floating Label",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "floating-label",
+      "input",
+      "input-xs",
+      "select",
+      "select-xs",
+      "textarea",
+      "textarea-xs"
+    ]
+  },
+  {
+    "id": "link--00",
+    "component": "link",
+    "title": "Link",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link"
+    ]
+  },
+  {
+    "id": "link--01",
+    "component": "link",
+    "title": "Link",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link"
+    ]
+  },
+  {
+    "id": "link--02",
+    "component": "link",
+    "title": "Primary color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-primary"
+    ]
+  },
+  {
+    "id": "link--03",
+    "component": "link",
+    "title": "Secondary color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-secondary"
+    ]
+  },
+  {
+    "id": "link--04",
+    "component": "link",
+    "title": "Accent color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-accent"
+    ]
+  },
+  {
+    "id": "link--05",
+    "component": "link",
+    "title": "Success color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-success"
+    ]
+  },
+  {
+    "id": "link--06",
+    "component": "link",
+    "title": "Info color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-info"
+    ]
+  },
+  {
+    "id": "link--07",
+    "component": "link",
+    "title": "Warning color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-warning"
+    ]
+  },
+  {
+    "id": "link--08",
+    "component": "link",
+    "title": "Error color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-error"
+    ]
+  },
+  {
+    "id": "link--09",
+    "component": "link",
+    "title": "Show underline only on hover",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "link",
+      "link-hover"
+    ]
+  },
+  {
+    "id": "list--00",
+    "component": "list",
+    "title": "List (second column grows - default)",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "list",
+      "list-row"
+    ]
+  },
+  {
+    "id": "list--01",
+    "component": "list",
+    "title": "List (third column grows)",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "list",
+      "list-col-grow",
+      "list-row"
+    ]
+  },
+  {
+    "id": "list--02",
+    "component": "list",
+    "title": "List (third column wraps to next row)",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "list",
+      "list-col-wrap",
+      "list-row"
+    ]
+  },
+  {
+    "id": "loading--00",
+    "component": "loading",
+    "title": "Loading spinner",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "loading",
+      "loading-lg",
+      "loading-md",
+      "loading-sm",
+      "loading-spinner",
+      "loading-xl",
+      "loading-xs"
+    ]
+  },
+  {
+    "id": "loading--01",
+    "component": "loading",
+    "title": "Loading dots",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "loading",
+      "loading-dots",
+      "loading-lg",
+      "loading-md",
+      "loading-sm",
+      "loading-xl",
+      "loading-xs"
+    ]
+  },
+  {
+    "id": "loading--02",
+    "component": "loading",
+    "title": "Loading ring",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "loading",
+      "loading-lg",
+      "loading-md",
+      "loading-ring",
+      "loading-sm",
+      "loading-xl",
+      "loading-xs"
+    ]
+  },
+  {
+    "id": "loading--03",
+    "component": "loading",
+    "title": "Loading ball",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "loading",
+      "loading-ball",
+      "loading-lg",
+      "loading-md",
+      "loading-sm",
+      "loading-xl",
+      "loading-xs"
+    ]
+  },
+  {
+    "id": "loading--04",
+    "component": "loading",
+    "title": "Loading bars",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "loading",
+      "loading-bars",
+      "loading-lg",
+      "loading-md",
+      "loading-sm",
+      "loading-xl",
+      "loading-xs"
+    ]
+  },
+  {
+    "id": "loading--05",
+    "component": "loading",
+    "title": "Loading infinity",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "loading",
+      "loading-infinity",
+      "loading-lg",
+      "loading-md",
+      "loading-sm",
+      "loading-xl",
+      "loading-xs"
+    ]
+  },
+  {
+    "id": "loading--06",
+    "component": "loading",
+    "title": "Loading with colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "loading",
+      "loading-spinner"
+    ]
+  },
+  {
+    "id": "mask--00",
+    "component": "mask",
+    "title": "Squircle",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-squircle"
+    ]
+  },
+  {
+    "id": "mask--01",
+    "component": "mask",
+    "title": "Heart",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-heart"
+    ]
+  },
+  {
+    "id": "mask--02",
+    "component": "mask",
+    "title": "Hexagon",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-hexagon"
+    ]
+  },
+  {
+    "id": "mask--03",
+    "component": "mask",
+    "title": "Hexagon-2 (horizontal hexagon)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-hexagon-2"
+    ]
+  },
+  {
+    "id": "mask--04",
+    "component": "mask",
+    "title": "Decagon",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-decagon"
+    ]
+  },
+  {
+    "id": "mask--05",
+    "component": "mask",
+    "title": "Pentagon",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-pentagon"
+    ]
+  },
+  {
+    "id": "mask--06",
+    "component": "mask",
+    "title": "Diamond",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-diamond"
+    ]
+  },
+  {
+    "id": "mask--07",
+    "component": "mask",
+    "title": "Circle",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-circle"
+    ]
+  },
+  {
+    "id": "mask--08",
+    "component": "mask",
+    "title": "Star",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-star"
+    ]
+  },
+  {
+    "id": "mask--09",
+    "component": "mask",
+    "title": "Star-2 (bold star)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-star-2"
+    ]
+  },
+  {
+    "id": "mask--10",
+    "component": "mask",
+    "title": "Triangle (pointing top)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-triangle"
+    ]
+  },
+  {
+    "id": "mask--11",
+    "component": "mask",
+    "title": "Triangle-2 (pointing down)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-triangle-2"
+    ]
+  },
+  {
+    "id": "mask--12",
+    "component": "mask",
+    "title": "Triangle-3 (pointing left)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-triangle-3"
+    ]
+  },
+  {
+    "id": "mask--13",
+    "component": "mask",
+    "title": "Triangle-4 (pointing right)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mask",
+      "mask-triangle-4"
+    ]
+  },
+  {
+    "id": "megamenu--00",
+    "component": "megamenu",
+    "title": "Responsive megamenu with small vertical menus",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "megamenu",
+      "megamenu-active",
+      "menu"
+    ]
+  },
+  {
+    "id": "megamenu--01",
+    "component": "megamenu",
+    "title": "Megamenu with wide popovers and horizontal menus",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "megamenu",
+      "megamenu-active",
+      "megamenu-wide",
+      "menu",
+      "menu-horizontal"
+    ]
+  },
+  {
+    "id": "megamenu--02",
+    "component": "megamenu",
+    "title": "Megamenu with a menus and lots of links",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "btn",
+      "megamenu",
+      "megamenu-active",
+      "megamenu-wide",
+      "menu",
+      "menu-title"
+    ]
+  },
+  {
+    "id": "megamenu--03",
+    "component": "megamenu",
+    "title": "Megamenu in a navbar",
+    "elementCount": 12,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "megamenu",
+      "megamenu-active",
+      "megamenu-full",
+      "menu",
+      "navbar",
+      "navbar-center",
+      "navbar-end",
+      "navbar-start"
+    ]
+  },
+  {
+    "id": "megamenu--04",
+    "component": "megamenu",
+    "title": "megamenu without arrows",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "megamenu",
+      "megamenu-active"
+    ]
+  },
+  {
+    "id": "megamenu--05",
+    "component": "megamenu",
+    "title": "Megamenu in different sizes",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "megamenu",
+      "megamenu-active",
+      "megamenu-lg",
+      "megamenu-md",
+      "megamenu-sm",
+      "megamenu-xl",
+      "megamenu-xs"
+    ]
+  },
+  {
+    "id": "menu--00",
+    "component": "menu",
+    "title": "Menu",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--01",
+    "component": "menu",
+    "title": "Responsive: vertical on small screen, horizontal on large screen",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "menu-vertical",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--02",
+    "component": "menu",
+    "title": "Paged menu with nested submenus",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "menu-paged",
+      "menu-vertical",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--03",
+    "component": "menu",
+    "title": "Menu with icon only",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--04",
+    "component": "menu",
+    "title": "Menu with icon only (horizontal)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "menu-horizontal",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--05",
+    "component": "menu",
+    "title": "Menu with icon only with tooltip",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box",
+      "tooltip",
+      "tooltip-right"
+    ]
+  },
+  {
+    "id": "menu--06",
+    "component": "menu",
+    "title": "Menu with icon only (horizontal) with tooltip",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "menu",
+      "menu-horizontal",
+      "rounded-box",
+      "tooltip"
+    ]
+  },
+  {
+    "id": "menu--07",
+    "component": "menu",
+    "title": "Menu sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "menu",
+      "menu-lg",
+      "menu-md",
+      "menu-sm",
+      "menu-xl",
+      "menu-xs",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--08",
+    "component": "menu",
+    "title": "Menu with disabled items",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "menu",
+      "menu-disabled",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--09",
+    "component": "menu",
+    "title": "Menu with icons",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--10",
+    "component": "menu",
+    "title": "Menu with icons and badge (responsive)",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "badge",
+      "badge-info",
+      "badge-warning",
+      "badge-xs",
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--11",
+    "component": "menu",
+    "title": "Menu without padding and border radius",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu"
+    ]
+  },
+  {
+    "id": "menu--12",
+    "component": "menu",
+    "title": "Menu with title",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "menu",
+      "menu-title",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--13",
+    "component": "menu",
+    "title": "Menu with title as a parent",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "menu",
+      "menu-title",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--14",
+    "component": "menu",
+    "title": "Submenu",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--15",
+    "component": "menu",
+    "title": "Collapsible submenu",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--16",
+    "component": "menu",
+    "title": "Collapsible submenu that works with class names",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "menu",
+      "menu-dropdown",
+      "menu-dropdown-show",
+      "menu-dropdown-toggle",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--17",
+    "component": "menu",
+    "title": "File tree",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "menu-xs"
+    ]
+  },
+  {
+    "id": "menu--18",
+    "component": "menu",
+    "title": "Menu with active item",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "menu",
+      "menu-active"
+    ]
+  },
+  {
+    "id": "menu--19",
+    "component": "menu",
+    "title": "Horizontal menu",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "menu-horizontal"
+    ]
+  },
+  {
+    "id": "menu--20",
+    "component": "menu",
+    "title": "Horizontal submenu",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "menu-horizontal",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--21",
+    "component": "menu",
+    "title": "Mega menu with submenu (responsive)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "menu--22",
+    "component": "menu",
+    "title": "Collapsible with submenu (responsive)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "menu",
+      "rounded-box"
+    ]
+  },
+  {
+    "id": "mockup-browser--00",
+    "component": "mockup-browser",
+    "title": "browser mockup with border",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "input",
+      "mockup-browser",
+      "mockup-browser-toolbar"
+    ]
+  },
+  {
+    "id": "mockup-browser--01",
+    "component": "mockup-browser",
+    "title": "browser mockup with background color",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "input",
+      "mockup-browser",
+      "mockup-browser-toolbar"
+    ]
+  },
+  {
+    "id": "mockup-code--00",
+    "component": "mockup-code",
+    "title": "mockup code with line prefix",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-code"
+    ]
+  },
+  {
+    "id": "mockup-code--01",
+    "component": "mockup-code",
+    "title": "Multi line",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-code"
+    ]
+  },
+  {
+    "id": "mockup-code--02",
+    "component": "mockup-code",
+    "title": "Highlighted line",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-code"
+    ]
+  },
+  {
+    "id": "mockup-code--03",
+    "component": "mockup-code",
+    "title": "Long line will scroll",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-code"
+    ]
+  },
+  {
+    "id": "mockup-code--04",
+    "component": "mockup-code",
+    "title": "Without prefix",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-code"
+    ]
+  },
+  {
+    "id": "mockup-code--05",
+    "component": "mockup-code",
+    "title": "With color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-code"
+    ]
+  },
+  {
+    "id": "mockup-phone--00",
+    "component": "mockup-phone",
+    "title": "iPhone mockup",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "mockup-phone",
+      "mockup-phone-camera",
+      "mockup-phone-display"
+    ]
+  },
+  {
+    "id": "mockup-phone--01",
+    "component": "mockup-phone",
+    "title": "With color and wallpaper",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "mockup-phone",
+      "mockup-phone-camera",
+      "mockup-phone-display"
+    ]
+  },
+  {
+    "id": "mockup-window--00",
+    "component": "mockup-window",
+    "title": "window mockup with border",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-window"
+    ]
+  },
+  {
+    "id": "mockup-window--01",
+    "component": "mockup-window",
+    "title": "window mockup with background color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "mockup-window"
+    ]
+  },
+  {
+    "id": "modal--00",
+    "component": "modal",
+    "title": "Dialog modal",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-action",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--01",
+    "component": "modal",
+    "title": "Dialog modal, closes when clicked outside",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-backdrop",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--02",
+    "component": "modal",
+    "title": "Dialog modal with a close button at corner",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "btn-ghost",
+      "btn-sm",
+      "modal",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--03",
+    "component": "modal",
+    "title": "Dialog modal with custom width",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-action",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--04",
+    "component": "modal",
+    "title": "Responsive",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-action",
+      "modal-bottom",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--05",
+    "component": "modal",
+    "title": "Popover modal",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-action",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--06",
+    "component": "modal",
+    "title": "Popover modal closes when clicked outside",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-backdrop",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "modal--07",
+    "component": "modal",
+    "title": "Modal using checkbox",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-action",
+      "modal-box",
+      "modal-toggle"
+    ]
+  },
+  {
+    "id": "modal--08",
+    "component": "modal",
+    "title": "Modal that closes when clicked outside",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-backdrop",
+      "modal-box",
+      "modal-toggle"
+    ]
+  },
+  {
+    "id": "modal--09",
+    "component": "modal",
+    "title": "Modal using anchor link",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "modal",
+      "modal-action",
+      "modal-box"
+    ]
+  },
+  {
+    "id": "navbar--00",
+    "component": "navbar",
+    "title": "Navbar with title only",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "navbar"
+    ]
+  },
+  {
+    "id": "navbar--01",
+    "component": "navbar",
+    "title": "Navbar with title and icon",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "navbar"
+    ]
+  },
+  {
+    "id": "navbar--02",
+    "component": "navbar",
+    "title": "Navbar with icon at start and end",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-square",
+      "navbar"
+    ]
+  },
+  {
+    "id": "navbar--03",
+    "component": "navbar",
+    "title": "Navbar with menu and submenu",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "menu",
+      "menu-horizontal",
+      "navbar"
+    ]
+  },
+  {
+    "id": "navbar--04",
+    "component": "navbar",
+    "title": "Navbar with search input and dropdown",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "avatar",
+      "badge",
+      "btn",
+      "btn-circle",
+      "btn-ghost",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "input",
+      "menu",
+      "menu-sm",
+      "navbar"
+    ]
+  },
+  {
+    "id": "navbar--05",
+    "component": "navbar",
+    "title": "Navbar with icon, indicator and dropdown",
+    "elementCount": 14,
+    "daisyClassSet": [
+      "avatar",
+      "badge",
+      "badge-sm",
+      "btn",
+      "btn-block",
+      "btn-circle",
+      "btn-ghost",
+      "btn-primary",
+      "card",
+      "card-actions",
+      "card-body",
+      "card-sm",
+      "dropdown",
+      "dropdown-content",
+      "dropdown-end",
+      "indicator",
+      "indicator-item",
+      "menu",
+      "menu-sm",
+      "navbar"
+    ]
+  },
+  {
+    "id": "navbar--06",
+    "component": "navbar",
+    "title": "Navbar with dropdown, center logo and icon",
+    "elementCount": 12,
+    "daisyClassSet": [
+      "badge",
+      "badge-primary",
+      "badge-xs",
+      "btn",
+      "btn-circle",
+      "btn-ghost",
+      "dropdown",
+      "dropdown-content",
+      "indicator",
+      "indicator-item",
+      "menu",
+      "menu-sm",
+      "navbar",
+      "navbar-center",
+      "navbar-end",
+      "navbar-start"
+    ]
+  },
+  {
+    "id": "navbar--07",
+    "component": "navbar",
+    "title": "Responsive (dropdown menu on small screen, center menu on large screen)",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "dropdown",
+      "dropdown-content",
+      "menu",
+      "menu-horizontal",
+      "menu-sm",
+      "navbar",
+      "navbar-center",
+      "navbar-end",
+      "navbar-start"
+    ]
+  },
+  {
+    "id": "navbar--08",
+    "component": "navbar",
+    "title": "Responsive (collapse on small screen, full content on large screen)",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "collapse-content",
+      "collapse-title",
+      "input",
+      "menu",
+      "menu-horizontal",
+      "navbar",
+      "navbar-center",
+      "navbar-end",
+      "navbar-start"
+    ]
+  },
+  {
+    "id": "navbar--09",
+    "component": "navbar",
+    "title": "Navbar with colors",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "navbar"
+    ]
+  },
+  {
+    "id": "otp--00",
+    "component": "otp",
+    "title": "OTP",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "otp"
+    ]
+  },
+  {
+    "id": "otp--01",
+    "component": "otp",
+    "title": "OTP with 6 digits",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "otp"
+    ]
+  },
+  {
+    "id": "otp--02",
+    "component": "otp",
+    "title": "OTP joined",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "otp",
+      "otp-joined"
+    ]
+  },
+  {
+    "id": "otp--03",
+    "component": "otp",
+    "title": "OTP with different sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "otp",
+      "otp-lg",
+      "otp-md",
+      "otp-sm",
+      "otp-xl",
+      "otp-xs"
+    ]
+  },
+  {
+    "id": "otp--04",
+    "component": "otp",
+    "title": "OTP with different colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "otp",
+      "otp-accent",
+      "otp-error",
+      "otp-info",
+      "otp-neutral",
+      "otp-primary",
+      "otp-secondary",
+      "otp-success",
+      "otp-warning"
+    ]
+  },
+  {
+    "id": "pagination--00",
+    "component": "pagination",
+    "title": "Pagination with an active button",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-active",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "pagination--01",
+    "component": "pagination",
+    "title": "Sizes",
+    "elementCount": 25,
+    "daisyClassSet": [
+      "btn",
+      "btn-active",
+      "btn-lg",
+      "btn-md",
+      "btn-sm",
+      "btn-xl",
+      "btn-xs",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "pagination--02",
+    "component": "pagination",
+    "title": "With a disabled button",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "btn-disabled",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "pagination--03",
+    "component": "pagination",
+    "title": "Extra small buttons",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "btn",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "pagination--04",
+    "component": "pagination",
+    "title": "Nex/Prev outline buttons with equal width",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-outline",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "pagination--05",
+    "component": "pagination",
+    "title": "Using radio inputs",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "btn",
+      "btn-square",
+      "join",
+      "join-item"
+    ]
+  },
+  {
+    "id": "progress--00",
+    "component": "progress",
+    "title": "Progress",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress"
+    ]
+  },
+  {
+    "id": "progress--01",
+    "component": "progress",
+    "title": "Primary color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-primary"
+    ]
+  },
+  {
+    "id": "progress--02",
+    "component": "progress",
+    "title": "Secondary color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-secondary"
+    ]
+  },
+  {
+    "id": "progress--03",
+    "component": "progress",
+    "title": "Accent color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-accent"
+    ]
+  },
+  {
+    "id": "progress--04",
+    "component": "progress",
+    "title": "Neutral color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-neutral"
+    ]
+  },
+  {
+    "id": "progress--05",
+    "component": "progress",
+    "title": "Info color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-info"
+    ]
+  },
+  {
+    "id": "progress--06",
+    "component": "progress",
+    "title": "Success color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-success"
+    ]
+  },
+  {
+    "id": "progress--07",
+    "component": "progress",
+    "title": "Warning color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-warning"
+    ]
+  },
+  {
+    "id": "progress--08",
+    "component": "progress",
+    "title": "Error color",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "progress",
+      "progress-error"
+    ]
+  },
+  {
+    "id": "progress--09",
+    "component": "progress",
+    "title": "Indeterminate (without value)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "progress"
+    ]
+  },
+  {
+    "id": "radial-progress--00",
+    "component": "radial-progress",
+    "title": "Radial progress",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "radial-progress"
+    ]
+  },
+  {
+    "id": "radial-progress--01",
+    "component": "radial-progress",
+    "title": "Different values",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "radial-progress"
+    ]
+  },
+  {
+    "id": "radial-progress--02",
+    "component": "radial-progress",
+    "title": "Custom color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "radial-progress"
+    ]
+  },
+  {
+    "id": "radial-progress--03",
+    "component": "radial-progress",
+    "title": "With background color and border",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "radial-progress"
+    ]
+  },
+  {
+    "id": "radial-progress--04",
+    "component": "radial-progress",
+    "title": "Custom size and custom thickness",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radial-progress"
+    ]
+  },
+  {
+    "id": "radio--00",
+    "component": "radio",
+    "title": "Radio",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio"
+    ]
+  },
+  {
+    "id": "radio--01",
+    "component": "radio",
+    "title": "Radio sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "radio",
+      "radio-lg",
+      "radio-md",
+      "radio-sm",
+      "radio-xl",
+      "radio-xs"
+    ]
+  },
+  {
+    "id": "radio--02",
+    "component": "radio",
+    "title": "Neutral color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-neutral"
+    ]
+  },
+  {
+    "id": "radio--03",
+    "component": "radio",
+    "title": "Primary color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-primary"
+    ]
+  },
+  {
+    "id": "radio--04",
+    "component": "radio",
+    "title": "Secondary color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-secondary"
+    ]
+  },
+  {
+    "id": "radio--05",
+    "component": "radio",
+    "title": "Accent color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-accent"
+    ]
+  },
+  {
+    "id": "radio--06",
+    "component": "radio",
+    "title": "Success color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-success"
+    ]
+  },
+  {
+    "id": "radio--07",
+    "component": "radio",
+    "title": "Warning color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-warning"
+    ]
+  },
+  {
+    "id": "radio--08",
+    "component": "radio",
+    "title": "Info color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-info"
+    ]
+  },
+  {
+    "id": "radio--09",
+    "component": "radio",
+    "title": "Error color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio",
+      "radio-error"
+    ]
+  },
+  {
+    "id": "radio--10",
+    "component": "radio",
+    "title": "Disabled",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio"
+    ]
+  },
+  {
+    "id": "radio--11",
+    "component": "radio",
+    "title": "Radio with custom colors",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "radio"
+    ]
+  },
+  {
+    "id": "range--00",
+    "component": "range",
+    "title": "Range",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range"
+    ]
+  },
+  {
+    "id": "range--01",
+    "component": "range",
+    "title": "With steps and measure",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range"
+    ]
+  },
+  {
+    "id": "range--02",
+    "component": "range",
+    "title": "Neutral color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-neutral"
+    ]
+  },
+  {
+    "id": "range--03",
+    "component": "range",
+    "title": "Primary color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-primary"
+    ]
+  },
+  {
+    "id": "range--04",
+    "component": "range",
+    "title": "Secondary color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-secondary"
+    ]
+  },
+  {
+    "id": "range--05",
+    "component": "range",
+    "title": "Accent color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-accent"
+    ]
+  },
+  {
+    "id": "range--06",
+    "component": "range",
+    "title": "Success color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-success"
+    ]
+  },
+  {
+    "id": "range--07",
+    "component": "range",
+    "title": "Warning color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-warning"
+    ]
+  },
+  {
+    "id": "range--08",
+    "component": "range",
+    "title": "Info color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-info"
+    ]
+  },
+  {
+    "id": "range--09",
+    "component": "range",
+    "title": "Error color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-error"
+    ]
+  },
+  {
+    "id": "range--10",
+    "component": "range",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "range",
+      "range-lg",
+      "range-md",
+      "range-sm",
+      "range-xl",
+      "range-xs"
+    ]
+  },
+  {
+    "id": "range--11",
+    "component": "range",
+    "title": "Range with custom color and no fill",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range"
+    ]
+  },
+  {
+    "id": "range--12",
+    "component": "range",
+    "title": "Vertical",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "range",
+      "range-vertical"
+    ]
+  },
+  {
+    "id": "rating--00",
+    "component": "rating",
+    "title": "Rating",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "mask",
+      "mask-star",
+      "rating"
+    ]
+  },
+  {
+    "id": "rating--01",
+    "component": "rating",
+    "title": "Read-only Rating",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "mask",
+      "mask-star",
+      "rating"
+    ]
+  },
+  {
+    "id": "rating--02",
+    "component": "rating",
+    "title": "mask-star-2 with warning color",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "mask",
+      "mask-star-2",
+      "rating"
+    ]
+  },
+  {
+    "id": "rating--03",
+    "component": "rating",
+    "title": "mask-heart with multiple colors",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "mask",
+      "mask-heart",
+      "rating"
+    ]
+  },
+  {
+    "id": "rating--04",
+    "component": "rating",
+    "title": "mask-star-2 with green-500 color",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "mask",
+      "mask-star-2",
+      "rating"
+    ]
+  },
+  {
+    "id": "rating--05",
+    "component": "rating",
+    "title": "Sizes",
+    "elementCount": 30,
+    "daisyClassSet": [
+      "mask",
+      "mask-star-2",
+      "rating",
+      "rating-lg",
+      "rating-md",
+      "rating-sm",
+      "rating-xl",
+      "rating-xs"
+    ]
+  },
+  {
+    "id": "rating--06",
+    "component": "rating",
+    "title": "with `rating-hidden`",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "mask",
+      "mask-star-2",
+      "rating",
+      "rating-hidden",
+      "rating-lg"
+    ]
+  },
+  {
+    "id": "rating--07",
+    "component": "rating",
+    "title": "half stars",
+    "elementCount": 12,
+    "daisyClassSet": [
+      "mask",
+      "mask-half-1",
+      "mask-half-2",
+      "mask-star-2",
+      "rating",
+      "rating-half",
+      "rating-hidden",
+      "rating-lg"
+    ]
+  },
+  {
+    "id": "select--00",
+    "component": "select",
+    "title": "Select",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select"
+    ]
+  },
+  {
+    "id": "select--01",
+    "component": "select",
+    "title": "Ghost (no background)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-ghost"
+    ]
+  },
+  {
+    "id": "select--02",
+    "component": "select",
+    "title": "With fieldset and labels",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "label",
+      "select"
+    ]
+  },
+  {
+    "id": "select--03",
+    "component": "select",
+    "title": "Primary color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-primary"
+    ]
+  },
+  {
+    "id": "select--04",
+    "component": "select",
+    "title": "Secondary color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-secondary"
+    ]
+  },
+  {
+    "id": "select--05",
+    "component": "select",
+    "title": "Accent color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-accent"
+    ]
+  },
+  {
+    "id": "select--06",
+    "component": "select",
+    "title": "Neutral color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-neutral"
+    ]
+  },
+  {
+    "id": "select--07",
+    "component": "select",
+    "title": "Info color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-info"
+    ]
+  },
+  {
+    "id": "select--08",
+    "component": "select",
+    "title": "Success color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-success"
+    ]
+  },
+  {
+    "id": "select--09",
+    "component": "select",
+    "title": "Warning color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-warning"
+    ]
+  },
+  {
+    "id": "select--10",
+    "component": "select",
+    "title": "Error color",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select",
+      "select-error"
+    ]
+  },
+  {
+    "id": "select--11",
+    "component": "select",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "select",
+      "select-lg",
+      "select-md",
+      "select-sm",
+      "select-xl",
+      "select-xs"
+    ]
+  },
+  {
+    "id": "select--12",
+    "component": "select",
+    "title": "Disabled",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select"
+    ]
+  },
+  {
+    "id": "select--13",
+    "component": "select",
+    "title": "Using OS native style for the options dropdown",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select"
+    ]
+  },
+  {
+    "id": "select--14",
+    "component": "select",
+    "title": "Select with custom dropdown height",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "select"
+    ]
+  },
+  {
+    "id": "skeleton--00",
+    "component": "skeleton",
+    "title": "Skeleton",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "skeleton"
+    ]
+  },
+  {
+    "id": "skeleton--01",
+    "component": "skeleton",
+    "title": "Skeleton - circle with content",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "skeleton"
+    ]
+  },
+  {
+    "id": "skeleton--02",
+    "component": "skeleton",
+    "title": "Skeleton - rectangle with content",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "skeleton"
+    ]
+  },
+  {
+    "id": "skeleton--03",
+    "component": "skeleton",
+    "title": "skeleton-text - animated gradient text",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "skeleton",
+      "skeleton-text"
+    ]
+  },
+  {
+    "id": "stack--00",
+    "component": "stack",
+    "title": "3 divs in a stack",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "stack"
+    ]
+  },
+  {
+    "id": "stack--01",
+    "component": "stack",
+    "title": "stacked images",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "stack"
+    ]
+  },
+  {
+    "id": "stack--02",
+    "component": "stack",
+    "title": "stacked cards",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "stack"
+    ]
+  },
+  {
+    "id": "stack--03",
+    "component": "stack",
+    "title": "stacked cards (top direction)",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "stack",
+      "stack-top"
+    ]
+  },
+  {
+    "id": "stack--04",
+    "component": "stack",
+    "title": "stacked cards (start direction)",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "stack",
+      "stack-start"
+    ]
+  },
+  {
+    "id": "stack--05",
+    "component": "stack",
+    "title": "stacked cards (end direction)",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "stack",
+      "stack-end"
+    ]
+  },
+  {
+    "id": "stack--06",
+    "component": "stack",
+    "title": "stacked cards with shadow",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "stack"
+    ]
+  },
+  {
+    "id": "stack--07",
+    "component": "stack",
+    "title": "stacked cards",
+    "elementCount": 10,
+    "daisyClassSet": [
+      "card",
+      "card-body",
+      "card-title",
+      "stack"
+    ]
+  },
+  {
+    "id": "stat--00",
+    "component": "stat",
+    "title": "Stat",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "stat",
+      "stat-desc",
+      "stat-title",
+      "stat-value",
+      "stats"
+    ]
+  },
+  {
+    "id": "stat--01",
+    "component": "stat",
+    "title": "Stat with icons or image",
+    "elementCount": 17,
+    "daisyClassSet": [
+      "avatar",
+      "avatar-online",
+      "stat",
+      "stat-desc",
+      "stat-figure",
+      "stat-title",
+      "stat-value",
+      "stats"
+    ]
+  },
+  {
+    "id": "stat--02",
+    "component": "stat",
+    "title": "Stat",
+    "elementCount": 16,
+    "daisyClassSet": [
+      "stat",
+      "stat-desc",
+      "stat-figure",
+      "stat-title",
+      "stat-value",
+      "stats"
+    ]
+  },
+  {
+    "id": "stat--03",
+    "component": "stat",
+    "title": "Centered items",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "stat",
+      "stat-desc",
+      "stat-title",
+      "stat-value",
+      "stats"
+    ]
+  },
+  {
+    "id": "stat--04",
+    "component": "stat",
+    "title": "Vertical",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "stat",
+      "stat-desc",
+      "stat-title",
+      "stat-value",
+      "stats",
+      "stats-vertical"
+    ]
+  },
+  {
+    "id": "stat--05",
+    "component": "stat",
+    "title": "Responsive (vertical on small screen, horizontal on large screen)",
+    "elementCount": 13,
+    "daisyClassSet": [
+      "stat",
+      "stat-desc",
+      "stat-title",
+      "stat-value",
+      "stats",
+      "stats-vertical"
+    ]
+  },
+  {
+    "id": "stat--06",
+    "component": "stat",
+    "title": "With custom colors and button",
+    "elementCount": 12,
+    "daisyClassSet": [
+      "btn",
+      "btn-success",
+      "btn-xs",
+      "stat",
+      "stat-actions",
+      "stat-title",
+      "stat-value",
+      "stats"
+    ]
+  },
+  {
+    "id": "status--00",
+    "component": "status",
+    "title": "Status",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "status"
+    ]
+  },
+  {
+    "id": "status--01",
+    "component": "status",
+    "title": "Status sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "status",
+      "status-lg",
+      "status-md",
+      "status-sm",
+      "status-xl",
+      "status-xs"
+    ]
+  },
+  {
+    "id": "status--02",
+    "component": "status",
+    "title": "Status with colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "status",
+      "status-accent",
+      "status-error",
+      "status-info",
+      "status-neutral",
+      "status-primary",
+      "status-secondary",
+      "status-success",
+      "status-warning"
+    ]
+  },
+  {
+    "id": "status--03",
+    "component": "status",
+    "title": "Status with ping animation",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "status",
+      "status-error"
+    ]
+  },
+  {
+    "id": "status--04",
+    "component": "status",
+    "title": "Status with bounce animation",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "status",
+      "status-info"
+    ]
+  },
+  {
+    "id": "steps--00",
+    "component": "steps",
+    "title": "Horizontal",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "step",
+      "step-primary",
+      "steps"
+    ]
+  },
+  {
+    "id": "steps--01",
+    "component": "steps",
+    "title": "Vertical",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "step",
+      "step-primary",
+      "steps",
+      "steps-vertical"
+    ]
+  },
+  {
+    "id": "steps--02",
+    "component": "steps",
+    "title": "responsive (vertical on small screen, horizontal on large screen)",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "step",
+      "step-primary",
+      "steps",
+      "steps-vertical"
+    ]
+  },
+  {
+    "id": "steps--03",
+    "component": "steps",
+    "title": "With custom content in step-icon",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "step",
+      "step-icon",
+      "step-neutral",
+      "steps"
+    ]
+  },
+  {
+    "id": "steps--04",
+    "component": "steps",
+    "title": "With data-content",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "step",
+      "step-neutral",
+      "steps"
+    ]
+  },
+  {
+    "id": "steps--05",
+    "component": "steps",
+    "title": "Custom colors",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "step",
+      "step-error",
+      "step-info",
+      "steps"
+    ]
+  },
+  {
+    "id": "steps--06",
+    "component": "steps",
+    "title": "With scrollable wrapper",
+    "elementCount": 25,
+    "daisyClassSet": [
+      "step",
+      "step-accent",
+      "step-error",
+      "step-neutral",
+      "step-secondary",
+      "step-warning",
+      "steps"
+    ]
+  },
+  {
+    "id": "swap--00",
+    "component": "swap",
+    "title": "Swap text",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "swap",
+      "swap-off",
+      "swap-on"
+    ]
+  },
+  {
+    "id": "swap--01",
+    "component": "swap",
+    "title": "Swap volume icons",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "swap",
+      "swap-off",
+      "swap-on"
+    ]
+  },
+  {
+    "id": "swap--02",
+    "component": "swap",
+    "title": "Swap icons with rotate effect",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "swap",
+      "swap-off",
+      "swap-on",
+      "swap-rotate"
+    ]
+  },
+  {
+    "id": "swap--03",
+    "component": "swap",
+    "title": "Hamburger button",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "btn-circle",
+      "swap",
+      "swap-off",
+      "swap-on",
+      "swap-rotate"
+    ]
+  },
+  {
+    "id": "swap--04",
+    "component": "swap",
+    "title": "Swap icons with flip effect",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "swap",
+      "swap-flip",
+      "swap-off",
+      "swap-on"
+    ]
+  },
+  {
+    "id": "swap--05",
+    "component": "swap",
+    "title": "Activate using class name instead of checkbox",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "swap",
+      "swap-active",
+      "swap-off",
+      "swap-on"
+    ]
+  },
+  {
+    "id": "tab--00",
+    "component": "tab",
+    "title": "tabs",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "tab",
+      "tab-active",
+      "tabs"
+    ]
+  },
+  {
+    "id": "tab--01",
+    "component": "tab",
+    "title": "tabs-border",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "tab",
+      "tab-active",
+      "tabs",
+      "tabs-border"
+    ]
+  },
+  {
+    "id": "tab--02",
+    "component": "tab",
+    "title": "tabs-lift",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "tab",
+      "tab-active",
+      "tabs",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "tab--03",
+    "component": "tab",
+    "title": "tabs-box",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "tab",
+      "tab-active",
+      "tabs",
+      "tabs-box"
+    ]
+  },
+  {
+    "id": "tab--04",
+    "component": "tab",
+    "title": "tabs-box using radio inputs",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "tab",
+      "tabs",
+      "tabs-box"
+    ]
+  },
+  {
+    "id": "tab--05",
+    "component": "tab",
+    "title": "Sizes",
+    "elementCount": 20,
+    "daisyClassSet": [
+      "tab",
+      "tab-active",
+      "tabs",
+      "tabs-lg",
+      "tabs-lift",
+      "tabs-sm",
+      "tabs-xl",
+      "tabs-xs"
+    ]
+  },
+  {
+    "id": "tab--06",
+    "component": "tab",
+    "title": "radio tabs-border + tab content",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "tab",
+      "tab-content",
+      "tabs",
+      "tabs-border"
+    ]
+  },
+  {
+    "id": "tab--07",
+    "component": "tab",
+    "title": "radio tabs-lift + tab content",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "tab",
+      "tab-content",
+      "tabs",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "tab--08",
+    "component": "tab",
+    "title": "radio tabs-lift with icons + tab content",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "tab",
+      "tab-content",
+      "tabs",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "tab--09",
+    "component": "tab",
+    "title": "radio tabs-lift + tab content on bottom",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "tab",
+      "tab-content",
+      "tabs",
+      "tabs-bottom",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "tab--10",
+    "component": "tab",
+    "title": "radio tabs-box + tab content",
+    "elementCount": 7,
+    "daisyClassSet": [
+      "tab",
+      "tab-content",
+      "tabs",
+      "tabs-box"
+    ]
+  },
+  {
+    "id": "tab--11",
+    "component": "tab",
+    "title": "tabs-box with a horizontal scroll when there's no space",
+    "elementCount": 9,
+    "daisyClassSet": [
+      "tab",
+      "tab-content",
+      "tabs",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "tab--12",
+    "component": "tab",
+    "title": "Tabs with custom color",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "tab",
+      "tab-active",
+      "tabs",
+      "tabs-lift"
+    ]
+  },
+  {
+    "id": "table--00",
+    "component": "table",
+    "title": "Table",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table"
+    ]
+  },
+  {
+    "id": "table--01",
+    "component": "table",
+    "title": "Table with border and background",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table"
+    ]
+  },
+  {
+    "id": "table--02",
+    "component": "table",
+    "title": "Table with an active row",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table"
+    ]
+  },
+  {
+    "id": "table--03",
+    "component": "table",
+    "title": "Table with a row that highlights on hover",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table"
+    ]
+  },
+  {
+    "id": "table--04",
+    "component": "table",
+    "title": "Zebra",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table",
+      "table-zebra"
+    ]
+  },
+  {
+    "id": "table--05",
+    "component": "table",
+    "title": "Table with visual elements",
+    "elementCount": 22,
+    "daisyClassSet": [
+      "avatar",
+      "badge",
+      "badge-ghost",
+      "badge-sm",
+      "btn",
+      "btn-ghost",
+      "btn-xs",
+      "checkbox",
+      "mask",
+      "mask-squircle",
+      "table"
+    ]
+  },
+  {
+    "id": "table--06",
+    "component": "table",
+    "title": "Table xs",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table",
+      "table-xs"
+    ]
+  },
+  {
+    "id": "table--07",
+    "component": "table",
+    "title": "Table with pinned-rows",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table",
+      "table-pin-rows"
+    ]
+  },
+  {
+    "id": "table--08",
+    "component": "table",
+    "title": "Table with pinned-rows and pinned-cols",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "table",
+      "table-pin-cols",
+      "table-pin-rows",
+      "table-xs"
+    ]
+  },
+  {
+    "id": "text-rotate--00",
+    "component": "text-rotate",
+    "title": "Text Rotate",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "text-rotate"
+    ]
+  },
+  {
+    "id": "text-rotate--01",
+    "component": "text-rotate",
+    "title": "Rotating 6 words",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "text-rotate"
+    ]
+  },
+  {
+    "id": "text-rotate--02",
+    "component": "text-rotate",
+    "title": "Rotating words in a sentence",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "text-rotate"
+    ]
+  },
+  {
+    "id": "text-rotate--03",
+    "component": "text-rotate",
+    "title": "Rotating 3 words with custom duration",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "text-rotate"
+    ]
+  },
+  {
+    "id": "text-rotate--04",
+    "component": "text-rotate",
+    "title": "Custom line height",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "text-rotate"
+    ]
+  },
+  {
+    "id": "textarea--00",
+    "component": "textarea",
+    "title": "Textarea",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "textarea"
+    ]
+  },
+  {
+    "id": "textarea--01",
+    "component": "textarea",
+    "title": "Ghost (no background)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "textarea",
+      "textarea-ghost"
+    ]
+  },
+  {
+    "id": "textarea--02",
+    "component": "textarea",
+    "title": "With form control and labels",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "label",
+      "textarea"
+    ]
+  },
+  {
+    "id": "textarea--03",
+    "component": "textarea",
+    "title": "Textarea colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "textarea",
+      "textarea-accent",
+      "textarea-error",
+      "textarea-info",
+      "textarea-neutral",
+      "textarea-primary",
+      "textarea-secondary",
+      "textarea-success",
+      "textarea-warning"
+    ]
+  },
+  {
+    "id": "textarea--04",
+    "component": "textarea",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "textarea",
+      "textarea-lg",
+      "textarea-md",
+      "textarea-sm",
+      "textarea-xl",
+      "textarea-xs"
+    ]
+  },
+  {
+    "id": "textarea--05",
+    "component": "textarea",
+    "title": "Disabled",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "textarea"
+    ]
+  },
+  {
+    "id": "theme-controller--00",
+    "component": "theme-controller",
+    "title": "Theme Controller using a toggle",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "theme-controller",
+      "toggle"
+    ]
+  },
+  {
+    "id": "theme-controller--01",
+    "component": "theme-controller",
+    "title": "Theme Controller using a checkbox",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "checkbox",
+      "theme-controller"
+    ]
+  },
+  {
+    "id": "theme-controller--02",
+    "component": "theme-controller",
+    "title": "Theme Controller using a swap",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "swap",
+      "swap-off",
+      "swap-on",
+      "swap-rotate",
+      "theme-controller"
+    ]
+  },
+  {
+    "id": "theme-controller--03",
+    "component": "theme-controller",
+    "title": "Theme Controller using a toggle with text",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "theme-controller",
+      "toggle"
+    ]
+  },
+  {
+    "id": "theme-controller--04",
+    "component": "theme-controller",
+    "title": "Theme Controller using a toggle with icons",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "theme-controller",
+      "toggle"
+    ]
+  },
+  {
+    "id": "theme-controller--05",
+    "component": "theme-controller",
+    "title": "Theme Controller using a toggle with icons inside",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "theme-controller",
+      "toggle"
+    ]
+  },
+  {
+    "id": "theme-controller--06",
+    "component": "theme-controller",
+    "title": "Theme Controller using a toggle with custom colors",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "theme-controller",
+      "toggle"
+    ]
+  },
+  {
+    "id": "theme-controller--07",
+    "component": "theme-controller",
+    "title": "Theme Controller using a radio input",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "fieldset",
+      "radio",
+      "radio-sm",
+      "theme-controller"
+    ]
+  },
+  {
+    "id": "theme-controller--08",
+    "component": "theme-controller",
+    "title": "Theme Controller using a radio button",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "join",
+      "join-item",
+      "join-vertical",
+      "theme-controller"
+    ]
+  },
+  {
+    "id": "theme-controller--09",
+    "component": "theme-controller",
+    "title": "Theme Controller using a dropdown",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "btn",
+      "btn-block",
+      "btn-ghost",
+      "btn-sm",
+      "dropdown",
+      "dropdown-content",
+      "theme-controller"
+    ]
+  },
+  {
+    "id": "timeline--00",
+    "component": "timeline",
+    "title": "Timeline with text on both sides and icon",
+    "elementCount": 16,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start"
+    ]
+  },
+  {
+    "id": "timeline--01",
+    "component": "timeline",
+    "title": "Timeline with bottom side only",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle"
+    ]
+  },
+  {
+    "id": "timeline--02",
+    "component": "timeline",
+    "title": "Timeline with top side only",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-middle",
+      "timeline-start"
+    ]
+  },
+  {
+    "id": "timeline--03",
+    "component": "timeline",
+    "title": "Timeline with different sides",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start"
+    ]
+  },
+  {
+    "id": "timeline--04",
+    "component": "timeline",
+    "title": "Timeline with colorful lines",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start"
+    ]
+  },
+  {
+    "id": "timeline--05",
+    "component": "timeline",
+    "title": "Timeline without icons",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-start"
+    ]
+  },
+  {
+    "id": "timeline--06",
+    "component": "timeline",
+    "title": "Vertical timeline with text on both sides and icon",
+    "elementCount": 16,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--07",
+    "component": "timeline",
+    "title": "Vertical timeline with right side only",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--08",
+    "component": "timeline",
+    "title": "Vertical timeline with left side only",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-middle",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--09",
+    "component": "timeline",
+    "title": "Vertical timeline with different sides",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--10",
+    "component": "timeline",
+    "title": "Vertical timeline with colorful lines",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--11",
+    "component": "timeline",
+    "title": "Vertical timeline without icons",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--12",
+    "component": "timeline",
+    "title": "Responsive: vertical by default, horizontal on large screen",
+    "elementCount": 16,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-box",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "timeline--13",
+    "component": "timeline",
+    "title": "Timeline with icon snapped to the start",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "timeline",
+      "timeline-end",
+      "timeline-middle",
+      "timeline-snap-icon",
+      "timeline-start",
+      "timeline-vertical"
+    ]
+  },
+  {
+    "id": "toast--00",
+    "component": "toast",
+    "title": "toast with alert inside",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "toast"
+    ]
+  },
+  {
+    "id": "toast--01",
+    "component": "toast",
+    "title": "toast-top toast-start",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-start",
+      "toast-top"
+    ]
+  },
+  {
+    "id": "toast--02",
+    "component": "toast",
+    "title": "toast-top toast-center",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-center",
+      "toast-top"
+    ]
+  },
+  {
+    "id": "toast--03",
+    "component": "toast",
+    "title": "toast-top toast-end",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-end",
+      "toast-top"
+    ]
+  },
+  {
+    "id": "toast--04",
+    "component": "toast",
+    "title": "toast-start toast-middle",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-middle",
+      "toast-start"
+    ]
+  },
+  {
+    "id": "toast--05",
+    "component": "toast",
+    "title": "toast-center toast-middle",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-center",
+      "toast-middle"
+    ]
+  },
+  {
+    "id": "toast--06",
+    "component": "toast",
+    "title": "toast-end toast-middle",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-end",
+      "toast-middle"
+    ]
+  },
+  {
+    "id": "toast--07",
+    "component": "toast",
+    "title": "toast-start toast-bottom (default)",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-start"
+    ]
+  },
+  {
+    "id": "toast--08",
+    "component": "toast",
+    "title": "toast-center toast-bottom (default)",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-center"
+    ]
+  },
+  {
+    "id": "toast--09",
+    "component": "toast",
+    "title": "toast-end (default) toast-bottom (default)",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "alert",
+      "alert-info",
+      "alert-success",
+      "toast",
+      "toast-end"
+    ]
+  },
+  {
+    "id": "toggle--00",
+    "component": "toggle",
+    "title": "Toggle (switch)",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "toggle"
+    ]
+  },
+  {
+    "id": "toggle--01",
+    "component": "toggle",
+    "title": "With fieldset and label",
+    "elementCount": 4,
+    "daisyClassSet": [
+      "fieldset",
+      "fieldset-legend",
+      "label",
+      "toggle"
+    ]
+  },
+  {
+    "id": "toggle--02",
+    "component": "toggle",
+    "title": "Sizes",
+    "elementCount": 5,
+    "daisyClassSet": [
+      "toggle",
+      "toggle-lg",
+      "toggle-md",
+      "toggle-sm",
+      "toggle-xl",
+      "toggle-xs"
+    ]
+  },
+  {
+    "id": "toggle--03",
+    "component": "toggle",
+    "title": "Colors",
+    "elementCount": 8,
+    "daisyClassSet": [
+      "toggle",
+      "toggle-accent",
+      "toggle-error",
+      "toggle-info",
+      "toggle-neutral",
+      "toggle-primary",
+      "toggle-secondary",
+      "toggle-success",
+      "toggle-warning"
+    ]
+  },
+  {
+    "id": "toggle--04",
+    "component": "toggle",
+    "title": "Disabled",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "toggle"
+    ]
+  },
+  {
+    "id": "toggle--05",
+    "component": "toggle",
+    "title": "Indeterminate",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "toggle"
+    ]
+  },
+  {
+    "id": "toggle--06",
+    "component": "toggle",
+    "title": "Toggle with icons inside",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "toggle"
+    ]
+  },
+  {
+    "id": "toggle--07",
+    "component": "toggle",
+    "title": "Toggle with custom colors",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "toggle"
+    ]
+  },
+  {
+    "id": "tooltip--00",
+    "component": "tooltip",
+    "title": "Tooltip",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "tooltip"
+    ]
+  },
+  {
+    "id": "tooltip--01",
+    "component": "tooltip",
+    "title": "Tooltip with tooltip-content",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-content"
+    ]
+  },
+  {
+    "id": "tooltip--02",
+    "component": "tooltip",
+    "title": "Force open",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-open"
+    ]
+  },
+  {
+    "id": "tooltip--03",
+    "component": "tooltip",
+    "title": "Top",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-end",
+      "tooltip-open",
+      "tooltip-start",
+      "tooltip-top"
+    ]
+  },
+  {
+    "id": "tooltip--04",
+    "component": "tooltip",
+    "title": "Bottom",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-bottom",
+      "tooltip-end",
+      "tooltip-open",
+      "tooltip-start"
+    ]
+  },
+  {
+    "id": "tooltip--05",
+    "component": "tooltip",
+    "title": "Left",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-end",
+      "tooltip-left",
+      "tooltip-open",
+      "tooltip-start"
+    ]
+  },
+  {
+    "id": "tooltip--06",
+    "component": "tooltip",
+    "title": "Right",
+    "elementCount": 6,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-end",
+      "tooltip-open",
+      "tooltip-right",
+      "tooltip-start"
+    ]
+  },
+  {
+    "id": "tooltip--07",
+    "component": "tooltip",
+    "title": "Primary color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-primary",
+      "tooltip",
+      "tooltip-open",
+      "tooltip-primary"
+    ]
+  },
+  {
+    "id": "tooltip--08",
+    "component": "tooltip",
+    "title": "Secondary color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-secondary",
+      "tooltip",
+      "tooltip-open",
+      "tooltip-secondary"
+    ]
+  },
+  {
+    "id": "tooltip--09",
+    "component": "tooltip",
+    "title": "Accent color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-accent",
+      "tooltip",
+      "tooltip-accent",
+      "tooltip-open"
+    ]
+  },
+  {
+    "id": "tooltip--10",
+    "component": "tooltip",
+    "title": "Info color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-info",
+      "tooltip",
+      "tooltip-info",
+      "tooltip-open"
+    ]
+  },
+  {
+    "id": "tooltip--11",
+    "component": "tooltip",
+    "title": "Success color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-success",
+      "tooltip",
+      "tooltip-open",
+      "tooltip-success"
+    ]
+  },
+  {
+    "id": "tooltip--12",
+    "component": "tooltip",
+    "title": "Warning color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-warning",
+      "tooltip",
+      "tooltip-open",
+      "tooltip-warning"
+    ]
+  },
+  {
+    "id": "tooltip--13",
+    "component": "tooltip",
+    "title": "Error color",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "btn-error",
+      "tooltip",
+      "tooltip-error",
+      "tooltip-open"
+    ]
+  },
+  {
+    "id": "tooltip--14",
+    "component": "tooltip",
+    "title": "Responsive tooltip. only show for large screen",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "btn"
+    ]
+  },
+  {
+    "id": "tooltip--15",
+    "component": "tooltip",
+    "title": "Responsive tooltip position",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "btn",
+      "tooltip",
+      "tooltip-start"
+    ]
+  },
+  {
+    "id": "validator--00",
+    "component": "validator",
+    "title": "Validator",
+    "elementCount": 1,
+    "daisyClassSet": [
+      "input",
+      "validator"
+    ]
+  },
+  {
+    "id": "validator--01",
+    "component": "validator",
+    "title": "Validator and validator-hint",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--02",
+    "component": "validator",
+    "title": "Password requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--03",
+    "component": "validator",
+    "title": "Username requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--04",
+    "component": "validator",
+    "title": "Phone Number requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--05",
+    "component": "validator",
+    "title": "URL input requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--06",
+    "component": "validator",
+    "title": "Date input requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--07",
+    "component": "validator",
+    "title": "Number input requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "input",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--08",
+    "component": "validator",
+    "title": "Checkbox requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "checkbox",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--09",
+    "component": "validator",
+    "title": "Toggle requirement validator",
+    "elementCount": 2,
+    "daisyClassSet": [
+      "toggle",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--10",
+    "component": "validator",
+    "title": "Select requirement validator",
+    "elementCount": 3,
+    "daisyClassSet": [
+      "btn",
+      "select",
+      "validator",
+      "validator-hint"
+    ]
+  },
+  {
+    "id": "validator--11",
+    "component": "validator",
+    "title": "Form requirement validator",
+    "elementCount": 11,
+    "daisyClassSet": [
+      "btn",
+      "btn-ghost",
+      "btn-neutral",
+      "fieldset",
+      "input",
+      "label",
+      "validator",
+      "validator-hint"
+    ]
+  }
+]

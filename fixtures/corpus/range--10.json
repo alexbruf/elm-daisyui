@@ -1,0 +1,53 @@
+{
+  "id": "range--10",
+  "component": "range",
+  "title": "Sizes",
+  "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"30\" class=\"range range-xs\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-sm\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"50\" class=\"range range-md\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"60\" class=\"range range-lg\" />\n<input type=\"range\" min=\"0\" max=\"100\" value=\"70\" class=\"range range-xl\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

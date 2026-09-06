@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--12",
+  "component": "tooltip",
+  "title": "Warning color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-warning\" data-tip=\"warning\">\n  <button class=\"btn btn-warning\">warning</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-open",
+        "tooltip-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-warning"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "join--00",
+  "component": "join",
+  "title": "Join",
+  "html": "<div class=\"join\">\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n  <button class=\"btn join-item\">Button</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "join"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "join-item"
+      ],
+      "tailwind": []
+    }
+  ]
+}

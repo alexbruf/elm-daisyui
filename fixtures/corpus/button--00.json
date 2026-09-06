@@ -1,0 +1,16 @@
+{
+  "id": "button--00",
+  "component": "button",
+  "title": "Button",
+  "html": "<button class=\"btn\">Default</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

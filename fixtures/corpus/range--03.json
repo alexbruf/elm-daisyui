@@ -1,0 +1,17 @@
+{
+  "id": "range--03",
+  "component": "range",
+  "title": "Primary color",
+  "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-primary\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

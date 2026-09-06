@@ -1,0 +1,50 @@
+{
+  "id": "steps--00",
+  "component": "steps",
+  "title": "Horizontal",
+  "html": "<ul class=\"steps\">\n  <li class=\"step step-primary\">Register</li>\n  <li class=\"step step-primary\">Choose plan</li>\n  <li class=\"step\">Purchase</li>\n  <li class=\"step\">Receive Product</li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "steps"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    }
+  ]
+}

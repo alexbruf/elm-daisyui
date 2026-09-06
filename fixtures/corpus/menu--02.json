@@ -1,0 +1,23 @@
+{
+  "id": "menu--02",
+  "component": "menu",
+  "title": "Paged menu with nested submenus",
+  "html": "<ul class=\"menu menu-paged menu-vertical bg-base-200 rounded-box w-56 lg:w-auto\">\n  <li><a>Home</a></li>\n  <li><a>About</a></li>\n  <li>\n    <details>\n      <summary>Products</summary>\n      <ul>\n        <li><a>All products</a></li>\n        <li><a>Electronics</a></li>\n        <li><a>Clothing</a></li>\n      </ul>\n    </details>\n  </li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-paged",
+        "menu-vertical",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "w-56",
+        "lg:w-auto"
+      ]
+    }
+  ]
+}

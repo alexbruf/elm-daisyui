@@ -1,0 +1,112 @@
+{
+  "id": "hero--03",
+  "component": "hero",
+  "title": "Hero with form",
+  "html": "<div class=\"hero bg-base-200 min-h-screen\">\n  <div class=\"hero-content flex-col lg:flex-row-reverse\">\n    <div class=\"text-center lg:text-left\">\n      <h1 class=\"text-5xl font-bold\">Login now!</h1>\n      <p class=\"py-6\">\n        Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem\n        quasi. In deleniti eaque aut repudiandae et a id nisi.\n      </p>\n    </div>\n    <div class=\"card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl\">\n      <div class=\"card-body\">\n        <fieldset class=\"fieldset\">\n          <label class=\"label\">Email</label>\n          <input type=\"email\" class=\"input\" placeholder=\"Email\" />\n          <label class=\"label\">Password</label>\n          <input type=\"password\" class=\"input\" placeholder=\"Password\" />\n          <div><a class=\"link link-hover\">Forgot password?</a></div>\n          <button class=\"btn btn-neutral mt-4\">Login</button>\n        </fieldset>\n      </div>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "hero"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "min-h-screen"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "hero-content"
+      ],
+      "tailwind": [
+        "flex-col",
+        "lg:flex-row-reverse"
+      ]
+    },
+    {
+      "path": "0/0/1",
+      "tag": "div",
+      "daisy": [
+        "card"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "w-full",
+        "max-w-sm",
+        "shrink-0",
+        "shadow-2xl"
+      ]
+    },
+    {
+      "path": "0/0/1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0",
+      "tag": "fieldset",
+      "daisy": [
+        "fieldset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0/0",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0/1",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0/2",
+      "tag": "label",
+      "daisy": [
+        "label"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0/3",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0/4/0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-hover"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1/0/0/5",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-neutral"
+      ],
+      "tailwind": [
+        "mt-4"
+      ]
+    }
+  ]
+}

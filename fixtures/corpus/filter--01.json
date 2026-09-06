@@ -1,0 +1,49 @@
+{
+  "id": "filter--01",
+  "component": "filter",
+  "title": "Filter without HTML form",
+  "html": "<div class=\"filter\">\n  <input class=\"btn filter-reset\" type=\"radio\" name=\"metaframeworks\" aria-label=\"All\"/>\n  <input class=\"btn\" type=\"radio\" name=\"metaframeworks\" aria-label=\"Sveltekit\"/>\n  <input class=\"btn\" type=\"radio\" name=\"metaframeworks\" aria-label=\"Nuxt\"/>\n  <input class=\"btn\" type=\"radio\" name=\"metaframeworks\" aria-label=\"Next.js\"/>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "filter"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "filter-reset"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

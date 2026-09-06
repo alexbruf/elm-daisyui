@@ -1,0 +1,17 @@
+{
+  "id": "mask--09",
+  "component": "mask",
+  "title": "Star-2 (bold star)",
+  "html": "<img\n  class=\"mask mask-star-2\"\n  alt=\"Star-2 CSS mask\"\n  src=\"https://img.daisyui.com/images/stock/photo-1567653418876-5bb0e566e1c2.webp\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "img",
+      "daisy": [
+        "mask",
+        "mask-star-2"
+      ],
+      "tailwind": []
+    }
+  ]
+}

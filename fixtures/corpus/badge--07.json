@@ -1,0 +1,17 @@
+{
+  "id": "badge--07",
+  "component": "badge",
+  "title": "Badge ghost",
+  "html": "<div class=\"badge badge-ghost\">ghost</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-ghost"
+      ],
+      "tailwind": []
+    }
+  ]
+}

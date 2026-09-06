@@ -1,0 +1,34 @@
+{
+  "id": "divider--05",
+  "component": "divider",
+  "title": "Divider in different positions",
+  "html": "<div class=\"flex w-full flex-col\">\n  <div class=\"divider divider-start\">Start</div>\n  <div class=\"divider\">Default</div>\n  <div class=\"divider divider-end\">End</div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "divider"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "divider",
+        "divider-end"
+      ],
+      "tailwind": []
+    }
+  ]
+}

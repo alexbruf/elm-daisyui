@@ -1,0 +1,17 @@
+{
+  "id": "validator--00",
+  "component": "validator",
+  "title": "Validator",
+  "html": "<input class=\"input validator\" type=\"email\" required placeholder=\"mail@site.com\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    }
+  ]
+}

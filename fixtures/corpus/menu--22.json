@@ -1,0 +1,21 @@
+{
+  "id": "menu--22",
+  "component": "menu",
+  "title": "Collapsible with submenu (responsive)",
+  "html": "<ul class=\"menu lg:menu-horizontal bg-base-200 rounded-box lg:mb-64\">\n  <li><a>Item 1</a></li>\n  <li>\n    <details open>\n      <summary>Parent item</summary>\n      <ul>\n        <li><a>Submenu 1</a></li>\n        <li><a>Submenu 2</a></li>\n        <li>\n          <details open>\n            <summary>Parent</summary>\n            <ul>\n              <li><a>item 1</a></li>\n              <li><a>item 2</a></li>\n            </ul>\n          </details>\n        </li>\n      </ul>\n    </details>\n  </li>\n  <li><a>Item 3</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "lg:$$menu-horizontal",
+        "bg-base-200",
+        "lg:mb-64"
+      ]
+    }
+  ]
+}

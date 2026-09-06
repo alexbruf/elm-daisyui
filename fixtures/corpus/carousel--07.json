@@ -1,0 +1,94 @@
+{
+  "id": "carousel--07",
+  "component": "carousel",
+  "title": "Carousel with indicator buttons",
+  "html": "<div class=\"carousel w-full\">\n  <div id=\"item1\" class=\"carousel-item w-full\">\n    <img\n      alt=\"Tailwind CSS gallery\"\n      src=\"https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp\"\n      class=\"w-full\" />\n  </div>\n  <div id=\"item2\" class=\"carousel-item w-full\">\n    <img\n      alt=\"Tailwind CSS gallery\"\n      src=\"https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp\"\n      class=\"w-full\" />\n  </div>\n  <div id=\"item3\" class=\"carousel-item w-full\">\n    <img\n      alt=\"Tailwind CSS gallery\"\n      src=\"https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp\"\n      class=\"w-full\" />\n  </div>\n  <div id=\"item4\" class=\"carousel-item w-full\">\n    <img\n      alt=\"Tailwind CSS gallery\"\n      src=\"https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp\"\n      class=\"w-full\" />\n  </div>\n</div>\n<div class=\"flex w-full justify-center gap-2 py-2\">\n  <a href=\"#item1\" class=\"btn btn-xs\">1</a>\n  <a href=\"#item2\" class=\"btn btn-xs\">2</a>\n  <a href=\"#item3\" class=\"btn btn-xs\">3</a>\n  <a href=\"#item4\" class=\"btn btn-xs\">4</a>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "carousel"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/1",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/2",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/3",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-xs"
+      ],
+      "tailwind": []
+    }
+  ]
+}

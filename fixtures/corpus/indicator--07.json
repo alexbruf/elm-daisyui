@@ -1,0 +1,26 @@
+{
+  "id": "indicator--07",
+  "component": "indicator",
+  "title": "in center of an image",
+  "html": "<div class=\"indicator\">\n  <span class=\"indicator-item indicator-center indicator-middle\">\n    Only available for Pro users\n  </span>\n  <img\n    alt=\"Tailwind CSS examples\"\n    src=\"https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp\"\n  />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "indicator-center",
+        "indicator-item",
+        "indicator-middle"
+      ],
+      "tailwind": []
+    }
+  ]
+}

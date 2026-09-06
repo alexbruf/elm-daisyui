@@ -1,0 +1,26 @@
+{
+  "id": "avatar--07",
+  "component": "avatar",
+  "title": "Avatar with presence indicator",
+  "html": "<div class=\"avatar avatar-online\">\n  <div class=\"w-24 rounded-full\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/gordon@192.webp\" />\n  </div>\n</div>\n<div class=\"avatar avatar-offline\">\n  <div class=\"w-24 rounded-full\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/idiotsandwich@192.webp\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "avatar-online"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "avatar-offline"
+      ],
+      "tailwind": []
+    }
+  ]
+}

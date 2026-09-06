@@ -1,0 +1,16 @@
+{
+  "id": "select--00",
+  "component": "select",
+  "title": "Select",
+  "html": "<select class=\"select\">\n  <option disabled selected>Pick a color</option>\n  <option>Crimson</option>\n  <option>Amber</option>\n  <option>Velvet</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select"
+      ],
+      "tailwind": []
+    }
+  ]
+}

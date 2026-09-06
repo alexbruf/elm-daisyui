@@ -1,0 +1,18 @@
+{
+  "id": "toggle--06",
+  "component": "toggle",
+  "title": "Toggle with icons inside",
+  "html": "<label class=\"toggle text-base-content\">\n  <input type=\"checkbox\" />\n  <svg aria-label=\"enabled\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"4\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <path d=\"M20 6 9 17l-5-5\"></path>\n    </g>\n  </svg>\n  <svg\n    aria-label=\"disabled\"\n    xmlns=\"http://www.w3.org/2000/svg\"\n    viewBox=\"0 0 24 24\"\n    fill=\"none\"\n    stroke=\"currentColor\"\n    stroke-width=\"4\"\n    stroke-linecap=\"round\"\n    stroke-linejoin=\"round\"\n  >\n    <path d=\"M18 6 6 18\" />\n    <path d=\"m6 6 12 12\" />\n  </svg>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "toggle"
+      ],
+      "tailwind": [
+        "text-base-content"
+      ]
+    }
+  ]
+}

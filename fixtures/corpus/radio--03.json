@@ -1,0 +1,26 @@
+{
+  "id": "radio--03",
+  "component": "radio",
+  "title": "Primary color",
+  "html": "<input type=\"radio\" name=\"radio-4\" class=\"radio radio-primary\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-4\" class=\"radio radio-primary\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

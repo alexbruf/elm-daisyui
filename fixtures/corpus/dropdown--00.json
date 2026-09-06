@@ -1,0 +1,42 @@
+{
+  "id": "dropdown--00",
+  "component": "dropdown",
+  "title": "Dropdown using details and summary",
+  "html": "<details class=\"dropdown\">\n  <summary class=\"btn m-1\">open or close</summary>\n  <ul class=\"menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm\">\n    <li><a>Item 1</a></li>\n    <li><a>Item 2</a></li>\n  </ul>\n</details>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "details",
+      "daisy": [
+        "dropdown"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "summary",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": [
+        "m-1"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "ul",
+      "daisy": [
+        "dropdown-content",
+        "menu",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "z-1",
+        "w-52",
+        "p-2",
+        "shadow-sm"
+      ]
+    }
+  ]
+}

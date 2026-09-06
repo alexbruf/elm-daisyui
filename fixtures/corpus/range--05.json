@@ -1,0 +1,17 @@
+{
+  "id": "range--05",
+  "component": "range",
+  "title": "Accent color",
+  "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-accent\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-accent"
+      ],
+      "tailwind": []
+    }
+  ]
+}

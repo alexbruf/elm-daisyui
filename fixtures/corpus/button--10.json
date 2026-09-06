@@ -1,0 +1,17 @@
+{
+  "id": "button--10",
+  "component": "button",
+  "title": "Wide button",
+  "html": "<button class=\"btn btn-wide\">Wide</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-wide"
+      ],
+      "tailwind": []
+    }
+  ]
+}

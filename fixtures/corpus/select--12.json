@@ -1,0 +1,16 @@
+{
+  "id": "select--12",
+  "component": "select",
+  "title": "Disabled",
+  "html": "<select class=\"select\" disabled>\n  <option>You can't touch this</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select"
+      ],
+      "tailwind": []
+    }
+  ]
+}

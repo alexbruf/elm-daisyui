@@ -1,0 +1,54 @@
+{
+  "id": "skeleton--01",
+  "component": "skeleton",
+  "title": "Skeleton - circle with content",
+  "html": "<div class=\"flex w-52 flex-col gap-4\">\n  <div class=\"flex items-center gap-4\">\n    <div class=\"skeleton h-16 w-16 shrink-0 rounded-full\"></div>\n    <div class=\"flex flex-col gap-4\">\n      <div class=\"skeleton h-4 w-20\"></div>\n      <div class=\"skeleton h-4 w-28\"></div>\n    </div>\n  </div>\n  <div class=\"skeleton h-32 w-full\"></div>\n</div>",
+  "elements": [
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-16",
+        "w-16",
+        "shrink-0",
+        "rounded-full"
+      ]
+    },
+    {
+      "path": "0/0/1/0",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-4",
+        "w-20"
+      ]
+    },
+    {
+      "path": "0/0/1/1",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-4",
+        "w-28"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-32",
+        "w-full"
+      ]
+    }
+  ]
+}

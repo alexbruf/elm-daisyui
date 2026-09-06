@@ -1,0 +1,16 @@
+{
+  "id": "link--00",
+  "component": "link",
+  "title": "Link",
+  "html": "<a class=\"link\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link"
+      ],
+      "tailwind": []
+    }
+  ]
+}

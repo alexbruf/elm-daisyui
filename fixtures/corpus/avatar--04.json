@@ -1,0 +1,50 @@
+{
+  "id": "avatar--04",
+  "component": "avatar",
+  "title": "Avatar group",
+  "html": "<div class=\"avatar-group -space-x-6\">\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/batperson@192.webp\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/spiderperson@192.webp\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/averagebulk@192.webp\" />\n    </div>\n  </div>\n  <div class=\"avatar\">\n    <div class=\"w-12\">\n      <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/wonderperson@192.webp\" />\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar-group"
+      ],
+      "tailwind": [
+        "-space-x-6"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    }
+  ]
+}

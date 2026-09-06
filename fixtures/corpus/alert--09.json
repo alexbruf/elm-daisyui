@@ -1,0 +1,28 @@
+{
+  "id": "alert--09",
+  "component": "alert",
+  "title": "Alert with title and description",
+  "html": "<div role=\"alert\" class=\"alert alert-vertical sm:alert-horizontal\">\n  <svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" class=\"stroke-current text-info h-6 w-6 shrink-0\">\n    <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path>\n  </svg>\n  <div>\n    <h3 class=\"font-bold\">New message!</h3>\n    <div class=\"text-xs\">You have 1 unread message</div>\n  </div>\n  <button class=\"btn btn-sm\">See</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-vertical"
+      ],
+      "tailwind": [
+        "sm:$$alert-horizontal"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-sm"
+      ],
+      "tailwind": []
+    }
+  ]
+}

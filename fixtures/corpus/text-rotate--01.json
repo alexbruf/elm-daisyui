@@ -1,0 +1,18 @@
+{
+  "id": "text-rotate--01",
+  "component": "text-rotate",
+  "title": "Rotating 6 words",
+  "html": "<span class=\"text-rotate text-7xl\">\n  <span class=\"justify-items-center\">\n    <span>DESIGN</span>\n    <span>DEVELOP</span>\n    <span>DEPLOY</span>\n    <span>SCALE</span>\n    <span>MAINTAIN</span>\n    <span>REPEAT</span>\n  </span>\n</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "text-rotate"
+      ],
+      "tailwind": [
+        "text-7xl"
+      ]
+    }
+  ]
+}

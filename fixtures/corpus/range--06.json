@@ -1,0 +1,17 @@
+{
+  "id": "range--06",
+  "component": "range",
+  "title": "Success color",
+  "html": "<input type=\"range\" min=\"0\" max=\"100\" value=\"40\" class=\"range range-success\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "range",
+        "range-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

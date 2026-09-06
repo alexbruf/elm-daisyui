@@ -1,0 +1,80 @@
+{
+  "id": "badge--02",
+  "component": "badge",
+  "title": "Badge with colors",
+  "html": "<div class=\"badge badge-primary\">Primary</div>\n<div class=\"badge badge-secondary\">Secondary</div>\n<div class=\"badge badge-accent\">Accent</div>\n<div class=\"badge badge-neutral\">Neutral</div>\n<div class=\"badge badge-info\">Info</div>\n<div class=\"badge badge-success\">Success</div>\n<div class=\"badge badge-warning\">Warning</div>\n<div class=\"badge badge-error\">Error</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "div",
+      "daisy": [
+        "badge",
+        "badge-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

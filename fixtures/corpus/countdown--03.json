@@ -1,0 +1,19 @@
+{
+  "id": "countdown--03",
+  "component": "countdown",
+  "title": "Clock countdown with colons",
+  "html": "<span class=\"countdown font-mono text-2xl\">\n  <span style=\"--value:10;\" aria-live=\"polite\" aria-label=\"10\">10</span>\n  :\n  <span style=\"--value:24; --digits: 2;\" aria-live=\"polite\" aria-label=\"24\">24</span>\n  :\n  <span style=\"--value:59; --digits: 2;\" aria-live=\"polite\" aria-label=\"59\">59</span>\n</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": [
+        "font-mono",
+        "text-2xl"
+      ]
+    }
+  ]
+}

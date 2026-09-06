@@ -1,0 +1,16 @@
+{
+  "id": "hover-3d--00",
+  "component": "hover-3d",
+  "title": "3D image hover effect",
+  "html": "<div class=\"hover-3d\">\n  <!-- content -->\n  <figure class=\"max-w-100 rounded-2xl\">\n    <img src=\"https://img.daisyui.com/images/stock/creditcard.webp\" alt=\"3D card\" />\n  </figure>\n  <!-- 8 empty divs needed for the 3D effect -->\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n  <div></div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "hover-3d"
+      ],
+      "tailwind": []
+    }
+  ]
+}

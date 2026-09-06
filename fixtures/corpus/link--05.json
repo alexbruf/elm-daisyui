@@ -1,0 +1,17 @@
+{
+  "id": "link--05",
+  "component": "link",
+  "title": "Success color",
+  "html": "<a class=\"link link-success\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

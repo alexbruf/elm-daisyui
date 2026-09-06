@@ -1,0 +1,33 @@
+{
+  "id": "validator--10",
+  "component": "validator",
+  "title": "Select requirement validator",
+  "html": "<form>\n  <select class=\"select validator\" required>\n    <option disabled selected value=\"\">Choose:</option>\n    <option>Tabs</option>\n    <option>Spaces</option>\n  </select>\n  <p class=\"validator-hint\">Required</p>\n  <button class=\"btn\" type=\"submit\">Submit form</button>\n</form>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

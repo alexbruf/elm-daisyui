@@ -1,0 +1,87 @@
+{
+  "id": "navbar--04",
+  "component": "navbar",
+  "title": "Navbar with search input and dropdown",
+  "html": "<div class=\"navbar bg-base-100 shadow-sm\">\n  <div class=\"flex-1\">\n    <a class=\"btn btn-ghost text-xl\">daisyUI</a>\n  </div>\n  <div class=\"flex gap-2\">\n    <input type=\"text\" placeholder=\"Search\" class=\"input w-24 md:w-auto\" />\n    <div class=\"dropdown dropdown-end\">\n      <div tabindex=\"0\" role=\"button\" class=\"btn btn-ghost btn-circle avatar\">\n        <div class=\"w-10 rounded-full\">\n          <img\n            alt=\"Tailwind CSS Navbar component\"\n            src=\"https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp\" />\n        </div>\n      </div>\n      <ul\n        tabindex=\"-1\"\n        class=\"menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow\">\n        <li>\n          <a class=\"justify-between\">\n            Profile\n            <span class=\"badge\">New</span>\n          </a>\n        </li>\n        <li><a>Settings</a></li>\n        <li><a>Logout</a></li>\n      </ul>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": [
+        "w-24",
+        "md:w-auto"
+      ]
+    },
+    {
+      "path": "0/1/1",
+      "tag": "div",
+      "daisy": [
+        "dropdown",
+        "dropdown-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1/0",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "btn",
+        "btn-circle",
+        "btn-ghost"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1/1",
+      "tag": "ul",
+      "daisy": [
+        "dropdown-content",
+        "menu",
+        "menu-sm"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "rounded-box",
+        "z-1",
+        "mt-3",
+        "w-52",
+        "p-2",
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/1/1/1/0/0/0",
+      "tag": "span",
+      "daisy": [
+        "badge"
+      ],
+      "tailwind": []
+    }
+  ]
+}

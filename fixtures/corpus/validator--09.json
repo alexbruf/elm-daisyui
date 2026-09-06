@@ -1,0 +1,25 @@
+{
+  "id": "validator--09",
+  "component": "validator",
+  "title": "Toggle requirement validator",
+  "html": "<input type=\"checkbox\" class=\"toggle validator\" required title=\"Required\" />\n<p class=\"validator-hint\">Required</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

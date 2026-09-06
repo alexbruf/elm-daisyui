@@ -1,0 +1,19 @@
+{
+  "id": "skeleton--00",
+  "component": "skeleton",
+  "title": "Skeleton",
+  "html": "<div class=\"skeleton h-32 w-32\"></div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "skeleton"
+      ],
+      "tailwind": [
+        "h-32",
+        "w-32"
+      ]
+    }
+  ]
+}

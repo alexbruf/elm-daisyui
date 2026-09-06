@@ -1,0 +1,19 @@
+{
+  "id": "menu--19",
+  "component": "menu",
+  "title": "Horizontal menu",
+  "html": "<ul class=\"menu menu-horizontal bg-base-200\">\n  <li><a>Item 1</a></li>\n  <li><a>Item 2</a></li>\n  <li><a>Item 3</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-horizontal"
+      ],
+      "tailwind": [
+        "bg-base-200"
+      ]
+    }
+  ]
+}

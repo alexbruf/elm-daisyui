@@ -1,0 +1,21 @@
+{
+  "id": "menu--11",
+  "component": "menu",
+  "title": "Menu without padding and border radius",
+  "html": "<ul class=\"menu bg-base-200 w-56 [&_li>*]:rounded-none p-0\">\n  <li><a>Item 1</a></li>\n  <li><a>Item 2</a></li>\n  <li><a>Item 3</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "w-56",
+        "[&_li>*]:rounded-none",
+        "p-0"
+      ]
+    }
+  ]
+}

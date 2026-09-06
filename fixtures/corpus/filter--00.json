@@ -1,0 +1,49 @@
+{
+  "id": "filter--00",
+  "component": "filter",
+  "title": "Filter using HTML form, radio buttons and reset button",
+  "html": "<form class=\"filter\">\n  <input class=\"btn btn-square\" type=\"reset\" value=\"×\"/>\n  <input class=\"btn\" type=\"radio\" name=\"frameworks\" aria-label=\"Svelte\"/>\n  <input class=\"btn\" type=\"radio\" name=\"frameworks\" aria-label=\"Vue\"/>\n  <input class=\"btn\" type=\"radio\" name=\"frameworks\" aria-label=\"React\"/>\n</form>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "form",
+      "daisy": [
+        "filter"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "input",
+      "daisy": [
+        "btn",
+        "btn-square"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "input",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    }
+  ]
+}

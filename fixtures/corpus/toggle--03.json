@@ -1,0 +1,80 @@
+{
+  "id": "toggle--03",
+  "component": "toggle",
+  "title": "Colors",
+  "html": "<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-primary\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-secondary\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-accent\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-neutral\" />\n\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-info\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-success\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-warning\" />\n<input type=\"checkbox\" checked=\"checked\" class=\"toggle toggle-error\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "5",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-success"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "6",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "7",
+      "tag": "input",
+      "daisy": [
+        "toggle",
+        "toggle-error"
+      ],
+      "tailwind": []
+    }
+  ]
+}

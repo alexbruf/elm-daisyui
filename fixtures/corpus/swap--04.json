@@ -1,0 +1,35 @@
+{
+  "id": "swap--04",
+  "component": "swap",
+  "title": "Swap icons with flip effect",
+  "html": "<label class=\"swap swap-flip text-9xl\">\n  <!-- this hidden checkbox controls the state -->\n  <input type=\"checkbox\" />\n\n  <div class=\"swap-on\">😈</div>\n  <div class=\"swap-off\">😇</div>\n</label>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "swap",
+        "swap-flip"
+      ],
+      "tailwind": [
+        "text-9xl"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "swap-on"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "swap-off"
+      ],
+      "tailwind": []
+    }
+  ]
+}

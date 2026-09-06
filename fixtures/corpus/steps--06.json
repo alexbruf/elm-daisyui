@@ -1,0 +1,226 @@
+{
+  "id": "steps--06",
+  "component": "steps",
+  "title": "With scrollable wrapper",
+  "html": "<div class=\"overflow-x-auto\">\n  <ul class=\"steps\">\n    <li class=\"step\">start</li>\n    <li class=\"step step-secondary\">2</li>\n    <li class=\"step step-secondary\">3</li>\n    <li class=\"step step-secondary\">4</li>\n    <li class=\"step\">5</li>\n    <li class=\"step step-accent\">6</li>\n    <li class=\"step step-accent\">7</li>\n    <li class=\"step\">8</li>\n    <li class=\"step step-error\">9</li>\n    <li class=\"step step-error\">10</li>\n    <li class=\"step\">11</li>\n    <li class=\"step\">12</li>\n    <li class=\"step step-warning\">13</li>\n    <li class=\"step step-warning\">14</li>\n    <li class=\"step\">15</li>\n    <li class=\"step step-neutral\">16</li>\n    <li class=\"step step-neutral\">17</li>\n    <li class=\"step step-neutral\">18</li>\n    <li class=\"step step-neutral\">19</li>\n    <li class=\"step step-neutral\">20</li>\n    <li class=\"step step-neutral\">21</li>\n    <li class=\"step step-neutral\">22</li>\n    <li class=\"step step-neutral\">23</li>\n    <li class=\"step step-neutral\">end</li>\n  </ul>\n</div>",
+  "elements": [
+    {
+      "path": "0/0",
+      "tag": "ul",
+      "daisy": [
+        "steps"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/3",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/4",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/5",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/6",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-accent"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/7",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/8",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-error"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/9",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-error"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/10",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/11",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/12",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/13",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/14",
+      "tag": "li",
+      "daisy": [
+        "step"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/15",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/16",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/17",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/18",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/19",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/20",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/21",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/22",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/23",
+      "tag": "li",
+      "daisy": [
+        "step",
+        "step-neutral"
+      ],
+      "tailwind": []
+    }
+  ]
+}

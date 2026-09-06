@@ -1,0 +1,26 @@
+{
+  "id": "radio--07",
+  "component": "radio",
+  "title": "Warning color",
+  "html": "<input type=\"radio\" name=\"radio-8\" class=\"radio radio-warning\" checked=\"checked\" />\n<input type=\"radio\" name=\"radio-8\" class=\"radio radio-warning\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-warning"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "input",
+      "daisy": [
+        "radio",
+        "radio-warning"
+      ],
+      "tailwind": []
+    }
+  ]
+}

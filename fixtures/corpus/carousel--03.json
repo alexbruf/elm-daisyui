@@ -1,0 +1,89 @@
+{
+  "id": "carousel--03",
+  "component": "carousel",
+  "title": "Carousel with full width items",
+  "html": "<div class=\"carousel rounded-box w-64\">\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1559703248-dcaaec9fab78.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1565098772267-60af42b81ef2.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1572635148818-ef6fd45eb394.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1494253109108-2e30c049369b.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1550258987-190a2d41a8ba.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1559181567-c3190ca9959b.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n  <div class=\"carousel-item w-full\">\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1601004890684-d8cbf643f5f2.webp\"\n      class=\"w-full\"\n      alt=\"Tailwind CSS Carousel component\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "carousel"
+      ],
+      "tailwind": [
+        "rounded-box",
+        "w-64"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/4",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/5",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    },
+    {
+      "path": "0/6",
+      "tag": "div",
+      "daisy": [
+        "carousel-item"
+      ],
+      "tailwind": [
+        "w-full"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "input--02",
+  "component": "input",
+  "title": "Ghost style",
+  "html": "<input type=\"text\" placeholder=\"Type here\" class=\"input input-ghost\" />",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "input-ghost"
+      ],
+      "tailwind": []
+    }
+  ]
+}

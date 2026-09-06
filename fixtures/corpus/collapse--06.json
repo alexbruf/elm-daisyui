@@ -1,0 +1,41 @@
+{
+  "id": "collapse--06",
+  "component": "collapse",
+  "title": "With arrow plus/minus icon",
+  "html": "<div tabindex=\"0\" class=\"collapse collapse-plus bg-base-100 border-base-300 border\">\n  <div class=\"collapse-title font-semibold\">How do I create an account?</div>\n  <div class=\"collapse-content text-sm\">\n    Click the \"Sign Up\" button in the top right corner and follow the registration process.\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "collapse",
+        "collapse-plus"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border-base-300",
+        "border"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "collapse-title"
+      ],
+      "tailwind": [
+        "font-semibold"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "collapse-content"
+      ],
+      "tailwind": [
+        "text-sm"
+      ]
+    }
+  ]
+}

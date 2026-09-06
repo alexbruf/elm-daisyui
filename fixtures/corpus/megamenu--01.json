@@ -1,0 +1,67 @@
+{
+  "id": "megamenu--01",
+  "component": "megamenu",
+  "title": "Megamenu with wide popovers and horizontal menus",
+  "html": "<button class=\"btn sm:hidden\" popovertarget=\"my-megamenu-2\">Menu</button>\n<div class=\"megamenu max-sm:megamenu-vertical megamenu-wide p-2 border border-base-300\" id=\"my-megamenu-2\" popover>\n  <span class=\"megamenu-active\"></span>\n\n  <button popovertarget=\"b1\">One</button>\n  <div id=\"b1\" popover>\n    <ul class=\"menu menu-horizontal\">\n      <li><a>Enterprise</a></li>\n      <li><a>CRM software</a></li>\n      <li><a>Security</a></li>\n      <li><a>Consulting</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"b2\">Two</button>\n  <div id=\"b2\" popover>\n    <ul class=\"menu menu-horizontal\">\n      <li><a>AI infrastructure</a></li>\n      <li><a>Image generation</a></li>\n      <li><a>MCP servers</a></li>\n    </ul>\n  </div>\n\n  <button popovertarget=\"b3\">Three</button>\n  <div id=\"b3\" popover>\n    <ul class=\"menu menu-horizontal\">\n      <li><a>Cloud computing</a></li>\n      <li><a>Storage solutions</a></li>\n      <li><a>Database services</a></li>\n      <li><a>CDN performance</a></li>\n    </ul>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": [
+        "sm:hidden"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "megamenu",
+        "megamenu-wide"
+      ],
+      "tailwind": [
+        "max-sm:$$megamenu-vertical",
+        "p-2",
+        "border",
+        "border-base-300"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "span",
+      "daisy": [
+        "megamenu-active"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/2/0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-horizontal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/4/0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-horizontal"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/6/0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "menu-horizontal"
+      ],
+      "tailwind": []
+    }
+  ]
+}

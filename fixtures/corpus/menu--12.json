@@ -1,0 +1,28 @@
+{
+  "id": "menu--12",
+  "component": "menu",
+  "title": "Menu with title",
+  "html": "<ul class=\"menu bg-base-200 rounded-box w-56\">\n  <li class=\"menu-title\">Title</li>\n  <li><a>Item 1</a></li>\n  <li><a>Item 2</a></li>\n  <li><a>Item 3</a></li>\n</ul>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "ul",
+      "daisy": [
+        "menu",
+        "rounded-box"
+      ],
+      "tailwind": [
+        "bg-base-200",
+        "w-56"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "li",
+      "daisy": [
+        "menu-title"
+      ],
+      "tailwind": []
+    }
+  ]
+}

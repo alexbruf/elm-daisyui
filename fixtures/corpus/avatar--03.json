@@ -1,0 +1,65 @@
+{
+  "id": "avatar--03",
+  "component": "avatar",
+  "title": "Avatar with mask",
+  "html": "<div class=\"avatar\">\n  <div class=\"mask mask-heart w-24\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/distracted3@192.webp\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"mask mask-squircle w-24\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/distracted1@192.webp\" />\n  </div>\n</div>\n<div class=\"avatar\">\n  <div class=\"mask mask-hexagon-2 w-24\">\n    <img alt=\"Tailwind-CSS-Avatar-component\" src=\"https://img.daisyui.com/images/profile/demo/distracted2@192.webp\" />\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-heart"
+      ],
+      "tailwind": [
+        "w-24"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-squircle"
+      ],
+      "tailwind": [
+        "w-24"
+      ]
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "avatar"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2/0",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-hexagon-2"
+      ],
+      "tailwind": [
+        "w-24"
+      ]
+    }
+  ]
+}

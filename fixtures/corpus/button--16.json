@@ -1,0 +1,43 @@
+{
+  "id": "button--16",
+  "component": "button",
+  "title": "Button with loading spinner",
+  "html": "<button class=\"btn btn-square\">\n  <span class=\"loading loading-spinner\"></span>\n</button>\n\n<button class=\"btn\">\n  <span class=\"loading loading-spinner\"></span>\n  loading\n</button>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-square"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "button",
+      "daisy": [
+        "btn"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1/0",
+      "tag": "span",
+      "daisy": [
+        "loading",
+        "loading-spinner"
+      ],
+      "tailwind": []
+    }
+  ]
+}

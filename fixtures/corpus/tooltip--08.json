@@ -1,0 +1,27 @@
+{
+  "id": "tooltip--08",
+  "component": "tooltip",
+  "title": "Secondary color",
+  "html": "<div class=\"tooltip tooltip-open tooltip-secondary\" data-tip=\"secondary\">\n  <button class=\"btn btn-secondary\">secondary</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "tooltip",
+        "tooltip-open",
+        "tooltip-secondary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-secondary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

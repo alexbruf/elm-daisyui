@@ -1,0 +1,22 @@
+{
+  "id": "calendar--00",
+  "component": "calendar",
+  "title": "Cally calendar example",
+  "html": "<!--\n* Import Cally web component from CDN\n<script type=\"module\" src=\"https://unpkg.com/cally\"></script>\n\n* Or install as a dependency:\nnpm i cally\n* and import it in JS\nimport \"cally\";\n-->\n\n<calendar-date class=\"cally bg-base-100 border border-base-300 shadow-lg rounded-box\">\n  <svg aria-label=\"Previous\" class=\"fill-current size-4\" slot=\"previous\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M15.75 19.5 8.25 12l7.5-7.5\"></path></svg>\n  <svg aria-label=\"Next\" class=\"fill-current size-4\" slot=\"next\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"m8.25 4.5 7.5 7.5-7.5 7.5\"></path></svg>\n  <calendar-month></calendar-month>\n</calendar-date>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "calendar-date",
+      "daisy": [
+        "cally"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "border",
+        "border-base-300",
+        "shadow-lg",
+        "rounded-box"
+      ]
+    }
+  ]
+}

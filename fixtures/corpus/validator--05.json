@@ -1,0 +1,25 @@
+{
+  "id": "validator--05",
+  "component": "validator",
+  "title": "URL input requirement validator",
+  "html": "<input type=\"url\" class=\"input validator\" required placeholder=\"https://\" value=\"https://\"\n  pattern=\"^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\\-].*[a-zA-Z0-9])?\\.)+[a-zA-Z].*$\" \n  title=\"Must be valid URL\" />\n<p class=\"validator-hint\">Must be valid URL</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

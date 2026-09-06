@@ -1,0 +1,45 @@
+{
+  "id": "avatar--08",
+  "component": "avatar",
+  "title": "Avatar placeholder",
+  "html": "<div class=\"avatar avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-24 rounded-full\">\n    <span class=\"text-3xl\">D</span>\n  </div>\n</div>\n<div class=\"avatar avatar-online avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-16 rounded-full\">\n    <span class=\"text-xl\">AI</span>\n  </div>\n</div>\n<div class=\"avatar avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-12 rounded-full\">\n    <span>SY</span>\n  </div>\n</div>\n<div class=\"avatar avatar-placeholder\">\n  <div class=\"bg-neutral text-neutral-content w-8 rounded-full\">\n    <span class=\"text-xs\">UI</span>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "avatar-placeholder"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "avatar-online",
+        "avatar-placeholder"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "avatar-placeholder"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "avatar-placeholder"
+      ],
+      "tailwind": []
+    }
+  ]
+}

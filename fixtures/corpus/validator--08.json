@@ -1,0 +1,25 @@
+{
+  "id": "validator--08",
+  "component": "validator",
+  "title": "Checkbox requirement validator",
+  "html": "<input type=\"checkbox\" class=\"checkbox validator\" required title=\"Required\" />\n<p class=\"validator-hint\">Required</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "input",
+      "daisy": [
+        "checkbox",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": []
+    }
+  ]
+}

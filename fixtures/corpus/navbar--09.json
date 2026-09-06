@@ -1,0 +1,73 @@
+{
+  "id": "navbar--09",
+  "component": "navbar",
+  "title": "Navbar with colors",
+  "html": "<div class=\"navbar bg-neutral text-neutral-content\">\n  <button class=\"btn btn-ghost text-xl\">daisyUI</button>\n</div>\n\n<div class=\"navbar bg-base-300\">\n  <button class=\"btn btn-ghost text-xl\">daisyUI</button>\n</div>\n\n<div class=\"navbar bg-primary text-primary-content\">\n  <button class=\"btn btn-ghost text-xl\">daisyUI</button>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-neutral",
+        "text-neutral-content"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-base-300"
+      ]
+    },
+    {
+      "path": "1/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-primary",
+        "text-primary-content"
+      ]
+    },
+    {
+      "path": "2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    }
+  ]
+}

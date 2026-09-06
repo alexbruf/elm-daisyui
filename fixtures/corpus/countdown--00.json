@@ -1,0 +1,16 @@
+{
+  "id": "countdown--00",
+  "component": "countdown",
+  "title": "Countdown",
+  "html": "<span class=\"countdown\">\n  <span style=\"--value:59;\" aria-live=\"polite\" aria-label=\"59\">59</span>\n</span>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "span",
+      "daisy": [
+        "countdown"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "input--16",
+  "component": "input",
+  "title": "Password input with icon and validator",
+  "html": "<label class=\"input validator\">\n  <svg class=\"h-[1em] opacity-50\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <g\n      stroke-linejoin=\"round\"\n      stroke-linecap=\"round\"\n      stroke-width=\"2.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n    >\n      <path\n        d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\"\n      ></path>\n      <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"></circle>\n    </g>\n  </svg>\n  <input\n    type=\"password\"\n    required\n    placeholder=\"Password\"\n    minlength=\"8\"\n    pattern=\"(?=.*\\\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}\"\n    title=\"Must be more than 8 characters, including number, lowercase letter, uppercase letter\"\n  />\n</label>\n<p class=\"validator-hint hidden\">\n  Must be more than 8 characters, including\n  <br />At least one number <br />At least one lowercase letter <br />At least one uppercase letter\n</p>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "label",
+      "daisy": [
+        "input",
+        "validator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "p",
+      "daisy": [
+        "validator-hint"
+      ],
+      "tailwind": [
+        "hidden"
+      ]
+    }
+  ]
+}

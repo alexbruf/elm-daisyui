@@ -1,0 +1,32 @@
+{
+  "id": "kbd--03",
+  "component": "kbd",
+  "title": "Key combination",
+  "html": "<kbd class=\"kbd\">ctrl</kbd>\n+\n<kbd class=\"kbd\">shift</kbd>\n+\n<kbd class=\"kbd\">del</kbd>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "kbd",
+      "daisy": [
+        "kbd"
+      ],
+      "tailwind": []
+    }
+  ]
+}

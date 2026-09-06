@@ -1,0 +1,53 @@
+{
+  "id": "status--01",
+  "component": "status",
+  "title": "Status sizes",
+  "html": "<div aria-label=\"status\" class=\"status status-xs\"></div>\n<div aria-label=\"status\" class=\"status status-sm\"></div>\n<div aria-label=\"status\" class=\"status status-md\"></div>\n<div aria-label=\"status\" class=\"status status-lg\"></div>\n<div aria-label=\"status\" class=\"status status-xl\"></div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-xs"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "1",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-sm"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "2",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-md"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "3",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-lg"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "4",
+      "tag": "div",
+      "daisy": [
+        "status",
+        "status-xl"
+      ],
+      "tailwind": []
+    }
+  ]
+}

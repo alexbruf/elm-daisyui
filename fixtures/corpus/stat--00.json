@@ -1,0 +1,50 @@
+{
+  "id": "stat--00",
+  "component": "stat",
+  "title": "Stat",
+  "html": "<div class=\"stats shadow\">\n  <div class=\"stat\">\n    <div class=\"stat-title\">Total Page Views</div>\n    <div class=\"stat-value\">89,400</div>\n    <div class=\"stat-desc\">21% more than last month</div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "stats"
+      ],
+      "tailwind": [
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "stat"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/0",
+      "tag": "div",
+      "daisy": [
+        "stat-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/1",
+      "tag": "div",
+      "daisy": [
+        "stat-value"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0/2",
+      "tag": "div",
+      "daisy": [
+        "stat-desc"
+      ],
+      "tailwind": []
+    }
+  ]
+}

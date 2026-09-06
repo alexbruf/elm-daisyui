@@ -1,0 +1,155 @@
+{
+  "id": "navbar--05",
+  "component": "navbar",
+  "title": "Navbar with icon, indicator and dropdown",
+  "html": "<div class=\"navbar bg-base-100 shadow-sm\">\n  <div class=\"flex-1\">\n    <a class=\"btn btn-ghost text-xl\">daisyUI</a>\n  </div>\n  <div class=\"flex-none\">\n    <div class=\"dropdown dropdown-end\">\n      <div tabindex=\"0\" role=\"button\" class=\"btn btn-ghost btn-circle\">\n        <div class=\"indicator\">\n          <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z\" /> </svg>\n          <span class=\"badge badge-sm indicator-item\">8</span>\n        </div>\n      </div>\n      <div\n        tabindex=\"0\"\n        class=\"card card-sm dropdown-content bg-base-100 z-1 mt-3 w-52 shadow\">\n        <div class=\"card-body\">\n          <span class=\"text-lg font-bold\">8 Items</span>\n          <span class=\"text-info\">Subtotal: $999</span>\n          <div class=\"card-actions\">\n            <button class=\"btn btn-primary btn-block\">View cart</button>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"dropdown dropdown-end\">\n      <div tabindex=\"0\" role=\"button\" class=\"btn btn-ghost btn-circle avatar\">\n        <div class=\"w-10 rounded-full\">\n          <img\n            alt=\"Tailwind CSS Navbar component\"\n            src=\"https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp\" />\n        </div>\n      </div>\n      <ul\n        tabindex=\"-1\"\n        class=\"menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow\">\n        <li>\n          <a class=\"justify-between\">\n            Profile\n            <span class=\"badge\">New</span>\n          </a>\n        </li>\n        <li><a>Settings</a></li>\n        <li><a>Logout</a></li>\n      </ul>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "navbar"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/0/0",
+      "tag": "a",
+      "daisy": [
+        "btn",
+        "btn-ghost"
+      ],
+      "tailwind": [
+        "text-xl"
+      ]
+    },
+    {
+      "path": "0/1/0",
+      "tag": "div",
+      "daisy": [
+        "dropdown",
+        "dropdown-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/0",
+      "tag": "div",
+      "daisy": [
+        "btn",
+        "btn-circle",
+        "btn-ghost"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/0/0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/0/0/1",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "badge-sm",
+        "indicator-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/1",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-sm",
+        "dropdown-content"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "z-1",
+        "mt-3",
+        "w-52",
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/1/0/1/0",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/1/0/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0/1/0/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-block",
+        "btn-primary"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1",
+      "tag": "div",
+      "daisy": [
+        "dropdown",
+        "dropdown-end"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1/0",
+      "tag": "div",
+      "daisy": [
+        "avatar",
+        "btn",
+        "btn-circle",
+        "btn-ghost"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/1/1",
+      "tag": "ul",
+      "daisy": [
+        "dropdown-content",
+        "menu",
+        "menu-sm"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "rounded-box",
+        "z-1",
+        "mt-3",
+        "w-52",
+        "p-2",
+        "shadow"
+      ]
+    },
+    {
+      "path": "0/1/1/1/0/0/0",
+      "tag": "span",
+      "daisy": [
+        "badge"
+      ],
+      "tailwind": []
+    }
+  ]
+}

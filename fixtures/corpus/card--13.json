@@ -1,0 +1,55 @@
+{
+  "id": "card--13",
+  "component": "card",
+  "title": "Card with image on side",
+  "html": "<div class=\"card card-side bg-base-100 shadow-sm\">\n  <figure>\n    <img\n      src=\"https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp\"\n      alt=\"Movie\" />\n  </figure>\n  <div class=\"card-body\">\n    <h2 class=\"card-title\">New movie is released!</h2>\n    <p>Click the button to watch on Jetflix app.</p>\n    <div class=\"card-actions justify-end\">\n      <button class=\"btn btn-primary\">Watch</button>\n    </div>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "card",
+        "card-side"
+      ],
+      "tailwind": [
+        "bg-base-100",
+        "shadow-sm"
+      ]
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "card-body"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/0",
+      "tag": "h2",
+      "daisy": [
+        "card-title"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1/2",
+      "tag": "div",
+      "daisy": [
+        "card-actions"
+      ],
+      "tailwind": [
+        "justify-end"
+      ]
+    },
+    {
+      "path": "0/1/2/0",
+      "tag": "button",
+      "daisy": [
+        "btn",
+        "btn-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "toast--07",
+  "component": "toast",
+  "title": "toast-start toast-bottom (default)",
+  "html": "<div class=\"toast toast-start\">\n  <div class=\"alert alert-info\">\n    <span>New mail arrived.</span>\n  </div>\n  <div class=\"alert alert-success\">\n    <span>Message sent successfully.</span>\n  </div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "toast",
+        "toast-start"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-info"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "alert",
+        "alert-success"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "link--04",
+  "component": "link",
+  "title": "Accent color",
+  "html": "<a class=\"link link-accent\">Click me</a>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "a",
+      "daisy": [
+        "link",
+        "link-accent"
+      ],
+      "tailwind": []
+    }
+  ]
+}

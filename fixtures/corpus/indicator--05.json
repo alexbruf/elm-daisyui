@@ -1,0 +1,33 @@
+{
+  "id": "indicator--05",
+  "component": "indicator",
+  "title": "for an input",
+  "html": "<div class=\"indicator\">\n  <span class=\"indicator-item badge\">Required</span>\n  <input type=\"text\" placeholder=\"Your email address\" class=\"input\" />\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "indicator"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "span",
+      "daisy": [
+        "badge",
+        "indicator-item"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "input",
+      "daisy": [
+        "input"
+      ],
+      "tailwind": []
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "rating--01",
+  "component": "rating",
+  "title": "Read-only Rating",
+  "html": "<div class=\"rating\">\n  <div class=\"mask mask-star\" aria-label=\"1 star\"></div>\n  <div class=\"mask mask-star\" aria-label=\"2 star\"></div>\n  <div class=\"mask mask-star\" aria-label=\"3 star\" aria-current=\"true\"></div>\n  <div class=\"mask mask-star\" aria-label=\"4 star\"></div>\n  <div class=\"mask mask-star\" aria-label=\"5 star\"></div>\n</div>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "div",
+      "daisy": [
+        "rating"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/0",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/1",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/2",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/3",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    },
+    {
+      "path": "0/4",
+      "tag": "div",
+      "daisy": [
+        "mask",
+        "mask-star"
+      ],
+      "tailwind": []
+    }
+  ]
+}

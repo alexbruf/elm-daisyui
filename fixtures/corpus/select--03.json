@@ -1,0 +1,17 @@
+{
+  "id": "select--03",
+  "component": "select",
+  "title": "Primary color",
+  "html": "<select class=\"select select-primary\">\n  <option disabled selected>Pick a text editor</option>\n  <option>VScode</option>\n  <option>VScode fork</option>\n  <option>Another VScode fork</option>\n</select>",
+  "elements": [
+    {
+      "path": "0",
+      "tag": "select",
+      "daisy": [
+        "select",
+        "select-primary"
+      ],
+      "tailwind": []
+    }
+  ]
+}
