@@ -19,6 +19,7 @@ has to be added here once.
 -}
 
 import Daisy.Chart as Chart
+import Daisy.Icon as DIcon
 import Daisy.Render as Render
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
@@ -177,6 +178,7 @@ leaves =
         ++ checkboxLeaves
         ++ dividerLeaves
         ++ fileInputLeaves
+        ++ iconLeaves
         ++ imageLeaves
         ++ inputLeaves
         ++ joinLeaves
@@ -292,6 +294,8 @@ buttonConfigs =
         ++ [ { defaultButtonConfig | modifiers = SButton.allModifiers }
            , { defaultButtonConfig | behaviors = SButton.allBehaviors }
            , { defaultButtonConfig | onClick = Just Clicked }
+           , { defaultButtonConfig | icon = Just DIcon.Download }
+           , { defaultButtonConfig | icon = Just DIcon.Eye, ariaLabel = Just "View order" }
            ]
 
 
@@ -324,6 +328,24 @@ fileInputLeaves =
         ++ List.map (\v -> FileInput { defaultFileInputConfig | style = Just v }) SFileInput.allStyles
         ++ List.map (\v -> FileInput { defaultFileInputConfig | size = Just v }) SFileInput.allSizes
         ++ [ FileInput { defaultFileInputConfig | onInput = Just Typed } ]
+
+
+{-| Every [`Daisy.Icon.Icon`](Daisy-Icon#Icon) at every
+[`IconSize`](Daisy-Tree#IconSize), plus one labelled icon, so all three size
+tokens and both accessibility shapes are walked.
+
+`Leaf.Icon` emits no daisyUI class at all, so it changes nothing in
+`CoverageTest`; it is here for `RenderPurityTest`'s budget check (the size
+tokens) and for `ExclusivityTest`'s per-element sweep.
+
+-}
+iconLeaves : List (Leaf Msg)
+iconLeaves =
+    List.map (Icon defaultIconConfig) DIcon.allIcons
+        ++ List.map
+            (\size -> Icon { defaultIconConfig | size = size } DIcon.Bell)
+            [ IconSm, IconMd, IconLg ]
+        ++ [ Icon { defaultIconConfig | label = Just "Notifications" } DIcon.Bell ]
 
 
 imageLeaves : List (Leaf Msg)
@@ -639,6 +661,7 @@ cardBlockChildren =
     { cardParts
         | body =
             [ CardLeaf (Text "body")
+            , CardAlert defaultAlertConfig [ Text "Saved" ]
             , CardChart Chart.Line chartData
             , CardTable defaultTableConfig tableRows
             , CardStat defaultStatConfig statItems
@@ -754,7 +777,7 @@ menuItems =
     , MenuItem
         { label = "Dashboard"
         , href = Nothing
-        , icon = Just "*"
+        , icon = Just DIcon.Home
         , badge = Just { config = defaultBadgeConfig, label = "2" }
         , active = True
         , disabled = True
@@ -843,8 +866,18 @@ tableBlocks =
 
 tableRows : List (Row Msg)
 tableRows =
-    [ { header = True, cells = [ Text "Name" ] }
-    , { header = False, cells = [ Text "Cy Ganderton" ] }
+    [ { header = True, cells = [ tableCell (Text "Name") ] }
+    , { header = False, cells = [ tableCell (Text "Cy Ganderton") ] }
+
+    -- A cell with a `leading` leaf: the avatar-and-name idiom, which is the
+    -- only branch of `tableCellHtml` that emits a wrapper.
+    , { header = False
+      , cells =
+            [ { leading = Just (Avatar defaultAvatarConfig "a.png")
+              , content = Text "Hart Hagerty"
+              }
+            ]
+      }
     ]
 
 
@@ -1046,6 +1079,7 @@ ctaWithProperties =
         | tooltip = Just (tooltip "Save the page")
         , aura = List.head auras
         , indicator = List.head indicators
+        , icon = Just DIcon.Download
     }
 
 

@@ -75,6 +75,7 @@
         "Daisy.Schema.Tooltip",
         "Daisy.Schema.Validator",
         "Daisy.Chart",
+        "Daisy.Icon",
         "Daisy.Render",
         "Daisy.Tree"
     ],

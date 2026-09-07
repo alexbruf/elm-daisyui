@@ -17,6 +17,7 @@ well as the pair.
 -}
 
 import Daisy.Chart as Chart
+import Daisy.Icon as DIcon
 import Daisy.Render as Render
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
@@ -183,8 +184,23 @@ statusConfigFuzzer =
         (Fuzz.maybe tooltipFuzzer)
 
 
+{-| A button config plus the two fields an icon-only button needs. Split off
+`plainButtonConfigFuzzer` because `Fuzz.map5` is the widest map there is and
+the class groups already use all five.
+-}
 buttonConfigFuzzer : Fuzzer (ButtonConfig Msg)
 buttonConfigFuzzer =
+    Fuzz.map2
+        (\base ( icon, aria ) -> { base | icon = icon, ariaLabel = aria })
+        plainButtonConfigFuzzer
+        (Fuzz.pair
+            (Fuzz.maybe (Fuzz.oneOfValues DIcon.allIcons))
+            (Fuzz.maybe (Fuzz.constant "View order"))
+        )
+
+
+plainButtonConfigFuzzer : Fuzzer (ButtonConfig Msg)
+plainButtonConfigFuzzer =
     Fuzz.map5
         (\color style size modifiers behaviors ->
             { defaultButtonConfig
@@ -255,6 +271,20 @@ allInputTypes =
     , InputSearch
     , InputDate
     ]
+
+
+{-| `Leaf.Icon` declares no class group at all — it emits no daisyUI class, like
+`Leaf.Heading` — so there is nothing here for the exclusivity rule to make
+contradictory. The fuzzer exists because the harness enumerates one entry per
+leaf constructor, and it does sweep both closed fields (all three sizes, both
+accessibility shapes) across all twenty-five drawings, which keeps the row
+honest if an icon ever grows a group.
+-}
+iconConfigFuzzer : Fuzzer IconConfig
+iconConfigFuzzer =
+    Fuzz.map2 (\size label -> { size = size, label = label })
+        (Fuzz.oneOfValues [ IconSm, IconMd, IconLg ])
+        (Fuzz.maybe (Fuzz.constant "Notifications"))
 
 
 selectConfigFuzzer : Fuzzer (SelectConfig Msg)
@@ -373,6 +403,9 @@ leafFuzzers =
             (maybeOf SFileInput.allStyles)
             (maybeOf SFileInput.allSizes)
             (Fuzz.maybe (Fuzz.constant "Avatar"))
+      )
+    , ( "icon"
+      , Fuzz.map2 Icon iconConfigFuzzer (Fuzz.oneOfValues DIcon.allIcons)
       )
     , ( "image", Fuzz.map (\mask -> Image { defaultImageConfig | mask = Just mask } "a.png") maskFuzzer )
     , ( "input", Fuzz.map Input inputConfigFuzzer )
@@ -525,8 +558,9 @@ ones as well as the leaves.
 cardChildren : List (CardChild Msg)
 cardChildren =
     [ CardLeaf (Text "body")
+    , CardAlert defaultAlertConfig [ Text "Saved" ]
     , CardChart Chart.Line { series = [], xLabels = [] }
-    , CardTable defaultTableConfig [ { header = True, cells = [ Text "Name" ] } ]
+    , CardTable defaultTableConfig [ { header = True, cells = [ tableCell (Text "Name") ] } ]
     , CardStat defaultStatConfig [ emptyStatItem "Downloads" "31K" ]
     , CardForm [ { legend = Just "Account", fields = [ field "Email" (Input defaultInputConfig) ] } ]
     ]
@@ -677,8 +711,14 @@ blockFuzzers =
       , Fuzz.map2
             (\size modifiers ->
                 Table { size = size, modifiers = modifiers }
-                    [ { header = True, cells = [ Text "Name" ] }
-                    , { header = False, cells = [ Text "Cy" ] }
+                    [ { header = True, cells = [ tableCell (Text "Name") ] }
+                    , { header = False
+                      , cells =
+                            [ { leading = Just (Avatar defaultAvatarConfig "a.png")
+                              , content = Text "Cy"
+                              }
+                            ]
+                      }
                     ]
             )
             (maybeOf STable.allSizes)
@@ -795,18 +835,25 @@ pageFuzzer =
 
 ctaFuzzer : Fuzzer (Cta Msg)
 ctaFuzzer =
-    Fuzz.map4
-        (\size style modifiers behaviors ->
+    Fuzz.map5
+        (\size style modifiers behaviors icon ->
             let
                 base =
                     cta "Save" Clicked
             in
-            { base | size = size, style = style, modifiers = modifiers, behaviors = behaviors }
+            { base
+                | size = size
+                , style = style
+                , modifiers = modifiers
+                , behaviors = behaviors
+                , icon = icon
+            }
         )
         (maybeOf SButton.allSizes)
         (maybeOf SButton.allStyles)
         (subsetOf SButton.allModifiers)
         (subsetOf SButton.allBehaviors)
+        (Fuzz.maybe (Fuzz.oneOfValues DIcon.allIcons))
 
 
 

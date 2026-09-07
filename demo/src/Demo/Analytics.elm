@@ -20,7 +20,11 @@ value and `Daisy.Render` owns every class.
 
 import BasePath
 import Daisy.Chart as DChart
+import Daisy.Icon as Icon
+import Daisy.Schema.Badge as SBadge
+import Daisy.Schema.Button as SButton
 import Daisy.Schema.Card as SCard
+import Daisy.Schema.Mask as SMask
 import Daisy.Schema.Menu as SMenu
 import Daisy.Schema.Select as SSelect
 import Daisy.Tree as Tree
@@ -33,6 +37,7 @@ import Daisy.Tree as Tree
         , CalendarValue
         , CardChild(..)
         , HeadingLevel(..)
+        , IndicatorPayload(..)
         , Leaf(..)
         , MenuItem(..)
         , MenuSpec
@@ -62,6 +67,7 @@ type alias Config msg =
     , onRangeSelect : String -> msg
     , onCalendarMsg : CalendarMsg -> msg
     , onCalendarChange : CalendarValue -> msg
+    , onNotifications : msg
     , onDownload : msg
     }
 
@@ -82,7 +88,7 @@ page config =
                 (statsSection config)
                 breakdownSection
                 (trafficSection config)
-        , cta = Tree.cta "Download CSV" config.onDownload
+        , cta = downloadCta config
         , overlays = []
         , theme = config.theme
         , dock = Nothing
@@ -98,9 +104,9 @@ sidebar : Config msg -> MenuSpec msg
 sidebar config =
     { config = { defaultMenu | size = Just SMenu.Lg }
     , items =
-        [ navItem "Overview" (href config "/") (config.onNavigate "/") False
-        , navItem "Analytics" (href config "/analytics") (config.onNavigate "/analytics") True
-        , navItem "Settings" (href config "/settings") (config.onNavigate "/settings") False
+        [ navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") False
+        , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") True
+        , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False
         , docsItem config
         ]
     }
@@ -116,7 +122,7 @@ docsItem : Config msg -> MenuItem msg
 docsItem config =
     MenuItem
         { label = "Docs"
-        , icon = Nothing
+        , icon = Just Icon.Document
         , badge = Nothing
         , active = False
         , disabled = False
@@ -147,11 +153,11 @@ href config path =
 that `Browser.application` intercepts as a `UrlRequest`) and an `onClick` that
 pushes the same url, so navigation works with either.
 -}
-navItem : String -> String -> msg -> Bool -> MenuItem msg
-navItem label path onClick active =
+navItem : String -> Icon.Icon -> String -> msg -> Bool -> MenuItem msg
+navItem label icon path onClick active =
     MenuItem
         { label = label
-        , icon = Nothing
+        , icon = Just icon
         , badge = Nothing
         , active = active
         , disabled = False
@@ -163,12 +169,95 @@ navItem label path onClick active =
         }
 
 
+{-| The same dashboard chrome `Demo.Admin` carries, with the date-range switcher
+in place of the theme dropdown: notifications, the signed-in user, and then
+`Page.cta` ("Download CSV"), which `Daisy.Render` appends after `navbar-end`.
+
+`navbar-center` stays empty on purpose — daisyUI fixes the two halves at 50%
+each, so anything between them has no width to shrink into at 375.
+
+-}
 navbar : Config msg -> NavbarParts msg
 navbar config =
     { start = [ Text "Acme Console" ]
     , center = []
-    , end = [ dateRangeSelect config ]
+    , end = [ dateRangeSelect config, notificationsButton config, userChip ]
     }
+
+
+{-| An icon-only button: its accessible name is `ariaLabel`, because the `Bell`
+glyph beside it is `aria-hidden` by design. The unread count rides along as the
+button's `indicator`.
+-}
+notificationsButton : Config msg -> Leaf msg
+notificationsButton config =
+    Button
+        { defaultButton
+            | icon = Just Icon.Bell
+            , ariaLabel = Just "Notifications"
+            , style = Just SButton.Ghost
+            , modifiers = [ SButton.Circle ]
+            , indicator =
+                Just
+                    { config = Tree.defaultIndicatorConfig
+                    , payload =
+                        IndicatorBadge
+                            { defaultBadge | color = Just SBadge.Error, size = Just SBadge.Xs }
+                            "3"
+                    }
+            , onClick = Just config.onNotifications
+        }
+        ""
+
+
+defaultButton : Tree.ButtonConfig msg
+defaultButton =
+    Tree.defaultButtonConfig
+
+
+defaultBadge : Tree.BadgeConfig
+defaultBadge =
+    Tree.defaultBadgeConfig
+
+
+{-| The signed-in user. The portrait is an inline `data:` URI so the 105 theme
+screenshots are byte-identical everywhere: no network, no fonts.
+-}
+userChip : Leaf msg
+userChip =
+    Avatar
+        { defaultAvatar | mask = Just { defaultMask | style = Just SMask.Circle } }
+        avatarSrc
+
+
+defaultAvatar : Tree.AvatarConfig msg
+defaultAvatar =
+    Tree.defaultAvatarConfig
+
+
+defaultMask : Tree.MaskConfig
+defaultMask =
+    Tree.defaultMaskConfig
+
+
+avatarSrc : String
+avatarSrc =
+    "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2040%2040'%3E"
+        ++ "%3Crect%20width='40'%20height='40'%20fill='slateblue'/%3E"
+        ++ "%3Ccircle%20cx='20'%20cy='16'%20r='7'%20fill='white'/%3E"
+        ++ "%3Cpath%20d='M7%2040c0-7.2%205.8-12%2013-12s13%204.8%2013%2012z'%20fill='white'/%3E%3C/svg%3E"
+
+
+{-| The page CTA, with a leading `Download` glyph.
+-}
+downloadCta : Config msg -> Tree.Cta msg
+downloadCta config =
+    let
+        base : Tree.Cta msg
+        base =
+            Tree.cta "Download CSV" config.onDownload
+    in
+    { base | icon = Just Icon.Download }
 
 
 {-| The navbar has no `Field` to label it, so the select names itself with
@@ -227,10 +316,10 @@ statsSection config =
     Grid { columns = Tree.Cols1 }
         [ Prose [ Heading H2 "Key metrics" ]
         , Stat { direction = Responsive }
-            [ statItem "Sessions" "486,204" "9.1% week over week"
-            , statItem "Conversion" "3.24%" "0.31 points above plan"
-            , statItem "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"
-            , statItem "Assisted revenue" "$91,470" "31% of total revenue"
+            [ statItem Icon.Users "Sessions" "486,204" "9.1% week over week"
+            , statItem Icon.ArrowTrendingUp "Conversion" "3.24%" "0.31 points above plan"
+            , statItem Icon.CurrencyDollar "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"
+            , statItem Icon.ChartBar "Assisted revenue" "$91,470" "31% of total revenue"
             ]
         , dateRangeCard config
         ]
@@ -302,14 +391,27 @@ calendarConfig given =
     { base | months = Tree.TwoMonths }
 
 
-statItem : String -> String -> String -> StatItem msg
-statItem title value desc =
+statItem : Icon.Icon -> String -> String -> String -> StatItem msg
+statItem icon title value desc =
     let
         base : StatItem msg
         base =
             Tree.emptyStatItem title value
     in
-    { base | desc = Just desc }
+    { base | desc = Just desc, figure = Just (figureIcon icon) }
+
+
+{-| A `stat-figure` glyph: the largest icon size, and decorative — the tile's
+`stat-title` already names the number.
+-}
+figureIcon : Icon.Icon -> Leaf msg
+figureIcon icon =
+    Icon { defaultIcon | size = Tree.IconLg } icon
+
+
+defaultIcon : Tree.IconConfig
+defaultIcon =
+    Tree.defaultIconConfig
 
 
 {-| Two chart cards side by side. Their `card-title`s are the band's headings:
@@ -336,8 +438,9 @@ emptyCard =
     Tree.emptyCardParts
 
 
-{-| `card-border` — without a style a `card` paints nothing of its own, so on a
-`base-100` page it is invisible and "the chart is in a card" does not read.
+{-| `card-border`. `Daisy.Render` paints every card `bg-base-100 shadow-sm` on
+the `bg-base-200` content ground, so the panel already reads as raised; the
+border is what daisyUI's own dashboard examples add on top.
 -}
 borderedCard : Tree.CardConfig
 borderedCard =

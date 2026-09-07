@@ -12,7 +12,8 @@ import { findOverflows } from "./lib/browser";
  *   2. no daisyUI element has content wider than its own box, unless it is a
  *      container the composition deliberately made scrollable
  *      (`overflow-x: auto|scroll` — the renderer's `overflow-x-auto` table
- *      wrapper is the only one in these demos);
+ *      wrapper is the only one in these demos) or an `.indicator`, whose
+ *      `indicator-item` child daisyUI deliberately translates outside the box;
  *   3. no daisyUI element's rect escapes the nearest ancestor that clips
  *      horizontally.
  */

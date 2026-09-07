@@ -710,8 +710,14 @@ tableEntries : List ( String, Node )
 tableEntries =
     let
         rows =
-            [ { header = True, cells = [ Text "Name", Text "Job", Text "Favorite Color" ] }
-            , { header = False, cells = [ Text "Cy Ganderton", Text "Quality Control Specialist", Text "Blue" ] }
+            [ { header = True
+              , cells = List.map tableCell [ Text "Name", Text "Job", Text "Favorite Color" ]
+              }
+            , { header = False
+              , cells =
+                    List.map tableCell
+                        [ Text "Cy Ganderton", Text "Quality Control Specialist", Text "Blue" ]
+              }
             ]
 
         table config =
@@ -727,12 +733,13 @@ tableEntries =
             (Table defaultTableConfig
                 [ { header = False
                   , cells =
-                        [ Checkbox chk
-                        , Avatar defaultAvatarConfig img
-                        , Image { defaultImageConfig | mask = Just { defaultMaskConfig | style = Just SMask.Squircle } } img
-                        , Badge { bdg | style = Just SBadge.Ghost, size = Just SBadge.Sm } "Desktop Support Technician"
-                        , Button { btn | style = Just SButton.Ghost, size = Just SButton.Xs } "details"
-                        ]
+                        List.map tableCell
+                            [ Checkbox chk
+                            , Avatar defaultAvatarConfig img
+                            , Image { defaultImageConfig | mask = Just { defaultMaskConfig | style = Just SMask.Squircle } } img
+                            , Badge { bdg | style = Just SBadge.Ghost, size = Just SBadge.Sm } "Desktop Support Technician"
+                            , Button { btn | style = Just SButton.Ghost, size = Just SButton.Xs } "details"
+                            ]
                   }
                 ]
             )

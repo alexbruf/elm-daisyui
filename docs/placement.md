@@ -23,7 +23,10 @@ and `Block.Chart` (`Daisy.Chart` over `terezka/elm-charts`). `Leaf.Image` is als
 required by `card` (figure), `carousel`, `diff`, `stack`, `avatar` and `hover-gallery`; it emits no daisyUI class
 of its own, only the `mask` / `hover-3d` properties. `Leaf.Heading` is the third: it renders a bare
 `<h1>`/`<h2>`/`<h3>` and emits no class at all, so that a page has a document outline for Tailwind typography
-(inside `Block.Prose`) and for assistive technology to read.
+(inside `Block.Prose`) and for assistive technology to read. `Leaf.Icon` is the fourth, for the same reason
+`Image` is there: daisyUI's own dashboard examples draw an inline `<svg>` inside a `menu` item, a `stat-figure`
+and a `btn`, and there is no daisyUI component for one. It emits no daisyUI class either — only a `size-*`
+token — and its drawing comes from the closed `Daisy.Icon` set, never from a caller-supplied path.
 
 `Section.Stack` (a fixed-gap vertical layout band) is **not** the daisyUI `stack` component. The daisyUI `stack`
 component (overlapping children) is placed at Block as `Block.Stacked`. See Unsure.
@@ -58,6 +61,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | footer | Section | `Section.Footer` | `List (Block msg)` — in practice `Block.Nav` columns | Fixed by the spec. `footer-title` is emitted only when a `Block.Nav` is a direct child of a Footer, so the part never escapes its component. |
 | hero | Section | `Section.Hero` | `List (Block msg)` | Fixed by the spec. `hero-content` wraps the blocks and `hero-overlay` comes from `HeroConfig.overlay`; both parts are renderer-emitted. |
 | (heading) | Leaf | `Leaf.Heading` | `HeadingLevel` (`H1`/`H2`/`H3`) + `String` | Not a daisyUI component and emits no daisyUI class. A page otherwise has no `<h1>`: `Leaf.Text` is a text node and `Block.Prose` is a `<div>`, so Tailwind typography had nothing to style and axe reported `page-has-heading-one` on every demo. |
+| (icon) | Leaf | `Leaf.Icon` | `IconConfig` (`size : IconSize`, `label : Maybe String`) + `Daisy.Icon.Icon` | Not a daisyUI component and emits no daisyUI class, like `Leaf.Heading` and `Leaf.Image`. A closed set of 25 heroicons outline drawings; the path data lives in the internal `Daisy.Render.Icons`, so `Daisy.Icon` stays pure data and no caller can hand the renderer markup. Also reachable as `MenuItem.icon`, `ButtonConfig.icon` and `Cta.icon`, which is where daisyUI's dashboard templates put glyphs. |
 | hover-3d | Property | field `hover3d : Bool` on `ImageConfig` and `CardConfig` | none | Decoration only: a wrapper plus eight empty divs the renderer emits. It has no authorable content. |
 | hover-gallery | Leaf | `Leaf.HoverGallery` | `List ImageSrc` (data) | A `<figure class="hover-gallery">` whose children are only `<img>` tags: terminal content with no nodes inside. |
 | indicator | Property | field `indicator : Maybe (Indicator msg)` on Leaf configs (Button, Avatar, Input, Link) | `Indicator` holds `IndicatorConfig` + a `Badge`/`Status` payload (the `indicator-item` part) | Same shape as `tooltip`/`dropdown`: a wrapper that decorates exactly one anchor element. Placing it as a node would let `indicator-item` appear without an anchor. |
@@ -292,7 +296,7 @@ Every element the three demos require (SPEC step 7) maps to a placement above.
 | Navbar | `Section.Navbar` with `NavbarParts` of Leaves |
 | 4 Stat cards | `Section.Grid [ Block.Stat cfg [ StatItem, StatItem, StatItem, StatItem ] ]` |
 | Chart Line | `Block.Chart Line data` (`Daisy.Chart`, not a daisyUI component) |
-| Table with badges and a row action | `Block.Table cfg (List Row)`; `Row.cells : List (Leaf msg)` holds `Leaf.Badge` and `Leaf.Button` |
+| Table with badges and a row action | `Block.Table cfg (List Row)`; `Row.cells : List (TableCell msg)`, a cell being `{ leading : Maybe (Leaf msg), content : Leaf msg }`, holds `Leaf.Badge`, an icon-only `Leaf.Button`, and the avatar-and-name pair in the customer cell |
 | Toast overlay | `Overlay.Toast cfg [ Block.Alert ... ]` |
 | Theme switcher in navbar | `Leaf.ThemeSelect` in `NavbarParts.end` |
 

@@ -24,7 +24,7 @@ module Daisy.Tree exposing
     , StackedConfig, defaultStackedConfig, StackedAlign(..)
     , StatConfig, defaultStatConfig, StatDirection(..), StatItem, emptyStatItem
     , StepsConfig, defaultStepsConfig, Step
-    , TableConfig, defaultTableConfig, Row
+    , TableConfig, defaultTableConfig, Row, TableCell, tableCell
     , TabsConfig, defaultTabsConfig, Tab
     , TimelineConfig, defaultTimelineConfig, TimelineModifier(..), allTimelineModifiers, timelineModifierToSchema, TimelineItem
     , Leaf(..), ImageSrc, HeadingLevel(..)
@@ -36,6 +36,7 @@ module Daisy.Tree exposing
     , DividerConfig, defaultDividerConfig
     , FileInputConfig, defaultFileInputConfig
     , FilterData, FilterReset(..)
+    , IconConfig, defaultIconConfig, IconSize(..)
     , ImageConfig, defaultImageConfig
     , InputConfig, defaultInputConfig, InputType(..)
     , JoinConfig, defaultJoinConfig, JoinItem(..)
@@ -138,7 +139,7 @@ that can emit a class.
 @docs StackedConfig, defaultStackedConfig, StackedAlign
 @docs StatConfig, defaultStatConfig, StatDirection, StatItem, emptyStatItem
 @docs StepsConfig, defaultStepsConfig, Step
-@docs TableConfig, defaultTableConfig, Row
+@docs TableConfig, defaultTableConfig, Row, TableCell, tableCell
 @docs TabsConfig, defaultTabsConfig, Tab
 @docs TimelineConfig, defaultTimelineConfig, TimelineModifier, allTimelineModifiers, timelineModifierToSchema, TimelineItem
 
@@ -154,6 +155,7 @@ that can emit a class.
 @docs DividerConfig, defaultDividerConfig
 @docs FileInputConfig, defaultFileInputConfig
 @docs FilterData, FilterReset
+@docs IconConfig, defaultIconConfig, IconSize
 @docs ImageConfig, defaultImageConfig
 @docs InputConfig, defaultInputConfig, InputType
 @docs JoinConfig, defaultJoinConfig, JoinItem
@@ -207,6 +209,7 @@ import Cally.Date as CallyDate
 import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
 import Daisy.Chart exposing (ChartConfig, ChartData)
+import Daisy.Icon exposing (Icon)
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Aura as SAura
@@ -305,11 +308,13 @@ type Shell msg
     | Dashboard { sidebar : MenuSpec msg, navbar : NavbarParts msg }
 
 
-{-| The page's single primary call to action. Rendered as `btn btn-primary`.
+{-| The page's single primary call to action. Rendered as `btn btn-primary`,
+with `icon` as an optional leading [`Daisy.Icon.Icon`](Daisy-Icon#Icon).
 -}
 type alias Cta msg =
     { label : String
     , onClick : msg
+    , icon : Maybe Icon
     , size : Maybe SButton.Size
     , style : Maybe SButton.Style
     , modifiers : List SButton.Modifier
@@ -329,6 +334,7 @@ cta : String -> msg -> Cta msg
 cta label onClick =
     { label = label
     , onClick = onClick
+    , icon = Nothing
     , size = Nothing
     , style = Nothing
     , modifiers = []
@@ -769,7 +775,7 @@ type alias CardParts msg =
     }
 
 
-{-| What a `card-body` may hold: leaves, plus the four block shapes a
+{-| What a `card-body` may hold: leaves, plus the five block shapes a
 dashboard card is actually made of.
 
 There is deliberately no `CardCard`: a card can never contain a card, which is
@@ -781,6 +787,7 @@ the same helper, so a chart in a card and a bare chart are the same markup.
 -}
 type CardChild msg
     = CardLeaf (Leaf msg)
+    | CardAlert AlertConfig (List (Leaf msg))
     | CardChart ChartConfig ChartData
     | CardTable TableConfig (List (Row msg))
     | CardStat StatConfig (List (StatItem msg))
@@ -969,6 +976,10 @@ defaultMenuConfig =
 {-| One menu entry. `title = True` renders it as the `menu-title` part; a
 non-empty `submenu` renders the `menu-dropdown` parts.
 
+`icon` is a [`Daisy.Icon.Icon`](Daisy-Icon#Icon) drawn before the label at
+`size-5`. It is decorative — the label beside it is the accessible name — so the
+`<svg>` is `aria-hidden`.
+
 `href` becomes the anchor's `href`. A menu item without one is a bare `<a>`,
 which is not focusable and carries no `link` role, so navigation items should
 always set it; `onClick` may still be set alongside (a `Browser.application`
@@ -978,7 +989,7 @@ turns the click into an `onUrlRequest` on its own).
 type MenuItem msg
     = MenuItem
         { label : String
-        , icon : Maybe String
+        , icon : Maybe Icon
         , badge : Maybe MenuBadge
         , active : Bool
         , disabled : Bool
@@ -1206,8 +1217,37 @@ defaultTableConfig =
 -}
 type alias Row msg =
     { header : Bool
-    , cells : List (Leaf msg)
+    , cells : List (TableCell msg)
     }
+
+
+{-| One cell of a [`Row`](#Row).
+
+`content` is the cell. `leading` is an optional second leaf drawn **before** it
+on the same line, which is the "avatar and name in one cell" idiom every
+dashboard table uses (daisyUI's own "Table with visual elements" example writes
+it as a flex `div` wrapping an `avatar` and the name).
+
+A cell with `leading = Nothing` renders as the bare leaf inside the `<td>`, i.e.
+exactly the markup a plain cell has always produced; only a cell that really has
+a leading leaf gets a wrapper. That is the rule [`ListCell`](#ListCell) already
+follows for `list-col-grow`.
+
+-}
+type alias TableCell msg =
+    { leading : Maybe (Leaf msg)
+    , content : Leaf msg
+    }
+
+
+{-| A plain table cell.
+
+    tableCell (Text "Cy Ganderton")
+
+-}
+tableCell : Leaf msg -> TableCell msg
+tableCell content =
+    { leading = Nothing, content = content }
 
 
 {-| Groups of the daisyUI `tab` component. `tab-active` and `tab-disabled`
@@ -1321,6 +1361,7 @@ type Leaf msg
     | Filter (FilterData msg)
     | HoverGallery (List ImageSrc)
     | Heading HeadingLevel String
+    | Icon IconConfig Icon
     | Image (ImageConfig msg) ImageSrc
     | Input (InputConfig msg)
     | Join JoinConfig (List (JoinItem msg))
@@ -1469,9 +1510,22 @@ buttonColorToSchema color =
 {-| Groups of the daisyUI `button` component, with the tree's narrowed colour
 type, plus the `tooltip`, `dropdown`, `indicator` and `aura` properties and the
 click handler.
+
+`icon` is an optional leading [`Daisy.Icon.Icon`](Daisy-Icon#Icon), drawn at
+`size-4` before the label and `aria-hidden`, because the label beside it is
+already the button's accessible name.
+
+`ariaLabel` is for the **icon-only** button — `Button { defaultButtonConfig |
+icon = Just Icon.Eye, ariaLabel = Just "View order" } ""`. Without it such a
+button has no accessible name at all, which axe reports as a critical
+`button-name` violation. It is the same field, with the same meaning, that
+`SelectConfig`, `InputConfig` and the other bare controls carry.
+
 -}
 type alias ButtonConfig msg =
     { color : Maybe ButtonColor
+    , icon : Maybe Icon
+    , ariaLabel : Maybe String
     , style : Maybe SButton.Style
     , size : Maybe SButton.Size
     , modifiers : List SButton.Modifier
@@ -1492,6 +1546,8 @@ type alias ButtonConfig msg =
 defaultButtonConfig : ButtonConfig msg
 defaultButtonConfig =
     { color = Nothing
+    , icon = Nothing
+    , ariaLabel = Nothing
     , style = Nothing
     , size = Nothing
     , modifiers = []
@@ -1749,6 +1805,45 @@ does the work and no part class is involved.
 type FilterReset
     = ResetPart
     | ResetButton (List SButton.Modifier)
+
+
+{-| How big a [`Leaf.Icon`](#Leaf) is drawn.
+
+Three fixed steps, not a free length: an icon's size is a layout decision and
+`Daisy.Render` owns those. They map to the `size-4` / `size-5` / `size-6`
+entries of `Daisy.Render.tokens`.
+
+-}
+type IconSize
+    = IconSm
+    | IconMd
+    | IconLg
+
+
+{-| Everything a [`Leaf.Icon`](#Leaf) needs beyond the drawing itself.
+
+`label` is the icon's accessible name. With `Nothing` the `<svg>` is
+`aria-hidden`, which is right for an icon that sits beside its own text (a
+sidebar entry, a labelled button). With `Just` it becomes `role="img"` plus
+that `aria-label`, which is what gives an **icon-only** control a name — a
+`Leaf.Button` whose label is empty has no accessible name otherwise, and axe
+reports that as a critical `button-name` violation.
+
+`Icon` is not a daisyUI component and emits no daisyUI class, exactly like
+[`Leaf.Heading`](#HeadingLevel) and [`Leaf.Image`](#Leaf).
+
+-}
+type alias IconConfig =
+    { size : IconSize
+    , label : Maybe String
+    }
+
+
+{-| A decorative icon at the middle size: `size-5`, `aria-hidden`.
+-}
+defaultIconConfig : IconConfig
+defaultIconConfig =
+    { size = IconMd, label = Nothing }
 
 
 {-| The `mask` and `hover-3d` properties of an image, plus its alt text.

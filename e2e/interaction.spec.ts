@@ -53,6 +53,41 @@ test("admin: the theme dropdown changes the page theme", async ({
   await expect(root).toHaveAttribute("data-theme", "nord");
 });
 
+test("admin: the icon-only notifications button is named and fires its msg", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/", theme);
+
+  // The button has no text: its `Bell` icon is `aria-hidden`, and the name
+  // comes from `ButtonConfig.ariaLabel` (Daisy.Tree). Finding it by role and
+  // name is the same lookup axe's `button-name` rule makes, so this fails if
+  // the accessible name ever goes missing.
+  const bell = page.getByRole("button", { name: "Notifications" });
+  await expect(bell).toBeVisible();
+
+  // The unread count is `ButtonConfig.indicator`: `Daisy.Render` wraps the
+  // button in `.indicator` and puts `indicator-item` on the badge itself, so
+  // the badge is the button's *sibling*, not its child.
+  const wrapper = page.locator(".indicator").filter({ has: bell });
+  await expect(wrapper.locator(".indicator-item")).toHaveText("3");
+
+  await bell.click();
+  await expect(page.getByText(pane)).toHaveText("last-msg: NotificationsOpened");
+});
+
+test("admin: the icon-only row action is named per order and fires OrderViewed", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/", theme);
+
+  const view = page.getByRole("button", { name: "View order AC-10431" });
+  await expect(view).toBeVisible();
+  await view.click();
+  await expect(page.getByText(pane)).toHaveText("last-msg: OrderViewed");
+});
+
 test("analytics: picking a range sets last-msg: DateRangeChanged", async ({
   page,
   theme,

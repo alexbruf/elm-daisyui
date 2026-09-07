@@ -29,10 +29,26 @@ export type OverlapHit = {
  * Ancestor/descendant pairs are exempt by definition, and so is any pair whose
  * intersection is under `tol` on either axis: that is the "same Grid/Stack
  * cell, zero-area intersection" case, plus sub-pixel layout rounding.
+ *
+ * One structural exemption beyond those: a daisyUI `indicator-item` and its
+ * siblings inside the same `.indicator`. Overlapping is that part's entire
+ * definition - daisyUI positions it `absolute` and translates it 50% onto the
+ * corner of the element it annotates, which is what a notification count on a
+ * bell button *is*. It is scoped to one `.indicator` subtree, so an
+ * `indicator-item` still may not overlap anything else on the page.
  */
 export function findOverlaps(input: { classes: string[]; tol: number }) {
   const { classes, tol } = input;
   const selector = classes.map((c) => "." + CSS.escape(c)).join(",");
+
+  function indicatorPair(a: Element, b: Element): boolean {
+    const annotates = (item: Element, other: Element) => {
+      if (!item.classList.contains("indicator-item")) return false;
+      const box = item.closest(".indicator");
+      return !!box && box.contains(other);
+    };
+    return annotates(a, b) || annotates(b, a);
+  }
 
   function visible(el: Element): boolean {
     for (let n: Element | null = el; n; n = n.parentElement) {
@@ -68,6 +84,7 @@ export function findOverlaps(input: { classes: string[]; tol: number }) {
     for (let j = i + 1; j < els.length; j++) {
       const b = els[j];
       if (a.contains(b) || b.contains(a)) continue;
+      if (indicatorPair(a, b)) continue;
       const rb = b.getBoundingClientRect();
       const w = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left);
       const h = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
@@ -123,7 +140,17 @@ export function findOverflows(input: { classes: string[]; tol: number }) {
     if (!visible(el)) continue;
     const s = getComputedStyle(el);
     const scrollable = s.overflowX === "auto" || s.overflowX === "scroll";
-    if (!scrollable && el.scrollWidth > el.clientWidth + tol && el.clientWidth > 0) {
+    // An `.indicator` is a box whose `indicator-item` child is placed outside
+    // it on purpose (`position: absolute` plus a 50% translate onto the
+    // corner), so its scrollWidth is always wider than its clientWidth. That
+    // is the component's definition, not an overflow.
+    const indicatorBox = el.classList.contains("indicator");
+    if (
+      !scrollable &&
+      !indicatorBox &&
+      el.scrollWidth > el.clientWidth + tol &&
+      el.clientWidth > 0
+    ) {
       scrolls.push({
         el: label(el),
         scrollWidth: el.scrollWidth,

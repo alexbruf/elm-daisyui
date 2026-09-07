@@ -59,6 +59,8 @@ import Chart as C
 import Chart.Attributes as CA
 import Chart.Svg as CS
 import Daisy.Chart as Chart exposing (ChartConfig(..), ChartData, Series)
+import Daisy.Icon exposing (Icon)
+import Daisy.Render.Icons as Icons
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Aura as SAura
@@ -186,13 +188,17 @@ tokens =
     , tokenStatsHorizontalLg
     , tokenProse
     , tokenBgBase
+    , tokenBgGround
+    , tokenShadowSm
     , tokenTextSm
     , tokenFontBold
     , tokenFontSemibold
     , tokenHeading1
     , tokenHeading2
     , tokenHeading3
+    , tokenSizeIconSm
     , tokenSizeIcon
+    , tokenSizeIconLg
     ]
 
 
@@ -395,6 +401,36 @@ tokenBgBase =
     "bg-base-100"
 
 
+{-| The page ground a dashboard is drawn on: `bg-base-200`, one step darker
+than the panels that sit on it.
+
+daisyUI's dashboard examples paint the _content area_ with it and leave the
+navbar, the sidebar and every card at `bg-base-100`, which is what makes a card
+read as a raised panel instead of a bordered region of the same paper. It goes
+on `drawer-content` under `Shell.Dashboard` and on the `<main>` under
+`Shell.Plain`; the page root keeps `tokenBgBase`, so nothing behind the content
+column changes colour.
+
+-}
+tokenBgGround : String
+tokenBgGround =
+    "bg-base-200"
+
+
+{-| The one elevation this package uses, on every `card`.
+
+daisyUI's `.card` deliberately paints no shadow of its own — every docs example
+adds `shadow-sm` as a utility beside it — so the renderer emits it rather than
+leaving each caller to remember. It is a Tailwind utility, not a daisyUI class,
+so a corpus fixture (which compares `$$`-prefixed daisyUI classes only) is
+unaffected.
+
+-}
+tokenShadowSm : String
+tokenShadowSm =
+    "shadow-sm"
+
+
 tokenTextSm : String
 tokenTextSm =
     "text-sm"
@@ -429,9 +465,29 @@ tokenHeading3 =
     "text-xl"
 
 
+{-| `IconSize.IconSm`: a glyph inside a control, where the control's own line
+height is the budget (a `btn-xs` row action, a leading button icon).
+-}
+tokenSizeIconSm : String
+tokenSizeIconSm =
+    "size-4"
+
+
+{-| `IconSize.IconMd`, and the fixed size of every non-`Leaf.Icon` glyph the
+renderer draws: the calendar's paging arrows, an avatar's image box, a menu
+item's icon.
+-}
 tokenSizeIcon : String
 tokenSizeIcon =
     "size-5"
+
+
+{-| `IconSize.IconLg`: a glyph that is the content rather than a decoration,
+e.g. a `stat-figure`.
+-}
+tokenSizeIconLg : String
+tokenSizeIconLg =
+    "size-6"
 
 
 {-| The daisyUI classes that no `Daisy.Tree` value can reach.
@@ -467,6 +523,15 @@ unreachableClasses =
 classes : List String -> Html.Attribute msg
 classes list =
     Attr.class (String.join " " (List.filter (\c -> c /= "") list))
+
+
+{-| The same, for an SVG element. `Html.Attributes.class` sets the `className`
+_property_, which is read-only on an `SVGElement`, so an SVG node needs the
+attribute form.
+-}
+svgClasses : List String -> Html.Attribute msg
+svgClasses list =
+    SvgA.class (String.join " " (List.filter (\c -> c /= "") list))
 
 
 {-| Pick one entry out of a schema `parts` or `componentClasses` list by
@@ -994,7 +1059,15 @@ shell theShell theCta theSections =
     case theShell of
         Plain ->
             [ Html.main_
-                [ classes [ tokenFlex, tokenFlexCol, tokenGapLg, tokenPadding ] ]
+                [ classes
+                    [ tokenFlex
+                    , tokenFlexCol
+                    , tokenGapLg
+                    , tokenPadding
+                    , tokenMinHScreen
+                    , tokenBgGround
+                    ]
+                ]
                 (sectionList [ ctaHtml theCta ] theSections)
             ]
 
@@ -1013,7 +1086,7 @@ shell theShell theCta theSections =
                     ]
                     []
                 , Html.div
-                    [ classes [ drawerContentPart, tokenFlex, tokenFlexCol, tokenMinHScreen ] ]
+                    [ classes [ drawerContentPart, tokenFlex, tokenFlexCol, tokenMinHScreen, tokenBgGround ] ]
                     [ navbarHtml
                         { start = d.navbar.start
                         , center = d.navbar.center
@@ -1063,7 +1136,7 @@ ctaHtml c =
             :: Ev.onClick c.onClick
             :: []
         )
-        [ Html.text c.label ]
+        (maybeHtml (iconHtml [] buttonIconConfig) c.icon ++ [ Html.text c.label ])
         |> withIndicator c.indicator
         |> withTooltip c.tooltip
         |> withAura c.aura
@@ -1155,10 +1228,21 @@ sectionWith extra theSection =
                 (List.map block blocks ++ extra)
 
 
+{-| The navbar, with the page's own gutter.
+
+daisyUI's `.navbar` pads itself by `0.5rem`, which is less than the overhang of
+an `indicator-item`: daisyUI translates that part 50% of its own width past the
+corner of the element it annotates, so a notification badge on the last control
+of a wrapped `navbar-end` hung ~3px past the viewport at 768 and gave the
+document a horizontal scrollbar (`e2e/overflow.spec.ts`). `tokenPadding` is the
+same `p-4` the `<main>` content column already uses, so the chrome and the
+content now share one gutter and an out-of-flow decoration has room to sit in.
+
+-}
 navbarHtml : NavbarParts msg -> List (Html msg) -> List (Html msg) -> Html msg
 navbarHtml parts before after =
     Html.div
-        [ classes [ SNavbar.component, tokenBgBase, tokenGapSm ] ]
+        [ classes [ SNavbar.component, tokenBgBase, tokenGapSm, tokenPadding ] ]
         -- `navbar-start` and `navbar-end` are each exactly 50% wide, so their
         -- contents overlap rather than shrink once they no longer fit; they
         -- wrap inside their own half instead.
@@ -1251,16 +1335,7 @@ blockIn context theBlock =
                 (List.map (accordionItemHtml config) items)
 
         Alert config leaves ->
-            Html.div
-                [ classes
-                    ([ SAlert.component ]
-                        ++ opt SAlert.colorToClass config.color
-                        ++ opt SAlert.styleToClass config.style
-                        ++ opt SAlert.directionToClass config.direction
-                    )
-                , Attr.attribute "role" "alert"
-                ]
-                (List.map leaf leaves)
+            alertHtml config leaves
 
         Breadcrumbs leaves ->
             Html.div
@@ -1454,6 +1529,12 @@ cardHtml config parts =
                 ++ opt SCard.styleToClass config.style
                 ++ opt SCard.sizeToClass config.size
                 ++ List.map SCard.modifierToClass config.modifiers
+                -- daisyUI's `.card` paints neither a background nor a shadow:
+                -- every docs example adds `bg-base-100 shadow-sm` beside it,
+                -- which is what makes a card read as a panel raised off the
+                -- `bg-base-200` content ground rather than a bordered region of
+                -- the same paper.
+                ++ [ tokenBgBase, tokenShadowSm ]
             )
         ]
         (maybeHtml (\f -> Html.figure [] [ leaf f ]) parts.figure
@@ -1482,6 +1563,9 @@ cardChildHtml child =
         CardLeaf value ->
             leaf value
 
+        CardAlert config leaves ->
+            alertHtml config leaves
+
         CardChart config data ->
             chartHtml config data
 
@@ -1495,6 +1579,20 @@ cardChildHtml child =
             formHtml fieldsets
 
 
+alertHtml : AlertConfig -> List (Leaf msg) -> Html msg
+alertHtml config leaves =
+    Html.div
+        [ classes
+            ([ SAlert.component ]
+                ++ opt SAlert.colorToClass config.color
+                ++ opt SAlert.styleToClass config.style
+                ++ opt SAlert.directionToClass config.direction
+            )
+        , Attr.attribute "role" "alert"
+        ]
+        (List.map leaf leaves)
+
+
 formHtml : List (Fieldset msg) -> Html msg
 formHtml fieldsets =
     Html.form
@@ -1505,7 +1603,17 @@ formHtml fieldsets =
 statsHtml : StatConfig -> List (StatItem msg) -> Html msg
 statsHtml config items =
     Html.div
-        [ classes (SStat.component :: statDirectionClasses config.direction) ]
+        [ classes
+            (SStat.component
+                :: statDirectionClasses config.direction
+                -- `.stats` is `rounded-box` but paints nothing; daisyUI's own
+                -- examples write `stats bg-base-100 border ...` / `stats
+                -- shadow`, which is what makes a tile row a panel on the
+                -- `bg-base-200` content ground instead of four numbers loose
+                -- on the page. Same pair a `card` gets, for the same reason.
+                ++ [ tokenBgBase, tokenShadowSm ]
+            )
+        ]
         (List.map statItemHtml items)
 
 
@@ -1689,7 +1797,7 @@ menuItemHtml (MenuItem item) =
                 ++ flag item.focus (SMenu.modifierToClass SMenu.Focus)
 
         body =
-            maybeHtml (\icon -> Html.span [ classes [ tokenSizeIcon ] ] [ Html.text icon ]) item.icon
+            maybeHtml (iconHtml [] defaultIconConfig) item.icon
                 ++ [ Html.text item.label ]
                 ++ maybeHtml (\b -> badgeHtml [] b.config b.label) item.badge
     in
@@ -1753,11 +1861,32 @@ tableHtml config rows =
                 )
             ]
             [ Html.thead []
-                (List.map (\r -> Html.tr [] (List.map (\c -> Html.th [] [ leaf c ]) r.cells)) headers)
+                (List.map (\r -> Html.tr [] (List.map (\c -> Html.th [] (tableCellHtml c)) r.cells)) headers)
             , Html.tbody []
-                (List.map (\r -> Html.tr [] (List.map (\c -> Html.td [] [ leaf c ]) r.cells)) body)
+                (List.map (\r -> Html.tr [] (List.map (\c -> Html.td [] (tableCellHtml c)) r.cells)) body)
             ]
         ]
+
+
+{-| One `<th>`/`<td>`'s content.
+
+A cell with no `leading` leaf is the bare leaf, byte for byte what a table cell
+has always rendered. A cell that has one gets the flex wrapper daisyUI's own
+"table with visual elements" example uses around an `avatar` and a name — no
+part class is involved, so nothing can leak onto an element that is not a cell.
+
+-}
+tableCellHtml : TableCell msg -> List (Html msg)
+tableCellHtml cell =
+    case cell.leading of
+        Nothing ->
+            [ leaf cell.content ]
+
+        Just leading ->
+            [ Html.div
+                [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
+                [ leaf leading, leaf cell.content ]
+            ]
 
 
 tabHtml : Tab msg -> List (Html msg)
@@ -1890,6 +2019,9 @@ leafWith extra theLeaf =
             Html.figure
                 [ classes (SHoverGallery.component :: extra) ]
                 (List.map (\src -> Html.img [ Attr.src src, Attr.alt "" ] []) srcs)
+
+        Icon config icon ->
+            iconHtml extra config icon
 
         Image config src ->
             Html.img
@@ -2124,6 +2256,67 @@ headingHtml extra level text =
     tag [ classes (sizeAndWeight ++ extra) ] [ Html.text text ]
 
 
+{-| One [`Daisy.Icon.Icon`](Daisy-Icon#Icon), as inline SVG.
+
+`Leaf.Icon` emits **no** daisyUI class — an icon is not a daisyUI component,
+like `Leaf.Heading` and `Leaf.Image` — so the only class on the `<svg>` is the
+size token its [`IconConfig`](Daisy-Tree#IconConfig) asks for.
+
+The five attributes every heroicons outline drawing shares — `viewBox`, an empty
+`fill`, a `currentColor` `stroke`, `stroke-width` and the two rounded
+`stroke-line*` joins — are written here once; `Daisy.Render.Icons` holds only the
+`d` values. `currentColor` is what makes an icon follow the daisyUI theme: it
+inherits the colour of whatever `btn`, `menu` or `stat-figure` it sits in.
+
+Accessibility follows `IconConfig.label`: unlabelled it is `aria-hidden`, so a
+decorative glyph beside a text label adds nothing to the accessible name;
+labelled it is an image `role` plus that `aria-label`, which is how an icon-only
+control gets a name.
+
+-}
+iconHtml : List String -> IconConfig -> Icon -> Html msg
+iconHtml extra config icon =
+    Svg.svg
+        (SvgA.viewBox "0 0 24 24"
+            :: SvgA.fill "none"
+            :: SvgA.stroke "currentColor"
+            :: SvgA.strokeWidth "1.5"
+            :: svgClasses (iconSizeToken config.size :: extra)
+            :: iconLabelAttrs config.label
+        )
+        (List.map
+            (\d ->
+                Svg.path
+                    [ SvgA.strokeLinecap "round", SvgA.strokeLinejoin "round", SvgA.d d ]
+                    []
+            )
+            (Icons.paths icon)
+        )
+
+
+iconSizeToken : IconSize -> String
+iconSizeToken size =
+    case size of
+        IconSm ->
+            tokenSizeIconSm
+
+        IconMd ->
+            tokenSizeIcon
+
+        IconLg ->
+            tokenSizeIconLg
+
+
+iconLabelAttrs : Maybe String -> List (Html.Attribute msg)
+iconLabelAttrs label =
+    case label of
+        Just text ->
+            [ Attr.attribute "role" "img", Attr.attribute "aria-label" text ]
+
+        Nothing ->
+            [ Attr.attribute "aria-hidden" "true" ]
+
+
 avatarHtml : List String -> AvatarConfig msg -> ImageSrc -> Html msg
 avatarHtml extra config src =
     Html.div
@@ -2169,13 +2362,24 @@ buttonHtml extra config label =
                 ++ List.map SButton.behaviorToClass config.behaviors
                 ++ extra
             )
-            :: onClickAttrs config.onClick
+            :: (optAttr (Attr.attribute "aria-label") config.ariaLabel
+                    ++ onClickAttrs config.onClick
+               )
         )
-        [ Html.text label ]
+        (maybeHtml (iconHtml [] buttonIconConfig) config.icon ++ [ Html.text label ])
         |> withIndicator config.indicator
         |> withTooltip config.tooltip
         |> withDropdown config.dropdown
         |> withAura config.aura
+
+
+{-| A leading button icon: one step down from the standalone default, so it fits
+a `btn-xs` row action, and `aria-hidden`, because the button's own label (or its
+`ariaLabel`) is what names it.
+-}
+buttonIconConfig : IconConfig
+buttonIconConfig =
+    { size = IconSm, label = Nothing }
 
 
 filterHtml : List String -> FilterData msg -> Html msg

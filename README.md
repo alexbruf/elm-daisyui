@@ -48,8 +48,8 @@ to five `Section`s (`Hero`, `Navbar`, `Footer`, `Grid`, `Stack`), a mandatory `c
 only primary button, which the renderer places according to the shell — a list of `Overlay`s, and a
 `Theme`. A `Section` holds `Block`s (`Card`, `Stat`, `Table`, `Form`, `Chart`, `Alert`, `Prose`,
 `Menu`, `Steps`, `Timeline` and the rest of daisyUI's block-level components); a `Block` holds
-`Leaf`s (`Button`, `Badge`, `Input`, `Select`, `Toggle`, `Calendar`, `Text`, `Heading`, …), which
-hold only data. `Overlay` (`Modal`, `Drawer`, `Toast`) exists only as an element of
+`Leaf`s (`Button`, `Badge`, `Input`, `Select`, `Toggle`, `Calendar`, `Text`, `Heading`, `Icon`, …),
+which hold only data. `Overlay` (`Modal`, `Drawer`, `Toast`) exists only as an element of
 `Page.overlays`, never as a child of anything else, and a `Leaf.Button` cannot take the `Primary`
 colour because `Page.cta` owns it. Where a daisyUI component has `part` classes the tree takes a
 record of parts (`CardParts`, `NavbarParts`, `CollapseParts`, …) rather than free children, so a
@@ -159,6 +159,48 @@ the renderer against.
 
 Per-item state lives on the item, not the container: `menu-active` is a `Bool` on a `MenuItem`,
 `tab-active` on a `Tab`, `step-*` colours on a `Step`.
+
+## Icons
+
+`Daisy.Icon` is a closed set of 25 drawings — heroicons 2.2.0 outline, MIT, (c) Tailwind Labs —
+copied into the package at build time. It is pure data: the path data lives in an internal module
+that is not exposed, so nothing a caller writes can become markup. An icon is not a daisyUI
+component and emits no daisyUI class, exactly like `Leaf.Heading` and `Leaf.Image`; only its size
+class (`size-4` / `size-5` / `size-6`) comes from `Daisy.Render.tokens`.
+
+```elm
+import Daisy.Icon as Icon
+import Daisy.Tree exposing (..)
+```
+
+Accessibility is a field, not a convention. `label = Nothing` renders the `<svg>` `aria-hidden`,
+which is what you want beside a text label; `Just` renders an image `role` plus that `aria-label`,
+which is what names an icon-only control:
+
+```elm
+-- decorative, next to its own text
+Icon defaultIconConfig Icon.Home
+
+-- a stat-figure, at the largest of the three sizes
+Icon { defaultIconConfig | size = IconLg } Icon.CurrencyDollar
+
+-- an icon-only button: `ariaLabel` names the button, the glyph stays hidden
+Button
+    { defaultButtonConfig
+        | icon = Just Icon.Eye
+        , ariaLabel = Just "View order"
+        , style = Just SButton.Ghost
+        , modifiers = [ SButton.Square ]
+    }
+    ""
+```
+
+The icon fields are all `Maybe` with a `Nothing` default: `MenuItem.icon` (a sidebar glyph),
+`ButtonConfig.icon` and `Cta.icon` (a leading glyph), and `StatItem.figure`, which takes any `Leaf`
+and therefore takes `Leaf.Icon` as it stands.
+
+Import `Daisy.Icon` **qualified**. Three of its constructors (`Calendar`, `Menu`, `Check`) also name
+a `Daisy.Tree` constructor, so `exposing (..)` on both at once is ambiguous.
 
 ## Charts
 
@@ -284,18 +326,59 @@ dashboard sidebars also link to the documentation site at `/docs/`, which `tools
 generates from the repository's markdown as part of the demo build.
 
 **[Dashboard shell, stats and a chart card](demo/src/Demo/Admin.elm)** — `Shell.Dashboard` (a
-daisyUI `drawer` that is open from `lg:` up), four `Stat` tiles in a four-column `Grid`, a
-`Chart Line` inside a `Card`, a `Table` with badges and a per-row action, and a `Toast` overlay:
+daisyUI `drawer` that is open from `lg:` up), four `Stat` tiles with icon figures in a four-column
+`Grid`, a `Chart Line` inside a `Card`, a `Table` whose customer cell pairs an `Avatar` with a name,
+and a `Toast` overlay:
 
 ```elm
 statsSection : Section msg
 statsSection =
     Grid { columns = Tree.Cols4 }
-        [ statBlock "Revenue (MTD)" "$248,930" "18.2% vs last month"
-        , statBlock "Orders" "3,412" "402 awaiting fulfilment"
-        , statBlock "Active users" "12,847" "1,204 new this week"
-        , statBlock "Refund rate" "1.8%" "0.4 points below target"
+        [ statBlock Icon.CurrencyDollar "Revenue (MTD)" "$248,930" "18.2% vs last month"
+        , statBlock Icon.ShoppingCart "Orders" "3,412" "402 awaiting fulfilment"
+        , statBlock Icon.Users "Active users" "12,847" "1,204 new this week"
+        , statBlock Icon.ArrowTrendingDown "Refund rate" "1.8%" "0.4 points below target"
         ]
+
+
+statBlock : Icon.Icon -> String -> String -> String -> Block msg
+statBlock icon title value desc =
+    let
+        base : StatItem msg
+        base =
+            Tree.emptyStatItem title value
+    in
+    Stat Tree.defaultStatConfig
+        [ { base | desc = Just desc, figure = Just (Icon { defaultIcon | size = Tree.IconLg } icon) } ]
+```
+
+A row of the orders table, with the avatar-and-name cell and the icon-only row action:
+
+```elm
+orderRow : Config msg -> Order -> Row msg
+orderRow config order =
+    { header = False
+    , cells =
+        [ Tree.tableCell (Text order.reference)
+        , { leading = Just (Avatar circleAvatar (avatarSrc order.avatar))
+          , content = Text order.customer
+          }
+        , Tree.tableCell (Badge { defaultBadge | color = Just order.tone } order.state)
+        , Tree.tableCell (Text order.total)
+        , Tree.tableCell
+            (Button
+                { defaultButton
+                    | icon = Just Icon.Eye
+                    , ariaLabel = Just ("View order " ++ order.reference)
+                    , style = Just SButton.Ghost
+                    , size = Just SButton.Xs
+                    , modifiers = [ SButton.Square ]
+                    , onClick = Just (config.onRowAction order.reference)
+                }
+                ""
+            )
+        ]
+    }
 ```
 
 **[Theme switcher](demo/src/Demo/Admin.elm)** — all 35 daisyUI themes as one `Leaf.ThemeSelect` in

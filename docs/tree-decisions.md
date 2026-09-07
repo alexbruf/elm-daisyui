@@ -811,3 +811,155 @@ header lines did. `elm.json` still asks for `alexbruf/elm-cally 1.x` and was
 `elm install alexbruf/elm-cally` puts it in `~/.elm` and source 1 takes over on
 its own, with no edit to this script — the header will then read
 `(package cache, ...)` and name the installed version.
+
+## Icons and surface tokens (2026-09-07)
+
+The demos were meant to look like daisyUI's dashboard templates (SPEC.md step
+7) and did not: no glyph anywhere, every panel the same white as the page, and
+a table of bare strings. Three changes close that, and none of them opens the
+tree.
+
+### 1. `Daisy.Icon` and `Leaf.Icon`
+
+`Daisy.Icon` is a **closed** set of 25 drawings (`Icon(..)`, `allIcons`,
+`name`) and holds no path data, no markup and no class — the same split
+`Daisy.Chart` has with `terezka/elm-charts`. The `d` attributes live in
+`Daisy.Render.Icons`, which is **not** in `elm.json`'s `exposed-modules`, so an
+application cannot reach them; `Daisy.Render.iconHtml` writes the five shared
+`<svg>` attributes once and the size class comes from `tokens`.
+
+The drawings are heroicons 2.2.0 **outline**, MIT, (c) Tailwind Labs, copied at
+build time out of `demo/node_modules/heroicons/24/outline/<name>.svg`
+(`Daisy.Icon.name` is that file name). heroicons is a `devDependency` of the
+demo only: nothing at runtime, and `elm.json` gained no dependency.
+
+An open `Icon String` — a path or an svg body from the caller — would have been
+an escape hatch straight into the renderer's markup, which is the one thing
+this package does not have. A closed set is why `Leaf.Icon` can be a leaf at
+all.
+
+- `Leaf.Icon IconConfig Icon`, where `IconConfig = { size : IconSize, label :
+  Maybe String }` and `IconSize = IconSm | IconMd | IconLg` (`size-4` /
+  `size-5` / `size-6`).
+- **Accessibility is in the type.** `label = Nothing` renders `aria-hidden`,
+  which is right for a glyph beside its own text; `Just` renders an image
+  `role` plus that `aria-label`. Nothing else in the tree can produce a named
+  icon, and nothing can produce an unnamed one that claims to be content.
+- Icons where the templates put them: `MenuItem.icon` changed from `Maybe
+  String` to `Maybe Icon` (it used to render the string in a `<span>`),
+  `ButtonConfig.icon` and `Cta.icon` are new leading-icon fields, and
+  `StatItem.figure` already took a `Leaf`, so `Leaf.Icon` works there with no
+  change at all. Every new field is a `Maybe` defaulting to `Nothing`.
+- `ButtonConfig.ariaLabel : Maybe String` came with them. An icon-only button
+  (`icon = Just Eye`, label `""`) has no accessible name otherwise, and axe
+  reports that as a **critical** `button-name` violation. It is the same field,
+  with the same meaning, that `SelectConfig`, `InputConfig` and the other bare
+  controls got in "Expressibility refinements" item 6.
+- `Leaf.Icon` emits **no** daisyUI class, so `CoverageTest` is unchanged: the
+  emitted set is still exactly `Schema.allClasses` minus the four unreachable
+  entries.
+
+### 2. Four surface tokens
+
+`Daisy.Render.tokens` went from 43 to 47 entries. `rounded-box` was
+considered and dropped: it is on `RenderPurityTest`'s forbidden list (and
+daisyUI already rounds `.card`, `.stats` and `.navbar` itself). Opacity
+variants such as `text-base-content/60` were dropped too — those are exactly
+the pairs the `contrast` spec fails on.
+
+| Token | Value | Where |
+|---|---|---|
+| `tokenBgGround` | `bg-base-200` | `drawer-content` under `Shell.Dashboard`, and the `<main>` under `Shell.Plain`. The page root keeps `bg-base-100`. |
+| `tokenShadowSm` | `shadow-sm` | every `card` and every `stats` block |
+| `tokenSizeIconSm` | `size-4` | `IconSm`, and the leading icon of every button |
+| `tokenSizeIconLg` | `size-6` | `IconLg`, which is what a `stat-figure` uses |
+
+Two existing tokens moved as well: `card` and `stats` now also carry
+`tokenBgBase` (`bg-base-100`), and `navbarHtml` carries `tokenPadding`
+(`p-4`).
+
+**Why the renderer and not the demos.** daisyUI's `.card` paints neither a
+background nor a shadow, and `.stats` paints nothing either — every docs
+example writes `card bg-base-100 shadow-sm` and `stats bg-base-100 border ...`
+/ `stats shadow` as utilities beside them. Leaving that to each caller means
+every dashboard re-derives the same pair, and a caller cannot emit a class at
+all in this package. Corpus fixtures compare `$$`-prefixed **daisyUI** classes
+only, so adding Tailwind utilities to those two elements changes no corpus row.
+
+**Why `p-4` on the navbar.** daisyUI pads `.navbar` by `0.5rem`, which is less
+than the overhang of an `indicator-item`: daisyUI translates that part 50% of
+its own width past the corner of the element it annotates. With a notification
+badge on the last control of a wrapped `navbar-end`, that hung ~3px past the
+viewport at 768 and gave the document a horizontal scrollbar
+(`e2e/overflow.spec.ts`). `tokenPadding` is the gutter the `<main>` content
+column already uses, so the chrome and the content now share one and an
+out-of-flow decoration has room to sit in. Found by the spec, fixed in the
+renderer, not worked around in a demo.
+
+### 3. `CardChild.CardAlert` and `Row.cells : List (TableCell msg)`
+
+Two typed additions the dashboard composition needed, both in the shape the
+existing ones already have.
+
+- **`CardAlert AlertConfig (List (Leaf msg))`** joins `CardLeaf`, `CardChart`,
+  `CardTable`, `CardStat` and `CardForm`. "A warning inside a card" is the
+  danger-zone idiom and was inexpressible. `Daisy.Render.cardChildHtml`
+  dispatches to the very same `alertHtml` that `Block.Alert` uses (it was
+  extracted out of `blockIn` for this), so an alert in a card and a bare alert
+  are one markup rather than two. There is still no `CardCard`.
+- **`TableCell msg = { leading : Maybe (Leaf msg), content : Leaf msg }`**, with
+  a `tableCell` helper for the plain case. A cell with `leading = Nothing`
+  renders as the bare leaf inside the `<td>` — byte for byte what a table cell
+  always produced, so every corpus `table--*` row is unchanged — and only a
+  cell that has one gets the flex wrapper daisyUI's own "table with visual
+  elements" example puts around an `avatar` and a name. This is exactly the
+  rule `ListCell` follows for `list-col-grow`: the flag is on the cell, and an
+  unflagged cell is invisible in the output.
+
+### 4. What the demos do with them
+
+| Demo | Now |
+|---|---|
+| Admin | Sidebar items carry `Home` / `ChartBar` / `Cog` / `Document`. `navbar-start` is the brand plus a `type="search"` `Input` (`ariaLabel = "Search orders"`); `navbar-end` is an icon-only `Bell` button with an `error` `indicator` badge, the user `Avatar`, the theme dropdown, then the CTA, which now carries a `Download` glyph. The four stat tiles have `CurrencyDollar` / `ShoppingCart` / `Users` / `ArrowTrendingDown` figures and keep their `stat-desc` lines. Each orders row puts an `Avatar` in the customer cell's `leading` slot and an icon-only `Eye` button (`ariaLabel = "View order AC-…"`) in the action cell. |
+| Analytics | Same sidebar icons; `navbar-end` is the date-range `Select`, the `Bell` button and the user `Avatar`, then a `Download` CTA. The four `Responsive` stat tiles gained `Users` / `ArrowTrendingUp` / `CurrencyDollar` / `ChartBar` figures. The three charts and the range picker stay in `Card`s. |
+| Settings | `Sections5` is unchanged in count: the warning band became a **Danger zone** `Card` holding an `error` `CardAlert`, a line of prose and a `Trash` `btn-error` in `card-actions` — deliberately not primary, which the type system enforces (`Leaf.Button`'s colour type has no `Primary`). The CTA carries a `Check` glyph. |
+
+Avatar portraits are inline `data:image/svg+xml` URIs, not files and not remote
+photos: `e2e/themes.spec.ts` compares 105 full-page screenshots byte for byte,
+so the image has to be present on first paint in every environment, with no
+network and no font metrics involved (the drawing is pure geometry, no text).
+
+### 5. `menu-title` is still out, and why
+
+SPEC's dashboard look wants a section header above the sidebar navigation. It
+was composed in, and then removed again: with it, `e2e/a11y.spec.ts` fails on
+**admin** and **analytics** in both `light` and `dark` with
+`color-contrast [serious] x1: .menu-title`. daisyUI paints `menu-title` at
+`text-base-content/40` by design, which is the same reason
+"Refinements from e2e" dropped it the first time. The sidebars therefore have
+no title row; the brand still sits in the navbar. This is a daisyUI palette
+decision, not a composition one, and fixing it would mean either editing
+`vendor/daisyui` or emitting an opacity override from `Render` — the first is
+forbidden, and the second is the contrast-fixme pair the token list
+deliberately does not carry. Recorded in `docs/e2e-findings.md`.
+
+### 6. One e2e exemption, and two new e2e tests
+
+`e2e/lib/browser.ts` gained a **structural** exemption, in the same register as
+the ancestor/descendant one it already had: a daisyUI `indicator-item` may
+overlap the siblings inside its own `.indicator`, and an `.indicator` box may
+have a `scrollWidth` wider than its `clientWidth`. Overlapping its sibling is
+that part's entire definition — daisyUI positions it `absolute` and translates
+it 50% onto the corner of the element it annotates, which is what a
+notification count on a bell button *is*. The exemption is scoped to one
+`.indicator` subtree, so an `indicator-item` still may not overlap anything
+else on the page, and no other assertion was relaxed. (The *page-level*
+consequence of that overhang was a real defect and was fixed in `Render`; see
+"Why `p-4` on the navbar" above.)
+
+`e2e/interaction.spec.ts` gained two tests, 12 across the six projects:
+the notifications button is found **by role and accessible name**, shows `3` on
+its `indicator-item` and fires `NotificationsOpened`; the row action is found
+by its per-order name and fires `OrderViewed`. Both look the control up the way
+axe's `button-name` rule does, so an icon-only button that lost its name would
+fail them before it failed the a11y sweep.

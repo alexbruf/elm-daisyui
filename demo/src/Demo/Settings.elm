@@ -17,6 +17,7 @@ Like every `Demo.*` module this imports no `Html`.
 -}
 
 import BasePath
+import Daisy.Icon as Icon
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Button as SButton
 import Daisy.Schema.Card as SCard
@@ -64,6 +65,7 @@ type alias Config msg =
     , onDigest : Bool -> msg
     , onAnonymize : Bool -> msg
     , onSave : msg
+    , onDelete : msg
     , onConfirm : msg
     , onCancel : msg
     }
@@ -101,9 +103,9 @@ page config =
                 (navSection config)
                 headerSection
                 (formsSection config)
-                warningSection
+                (dangerSection config)
                 (footerSection config)
-        , cta = Tree.cta "Save changes" config.onSave
+        , cta = saveCta config
         , overlays = [ confirmModal config ]
         , theme = config.theme
         , dock = Nothing
@@ -187,8 +189,9 @@ emptyCard =
     Tree.emptyCardParts
 
 
-{-| `card-border` — without a style a `card` paints nothing of its own, so on a
-`base-100` page it is invisible and the two form groups read as one band.
+{-| `card-border`. `Daisy.Render` paints every card `bg-base-100 shadow-sm` on
+the `bg-base-200` page ground, so a card already reads as its own panel; the
+border is what daisyUI's dashboard examples add on top.
 -}
 borderedCard : Tree.CardConfig
 borderedCard =
@@ -290,17 +293,39 @@ toggleField label control =
     { base | labelPlacement = LabelEnd }
 
 
-{-| The warning band, on its own so it can stretch. An `AlignStart` stack
-shrinks an `Alert` to its content width, which is what visibly clipped this one
-at 1440 (`docs/screenshots/demo-settings-modal.png`); `AlignStretch` fills the
-band.
+{-| The danger zone, on its own so it can stretch. An `AlignStart` stack shrinks
+a `Card` to its content width; `AlignStretch` fills the band.
+
+The card holds an error `Alert` as a `CardAlert` child — the same helper
+`Block.Alert` renders, so an alert in a card and a bare alert are one markup —
+and a destructive `Trash` action in `card-actions`. The action is deliberately
+**not** primary: `Page.cta` ("Save changes") is the page's only `btn-primary`,
+which the type system enforces (`Leaf.Button`'s colour type has no `Primary`).
+
 -}
-warningSection : Section msg
-warningSection =
+dangerSection : Config msg -> Section msg
+dangerSection config =
     Stack { align = AlignStretch }
-        [ Alert
-            { color = Just SAlert.Warning, style = Nothing, direction = Nothing }
-            [ Text "Saving asks for confirmation: retention changes delete history permanently." ]
+        [ Card borderedCard
+            { emptyCard
+                | title = Just "Danger zone"
+                , body =
+                    [ CardAlert
+                        { color = Just SAlert.Error, style = Nothing, direction = Nothing }
+                        [ Text "Deleting the workspace removes every event, export and invoice. This cannot be undone." ]
+                    , CardLeaf
+                        (Text "Saving asks for confirmation first: retention changes delete history permanently.")
+                    ]
+                , actions =
+                    [ Button
+                        { defaultButton
+                            | icon = Just Icon.Trash
+                            , color = Just Tree.Error
+                            , onClick = Just config.onDelete
+                        }
+                        "Delete workspace"
+                    ]
+            }
         ]
 
 
@@ -313,6 +338,18 @@ footerSection : Config msg -> Section msg
 footerSection config =
     Stack Tree.defaultStackConfig
         [ debugPane config ]
+
+
+{-| The page CTA, with a leading `Check` glyph.
+-}
+saveCta : Config msg -> Tree.Cta msg
+saveCta config =
+    let
+        base : Tree.Cta msg
+        base =
+            Tree.cta "Save changes" config.onSave
+    in
+    { base | icon = Just Icon.Check }
 
 
 {-| The debug pane the Tier C "interaction" spec reads. Same convention on

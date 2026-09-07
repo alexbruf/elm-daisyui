@@ -175,6 +175,7 @@ type alias Model =
     , lastMsg : String
     , toastVisible : Bool
     , modalOpen : Bool
+    , search : String
     , dateRange : String
     , calendar : Tree.CalendarState
     , dateRangeCaption : String
@@ -196,6 +197,7 @@ init flags url key =
       , lastMsg = "none"
       , toastVisible = False
       , modalOpen = False
+      , search = ""
       , dateRange = firstOr "Last 30 days" (List.drop 1 Demo.Analytics.dateRanges)
       , calendar = Daisy.Render.initCalendarRange analyticsCalendarConfig Nothing
       , dateRangeCaption = noRangeCaption
@@ -253,6 +255,8 @@ type Msg
     | UrlChanged Url.Url
     | NavigateTo String
     | ThemeChanged Theme
+    | SearchChanged String
+    | NotificationsOpened
     | ExportClicked
     | ToastDismissed
     | OrderViewed String
@@ -267,6 +271,7 @@ type Msg
     | DigestToggled Bool
     | AnonymizeToggled Bool
     | SaveClicked
+    | DeleteRequested
     | ModalConfirmed
     | ModalCancelled
 
@@ -302,6 +307,12 @@ msgName msg =
 
         ThemeChanged _ ->
             "ThemeChanged"
+
+        SearchChanged _ ->
+            "SearchChanged"
+
+        NotificationsOpened ->
+            "NotificationsOpened"
 
         ExportClicked ->
             "ExportClicked"
@@ -344,6 +355,9 @@ msgName msg =
 
         SaveClicked ->
             "SaveClicked"
+
+        DeleteRequested ->
+            "DeleteRequested"
 
         ModalConfirmed ->
             "ModalConfirmed"
@@ -390,6 +404,12 @@ step msg model =
 
         ThemeChanged theme ->
             ( { model | theme = theme }, Cmd.none )
+
+        SearchChanged text ->
+            ( { model | search = text }, Cmd.none )
+
+        NotificationsOpened ->
+            ( model, Cmd.none )
 
         ExportClicked ->
             ( { model | toastVisible = True }
@@ -442,6 +462,9 @@ step msg model =
             ( { model | anonymize = on }, Cmd.none )
 
         SaveClicked ->
+            ( { model | modalOpen = True }, Cmd.none )
+
+        DeleteRequested ->
             ( { model | modalOpen = True }, Cmd.none )
 
         ModalConfirmed ->
@@ -497,8 +520,11 @@ pageFor model =
                 , theme = model.theme
                 , lastMsg = model.lastMsg
                 , toastVisible = model.toastVisible
+                , search = model.search
                 , onNavigate = NavigateTo
                 , onTheme = ThemeChanged
+                , onSearch = SearchChanged
+                , onNotifications = NotificationsOpened
                 , onExport = ExportClicked
                 , onRowAction = OrderViewed
                 }
@@ -516,6 +542,7 @@ pageFor model =
                 , onRangeSelect = RangeSelected
                 , onCalendarMsg = CalendarMsg
                 , onCalendarChange = DateRangeChanged
+                , onNotifications = NotificationsOpened
                 , onDownload = DownloadClicked
                 }
 
@@ -538,6 +565,7 @@ pageFor model =
                 , onDigest = DigestToggled
                 , onAnonymize = AnonymizeToggled
                 , onSave = SaveClicked
+                , onDelete = DeleteRequested
                 , onConfirm = ModalConfirmed
                 , onCancel = ModalCancelled
                 }

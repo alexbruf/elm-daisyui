@@ -127,3 +127,27 @@ have since been fixed in `Daisy.Tree` — see "Expressibility refinements
   control's `Tooltip` text when `ariaLabel` is `Nothing`, but
   `Demo.Analytics`' navbar select no longer needs it: it carries
   `ariaLabel = Just "Date range"` and no `Tooltip` at all.
+- **`menu-title` cannot be used at all, in any theme** (new, 2026-09-07). The
+  dashboard look SPEC step 7 points at puts a section header above the sidebar
+  navigation, and `MenuItem.title = True` expresses it exactly. It still cannot
+  be shipped: daisyUI paints `.menu-title` at `text-base-content/40`, and
+  `a11y.spec.ts` fails on **admin** and **analytics** in both `light` and
+  `dark` with `color-contrast [serious] x1: .menu-title`. It was composed into
+  both sidebars, measured, and taken out again — the same conclusion
+  `docs/tree-decisions.md` "Refinements from e2e" reached, now with the newer
+  composition and the icons in place, so it is a property of the daisyUI
+  palette rather than of the surrounding page. Fixing it needs either an edit
+  to `vendor/daisyui` (forbidden) or an opacity override emitted from
+  `Daisy.Render` — which is the contrast-fixme kind of utility that
+  `Render.tokens` deliberately does not carry. The brand still sits in the
+  navbar, so no information is lost.
+- **An `indicator-item` overhangs its own box, and nothing in the tree can say
+  otherwise** (new, 2026-09-07). daisyUI positions the part `absolute` and
+  translates it 50% of its own width onto the corner of the element it
+  annotates. That is the component's definition, so `overlap.spec.ts` and
+  `overflow.spec.ts` now carry a structural exemption for it, scoped to one
+  `.indicator` subtree. The *page-level* consequence was a real defect and was
+  fixed rather than exempted: with only daisyUI's `0.5rem` of navbar padding, a
+  badge on the last control of a wrapped `navbar-end` hung ~3px past the
+  viewport at 768, so `Daisy.Render.navbarHtml` now uses the same `p-4` gutter
+  as the content column.
