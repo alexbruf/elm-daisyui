@@ -195,6 +195,24 @@ tokens =
     , tokenProse
     , tokenBgBase
     , tokenBgGround
+    , tokenBgBase300
+    , tokenTextBaseContent
+    , tokenBgPrimary
+    , tokenTextPrimaryContent
+    , tokenBgSecondary
+    , tokenTextSecondaryContent
+    , tokenBgAccent
+    , tokenTextAccentContent
+    , tokenBgNeutral
+    , tokenTextNeutralContent
+    , tokenBgInfo
+    , tokenTextInfoContent
+    , tokenBgSuccess
+    , tokenTextSuccessContent
+    , tokenBgWarning
+    , tokenTextWarningContent
+    , tokenBgError
+    , tokenTextErrorContent
     , tokenShadowSm
     , tokenRoundedLg
     , tokenTextXs
@@ -487,6 +505,112 @@ column changes colour.
 tokenBgGround : String
 tokenBgGround =
     "bg-base-200"
+
+
+{-| The eighteen utilities `Leaf.Swatch` paints a palette chip with, plus the
+two above it: one `bg-*` per surface and the `text-*-content` that reads on it.
+
+They are the only tokens in this table that are _colours_. Everywhere else the
+renderer leaves colour to daisyUI's own component classes, because a component
+carries its own pair; a swatch is not a component — it is a picture of a theme
+variable — so the pair has to be named here. Each constant has exactly one use
+site, the `swatchClasses` table below, and there is no way for a caller to reach
+one: `Leaf.Swatch` takes a `Daisy.Tree.SwatchColor`, never a class.
+
+`bg-primary` therefore left `tests/RenderPurityTest.elm`'s `forbidden` list in
+this pass, by the same rule `gap-6` and `rounded-lg` left it in the Nexus pass —
+it became one named constant with one job. `text-primary` did **not**: no swatch
+needs it, and a `-content` colour is not the same utility.
+
+-}
+tokenBgBase300 : String
+tokenBgBase300 =
+    "bg-base-300"
+
+
+tokenTextBaseContent : String
+tokenTextBaseContent =
+    "text-base-content"
+
+
+tokenBgPrimary : String
+tokenBgPrimary =
+    "bg-primary"
+
+
+tokenTextPrimaryContent : String
+tokenTextPrimaryContent =
+    "text-primary-content"
+
+
+tokenBgSecondary : String
+tokenBgSecondary =
+    "bg-secondary"
+
+
+tokenTextSecondaryContent : String
+tokenTextSecondaryContent =
+    "text-secondary-content"
+
+
+tokenBgAccent : String
+tokenBgAccent =
+    "bg-accent"
+
+
+tokenTextAccentContent : String
+tokenTextAccentContent =
+    "text-accent-content"
+
+
+tokenBgNeutral : String
+tokenBgNeutral =
+    "bg-neutral"
+
+
+tokenTextNeutralContent : String
+tokenTextNeutralContent =
+    "text-neutral-content"
+
+
+tokenBgInfo : String
+tokenBgInfo =
+    "bg-info"
+
+
+tokenTextInfoContent : String
+tokenTextInfoContent =
+    "text-info-content"
+
+
+tokenBgSuccess : String
+tokenBgSuccess =
+    "bg-success"
+
+
+tokenTextSuccessContent : String
+tokenTextSuccessContent =
+    "text-success-content"
+
+
+tokenBgWarning : String
+tokenBgWarning =
+    "bg-warning"
+
+
+tokenTextWarningContent : String
+tokenTextWarningContent =
+    "text-warning-content"
+
+
+tokenBgError : String
+tokenBgError =
+    "bg-error"
+
+
+tokenTextErrorContent : String
+tokenTextErrorContent =
+    "text-error-content"
 
 
 {-| The one elevation this package uses, on every `card`.
@@ -1186,12 +1310,49 @@ and `fab` render in the same fixed layer, after the overlays.
 page : Page msg -> Html msg
 page (Page p) =
     Html.div
-        [ Attr.attribute "data-theme" (Tree.themeToString p.theme)
-        , classes [ tokenMinHScreen, tokenBgBase ]
-        ]
+        (Attr.attribute "data-theme" (Tree.themeToString p.theme)
+            :: classes [ tokenMinHScreen, tokenBgBase ]
+            :: themeAttrs p.theme
+        )
         (shell p.shell p.header p.cta p.sections
             ++ [ overlayLayer p.overlays p.dock p.fab ]
         )
+
+
+{-| The inline half of theming.
+
+A built-in theme needs nothing here: daisyUI's stylesheet already carries a
+`[data-theme=dark]` rule with all twenty-nine declarations in it, and the
+`data-theme` attribute above selects it.
+
+A `Theme.Custom` has no such rule — it is a value the application made up at
+run time, and a stylesheet cannot be written from a value — so the same
+twenty-nine declarations go on this element as inline custom properties. That is
+enough, because daisyUI never reads them where they are _defined_: every use in
+its component CSS is a `var(--color-primary)`, a `color-mix(... var(--color-base-content) ...)`
+or a `calc(var(--depth) * 30%)` inside a declaration on the component itself,
+and none of the variables is registered with `@property { inherits: false }`.
+So a definition on an ancestor reaches every component below it exactly as a
+`[data-theme]` rule would — `--depth` and `--noise` included.
+
+It is **one** `style` attribute rather than a `Html.Attributes.style` per
+property, and that is not a tidiness choice: `elm/virtual-dom` applies a style
+node with `element.style[key] = value`, and a `CSSStyleDeclaration` silently
+ignores an assignment to `"--color-primary"` — custom properties need
+`setProperty`, which Elm never calls. `Attr.attribute "style"` goes through
+`setAttribute` instead, so the CSS parser reads the declarations and they take
+effect. `Daisy.Tree.customThemeStyle` builds the string, so no CSS variable name
+is written in this module.
+
+-}
+themeAttrs : Theme -> List (Html.Attribute msg)
+themeAttrs theme =
+    case theme of
+        Custom custom ->
+            [ Attr.attribute "style" (Tree.customThemeStyle custom) ]
+
+        _ ->
+            []
 
 
 shell : Shell msg -> Maybe (PageHeader msg) -> Cta msg -> Sections msg -> List (Html msg)
@@ -1684,8 +1845,21 @@ blockIn context theBlock =
                 )
 
         MockupCode lines ->
+            -- `tabindex="0"` on the frame, not decoration: daisyUI's
+            -- `.mockup-code` is `overflow-x: auto` around a `<pre>` of
+            -- `width: max-content`, so any line longer than the container
+            -- makes it a scrollable region — and a scrollable region no
+            -- keyboard can reach is axe's `scrollable-region-focusable`
+            -- (serious). The block holds only text, so there is nothing else
+            -- inside it to receive that focus. The `group` role names what the
+            -- stop is for, which keeps the added tab stop from being an
+            -- unexplained one.
             Html.div
-                [ classes [ SMockupCode.component ] ]
+                [ classes [ SMockupCode.component ]
+                , Attr.tabindex 0
+                , Attr.attribute "role" "group"
+                , Attr.attribute "aria-label" "Code"
+                ]
                 (List.map codeLineHtml lines)
 
         MockupPhone parts ->
@@ -2597,6 +2771,9 @@ leafWith extra theLeaf =
         Status config ->
             statusHtml extra config
 
+        Swatch config color label ->
+            swatchHtml extra config color label
+
         Swap config faces ->
             Html.label
                 [ classes
@@ -2977,6 +3154,9 @@ inputTypeAttr inputType =
         InputDate ->
             "date"
 
+        InputColor ->
+            "color"
+
 
 joinItemHtml : JoinItem msg -> Html msg
 joinItemHtml item =
@@ -3117,6 +3297,81 @@ statusHtml extra config =
         ]
         []
         |> withTooltip config.tooltip
+
+
+{-| A palette chip: one theme surface with its content colour on it.
+
+The box is the renderer's, not daisyUI's — a centred `rounded-lg` block the
+width of its cell, at the same 8px corner and 8px padding the `stat-figure` tile
+uses — because daisyUI ships no component whose job is "show me this colour".
+Only the two colour tokens change from one `SwatchColor` to the next.
+
+-}
+swatchHtml : List String -> SwatchConfig -> SwatchColor -> String -> Html msg
+swatchHtml extra config color label =
+    let
+        ( surface, content ) =
+            swatchClasses color
+    in
+    Html.div
+        (classes
+            ([ surface
+             , content
+             , tokenRoundedLg
+             , tokenPaddingSm
+             , tokenWFull
+             , tokenFlex
+             , tokenItemsCenter
+             , tokenJustifyCenter
+             , tokenTextSm
+             , tokenFontMedium
+             ]
+                ++ extra
+            )
+            :: ariaLabelAttrs config.ariaLabel config.tooltip
+        )
+        [ Html.text label ]
+        |> withTooltip config.tooltip
+
+
+{-| The `( background, foreground )` token pair of every `SwatchColor`. This is
+the whole mapping; nothing else in the renderer emits a colour utility.
+-}
+swatchClasses : SwatchColor -> ( String, String )
+swatchClasses color =
+    case color of
+        SwatchBase100 ->
+            ( tokenBgBase, tokenTextBaseContent )
+
+        SwatchBase200 ->
+            ( tokenBgGround, tokenTextBaseContent )
+
+        SwatchBase300 ->
+            ( tokenBgBase300, tokenTextBaseContent )
+
+        SwatchPrimary ->
+            ( tokenBgPrimary, tokenTextPrimaryContent )
+
+        SwatchSecondary ->
+            ( tokenBgSecondary, tokenTextSecondaryContent )
+
+        SwatchAccent ->
+            ( tokenBgAccent, tokenTextAccentContent )
+
+        SwatchNeutral ->
+            ( tokenBgNeutral, tokenTextNeutralContent )
+
+        SwatchInfo ->
+            ( tokenBgInfo, tokenTextInfoContent )
+
+        SwatchSuccess ->
+            ( tokenBgSuccess, tokenTextSuccessContent )
+
+        SwatchWarning ->
+            ( tokenBgWarning, tokenTextWarningContent )
+
+        SwatchError ->
+            ( tokenBgError, tokenTextErrorContent )
 
 
 themeSelectHtml : List String -> ThemeSelectData msg -> Html msg

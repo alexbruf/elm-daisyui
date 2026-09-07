@@ -68,6 +68,7 @@ import Daisy.Schema.Timeline as STimeline
 import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
+import Daisy.Themes as Themes
 import Daisy.Tree exposing (..)
 import Date
 import Expect exposing (Expectation)
@@ -280,6 +281,7 @@ allInputTypes =
     , InputTel
     , InputSearch
     , InputDate
+    , InputColor
     ]
 
 
@@ -529,6 +531,15 @@ leafFuzzers =
             (subsetOf SSkeleton.allModifiers)
       )
     , ( "status", Fuzz.map Status statusConfigFuzzer )
+    , ( "swatch"
+      , Fuzz.map3
+            (\color aria tip ->
+                Swatch { ariaLabel = aria, tooltip = tip } color "A"
+            )
+            (Fuzz.oneOfValues allSwatchColors)
+            (Fuzz.maybe (Fuzz.constant "Primary colour"))
+            (Fuzz.maybe tooltipFuzzer)
+      )
     , ( "swap"
       , Fuzz.map2
             (\style modifiers ->
@@ -884,10 +895,72 @@ pageFuzzer =
                         }
                 }
         )
-        (Fuzz.oneOfValues allThemes)
+        themeFuzzer
         (maybeOf SDock.allSizes)
         (subsetOf SFab.allModifiers)
         ctaFuzzer
+
+
+{-| Every theme the page can carry: the thirty-five built-ins, and a `Custom`
+one built from each of them.
+
+`Daisy.Themes` is the generated table of the built-ins' twenty-nine
+declarations, so `Custom (rename light)` is `light` written inline instead of
+selected by name — which means the exclusivity rule is checked against a page
+root that carries a `style` attribute as well as `data-theme`, and against every
+combination of `Radius`, `Size`, `Border` and the two effect switches those
+thirty-five themes between them use.
+
+-}
+themeFuzzer : Fuzzer Theme
+themeFuzzer =
+    Fuzz.oneOf
+        [ Fuzz.oneOfValues allThemes
+        , Fuzz.map Custom customThemeFuzzer
+        ]
+
+
+{-| A `CustomTheme`: one of the thirty-five built-ins' colour sets under a name
+of our own, with every closed measurement swept independently.
+-}
+customThemeFuzzer : Fuzzer CustomTheme
+customThemeFuzzer =
+    Fuzz.map3
+        (\base ( scheme, radius, size ) ( border, depth, noise ) ->
+            { base
+                | name = fuzzThemeName
+                , colorScheme = scheme
+                , radius = radius
+                , size = size
+                , border = border
+                , depth = depth
+                , noise = noise
+            }
+        )
+        (Fuzz.oneOfValues Themes.all)
+        (Fuzz.triple
+            (Fuzz.oneOfValues allColorSchemes)
+            (Fuzz.map3 (\selector field box -> { selector = selector, field = field, box = box })
+                (Fuzz.oneOfValues allRadii)
+                (Fuzz.oneOfValues allRadii)
+                (Fuzz.oneOfValues allRadii)
+            )
+            (Fuzz.map2 (\selector field -> { selector = selector, field = field })
+                (Fuzz.oneOfValues allSizes)
+                (Fuzz.oneOfValues allSizes)
+            )
+        )
+        (Fuzz.triple (Fuzz.oneOfValues allBorders) Fuzz.bool Fuzz.bool)
+
+
+{-| A name `Daisy.Tree.themeName` accepts. The fallback is unreachable —
+`"fuzz-theme"` is well formed and is not one of the thirty-five reserved names —
+and it is deliberately a built-in's name, so a change that broke the validator
+would show up as a failing assertion rather than as a silently different page.
+-}
+fuzzThemeName : ThemeName
+fuzzThemeName =
+    Maybe.withDefault (themeNameOf Light) (themeName "fuzz-theme")
 
 
 ctaFuzzer : Fuzzer (Cta Msg)

@@ -37,7 +37,7 @@ export const SNAPSHOT_ROOT = path.resolve(
 /**
  * Directory holding the current tag's baselines. `themes.spec.ts` skips the
  * screenshot comparison when it does not exist yet, because a tag that has
- * never been generated would otherwise have 105 baselines written by the very
+ * never been generated would otherwise have 144 baselines written by the very
  * run that is supposed to check them.
  */
 export const SNAPSHOT_TAG_DIR = path.join(SNAPSHOT_ROOT, SNAPSHOT_TAG);

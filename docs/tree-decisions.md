@@ -1171,3 +1171,262 @@ than waived:
   only thing in the page header's right-hand group (daisyUI's negative
   `margin-inline-start` against its `max-width: 100%`). The renderer now puts
   the trail directly in the header row when there is nothing beside it.
+
+## Custom themes and the generator page (2026-09-07)
+
+Until this pass `Page.theme` could only name one of the thirty-five themes
+daisyUI ships. That is a real limitation: daisyUI's own theme format is a
+closed list of twenty-nine declarations, an application's brand colours are
+exactly such a list, and there was no way to say one. `Theme` gained a
+`Custom CustomTheme` constructor, and a fourth demo — the theme generator at
+`/theme` — was built to prove the whole path works.
+
+### 1. The theme API
+
+Nine new types in `Daisy.Tree`, all closed, and one new module beside it.
+
+| Addition | Shape | Why this shape |
+| --- | --- | --- |
+| `Theme.Custom CustomTheme` | one more constructor | `allThemes` deliberately stays the thirty-five built-ins: there is no list of every custom theme, because a custom theme is a value the application makes up. `themeToString` answers with the custom name. |
+| `CustomTheme` | `{ name, colorScheme, colors, radius, size, border, depth, noise }` | The same twenty-nine declarations `vendor/daisyui/packages/daisyui/src/themes/*.css` carries, and nothing else. Every one of the thirty-five files was checked: the property set is identical across all of them, so the record is exhaustive rather than a subset. |
+| `ThemeColors` | twenty `Oklch` fields | daisyUI's twenty `--color-*` variables, in daisyUI's own order. |
+| `Oklch` (`Daisy.Color`) | `{ l, c, h }` | `l` is **lightness in percent**, 0..100, not the 0..1 the OKLab literature uses. That is the unit daisyUI prints (`oklch(62% 0.265 303.9)`), and its own sources carry values like `11.784%` — keeping the number in the unit it is printed in is what makes a theme read out of the oracle and printed back byte-identical. `0.11784 * 100` in IEEE 754 is `11.783999999999999`. |
+| `Radius` | `RadiusNone`/`Xs`/`Sm`/`Md`/`Lg` | The five steps daisyUI's own generator offers, verified by reading its radio inputs at 1440: `0rem`, `0.25rem`, `0.5rem`, `1rem`, `2rem`. The thirty-five stock themes use only these five. A free `Float` would let a theme say something no daisyUI theme says. |
+| `Size` | `SizeXs`..`SizeXl` | The generator's five-position "base size" slider: 3px, 3.5px, 4px, 4.5px, 5px, written `0.1875rem` .. `0.3125rem`. Every stock theme is `SizeMd`. |
+| `Border` | `BorderHairline`/`Thin`/`Medium`/`Thick` | `0.5px`, `1px`, `1.5px`, `2px`. Stock themes use `1px` and `2px`. |
+| `ColorScheme` | `LightScheme`/`DarkScheme` | The `color-scheme` property, which is what the browser paints its own UI from. |
+| `ThemeName` | opaque | Built by `themeName : String -> Maybe ThemeName`, which accepts `[a-z][a-z0-9-]*` and refuses all thirty-five reserved names. There is no other constructor, so an invalid name is *unrepresentable* rather than caught. `themeNameOf : Theme -> ThemeName` is the one way to reach a built-in's reserved name — reserved is reserved against *new* themes, not against reading the built-in ones back. |
+| `depth` / `noise` | `Bool` | daisyUI's two effect switches. Its component CSS only ever multiplies them by something inside a `calc()`, and its own themes only ever write `0` or `1`, so a `Bool` is the honest type and the renderer prints the digit. |
+
+Three functions turn one into text, all pure strings with no class in them:
+`customThemeProperties` (the twenty-nine `( property, value )` pairs, in
+daisyUI's order), `customThemeToCss` (the `@plugin "daisyui/theme" { ... }`
+block daisyUI's docs ask for) and `customThemeToJson` (the exact shape
+daisyUI's *own* generator round-trips through its URL). The last one is in the
+package rather than in the demo because it is written from the same facts the
+first two are, and two copies of the property list would drift.
+
+`should-not-compile` gained `Reject/ThemeNameFromString.elm`: a `Custom` whose
+`name` is `"acme"` is a `TYPE MISMATCH`. The fixture the task sketched — "a
+`ThemeName` built from a raw string" — cannot be written at all, which is the
+stronger statement; the fixture that *can* be written is the one that shows
+`Custom` needs a `ThemeName` and not a `String`.
+
+### 2. `Daisy.Themes`, generated
+
+`tools/gen-themes.js` reads the thirty-five theme files out of the pinned
+oracle and writes `src/Daisy/Themes.elm`: one `CustomTheme` value per built-in
+plus `builtinToCustom : Theme -> Maybe CustomTheme` and `all`. It is a `ci.sh`
+step (`gen-themes`, right after `gen-schema`) that regenerates the file and
+fails on a diff, so a drift from `vendor/daisyui` shows up as a red pipeline
+rather than as a stale table.
+
+A `Theme` constructor is a *name* — it selects a rule daisyUI already ships and
+there is nothing in it to read. An editor needs the other thing, so that "start
+from `nord` and change the primary" is one record update rather than
+twenty-nine values retyped. `tests/ThemeTest.elm` pins the round trip against
+`light.css` verbatim.
+
+**It is `Daisy.Themes`, not `Daisy.Schema.Themes`.** `tools/gen-schema.js` owns
+`src/Daisy/Schema/` outright: it `rmSync`s the whole directory before writing
+and rebuilds `elm.json`'s `exposed-modules` from its own component list, so a
+module of ours in there would be deleted by the next regeneration and dropped
+from the package. The name is also the more honest one — the `Schema.*` modules
+are class tables and this one holds no class at all.
+
+### 3. How a custom theme reaches the page, and the bug that nearly hid it
+
+`Daisy.Render.page` writes `data-theme="<name>"` as before, and for a `Custom`
+theme adds the twenty-nine declarations as inline CSS custom properties on the
+same element. That is enough on its own — **no `@plugin "daisyui/theme"` block
+is registered anywhere in `demo/app.css`** — because daisyUI never reads those
+variables where they are *defined*: every use in its component CSS is a
+`var(--color-primary)`, a `color-mix(... var(--color-base-content) ...)` or a
+`calc(var(--depth) * 30%)` in a declaration on the component itself, and none of
+them is registered with `@property { inherits: false }` (`src/base/properties.css`
+registers exactly two properties, neither of them ours). A definition on an
+ancestor therefore reaches every component below it exactly as a `[data-theme]`
+rule would.
+
+The first implementation wrote one `Html.Attributes.style "--color-primary" ...`
+per property, and **it silently did nothing**. `elm/virtual-dom` applies a style
+node with `element.style[key] = value` (the compiled bundle's
+`function Mn(e,t){var n=e.style;for(var r in t)n[r]=t[r]}`), and a
+`CSSStyleDeclaration` ignores an assignment to a `--*` name — custom properties
+need `setProperty`, which Elm never calls. The page rendered `data-theme="acme"`
+with `light`'s colours, which looks plausible enough to ship. `Daisy.Render`
+now emits **one** `Attr.attribute "style"` built by
+`Daisy.Tree.customThemeStyle`; `setAttribute` hands the string to the CSS
+parser, and the declarations take effect.
+
+Verified in Chrome against the built demo, on the page root and on the
+components below it:
+
+| Read back | `?theme=acme` | Why it is the interesting one |
+| --- | --- | --- |
+| `--color-primary` | `oklch(62% 0.265 303.9)` | the value `Demo.Themes.acme` holds, not `light`'s |
+| `color-scheme` | `light` (and `dark` when the editor's scheme toggle is on) | a plain property, not a custom one |
+| `--radius-box` | `0.5rem`, and the `.card`'s computed `border-radius` is `8px` | daisyUI consumed it |
+| `--border` | `1px`, and the `.btn`'s computed `border-top-width` follows it | |
+| `--depth: 0` | the CTA's `box-shadow` alphas are all `0` (`oklch(1 0 0 / 0)`, `oklab(0 0 0 / 0)`), against `dark`'s real `0.06`/`0.3` | daisyUI multiplies `--depth` into three shadow alphas, so this is the sharpest proof that an *effect* switch inherits, not just a colour |
+| `--noise` | `0` / `1` through the editor's toggle | |
+| `.bg-primary` swatch | background `oklch(0.62 0.265 303.9)`, colour `oklch(0.98 0.031 120.757)` | a Tailwind utility over the variable, not a daisyUI component class |
+
+`e2e/theme-generator.spec.ts` asserts all of that, including that the root
+carries exactly 29 declarations in one `style` attribute — which is what would
+catch a regression back to the per-property form.
+
+Nothing needed a static `@plugin` block. The only reason to add one would be a
+page that daisyUI has to style before Elm boots, which is not this demo.
+
+### 4. `Leaf.Swatch`, and the one entry that left `forbidden`
+
+A theme editor has to *show* the colour it is editing, and daisyUI has no
+component for that: every colour class it ships belongs to a control. So
+`Leaf.Swatch SwatchConfig SwatchColor String` — `SwatchColor` is a closed
+eleven-value slot name (`base-100/200/300` plus the eight semantic colours) and
+`Daisy.Render.swatchClasses` maps each to one `bg-*` / `text-*-content` pair.
+Eleven surfaces, not twenty: a swatch shows a surface with its matching content
+colour *on* it, so the nine `-content` colours are reached as foregrounds rather
+than as surfaces of their own.
+
+That is eighteen new tokens (`bg-base-300`, `text-base-content`, and a pair per
+semantic colour), the only *colour* tokens in the table: 58 -> 76. Everywhere
+else the renderer leaves colour to daisyUI's component classes, because a
+component carries its own pair; a swatch is not a component, so the pair has to
+be named.
+
+`tests/RenderPurityTest.elm`'s `forbidden` list therefore lost exactly one
+entry, `bg-primary`, by the rule that let `gap-6`, `text-xs` and `rounded-lg`
+leave it in the Nexus pass: it became one named constant with one job and one
+use site, not room for a sprinkled utility. **`text-primary` did not follow it**
+and stays forbidden — it is a foreground utility over an arbitrary element,
+which is exactly what the list exists to prevent, and no swatch wants it: a
+chip's foreground is `text-primary-content`, the colour daisyUI itself pairs
+with that surface.
+
+### 5. `Daisy.Color`
+
+`hexToOklch` / `oklchToHex`, Björn Ottosson's two matrices with the sRGB
+transfer function either side of them. It is a package module rather than a
+demo one because the conversion is what any daisyUI theme editor needs and it
+has nothing to do with the demo.
+
+Two things worth recording:
+
+- **OKLCH is much larger than sRGB.** 151 of daisyUI's own 700 theme colours are
+  outside it. `oklchToHex` clamps each linear channel rather than failing, which
+  is what a browser does with the same colour, and `tests/ColorTest.elm` says so.
+- **The round trip is exact in one direction only.** `hex -> OKLCH -> hex` is
+  the identity for all 16.7 million sRGB colours (fuzzed). The other direction
+  loses a byte per channel, and at low chroma a byte is a large *angle*: at
+  `c = 0.03` it is up to 3.5 degrees of hue. The fuzzer's box (`L` 45..75,
+  `C` 0.03..0.05) was swept at a quarter-degree against an independent
+  implementation to establish both that nothing in it clips and what the real
+  bounds are; the greys, where hue stops meaning anything, are pinned by exact
+  known-value tests instead.
+
+### 6. The generator page
+
+`/theme`, `Demo.ThemeGenerator`, in the same Dashboard shell as the other two
+dashboards — all three sidebars gained a `Tools` group with the entry, so the
+chrome is identical on every route. Four sections: colours + palette, shape and
+effects + a component preview, chart and table + export, then the CSS block and
+the debug pane.
+
+Three decisions worth naming:
+
+- **The page renders under the theme it is editing**, because there is nowhere
+  else for it to render: `Page.theme` is one field and the router keeps one
+  theme. The sidebar, the navbar and the editor's own controls are repainted by
+  the same declarations the preview is, so a colour that does not work is
+  visible in the chrome as well as in the swatch. Edits survive navigation for
+  the same reason — `Model.theme` was already shared.
+- **`data-theme` on this page is always `acme`**, even when "Start from" says
+  `nord`: `Demo.Themes.rename` gives the copied values the demo's own name. No
+  stylesheet declares `acme`, so every colour on the page can only have come
+  from the inline properties. `e2e/lib/daisy.ts`'s `rootThemeOf` is that rule,
+  in one place, and `themes.spec.ts` reads it rather than assuming `?theme=X`
+  means `data-theme=X`.
+- **Every edit is one value of a closed `ThemeEdit` type**, applied by
+  `ThemeGenerator.apply`. The alternative — a `Msg` per control, or a `Msg`
+  carrying a function — would have put twenty-odd constructors in `Main` for one
+  page. `Main` has two: `ThemeEdited ThemeEdit` and `ThemeExported`.
+  "Randomize" carries no seed; the router keeps the counter, so the page stays a
+  pure function of the model and the screenshots stay byte-stable.
+
+### 7. The port contract
+
+Three ports, all in `demo/src/Ports.elm` (a `port module` with no `Html`
+import, so `NoHtmlInDemo` applies to it unchanged) and implemented in
+`demo/src/main.js`:
+
+```
+port copyToClipboard : String -> Cmd msg      -- navigator.clipboard.writeText
+port encodeTheme     : String -> Cmd msg      -- the theme's JSON in
+port themeEncoded    : (String -> msg) -> Sub msg   -- the generator URL back
+```
+
+`encodeTheme`/`themeEncoded` are a pair rather than a function because the
+compression is a *stream*. daisyUI encodes a theme into its own URL as
+`https://daisyui.com/theme-generator/#theme=<base64url(zlib-deflate(json))>`,
+and `CompressionStream("deflate")` is the zlib wrapper (RFC 1950) — which is
+what those hashes are: every one of them starts `eJx`, the bytes `0x78 0x9c`.
+(`"deflate-raw"` would be RFC 1951 and would not decode.) A stream cannot be a
+synchronous function returning a value to Elm, so the answer comes back on a
+second port; the anchor shows the bare generator URL until it arrives, which is
+still a working link.
+
+Verified in both directions:
+
+- a hash the **live** generator produced for its own `light` theme was inflated
+  with `node:zlib` and is exactly `{"name":...,"color-scheme":...,29
+  declarations...,"default":false,"prefersdark":false}` — which is what
+  `customThemeToJson` writes, key for key and in the same order;
+- the hash the demo produces for `acme` was inflated the same way and equals the
+  JSON the user's generator link carried, byte for byte. `e2e/theme-generator.spec.ts`
+  repeats that in the page with `DecompressionStream`, and also asserts the key
+  order, not just the key set.
+
+### 8. What the e2e suite gained, and the two root causes it found
+
+`e2e/lib/daisy.ts` now lists four demos and thirty-six themes, so
+`themes.spec.ts` is 4 x 36 = **144 baselines** (was 105) and the contrast and
+chart-colour sweeps cover the custom-theme path as well.
+`e2e/theme-generator.spec.ts` is new: eight tests covering the inline
+properties, a built-in opened as an editable theme, a colour edit repainting the
+root and the CTA and the export, the shape controls, the generator hash, the
+palette chips and the edit surviving navigation.
+
+Two defects the matrix found on the new route were fixed at the root:
+
+- `scrollable-region-focusable` (serious) on the two-tile `stats` at 375 — the
+  same one `Demo.Admin` hit, same fix: `StatDirection.Responsive`.
+- `scrollable-region-focusable` (serious) on `.mockup-code`. daisyUI's
+  `.mockup-code` is `overflow-x: auto` around a `<pre>` of `width: max-content`,
+  so any line longer than the container makes it a scrollable region — and the
+  block holds only text, so there is nothing inside it to receive focus. Fixed
+  in **`Daisy.Render`**, for every user of the package, not in the demo:
+  `MockupCode` now emits `tabindex="0"` with `role="group"` and a name. The
+  stretch that exposed it was a second root-cause fix — the export band is
+  `Stack { align = AlignStretch }`, because a `mockup-code` sized to its content
+  is ~500px wide and gave the *document* a horizontal scrollbar at 375.
+
+Two composition choices were changed rather than waived: the preview's alerts
+are solid `alert-<color>` and not `alert-soft` (soft is a `color-mix` pair the
+composition derives; solid is daisyUI's own `--color-X` / `--color-X-content`),
+and the export link is a plain `link` and not `link-primary` (`--color-primary`
+as a *foreground* over `--color-base-100` falls under 4.5:1 in several themes,
+and this page draws itself under deliberately bad ones).
+
+One waiver was added, and it is the *existing* position made consistent rather
+than a new exemption. `e2e/a11y.spec.ts` already waived `color-contrast` on
+daisyUI's three de-emphasised pairs by class list; it now also waives it on
+daisyUI's **emphasised** pair — `--color-X` under exactly its own
+`--color-X-content` — decided in the browser on painted sRGB bytes, which is the
+same mechanical rule `e2e/contrast.spec.ts` has applied from the start and which
+SPEC.md's "what is deliberately not tested" puts outside Tier C. It matters here
+because the generator page's job is to show a theme's pairs including the bad
+ones: `acme`'s own `--color-secondary` / `--color-secondary-content`, which
+daisyUI's generator derived, is 1.9:1. A `-content` colour over the wrong
+surface, or a `color-mix` background, still does not match and still fails.

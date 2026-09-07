@@ -98,9 +98,10 @@ emitted =
 in any render: spacing, sizing and colour are decided by `Render.tokens`, and
 `btn-primary` may only come from `Page.cta`.
 
-Three entries left this list in the Nexus design pass (2026-09-07), each because
-it became a named `Daisy.Render` token with one job, not because a render wanted
-room:
+Four entries have left this list, each because it became a named `Daisy.Render`
+token with one job, not because a render wanted room.
+
+Three went in the Nexus design pass (2026-09-07):
 
   - `gap-6` is `tokenGapMd`, the single vertical rhythm between the bands of a
     page.
@@ -111,6 +112,21 @@ room:
     chip). `rounded-box` stays forbidden: it resolves to `--radius-box`, which
     is 1rem or more in daisyUI's stock themes, so a 36px square would come out
     a circle.
+
+The fourth went in the custom-theme pass (2026-09-07):
+
+  - `bg-primary` is `tokenSwatchBgPrimary`, one of the eighteen colour tokens
+    `Leaf.Swatch` paints a palette chip from. A swatch is a picture of a theme
+    variable, not a component, so daisyUI ships no class for it and the pair
+    (`bg-primary` + `text-primary-content`) has to be named in the renderer. Each
+    constant has exactly one use site, `Daisy.Render.swatchClasses`, and no
+    caller can reach one: `Leaf.Swatch` takes a closed
+    `Daisy.Tree.SwatchColor`, never a class.
+
+`text-primary` did **not** follow it and stays forbidden: it is a _foreground_
+utility over an arbitrary element, which is exactly the sprinkled colour this
+list exists to prevent, and no swatch needs it — a chip's foreground is
+`text-primary-content`, the colour daisyUI itself pairs with that surface.
 
 `opacity-50` also stays: de-emphasis is `tokenTextMuted`
 (`text-base-content/60`), which is the colour daisyUI's own `.stat-title` and
@@ -135,7 +151,6 @@ forbidden =
     , "w-96"
     , "w-32"
     , "h-32"
-    , "bg-primary"
     , "bg-white"
     , "text-primary"
     , "grid-cols-5"

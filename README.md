@@ -271,6 +271,78 @@ so `::part` never matches). `bun tools/gen-cally-css.js` writes both from
 [`demo/cally-base.css`](demo/cally-base.css) and [`demo/cally-daisy.css`](demo/cally-daisy.css) and
 can be copied as-is. Import them after the daisyUI plugin line so its layers are already registered.
 
+## Themes
+
+`Page.theme` is a `Daisy.Tree.Theme`: either one of the thirty-five daisyUI ships, or a `Custom`
+one of your own.
+
+```elm
+Page { ... , theme = Nord }
+```
+
+A custom theme is the same twenty-nine declarations daisyUI's own theme format has, and nothing
+else — twenty `oklch()` colours, three radii, two base sizes, a border width and the two effect
+switches. Every field is a closed type, so a theme cannot say something daisyUI cannot express:
+
+```elm
+import Daisy.Themes as Themes
+import Daisy.Tree as Tree exposing (Border(..), Radius(..), Size(..), Theme(..))
+
+
+brand : Maybe Theme
+brand =
+    Tree.themeName "acme"
+        |> Maybe.map
+            (\name ->
+                Custom
+                    { Themes.nord
+                        | name = name
+                        , colors = ...
+                        , radius = { selector = RadiusXs, field = RadiusXs, box = RadiusSm }
+                        , border = BorderThin
+                        , depth = False
+                    }
+            )
+```
+
+- **`ThemeName` is opaque.** `Tree.themeName : String -> Maybe ThemeName` is the only way to make
+  one; it accepts `[a-z][a-z0-9-]*` and refuses all thirty-five reserved daisyUI names, so a theme
+  that would collide with a stylesheet daisyUI already ships is unrepresentable.
+- **`Daisy.Themes` is every built-in as an editable value.** `Themes.nord`, `Themes.light`, … plus
+  `builtinToCustom : Theme -> Maybe CustomTheme`, generated from daisyUI's own sources by
+  `bun tools/gen-themes.js`. It is what makes "start from a built-in" one record update.
+- **`Radius`, `Size` and `Border` are closed enums**, matching the five/five/four steps daisyUI's
+  own theme generator offers. `depth` and `noise` are `Bool`s: daisyUI's CSS only ever multiplies
+  them inside a `calc()`, and its own themes only ever write `0` or `1`.
+- **Colours are `Daisy.Color.Oklch`** — `{ l, c, h }`, with `l` in **percent** (0..100), the unit
+  daisyUI prints. `Daisy.Color.hexToOklch` / `oklchToHex` convert to and from the `#rrggbb` an HTML
+  colour input produces, which is what a theme editor needs.
+
+**No stylesheet registration is needed.** `Daisy.Render.page` writes `data-theme="<name>"` and, for
+a `Custom` theme, the twenty-nine declarations as inline CSS custom properties on the same element.
+daisyUI never reads those variables where they are *defined* — every use in its component CSS is a
+`var(--color-primary)` or a `calc(var(--depth) * 30%)` on the component itself, and none of them is
+registered with `@property { inherits: false }` — so an inline definition on an ancestor themes the
+whole subtree exactly as a `[data-theme]` rule would, `--depth` and `--noise` included.
+
+If you do want a stylesheet — for a page daisyUI has to style before Elm boots, say —
+`Tree.customThemeToCss` prints the block daisyUI's docs ask for:
+
+```css
+@plugin "daisyui/theme" {
+  name: "acme";
+  default: false;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: oklch(98% 0 0);
+  /* ...27 more... */
+}
+```
+
+`Tree.customThemeToJson` prints the same theme in the shape daisyUI's own
+[theme generator](https://daisyui.com/theme-generator/) round-trips through its URL, so a theme
+built here can be handed back to that tool.
+
 ## CSS setup
 
 Tailwind 4 plus the daisyUI plugin, and then one thing that is specific to Elm.
@@ -322,7 +394,7 @@ If you use `Leaf.Calendar`, add the two calendar stylesheets after the plugin li
 
 ## Demos
 
-Three demo applications, each a single `Page` value, built only through the tree. They share one
+Four demo applications, each a single `Page` value, built only through the tree. They share one
 router (`demo/src/Main.elm`) and are live at <https://alexbruf.github.io/elm-daisyui/>. The
 dashboard sidebars also link to the documentation site at `/docs/`, which `tools/build-docs-site.js`
 generates from the repository's markdown as part of the demo build.
@@ -334,7 +406,7 @@ the right, both at 1440x900:
 ![Nexus and Demo.Admin side by side](docs/screenshots/nexus-vs-admin.png)
 
 Everything on the right comes out of `Daisy.Tree`: no `Html.Attributes.class`, no raw markup, every
-class either a `Daisy.Schema.*` value or one of `Daisy.Render`'s 58 layout tokens.
+class either a `Daisy.Schema.*` value or one of `Daisy.Render`'s 76 layout tokens.
 `docs/tree-decisions.md` ("Nexus design pass") lists what was added to the tree to get there and
 what is still deliberately different.
 
@@ -487,6 +559,41 @@ and `Area` charts (each with a `status`-dot legend the renderer draws under it),
 row and a two-month `Leaf.Calendar` range picker in a card whose header holds the date-range
 `Select`.
 
+**[Theme generator](demo/src/Demo/ThemeGenerator.elm)** (`/theme`) is a recreation of
+[daisyUI's own](https://daisyui.com/theme-generator/): a colour picker per `--color-*` variable, the
+radius/size/border/effect controls, a live preview and the exported CSS.
+
+![The theme generator demo](docs/screenshots/demo-theme.png)
+
+The whole page renders under the theme being edited, because `Page.theme` is one field and the
+router keeps one theme — so the sidebar, the navbar and the editor's own controls are repainted by
+the same declarations the preview is. `data-theme` on it is always `acme`, a name no stylesheet
+declares, which is what makes it a proof that inline custom properties are enough:
+
+```elm
+colorField : Config msg -> Slot -> Field msg
+colorField config slot =
+    Tree.field (slotLabel slot)
+        (Input
+            { defaultInputConfig
+                | inputType = InputColor
+                , value = Color.oklchToHex (getSlot slot config.edited.colors)
+                , onInput = Just (config.onEdit << SetColor slot)
+            }
+        )
+```
+
+Two additions made it expressible: `InputType.InputColor` (a native `type="color"` picker, named by
+the `Field` it sits in) and `Leaf.Swatch`, a palette chip. daisyUI has no component whose job is
+"show me this colour" — every colour class it ships belongs to a control — so `SwatchColor` names
+one of eleven theme surfaces and `Daisy.Render` paints it from a fixed token pair:
+
+```elm
+swatchRow : ( SwatchColor, String ) -> CardChild msg
+swatchRow ( color, label ) =
+    CardLeaf (Swatch Tree.defaultSwatchConfig color label)
+```
+
 ## What is deliberately inexpressible
 
 Each of these is a consequence of one of the four guarantees, not an oversight. The full list, one
@@ -507,21 +614,22 @@ tree-level reasoning is in [`docs/tree-decisions.md`](docs/tree-decisions.md).
 ## Testing and CI
 
 Everything the type checker does not guarantee has a test. `bash tools/ci.sh` runs the whole thing
-in a fixed order: gen-schema diff → `elm make` → package docs → elm-review → elm-test → render
-audit → should-not-compile → gen-cally-css → demo build → css-coverage → Playwright. Any failure
-stops it.
+in a fixed order: gen-schema diff → gen-themes diff → `elm make` → package docs → elm-review →
+elm-test → render audit → should-not-compile → gen-cally-css → demo build → css-coverage →
+Playwright. Any failure stops it.
 
 | Tier | What | Count | Asserts |
 |---|---|---|---|
-| A | elm-test (`tests/`) | 931 | class coverage against `schema.json`, group exclusivity under fuzzing, part/parent pairing, render purity and determinism, and a hand-written tree per daisyUI docs example (`fixtures/corpus`) |
+| A | elm-test (`tests/`) | 981 | class coverage against `schema.json`, group exclusivity under fuzzing, part/parent pairing, render purity and determinism, the sRGB/OKLCH conversion and the custom-theme API, and a hand-written tree per daisyUI docs example (`fixtures/corpus`) |
 | B | elm-review rule tests (`review/tests/`) | 24 | positive and negative cases for `NoClassOutsideRender`, `NoHtmlInDemo`, `NoRawSchemaStrings` |
-| B | should-not-compile (`tools/should-not-compile/`) | 21 | 20 fixtures that must fail `elm make` with the expected error, plus one control that must compile |
+| B | should-not-compile (`tools/should-not-compile/`) | 22 | 21 fixtures that must fail `elm make` with the expected error, plus one control that must compile |
 | B | css-coverage | — | every class in `Daisy.Schema.allClasses` is present in the built demo CSS |
 | B | package docs | — | `elm make --docs` and `elm-format --validate src`, the two things `elm publish` checks |
-| C | Playwright (`e2e/`) | 293 across 6 projects | overlap, overflow, stacking layers, responsive behaviour, 35-theme screenshot baselines, WCAG contrast, axe a11y, keyboard and focus trapping, interaction |
+| C | Playwright (`e2e/`) | 382 across 6 projects | overlap, overflow, stacking layers, responsive behaviour, 36-theme screenshot baselines, WCAG contrast, axe a11y, keyboard and focus trapping, interaction, the theme generator |
 
 The six Playwright projects are viewports 375/768/1440 × themes light/dark; `themes.spec.ts`
-sweeps all 35 daisyUI themes inside one of them. Baselines are committed in `e2e/snapshots`.
+sweeps all 35 daisyUI themes plus the demo's own custom `acme` inside one of them, over four demos
+— 144 baselines, committed in `e2e/snapshots`.
 
 ## Further reading
 

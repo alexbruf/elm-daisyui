@@ -2,6 +2,13 @@ module Daisy.Tree exposing
     ( Page(..), Sections(..), Shell(..), DashboardShell, dashboardShell, Brand, Cta, cta
     , PageHeader, pageHeader
     , Theme(..), allThemes, themeToString
+    , CustomTheme, ColorScheme(..), allColorSchemes, colorSchemeToString
+    , ThemeColors, Oklch
+    , Radius(..), allRadii, radiusToString
+    , Size(..), allSizes, sizeToString
+    , Border(..), allBorders, borderToString
+    , ThemeName, themeName, themeNameOf, themeNameToString
+    , customThemeProperties, customThemeStyle, customThemeToCss, customThemeToJson
     , Section(..)
     , HeroConfig, defaultHeroConfig
     , NavbarParts, emptyNavbarParts
@@ -54,6 +61,7 @@ module Daisy.Tree exposing
     , SelectConfig, defaultSelectConfig, SelectData
     , SkeletonConfig, defaultSkeletonConfig
     , StatusConfig, defaultStatusConfig
+    , SwatchConfig, defaultSwatchConfig, SwatchColor(..), allSwatchColors
     , SwapConfig, defaultSwapConfig, SwapFaces
     , TextareaConfig, defaultTextareaConfig
     , ThemeSelectData, ThemePresentation(..)
@@ -111,6 +119,21 @@ that can emit a class.
 # Theme
 
 @docs Theme, allThemes, themeToString
+
+
+# Custom themes
+
+A `Theme` is either one of the thirty-five daisyUI ships or a `Custom` one of
+the application's own, built from exactly the declarations daisyUI's own theme
+format has.
+
+@docs CustomTheme, ColorScheme, allColorSchemes, colorSchemeToString
+@docs ThemeColors, Oklch
+@docs Radius, allRadii, radiusToString
+@docs Size, allSizes, sizeToString
+@docs Border, allBorders, borderToString
+@docs ThemeName, themeName, themeNameOf, themeNameToString
+@docs customThemeProperties, customThemeStyle, customThemeToCss, customThemeToJson
 
 
 # Sections
@@ -175,6 +198,7 @@ that can emit a class.
 @docs SelectConfig, defaultSelectConfig, SelectData
 @docs SkeletonConfig, defaultSkeletonConfig
 @docs StatusConfig, defaultStatusConfig
+@docs SwatchConfig, defaultSwatchConfig, SwatchColor, allSwatchColors
 @docs SwapConfig, defaultSwapConfig, SwapFaces
 @docs TextareaConfig, defaultTextareaConfig
 @docs ThemeSelectData, ThemePresentation
@@ -213,6 +237,7 @@ import Cally.Date as CallyDate
 import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
 import Daisy.Chart exposing (ChartConfig, ChartData)
+import Daisy.Color as Color
 import Daisy.Icon exposing (Icon)
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
@@ -463,9 +488,15 @@ type Theme
     | Caramellatte
     | Abyss
     | Silk
+    | Custom CustomTheme
 
 
 {-| All 35 themes, in daisyUI's own order.
+
+`Custom` is deliberately absent: there is no list of every custom theme,
+because a custom theme is a value the application makes up. This is the list a
+[`Leaf.ThemeSelect`](#Leaf) offers when it offers "everything daisyUI ships".
+
 -}
 allThemes : List Theme
 allThemes =
@@ -619,6 +650,481 @@ themeToString theme =
 
         Silk ->
             "silk"
+
+        Custom custom ->
+            themeNameToString custom.name
+
+
+
+-- CUSTOM THEME --------------------------------------------------------------
+
+
+{-| A theme of the application's own: the same twenty-nine declarations
+daisyUI's own themes are written from, and nothing else.
+
+Every field is a closed type, so the record cannot say anything daisyUI's theme
+format cannot express — there is no `String` here except inside
+[`ThemeName`](#ThemeName), which is opaque and validated.
+
+`depth` and `noise` are daisyUI's two effect switches (`--depth` / `--noise`),
+which its component CSS reads as `0` or `1`; a `Bool` is the honest type for a
+variable whose only two documented values are those.
+
+`Daisy.Render.page` writes every one of these onto the page root as an inline
+CSS custom property, so a custom theme needs no stylesheet registration at all.
+[`customThemeToCss`](#customThemeToCss) produces the `@plugin "daisyui/theme"`
+block for the case where a _stylesheet_ is what is wanted.
+
+-}
+type alias CustomTheme =
+    { name : ThemeName
+    , colorScheme : ColorScheme
+    , colors : ThemeColors
+    , radius : { selector : Radius, field : Radius, box : Radius }
+    , size : { selector : Size, field : Size }
+    , border : Border
+    , depth : Bool
+    , noise : Bool
+    }
+
+
+{-| `color-scheme`, the CSS property that tells the browser which way round to
+paint the UI it draws itself — scrollbars, form controls, the canvas behind the
+page.
+-}
+type ColorScheme
+    = LightScheme
+    | DarkScheme
+
+
+{-| Every [`ColorScheme`](#ColorScheme).
+-}
+allColorSchemes : List ColorScheme
+allColorSchemes =
+    [ LightScheme, DarkScheme ]
+
+
+{-| The `color-scheme` value for a [`ColorScheme`](#ColorScheme).
+
+    colorSchemeToString DarkScheme --> "dark"
+
+-}
+colorSchemeToString : ColorScheme -> String
+colorSchemeToString scheme =
+    case scheme of
+        LightScheme ->
+            "light"
+
+        DarkScheme ->
+            "dark"
+
+
+{-| A colour in OKLCH, the space daisyUI writes every theme colour in. This is
+[`Daisy.Color.Oklch`](Daisy-Color#Oklch) under a local name, so a caller
+building a theme does not have to import two modules; `l` is lightness in
+percent (`0` to `100`), matching the `62%` daisyUI prints.
+-}
+type alias Oklch =
+    Color.Oklch
+
+
+{-| The twenty colour variables a daisyUI theme declares: three base surfaces
+and the content colour that reads on them, then eight semantic colours each
+paired with the content colour that reads on _it_.
+
+The list is daisyUI's, in daisyUI's own order, and it is exhaustive — every
+`--color-*` variable `vendor/daisyui/packages/daisyui/src/themes/*.css`
+declares appears here exactly once.
+
+-}
+type alias ThemeColors =
+    { base100 : Oklch
+    , base200 : Oklch
+    , base300 : Oklch
+    , baseContent : Oklch
+    , primary : Oklch
+    , primaryContent : Oklch
+    , secondary : Oklch
+    , secondaryContent : Oklch
+    , accent : Oklch
+    , accentContent : Oklch
+    , neutral : Oklch
+    , neutralContent : Oklch
+    , info : Oklch
+    , infoContent : Oklch
+    , success : Oklch
+    , successContent : Oklch
+    , warning : Oklch
+    , warningContent : Oklch
+    , error : Oklch
+    , errorContent : Oklch
+    }
+
+
+{-| One corner radius, as one of the five steps daisyUI's own theme generator
+offers. There is no free `Float`: daisyUI's generator is a five-position slider
+and its thirty-five stock themes only ever use these values, so an open number
+would let a theme say something no daisyUI theme says.
+
+`RadiusNone` is `0rem`, `RadiusXs` `0.25rem`, `RadiusSm` `0.5rem`, `RadiusMd`
+`1rem`, `RadiusLg` `2rem`.
+
+-}
+type Radius
+    = RadiusNone
+    | RadiusXs
+    | RadiusSm
+    | RadiusMd
+    | RadiusLg
+
+
+{-| Every [`Radius`](#Radius), smallest first.
+-}
+allRadii : List Radius
+allRadii =
+    [ RadiusNone, RadiusXs, RadiusSm, RadiusMd, RadiusLg ]
+
+
+{-| The CSS length for a [`Radius`](#Radius).
+
+    radiusToString RadiusSm --> "0.5rem"
+
+-}
+radiusToString : Radius -> String
+radiusToString radius =
+    case radius of
+        RadiusNone ->
+            "0rem"
+
+        RadiusXs ->
+            "0.25rem"
+
+        RadiusSm ->
+            "0.5rem"
+
+        RadiusMd ->
+            "1rem"
+
+        RadiusLg ->
+            "2rem"
+
+
+{-| The base size a control is built from, as one of the five steps daisyUI's
+generator offers: 3px, 3.5px, 4px, 4.5px and 5px, written in `rem`.
+
+daisyUI multiplies it by a per-size factor, so `SizeMd` (`0.25rem`, the value
+every stock theme uses) is what makes a `btn` 40px tall and a `btn-xs` 24px.
+
+-}
+type Size
+    = SizeXs
+    | SizeSm
+    | SizeMd
+    | SizeLg
+    | SizeXl
+
+
+{-| Every [`Size`](#Size), smallest first.
+-}
+allSizes : List Size
+allSizes =
+    [ SizeXs, SizeSm, SizeMd, SizeLg, SizeXl ]
+
+
+{-| The CSS length for a [`Size`](#Size).
+
+    sizeToString SizeMd --> "0.25rem"
+
+-}
+sizeToString : Size -> String
+sizeToString size =
+    case size of
+        SizeXs ->
+            "0.1875rem"
+
+        SizeSm ->
+            "0.21875rem"
+
+        SizeMd ->
+            "0.25rem"
+
+        SizeLg ->
+            "0.28125rem"
+
+        SizeXl ->
+            "0.3125rem"
+
+
+{-| The border width every bordered component shares (`--border`), as one of
+the four steps daisyUI's generator offers.
+
+`BorderHairline` is `0.5px`, `BorderThin` `1px`, `BorderMedium` `1.5px`,
+`BorderThick` `2px`.
+
+-}
+type Border
+    = BorderHairline
+    | BorderThin
+    | BorderMedium
+    | BorderThick
+
+
+{-| Every [`Border`](#Border), thinnest first.
+-}
+allBorders : List Border
+allBorders =
+    [ BorderHairline, BorderThin, BorderMedium, BorderThick ]
+
+
+{-| The CSS length for a [`Border`](#Border).
+
+    borderToString BorderThin --> "1px"
+
+-}
+borderToString : Border -> String
+borderToString border =
+    case border of
+        BorderHairline ->
+            "0.5px"
+
+        BorderThin ->
+            "1px"
+
+        BorderMedium ->
+            "1.5px"
+
+        BorderThick ->
+            "2px"
+
+
+{-| The name a custom theme answers to: what `data-theme` carries, what
+`@plugin "daisyui/theme"` declares, and what `?theme=` selects.
+
+It is opaque, and [`themeName`](#themeName) is the only way to build one, so an
+invalid name is unrepresentable rather than a runtime surprise.
+
+-}
+type ThemeName
+    = ThemeName String
+
+
+{-| Build a [`ThemeName`](#ThemeName), or refuse.
+
+Two rules, both of them daisyUI's:
+
+1.  The name must match `[a-z][a-z0-9-]*`. It ends up inside a CSS attribute
+    selector (`[data-theme="x"]`), inside an `@plugin` block and inside a URL
+    query, and daisyUI's own thirty-five names are all of this shape.
+2.  The name must not be one of the thirty-five built-ins. A custom theme that
+    called itself `light` would collide with the stylesheet daisyUI already
+    ships under that selector, and `themeToString` would stop being injective.
+
+```
+themeName "acme" --> Just (themeName-of "acme")
+
+themeName "Acme" --> Nothing
+
+themeName "1acme" --> Nothing
+
+themeName "acme corp" --> Nothing
+
+themeName "light" --> Nothing
+```
+
+-}
+themeName : String -> Maybe ThemeName
+themeName raw =
+    let
+        reserved : Bool
+        reserved =
+            List.any (\theme -> themeToString theme == raw) allThemes
+    in
+    if reserved || not (wellFormedThemeName raw) then
+        Nothing
+
+    else
+        Just (ThemeName raw)
+
+
+wellFormedThemeName : String -> Bool
+wellFormedThemeName raw =
+    case String.uncons raw of
+        Nothing ->
+            False
+
+        Just ( first, rest ) ->
+            Char.isLower first
+                && Char.isAlpha first
+                && String.all (\c -> (Char.isLower c && Char.isAlpha c) || Char.isDigit c || c == '-') rest
+
+
+{-| The name of any theme at all, built-in or custom.
+
+This is the one way to get a [`ThemeName`](#ThemeName) for a built-in, which
+[`themeName`](#themeName) refuses on purpose. It is what
+`Daisy.Themes.builtinToCustom` uses to turn a stock theme into an editable
+[`CustomTheme`](#CustomTheme): the reserved names are reserved against _new_
+themes, not against reading the built-in ones back out.
+
+    themeNameToString (themeNameOf Caramellatte) --> "caramellatte"
+
+-}
+themeNameOf : Theme -> ThemeName
+themeNameOf theme =
+    ThemeName (themeToString theme)
+
+
+{-| The string inside a [`ThemeName`](#ThemeName).
+-}
+themeNameToString : ThemeName -> String
+themeNameToString (ThemeName raw) =
+    raw
+
+
+{-| Every declaration a [`CustomTheme`](#CustomTheme) stands for, as
+`( property, value )` pairs in daisyUI's own order: `color-scheme`, the twenty
+colours, three radii, two sizes, the border width, and the two effect switches.
+Twenty-nine pairs, always.
+
+`Daisy.Render.page` maps this straight onto `Html.Attributes.style` on the page
+root. Nothing in daisyUI's component CSS reads these variables at _definition_
+time — every use is a `var(--color-primary)` or a `calc(var(--depth) * 30%)` in
+a declaration on the component itself — so an inline definition on an ancestor
+themes the whole subtree exactly as a stylesheet rule would.
+
+-}
+customThemeProperties : CustomTheme -> List ( String, String )
+customThemeProperties custom =
+    let
+        colors : ThemeColors
+        colors =
+            custom.colors
+
+        color : String -> (ThemeColors -> Oklch) -> ( String, String )
+        color name get =
+            ( "--color-" ++ name, Color.oklchToCss (get colors) )
+    in
+    [ ( "color-scheme", colorSchemeToString custom.colorScheme )
+    , color "base-100" .base100
+    , color "base-200" .base200
+    , color "base-300" .base300
+    , color "base-content" .baseContent
+    , color "primary" .primary
+    , color "primary-content" .primaryContent
+    , color "secondary" .secondary
+    , color "secondary-content" .secondaryContent
+    , color "accent" .accent
+    , color "accent-content" .accentContent
+    , color "neutral" .neutral
+    , color "neutral-content" .neutralContent
+    , color "info" .info
+    , color "info-content" .infoContent
+    , color "success" .success
+    , color "success-content" .successContent
+    , color "warning" .warning
+    , color "warning-content" .warningContent
+    , color "error" .error
+    , color "error-content" .errorContent
+    , ( "--radius-selector", radiusToString custom.radius.selector )
+    , ( "--radius-field", radiusToString custom.radius.field )
+    , ( "--radius-box", radiusToString custom.radius.box )
+    , ( "--size-selector", sizeToString custom.size.selector )
+    , ( "--size-field", sizeToString custom.size.field )
+    , ( "--border", borderToString custom.border )
+    , ( "--depth", switchToString custom.depth )
+    , ( "--noise", switchToString custom.noise )
+    ]
+
+
+{-| The twenty-nine declarations as one `style` attribute value.
+
+    customThemeStyle myTheme
+    --> "color-scheme:light;--color-base-100:oklch(98% 0 0);..."
+
+This exists rather than `Daisy.Render` writing one `Html.Attributes.style` per
+property because **`Html.Attributes.style` cannot set a CSS custom property**:
+`elm/virtual-dom` applies a style node with `element.style[key] = value`, and a
+`CSSStyleDeclaration` ignores an assignment to `"--color-primary"` — only
+`setProperty` works there, and Elm never calls it. Setting the whole `style`
+attribute goes through `setAttribute`, which the CSS parser reads, so the
+custom properties land. Verified in Chrome against the built demo: with one
+`style` node per property the page root's computed `--color-primary` stayed
+daisyUI's default; with this one attribute it is the theme's.
+
+-}
+customThemeStyle : CustomTheme -> String
+customThemeStyle custom =
+    customThemeProperties custom
+        |> List.map (\( property, value ) -> property ++ ":" ++ value)
+        |> String.join ";"
+
+
+switchToString : Bool -> String
+switchToString on =
+    if on then
+        "1"
+
+    else
+        "0"
+
+
+{-| A [`CustomTheme`](#CustomTheme) as the `@plugin "daisyui/theme"` block
+daisyUI's documentation asks for — a plain string of CSS, no classes involved.
+
+Paste it into a stylesheet next to `@plugin "daisyui"` and the theme is
+registered the way a built-in is, which is what a `<link>`ed page or a
+Tailwind build wants. An application that renders through `Daisy.Render.page`
+needs none of it: the same declarations go on the page root inline.
+
+    customThemeToCss myTheme
+    --> "@plugin \"daisyui/theme\" {\n  name: \"mytheme\";\n  ... }"
+
+-}
+customThemeToCss : CustomTheme -> String
+customThemeToCss custom =
+    let
+        declaration : ( String, String ) -> String
+        declaration ( property, value ) =
+            "  " ++ property ++ ": " ++ value ++ ";"
+    in
+    String.join "\n"
+        ([ "@plugin \"daisyui/theme\" {"
+         , "  name: \"" ++ themeNameToString custom.name ++ "\";"
+         , "  default: false;"
+         , "  prefersdark: false;"
+         ]
+            ++ List.map declaration (customThemeProperties custom)
+            ++ [ "}" ]
+        )
+
+
+{-| A [`CustomTheme`](#CustomTheme) in the exact JSON shape daisyUI's own theme
+generator round-trips through its URL: `name`, `color-scheme`, the twenty-nine
+declarations, then `default` and `prefersdark`, in that order.
+
+It is here rather than in an application because the key names and the ordering
+are the same facts [`customThemeToCss`](#customThemeToCss) is written from, and
+two copies of them would drift.
+
+Every value is a plain string with no character needing an escape (a theme name
+is `[a-z][a-z0-9-]*`, a colour is `oklch(...)`, a length is digits and letters),
+so this builds the document directly instead of pulling in a JSON encoder.
+
+-}
+customThemeToJson : CustomTheme -> String
+customThemeToJson custom =
+    let
+        pair : ( String, String ) -> String
+        pair ( key, value ) =
+            "\"" ++ key ++ "\":\"" ++ value ++ "\""
+    in
+    "{"
+        ++ String.join ","
+            (pair ( "name", themeNameToString custom.name )
+                :: List.map pair (customThemeProperties custom)
+                ++ [ "\"default\":false", "\"prefersdark\":false" ]
+            )
+        ++ "}"
 
 
 
@@ -1505,6 +2011,7 @@ type Leaf msg
     | Select (SelectConfig msg) SelectData
     | Skeleton SkeletonConfig
     | Status StatusConfig
+    | Swatch SwatchConfig SwatchColor String
     | Swap (SwapConfig msg) SwapFaces
     | Text String
     | TextRotate (List String)
@@ -2005,6 +2512,7 @@ type InputType
     | InputTel
     | InputSearch
     | InputDate
+    | InputColor
 
 
 {-| Groups of the daisyUI `input` component, plus the HTML validation
@@ -2427,6 +2935,75 @@ type alias StatusConfig =
 defaultStatusConfig : StatusConfig
 defaultStatusConfig =
     { color = Nothing, size = Nothing, tooltip = Nothing }
+
+
+{-| One slot of a theme's palette, as a filled chip.
+
+A theme editor has to _show_ the colour it is editing, and daisyUI has no
+component for that: every one of its colour classes belongs to a control. The
+chip is therefore painted with the two Tailwind utilities that read the theme's
+own variables — `bg-primary` and `text-primary-content` for
+[`SwatchPrimary`](#SwatchColor), and so on — which `Daisy.Render` holds as named
+tokens like every other utility it emits. Nothing here is a class the caller
+chooses: the constructor names the slot, and the renderer knows the pair.
+
+`label` is the text drawn on the chip (daisyUI's own generator draws an `A`, to
+show the content colour reading on the surface colour). It may be empty.
+
+-}
+type alias SwatchConfig =
+    { ariaLabel : Maybe String
+    , tooltip : Maybe Tooltip
+    }
+
+
+{-| A swatch with no accessible name of its own — right when the chip sits
+inside a `Field` that already labels it, or beside text that names the colour.
+-}
+defaultSwatchConfig : SwatchConfig
+defaultSwatchConfig =
+    { ariaLabel = Nothing, tooltip = Nothing }
+
+
+{-| Which of a theme's twenty colour variables a [`Leaf.Swatch`](#Leaf) paints.
+
+Eleven slots, not twenty: a swatch shows a _surface_ and puts its matching
+content colour on top, so `base-content` and the eight `*-content` colours are
+reached as the foreground of the surface they belong to rather than as surfaces
+of their own. `base-100`, `base-200` and `base-300` share `base-content`, which
+is exactly what daisyUI's palette says.
+
+-}
+type SwatchColor
+    = SwatchBase100
+    | SwatchBase200
+    | SwatchBase300
+    | SwatchPrimary
+    | SwatchSecondary
+    | SwatchAccent
+    | SwatchNeutral
+    | SwatchInfo
+    | SwatchSuccess
+    | SwatchWarning
+    | SwatchError
+
+
+{-| Every [`SwatchColor`](#SwatchColor), in daisyUI's palette order.
+-}
+allSwatchColors : List SwatchColor
+allSwatchColors =
+    [ SwatchBase100
+    , SwatchBase200
+    , SwatchBase300
+    , SwatchPrimary
+    , SwatchSecondary
+    , SwatchAccent
+    , SwatchNeutral
+    , SwatchInfo
+    , SwatchSuccess
+    , SwatchWarning
+    , SwatchError
+    ]
 
 
 {-| Groups of the daisyUI `swap` component.

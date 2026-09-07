@@ -45,6 +45,10 @@ function moderateLine(
  * label, a `Day | Month | Year` switch, a status pill). Changing any of them
  * would mean editing `vendor/daisyui`, which is forbidden.
  *
+ * A second waiver, `daisyPalettePairTargets` below, covers daisyUI's *emphasised*
+ * pair — `--color-X` under `--color-X-content` — and is decided in the browser
+ * rather than from a class list.
+ *
  * The waiver is a node filter rather than an `AxeBuilder.exclude()`: excluding
  * the elements would take them out of *every* rule, and they still have to
  * answer for their roles, names and structure. It matches on the offending
@@ -64,23 +68,140 @@ function isDaisyDeemphasis(node: { html?: string }): boolean {
 }
 
 /**
+ * The *other* pair daisyUI owns: a `--color-X` background under exactly its own
+ * `--color-X-content` foreground.
+ *
+ * SPEC.md's "what is deliberately not tested" puts those outside Tier C —
+ * "daisyUI's `contrast.test.js` already does that; Tier C contrast tests the
+ * rendered result instead" — and `e2e/contrast.spec.ts` has applied that rule
+ * from the start, mechanically, with a `test.fixme` recording the full claim.
+ * This is the same rule, so that the two specs agree about the same nodes
+ * instead of one exempting what the other fails on.
+ *
+ * It matters here because the theme generator page's whole job is to *show* a
+ * theme's colour pairs, and some of them are bad: the demo's own `acme` theme
+ * (which daisyUI's generator produced) pairs `--color-secondary`
+ * `oklch(76% 0.188 70.08)` with `--color-secondary-content`
+ * `oklch(98% 0.022 95.277)` at 1.9:1. Nothing the tree, the renderer or the
+ * page chooses is wrong there — `Leaf.Swatch SwatchSecondary` names a slot, and
+ * daisyUI's own derivation picked the two colours.
+ *
+ * Deciding it in the browser rather than from a class list is what keeps it
+ * honest: a `-content` colour over the *wrong* surface, or a `color-mix`
+ * background, does not match and still fails. The comparison is on painted sRGB
+ * bytes, so `oklch()` in the theme and `rgb()` from `getComputedStyle` compare
+ * the same way `lib/browser.ts` compares them.
+ */
+async function daisyPalettePairTargets(
+  page: import("@playwright/test").Page,
+  targets: string[],
+): Promise<Set<string>> {
+  if (targets.length === 0) return new Set();
+  const matched = await page.evaluate((selectors: string[]) => {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = 1;
+    const ctx = cv.getContext("2d", { willReadFrequently: true })!;
+    const paint = (color: string): number[] | null => {
+      if (!color) return null;
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = "#000000";
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, 1, 1);
+      const d = ctx.getImageData(0, 0, 1, 1).data;
+      return d[3] < 250 ? null : [d[0], d[1], d[2]];
+    };
+    const near = (a: number[] | null, b: number[] | null) =>
+      !!a && !!b && a.every((v, i) => Math.abs(v - b[i]) <= 3);
+
+    const root = document.querySelector("[data-theme]") ?? document.documentElement;
+    const rootStyle = getComputedStyle(root);
+    const names = [
+      "primary",
+      "secondary",
+      "accent",
+      "neutral",
+      "info",
+      "success",
+      "warning",
+      "error",
+      "base-100",
+      "base-200",
+      "base-300",
+    ];
+    const pairs = names.map((name) => ({
+      name,
+      bg: paint(rootStyle.getPropertyValue("--color-" + name).trim()),
+      fg: paint(
+        rootStyle
+          .getPropertyValue(
+            name.startsWith("base-") ? "--color-base-content" : "--color-" + name + "-content",
+          )
+          .trim(),
+      ),
+    }));
+
+    /** The nearest ancestor (self included) that paints an opaque background. */
+    const opaqueBackground = (el: Element): number[] | null => {
+      for (let node: Element | null = el; node; node = node.parentElement) {
+        const painted = paint(getComputedStyle(node).backgroundColor);
+        if (painted) return painted;
+      }
+      return null;
+    };
+
+    const out: string[] = [];
+    for (const selector of selectors) {
+      const el = document.querySelector(selector);
+      if (!el) continue;
+      const fg = paint(getComputedStyle(el).color);
+      const bg = opaqueBackground(el);
+      if (pairs.some((p) => near(bg, p.bg) && near(fg, p.fg))) out.push(selector);
+    }
+    return out;
+  }, targets);
+  return new Set(matched);
+}
+
+/**
  * Violations, with the waiver above applied: a `color-contrast` violation keeps
  * only the nodes that are *not* one of daisyUI's two de-emphasised pairs, and
  * disappears entirely when that leaves it with no nodes. Every other rule is
  * untouched.
  */
-function waived(results: Awaited<ReturnType<AxeBuilder["analyze"]>>) {
+function waived(
+  results: Awaited<ReturnType<AxeBuilder["analyze"]>>,
+  palettePairs: Set<string> = new Set(),
+) {
   return results.violations
     .map((v) =>
       v.id === "color-contrast"
-        ? { ...v, nodes: v.nodes.filter((n) => !isDaisyDeemphasis(n)) }
+        ? {
+            ...v,
+            nodes: v.nodes.filter(
+              (n) =>
+                !isDaisyDeemphasis(n) && !palettePairs.has(n.target.join(" ")),
+            ),
+          }
         : v,
     )
     .filter((v) => v.nodes.length > 0);
 }
 
-function serious(results: Awaited<ReturnType<AxeBuilder["analyze"]>>) {
-  return waived(results)
+
+/** Every `color-contrast` node axe reported, as its own target selector. */
+function contrastTargets(
+  results: Awaited<ReturnType<AxeBuilder["analyze"]>>,
+): string[] {
+  return results.violations
+    .filter((v) => v.id === "color-contrast")
+    .flatMap((v) => v.nodes.map((n) => n.target.join(" ")));
+}
+
+function serious(
+  results: Awaited<ReturnType<AxeBuilder["analyze"]>>,
+  palettePairs: Set<string> = new Set(),
+) {
+  return waived(results, palettePairs)
     .filter((v) => v.impact === "serious" || v.impact === "critical")
     .map(
       (v) =>
@@ -97,8 +218,12 @@ for (const demo of DEMOS) {
   }) => {
     await open(page, demo.path, theme);
     const results = await new AxeBuilder({ page }).analyze();
+    const palettePairs = await daisyPalettePairTargets(
+      page,
+      contrastTargets(results),
+    );
     console.log(moderateLine(`${demo.name} ${theme}`, results));
-    expect(serious(results)).toEqual([]);
+    expect(serious(results, palettePairs)).toEqual([]);
   });
 }
 

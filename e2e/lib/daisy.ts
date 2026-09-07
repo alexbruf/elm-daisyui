@@ -5,22 +5,47 @@ import type { Page } from "@playwright/test";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
-/** The three demo apps of SPEC.md step 7, in route order. */
+/**
+ * The demo apps, in route order: the three of SPEC.md step 7 plus the theme
+ * generator (`docs/tree-decisions.md`, "Custom themes and the generator page").
+ */
 export const DEMOS = [
   { name: "admin", path: "/" },
   { name: "analytics", path: "/analytics" },
   { name: "settings", path: "/settings" },
+  { name: "theme", path: "/theme" },
 ] as const;
+
+/**
+ * The `data-theme` a demo actually renders with when `?theme=<name>` asked for
+ * `name`.
+ *
+ * Three of the four answer with `name` itself. `/theme` always answers `acme`:
+ * it is the theme *editor*, so `?theme=nord` means "open the editor on nord's
+ * values", and `Demo.Themes.rename` gives those values the demo's own name
+ * before they reach `Page.theme`. That is deliberate and is what the page
+ * proves — no stylesheet declares `acme`, so every colour on it can only have
+ * come from the inline custom properties `Daisy.Render.page` writes.
+ */
+export function rootThemeOf(demo: Demo, requested: string): string {
+  return demo.name === "theme" ? "acme" : requested;
+}
 
 export type Demo = (typeof DEMOS)[number];
 
-/** Every theme `Daisy.Tree.allThemes` offers, in the same order. */
+/**
+ * Every theme the demo can be asked for: `Daisy.Tree.allThemes`' thirty-five
+ * built-ins in daisyUI's own order, then `acme` — the demo's own
+ * `Theme.Custom` (`Demo.Themes.acme`), which no stylesheet declares and which
+ * therefore exercises the inline-property path end to end.
+ */
 export const ALL_THEMES = [
   "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave",
   "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua",
   "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula",
   "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee",
   "winter", "dim", "nord", "sunset", "caramellatte", "abyss", "silk",
+  "acme",
 ] as const;
 
 /**

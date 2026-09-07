@@ -2,16 +2,25 @@ module Main exposing (main)
 
 {-| The demo router.
 
-`Browser.application` over three routes — `/` (Admin), `/analytics`,
-`/settings` — sharing one model. Everything the three demos render comes from
+`Browser.application` over four routes — `/` (Admin), `/analytics`,
+`/settings`, `/theme` (the theme generator) — sharing one model. Everything the
+four demos render comes from
 `Daisy.Tree`; this module only holds state and turns it into a `Page`.
 
 Conventions the Tier C specs rely on:
 
   - **Theme.** `?theme=<name>` on any URL sets the initial theme; `<name>` is
-    any of the 35 values `Daisy.Tree.themeToString` produces. The navbar
-    switcher writes the same field, so a theme chosen on one demo survives
-    navigation to the others.
+    any of the 35 values `Daisy.Tree.themeToString` produces, or `acme`, the
+    demo's own `Daisy.Tree.Theme.Custom` (`Demo.Themes.acme`) and the default.
+    The navbar switcher and the `/theme` editor write the same field, so a
+    theme chosen or built on one demo survives navigation to the others.
+
+  - **Ports.** `demo/src/Ports.elm` holds all three, implemented in
+    `demo/src/main.js`: the clipboard, and the request/response pair that turns
+    the edited theme into daisyUI's own `#theme=` hash. `ThemeLinkReady` is the
+    second `paneName` exception, for the same reason `CalendarMsg` is: it
+    arrives from JavaScript after the `ThemeEdited` that caused it, so stamping
+    it would make every `last-msg:` assertion on `/theme` racy.
 
   - **Debug pane.** Every demo renders a `Prose` block whose text is
     `last-msg: <Name>`, where `<Name>` is the constructor name of the last
@@ -33,7 +42,7 @@ Conventions the Tier C specs rely on:
     `import.meta.env.BASE_URL` and `demo/src/main.js` passes it in as the
     `basePath` flag; `BasePath.strip` takes it off an incoming `Url` before
     routing and `BasePath.join` puts it back on every `href` and `pushUrl`.
-    The three routes themselves stay base-free.
+    The four routes themselves stay base-free.
 
   - **Today.** `Leaf.Calendar` needs a `today`, and the theme screenshots have
     to be byte-identical from one run to the next, so it is the fixed date
@@ -41,7 +50,9 @@ Conventions the Tier C specs rely on:
     the clock in `init`; nothing else about the wiring would change.
 
 This module imports no `Html` at all: `Browser.Document` gives the `view`
-signature and `Daisy.Render.page` produces the body.
+signature and `Daisy.Render.page` produces the body, and no `port` either: all
+three live in `demo/src/Ports.elm`, which `subscriptions` and `update` call like
+any other module.
 
 -}
 
@@ -54,6 +65,9 @@ import Date exposing (Date)
 import Demo.Admin
 import Demo.Analytics
 import Demo.Settings
+import Demo.ThemeGenerator as ThemeGenerator
+import Demo.Themes
+import Ports
 import Process
 import Task
 import Time
@@ -70,7 +84,7 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , onUrlRequest = UrlRequested
         , onUrlChange = UrlChanged
         }
@@ -84,6 +98,7 @@ type Route
     = AdminRoute
     | AnalyticsRoute
     | SettingsRoute
+    | ThemeRoute
 
 
 {-| What `demo/src/main.js` hands over. `basePath` is Vite's `BASE_URL`: `"/"`
@@ -117,6 +132,9 @@ routeFor basePath url =
         "/settings" ->
             Just SettingsRoute
 
+        "/theme" ->
+            Just ThemeRoute
+
         _ ->
             Nothing
 
@@ -130,7 +148,8 @@ normalisePath path =
         path
 
 
-{-| `?theme=<name>` wins over the default, for any of the 35 themes.
+{-| `?theme=<name>` wins over the default, for any of the 35 built-ins or
+`acme`.
 -}
 themeFromUrl : Url.Url -> Theme
 themeFromUrl url =
@@ -139,7 +158,19 @@ themeFromUrl url =
         |> String.split "&"
         |> List.filterMap themeFromPair
         |> List.head
-        |> Maybe.withDefault Light
+        |> Maybe.withDefault defaultTheme
+
+
+{-| The demo's default: `acme`, a theme daisyUI does not ship.
+
+It is a `Daisy.Tree.Theme.Custom`, so nothing in `demo/app.css` declares it —
+`Daisy.Render.page` writes its twenty-nine declarations onto the page root as
+inline CSS custom properties, and daisyUI's components read them from there.
+
+-}
+defaultTheme : Theme
+defaultTheme =
+    Tree.Custom Demo.Themes.acme
 
 
 themeFromPair : String -> Maybe Theme
@@ -147,20 +178,13 @@ themeFromPair pair =
     case String.split "=" pair of
         [ key, value ] ->
             if key == "theme" then
-                themeByName value
+                Demo.Themes.named value
 
             else
                 Nothing
 
         _ ->
             Nothing
-
-
-themeByName : String -> Maybe Theme
-themeByName name =
-    Tree.allThemes
-        |> List.filter (\theme -> Tree.themeToString theme == name)
-        |> List.head
 
 
 
@@ -185,6 +209,8 @@ type alias Model =
     , retention : String
     , digest : Bool
     , anonymize : Bool
+    , generatorUrl : String
+    , themeSeed : Int
     }
 
 
@@ -207,9 +233,24 @@ init flags url key =
       , retention = firstOr "90 days" (List.drop 1 Demo.Settings.retentionWindows)
       , digest = True
       , anonymize = False
+      , generatorUrl = generatorFallback
+      , themeSeed = 0
       }
-    , Cmd.none
+    , Ports.encodeTheme (ThemeGenerator.exportJson (Demo.Themes.rename (themeFromUrl url)))
     )
+
+
+{-| The link the export card shows until the first `Ports.themeEncoded` lands.
+
+Compressing a theme into daisyUI's `#theme=` hash goes through
+`CompressionStream`, which is asynchronous, so the anchor needs a real `href`
+from the very first render. The bare generator URL is that href: it opens the
+tool, just without this theme in it.
+
+-}
+generatorFallback : String
+generatorFallback =
+    "https://daisyui.com/theme-generator/"
 
 
 firstOr : String -> List String -> String
@@ -274,19 +315,27 @@ type Msg
     | DeleteRequested
     | ModalConfirmed
     | ModalCancelled
+    | ThemeEdited ThemeGenerator.ThemeEdit
+    | ThemeExported
+    | ThemeLinkReady String
 
 
 {-| The constructor name of a `Msg`, for the debug pane, or `Nothing` for a
 message the pane deliberately ignores. Payloads are left off so the pane's
 text is exactly one stable token per constructor.
 
-`CalendarMsg` is the only `Nothing`: see the module comment.
+`CalendarMsg` and `ThemeLinkReady` are the two `Nothing`s: see the module
+comment. Both arrive _after_ the message that caused them and neither is a
+message the application acted on.
 
 -}
 paneName : Msg -> Maybe String
 paneName msg =
     case msg of
         CalendarMsg _ ->
+            Nothing
+
+        ThemeLinkReady _ ->
             Nothing
 
         _ ->
@@ -364,6 +413,15 @@ msgName msg =
 
         ModalCancelled ->
             "ModalCancelled"
+
+        ThemeEdited _ ->
+            "ThemeEdited"
+
+        ThemeExported ->
+            "ThemeExported"
+
+        ThemeLinkReady _ ->
+            "ThemeLinkReady"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -473,6 +531,24 @@ step msg model =
         ModalCancelled ->
             ( { model | modalOpen = False }, Cmd.none )
 
+        ThemeEdited edit ->
+            let
+                edited : Tree.CustomTheme
+                edited =
+                    ThemeGenerator.apply model.themeSeed edit (editedTheme model.theme)
+            in
+            ( { model | theme = Custom edited, themeSeed = model.themeSeed + 1 }
+            , Ports.encodeTheme (ThemeGenerator.exportJson edited)
+            )
+
+        ThemeExported ->
+            ( model
+            , Ports.copyToClipboard (ThemeGenerator.exportCss (editedTheme model.theme))
+            )
+
+        ThemeLinkReady url ->
+            ( { model | generatorUrl = url }, Cmd.none )
+
 
 {-| The caption under the picker. A `Cally.Range` value is sorted already, so
 this only has to format it.
@@ -485,6 +561,30 @@ rangeCaption value =
 
         _ ->
             noRangeCaption
+
+
+{-| The theme the `/theme` editor is showing.
+
+The router keeps one `Theme`, which is either a built-in name or a
+`CustomTheme`. `Demo.Themes.rename` covers both: a built-in becomes its
+`Daisy.Themes` values under the demo's own `acme` name, and a `Custom` is
+already what is wanted. That renaming is what makes `?theme=nord` on `/theme`
+open the editor _on_ nord's palette while still rendering `data-theme="acme"`,
+so the page can only be painted by the inline properties.
+
+-}
+editedTheme : Theme -> Tree.CustomTheme
+editedTheme =
+    Demo.Themes.rename
+
+
+
+-- SUBSCRIPTIONS -------------------------------------------------------------
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Ports.themeEncoded ThemeLinkReady
 
 
 
@@ -509,6 +609,9 @@ title route =
 
         SettingsRoute ->
             "Acme Console — Settings"
+
+        ThemeRoute ->
+            "Acme Console — Theme generator"
 
 
 pageFor : Model -> Tree.Page Msg
@@ -568,4 +671,15 @@ pageFor model =
                 , onDelete = DeleteRequested
                 , onConfirm = ModalConfirmed
                 , onCancel = ModalCancelled
+                }
+
+        ThemeRoute ->
+            ThemeGenerator.page
+                { basePath = model.basePath
+                , edited = editedTheme model.theme
+                , lastMsg = model.lastMsg
+                , generatorUrl = model.generatorUrl
+                , onNavigate = NavigateTo
+                , onEdit = ThemeEdited
+                , onExport = ThemeExported
                 }

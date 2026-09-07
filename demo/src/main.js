@@ -12,7 +12,57 @@ const node = document.getElementById('app')
 // demo/src/BasePath.elm.
 const flags = { basePath: import.meta.env.BASE_URL }
 
-Elm.Main.init({ node, flags })
+const app = Elm.Main.init({ node, flags })
+
+// --- ports (see demo/src/Ports.elm) -----------------------------------------
+//
+// Three ports, all of them browser APIs Elm cannot reach.
+
+// 1. The clipboard. `writeText` needs a user gesture, which it has: Elm only
+//    sends on a button's onClick.
+app.ports.copyToClipboard.subscribe((text) => {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => {})
+  }
+})
+
+// 2. The daisyUI theme-generator link.
+//
+// daisyUI encodes a theme into its own URL as
+//
+//     https://daisyui.com/theme-generator/#theme=<base64url(zlib-deflate(json))>
+//
+// — verified by inflating a hash the live generator produced (`bun -e` +
+// node:zlib) and diffing the result against the JSON `Daisy.Tree` emits: same
+// keys, same order, same values.
+//
+// `CompressionStream("deflate")` is the zlib wrapper (RFC 1950), which is what
+// that hash is: every one of them starts `eJx`, i.e. the bytes 0x78 0x9c.
+// (`"deflate-raw"` would be RFC 1951 and would not decode.) It is a stream, so
+// this cannot be a synchronous function returning a value to Elm — hence the
+// answer coming back on a second port.
+const GENERATOR = 'https://daisyui.com/theme-generator/'
+
+async function deflateToBase64Url(text) {
+  const stream = new Blob([text])
+    .stream()
+    .pipeThrough(new CompressionStream('deflate'))
+  const bytes = new Uint8Array(await new Response(stream).arrayBuffer())
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+app.ports.encodeTheme.subscribe(async (json) => {
+  let url = GENERATOR
+  try {
+    url = `${GENERATOR}#theme=${await deflateToBase64Url(json)}`
+  } catch {
+    // No CompressionStream (or a blocked Blob): the bare generator URL is
+    // still a working link, so the page never shows a broken one.
+  }
+  app.ports.themeEncoded.send(url)
+})
 
 // --- native <dialog> glue ---------------------------------------------------
 //

@@ -40,7 +40,7 @@ test("admin: the sidebar menu items are reachable and are links", async ({
   const width = page.viewportSize()!.width;
   if (width < 1024) await page.locator("label.drawer-button").click();
 
-  // Three routes plus "Docs", which leaves the SPA for the generated
+  // Four routes plus "Docs", which leaves the SPA for the generated
   // documentation site at <base>docs/ (see demo/src/Demo/Admin.elm).
   //
   // The assertion is "every destination is there, exactly once, and focusable",
@@ -48,11 +48,17 @@ test("admin: the sidebar menu items are reachable and are links", async ({
   // `menu-title` rows, which are `<li>`s and not links, and adding a real route
   // should not make this spec fail.
   const items = page.locator(".drawer-side ul.menu a");
-  await expect(items).toHaveCount(4);
+  await expect(items).toHaveCount(5);
   // "Analytics New" is the label plus its `MenuItem.badge`, which is inside the
   // link and therefore part of its accessible name — which is what a screen
   // reader announces, so it is asserted as written rather than matched loosely.
-  for (const name of ["Overview", "Analytics New", "Settings", "Docs"]) {
+  for (const name of [
+    "Overview",
+    "Analytics New",
+    "Settings",
+    "Theme generator",
+    "Docs",
+  ]) {
     const item = page.getByRole("link", { name, exact: true });
     await expect(item).toHaveCount(1);
     await item.focus();

@@ -2,9 +2,9 @@
 # tools/ci.sh — run the full CI pipeline in the exact order fixed by
 # CLAUDE.md / SPEC.md "Constraints":
 #
-#   gen-schema diff -> elm make -> package-docs -> elm-review -> elm-test
-#   -> render-audit -> should-not-compile -> gen-cally-css -> demo build
-#   -> css-coverage -> Playwright
+#   gen-schema diff -> gen-themes -> elm make -> package-docs -> elm-review
+#   -> elm-test -> render-audit -> should-not-compile -> gen-cally-css
+#   -> demo build -> css-coverage -> Playwright
 #
 # render-audit is the static half of RenderPurityTest and so runs with it,
 # right after elm-test.
@@ -30,6 +30,7 @@ cd "$REPO_ROOT"
 # above and CLAUDE.md.
 STEP_NAMES=(
   gen-schema
+  gen-themes
   elm-make
   package-docs
   elm-review
@@ -44,6 +45,19 @@ STEP_NAMES=(
 
 step_gen-schema() {
   bun tools/gen-schema.js
+}
+
+step_gen-themes() {
+  # src/Daisy/Themes.elm, the 35 built-in themes as CustomTheme values.
+  # Committed, but regenerated here so a drift from vendor/daisyui shows up as
+  # a diff instead of as a stale table. Same contract as gen-schema above.
+  bun tools/gen-themes.js
+  if ! git diff --quiet -- src/Daisy/Themes.elm; then
+    echo "error: src/Daisy/Themes.elm is out of date with vendor/daisyui." >&2
+    echo "       Run 'bun tools/gen-themes.js' and commit the result." >&2
+    git --no-pager diff --stat -- src/Daisy/Themes.elm >&2
+    exit 1
+  fi
 }
 
 step_elm-make() {

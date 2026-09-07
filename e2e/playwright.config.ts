@@ -40,7 +40,7 @@ function resolvePreviewPort(): number {
 }
 
 // One line at the top of the run when this environment has no committed
-// baselines yet; themes.spec.ts then skips the 105 comparisons rather than
+// baselines yet; themes.spec.ts then skips the 144 comparisons rather than
 // silently writing them. `desktop-light` is the project that owns them.
 warnIfNoBaselines("desktop-light");
 
@@ -49,9 +49,9 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 // --- Viewport x Theme project matrix -----------------------------------
 //
-// SPEC.md Tier C runs every spec across 3 demos x viewports 375/768/1440 x
-// themes light/dark (the `themes` spec itself sweeps all 35 daisyUI themes
-// separately, outside this matrix). We encode:
+// SPEC.md Tier C runs every spec across 4 demos x viewports 375/768/1440 x
+// themes light/dark (the `themes` spec itself sweeps all 35 daisyUI themes plus
+// the demo's own `acme`, separately, outside this matrix). We encode:
 //   - viewport as a genuine Playwright `use.viewport` (real browser size)
 //   - theme as a custom `theme` test-option fixture (see ./fixtures.ts)
 //

@@ -14,7 +14,8 @@
     "docs-site": "bun tools/build-docs-site.js",
     "e2e": "cd e2e && bunx playwright test",
     "demo:build": "cd demo && bun install && bun run build",
-    "review": "bun run gen-review-classes && elm-review && cd demo && elm-review --config ../review"
+    "review": "bun run gen-review-classes && elm-review && cd demo && elm-review --config ../review",
+    "gen-themes": "bun tools/gen-themes.js"
   },
   "dependencies": {
     "node-html-parser": "^9.0.3",

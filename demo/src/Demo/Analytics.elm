@@ -111,6 +111,8 @@ sidebar config =
         , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") True
         , sectionTitle "Workspace"
         , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False
+        , sectionTitle "Tools"
+        , navItem "Theme generator" Icon.Sun (href config "/theme") (config.onNavigate "/theme") False
         , docsItem config
         ]
     }

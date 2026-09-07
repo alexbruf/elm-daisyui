@@ -95,6 +95,47 @@ way only the one rule is waived, only on those two selectors, and a
 `color-contrast` violation anywhere else still fails the run. Nothing else is
 waived.
 
+### The second axe waiver (2026-09-07, custom themes)
+
+The waiver above covers daisyUI's *de-emphasised* pairs. A second one, added
+with the theme generator, covers its **emphasised** pair: `--color-X` under
+exactly its own `--color-X-content`. That is the first shape in the table at the
+top of this section — the shape `contrast.spec.ts` has classified as daisyUI's
+own from the start, and the one SPEC.md's "what is deliberately not tested"
+puts outside Tier C. Until now no demo happened to render one below 4.5:1 where
+axe could measure it, so the two specs had never disagreed about a node.
+
+The theme generator makes them disagree, because its job is to *show* a theme's
+colour pairs including the bad ones. `Demo.Themes.acme` — the theme daisyUI's
+own generator produced for this palette — pairs
+
+    --color-secondary          oklch(76% 0.188 70.08)      an amber
+    --color-secondary-content  oklch(98% 0.022 95.277)     a near-white cream
+
+at **1.9:1**, and `Leaf.Swatch SwatchSecondary` paints exactly that pair,
+because painting it is the point. Nothing the tree, the renderer or the page
+chooses is wrong: the leaf names a slot and daisyUI's own derivation picked the
+two colours.
+
+The implementation is deliberately **not** a class list. It runs in the browser,
+reads the page root's `--color-*` variables, paints every colour through a 1x1
+canvas the way `lib/browser.ts` does, and matches only an exact
+`--color-X` / `--color-X-content` pair on the node axe reported. A `-content`
+colour over the wrong surface, or a `color-mix` background, does not match and
+still fails the run. So the two specs now apply one rule rather than two, which
+is the point of adding it here instead of adding `alert` to the class list.
+
+Two composition changes were made rather than waived in the same pass, and they
+are the reason the waiver has only one node to cover:
+
+- the generator's preview alerts are solid `alert-<color>`, not `alert-soft`
+  (soft is a `color-mix` pair the composition derives; solid is daisyUI's own);
+- its export link is a plain `link`, not `link-primary` — `--color-primary` as a
+  *foreground* over `--color-base-100` is a pair the composition chooses, and it
+  falls under 4.5:1 in several themes (3.6:1 in `dark`). A page that draws
+  itself under deliberately bad themes cannot have its one link depend on the
+  theme's primary being readable.
+
 ## 2. `layers`: "toast is above modal" is not what daisyUI's CSS does
 
 **Spec row:** "With a modal open, every non-overlay element is either hidden or
@@ -127,13 +168,20 @@ is why the toast would be on top if `.modal` did not raise itself.
 
 ## 3. Screenshot baselines are taken at one viewport, on purpose
 
-`e2e/themes.spec.ts` takes its 105 baselines (3 demos x 35 themes) in the
-`desktop-light` project only. Running them in all six projects would be 630
+`e2e/themes.spec.ts` takes its 144 baselines (4 demos x 36 themes) in the
+`desktop-light` project only. Running them in all six projects would be 864
 images for the same information: a theme is a set of colours, and the three
 viewports are already covered pixel-for-pixel by `overlap`, `overflow` and
-`responsive`, which measure geometry rather than photograph it. The 35-theme
+`responsive`, which measure geometry rather than photograph it. The 36-theme
 chart-colour and contrast sweeps are gated to the same project for the same
 reason — neither depends on the viewport.
+
+The 36th theme is `acme`, the demo's own `Daisy.Tree.Theme.Custom`. Nothing in
+`demo/app.css` declares it, so those 36 screenshots and both sweeps are what
+test the inline-custom-property path `Daisy.Render.page` writes for a custom
+theme — including on `/theme`, the fourth demo, which always renders
+`data-theme="acme"` whatever `?theme=` asked for (`lib/daisy.ts`'s
+`rootThemeOf`).
 
 ## 4. Things the demos still cannot express
 

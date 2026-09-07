@@ -123,7 +123,7 @@ dashboard config =
 
 {-| The sidebar, in the two labelled groups Nexus splits its own into.
 
-The four entries are the demo's four real destinations: three routes plus the
+The five entries are the demo's five real destinations: four routes plus the
 generated documentation site. Nexus lists about twenty; the rest of its list
 would be dead links here, and a dead link in a demo is worse than a short one
 (`docs/tree-decisions.md`).
@@ -138,6 +138,8 @@ sidebar config =
         , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") False (Just "New")
         , sectionTitle "Workspace"
         , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False Nothing
+        , sectionTitle "Tools"
+        , navItem "Theme generator" Icon.Sun (href config "/theme") (config.onNavigate "/theme") False Nothing
         , docsItem config
         ]
     }

@@ -76,13 +76,19 @@ for (const demo of DEMOS) {
 }
 
 /**
- * The 35-theme sweep. It is the same assertion as above, run once over every
- * theme `Daisy.Tree.allThemes` offers rather than once per matrix row, because
- * theme colours do not depend on the viewport. It runs in `desktop-light`
- * only; the project's own `theme` option is ignored here since the sweep sets
- * the theme itself.
+ * The 36-theme sweep. It is the same assertion as above, run once over every
+ * theme `Daisy.Tree.allThemes` offers — plus `acme`, the demo's own
+ * `Theme.Custom`, whose colours reach the page only as inline custom properties
+ * — rather than once per matrix row, because theme colours do not depend on the
+ * viewport. It runs in `desktop-light` only; the project's own `theme` option is
+ * ignored here since the sweep sets the theme itself.
+ *
+ * The classifier in `lib/browser.ts` needs no change for a custom theme: it
+ * decides "daisyUI's own pair" by comparing computed colours against the root's
+ * `--color-*` values, and `getComputedStyle` resolves an inline custom property
+ * exactly as it resolves one from a stylesheet rule.
  */
-test("every theme: composed text reaches 4.5:1 on all three demos", async ({
+test("every theme: composed text reaches 4.5:1 on all four demos", async ({
   page,
 }, testInfo) => {
   test.skip(

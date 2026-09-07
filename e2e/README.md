@@ -29,7 +29,7 @@ own default preview port, `4173`.
 
 ## Base path
 
-The specs navigate with absolute paths (`/`, `/analytics`, `/settings`), which
+The specs navigate with absolute paths (`/`, `/analytics`, `/settings`, `/theme`), which
 is what the demo serves locally: `demo/vite.config.js` defaults Vite's `base`
 to `/` and only `.github/workflows/pages.yml` overrides it (to `/elm-daisyui/`,
 for the project site). `vite preview` reads the same config, so the built
@@ -39,9 +39,22 @@ mechanism.
 
 ## Viewport x theme project matrix
 
-SPEC.md's Tier C runs every spec across 3 demos x viewports `375, 768, 1440`
-x themes `light, dark` (`themes.spec` additionally sweeps all 35 daisyUI
-themes on its own, outside this matrix).
+SPEC.md's Tier C runs every spec across the demos x viewports `375, 768, 1440`
+x themes `light, dark` (`themes.spec` additionally sweeps every theme on its
+own, outside this matrix).
+
+There are **four** demos: the three of SPEC.md step 7 plus `/theme`, the theme
+generator (`docs/tree-decisions.md`, "Custom themes and the generator page").
+And **36** themes: daisyUI's 35 plus `acme`, the demo's own
+`Daisy.Tree.Theme.Custom`. Nothing in `demo/app.css` declares `acme`, so every
+sweep that includes it is testing the inline-custom-property path
+`Daisy.Render.page` writes for a custom theme — which is why it is in the theme
+list rather than in a spec of its own.
+
+`/theme` is the one demo whose `data-theme` is not what `?theme=` asked for: it
+is the theme *editor*, so the query picks the palette the editor opens on and
+the page always renders `acme`. `lib/daisy.ts`'s `rootThemeOf` is that rule,
+in one place; `themes.spec.ts` reads it rather than assuming.
 
 This config expresses that as 6 Playwright **projects**, named
 `<viewport>-<theme>`:
@@ -128,7 +141,7 @@ so the bundled face is loaded before anything is photographed.
 
 `snapshotDir` is `e2e/snapshots`, and the path template is
 `{snapshotDir}/<tag>/{arg}{ext}` — flat filenames under one **environment
-tag**. `themes.spec.ts` owns all of them: **105 baselines**, 3 demos x 35
+tag**. `themes.spec.ts` owns all of them: **144 baselines**, 4 demos x 36
 themes, per tag, and they are committed. A later diff fails the run and needs a
 human decision (see SPEC.md step 6 Tier C, "themes").
 
@@ -161,7 +174,7 @@ the directory it writes.
 
 ### When a tag has no baselines yet
 
-A tag whose directory does not exist has never been generated. The 105
+A tag whose directory does not exist has never been generated. The 144
 screenshot comparisons then **skip** with the reason
 
 ```
@@ -171,7 +184,7 @@ screenshot comparisons then **skip** with the reason
 printed once at the top of the run (from `playwright.config.ts`, so it lands in
 the CI log) and attached to every skipped test. Skipping is the point: without
 it, `--update-snapshots` semantics would have the very run that is supposed to
-check the baselines write all 105 of them and pass. Nothing else is affected —
+check the baselines write all 144 of them and pass. Nothing else is affected —
 the chart-colour sweep in `themes.spec.ts` and the contrast sweep in
 `contrast.spec.ts` measure computed values, not pixels, and run under every
 tag.
@@ -197,10 +210,10 @@ not start itself off that commit — start it by hand: Actions -> *CI* -> Run
 workflow (`ci.yml` carries a `workflow_dispatch` trigger for exactly this).
 
 They are taken in the `desktop-light` project only. Doing it in all six would
-be 630 images for the same information: a theme is a set of colours, and the
+be 864 images for the same information: a theme is a set of colours, and the
 three viewports are already covered pixel-for-pixel by `overlap`, `overflow`
 and `responsive`, which measure geometry rather than photograph it. The two
-other 35-theme sweeps (chart colours in `themes.spec.ts`, contrast in
+other 36-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 `contrast.spec.ts`) are gated to the same project, for the same reason.
 
 ## The specs
@@ -208,15 +221,16 @@ other 35-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 | File | SPEC.md Tier C row | Runs |
 |---|---|---|
 | `smoke.spec.ts` | — (harness self-check) | full matrix |
-| `overlap.spec.ts` | overlap | full matrix, 3 demos |
-| `overflow.spec.ts` | overflow | full matrix, 3 demos |
+| `overlap.spec.ts` | overlap | full matrix, 4 demos |
+| `overflow.spec.ts` | overflow | full matrix, 4 demos |
 | `layers.spec.ts` | layers | full matrix |
 | `responsive.spec.ts` | responsive | full matrix, 2 dashboards |
-| `themes.spec.ts` | themes | `desktop-light`, 35 themes (screenshots skip when the tag has no baselines) |
-| `contrast.spec.ts` | contrast | full matrix + a 35-theme sweep in `desktop-light` |
-| `a11y.spec.ts` | a11y | full matrix, 3 demos + the modal-open state |
+| `themes.spec.ts` | themes | `desktop-light`, 36 themes x 4 demos (screenshots skip when the tag has no baselines) |
+| `contrast.spec.ts` | contrast | full matrix + a 36-theme sweep in `desktop-light` |
+| `a11y.spec.ts` | a11y | full matrix, 4 demos + the modal-open state |
 | `keyboard.spec.ts` | keyboard | full matrix |
 | `interaction.spec.ts` | interaction | full matrix |
+| `theme-generator.spec.ts` | — (the custom-theme feature) | `desktop-light`, the `/theme` route |
 
 `a11y.spec.ts` asserts zero serious/critical axe violations, which is the
 SPEC row, and additionally **prints** the moderate/minor tally for every scan
@@ -224,9 +238,20 @@ as `axe <demo> <theme>: moderate=<n> minor=<n> <rule>[<impact>]x<nodes>`. It
 is reported, never asserted, so a composition change's effect on the findings
 the row does not fail on is visible in the run output. Since the demos gained
 `Leaf.Heading`, `page-has-heading-one` is gone from all three; what is left is
-`region` (2 nodes on Admin, 3 on Analytics, 0 on Settings) — the `Dashboard`
-shell's navbar sits outside `<main>`, which is a `Daisy.Render` shape, not a
-demo one.
+`region` (6 nodes on Admin, 5 on Analytics, 0 on Settings, 4 on the theme
+generator) — the `Dashboard` shell's navbar sits outside `<main>`, which is a
+`Daisy.Render` shape, not a demo one.
+
+It carries **two** `color-contrast` waivers, and only that rule. The first is a
+class list (`menu-title`, `tab`, `badge-soft`), daisyUI's de-emphasised pairs.
+The second, added with the theme generator, is daisyUI's *emphasised* pair —
+`--color-X` under exactly its own `--color-X-content` — decided in the browser
+on painted sRGB bytes rather than from a class list, which is the same
+mechanical rule `contrast.spec.ts` has always used and which SPEC.md's "what is
+deliberately not tested" puts outside Tier C. It is what lets the generator page
+*show* a bad pair: `acme`'s own secondary/secondary-content, which daisyUI's
+generator derived, is 1.9:1. A `-content` colour over the wrong surface, or a
+`color-mix` background, does not match and still fails.
 
 `lib/daisy.ts` holds the demo list, the theme list, the `fixtures/schema.json`
 reader (the daisyUI class list is read from the generated schema at test time,
@@ -236,7 +261,7 @@ self-contained by construction.
 
 ## Known `fixme`s
 
-`contrast.spec.ts` carries three `test.fixme`s — one per demo — for the version
+`contrast.spec.ts` carries four `test.fixme`s — one per demo — for the version
 of the contrast row that includes daisyUI's own theme colour pairs, which are
 below 4.5:1 in about twenty themes and cannot be changed without editing
 `vendor/daisyui`. The running tests assert the same row for every pair the
@@ -245,13 +270,38 @@ of the reasoning, including why `layers.spec.ts` asserts the renderer's fixed
 overlay order rather than SPEC's "toast is above modal".
 
 Re-measured after the 2026-09-07 demo recomposition: in the `light` projects
-all three would now pass (0 text nodes under 4.5:1, daisyUI's own pairs
+they would now pass (0 text nodes under 4.5:1, daisyUI's own pairs
 included), but in the `dark` projects each demo still has exactly one — the
 page's single `btn-primary` CTA, `--color-primary` under
 `--color-primary-content` at 4.13:1. That pair is daisyUI's, the tree allows
 exactly one primary CTA and that is what `Daisy.Render` emits, so the three
 `fixme`s stay as they are rather than being un-fixme'd into a per-project
 flake.
+
+## `theme-generator.spec.ts`
+
+Eight tests over the `/theme` route, in `desktop-light` only (the page's
+behaviour is not viewport-dependent; geometry belongs to `overlap`/`overflow`/
+`responsive` and colour to `contrast`).
+
+What it is really asserting is the claim the whole custom-theme feature rests
+on: a theme that exists only as an Elm value, written onto the page root as
+inline CSS custom properties, themes daisyUI's components exactly as a
+stylesheet rule would. It is worth asserting because it nearly did not work —
+`Html.Attributes.style "--color-primary" "..."` is a **no-op**, since
+`elm/virtual-dom` applies a style node with `element.style[key] = value` and a
+`CSSStyleDeclaration` ignores an assignment to a `--*` name. `Daisy.Render`
+writes one whole `style` *attribute* instead, and the first test's
+"29 declarations in one attribute" assertion is what would catch a regression.
+
+The sharpest colour assertion is `--depth`, not a colour: daisyUI multiplies it
+into three of the button's box-shadow alphas, so `--depth: 0` means the CTA has
+no shadow at all — something only an *inherited effect switch* can produce.
+
+The generator-link test inflates the `#theme=` hash in the page with
+`DecompressionStream("deflate")` (the zlib wrapper, RFC 1950 — daisyUI's own
+hashes all start `eJx`) and compares the result with daisyUI's exact theme JSON,
+key order included.
 
 ## `compare.mjs`
 

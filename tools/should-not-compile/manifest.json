@@ -58,5 +58,8 @@
   ],
   "Reject/TooltipAsNode.elm": [
     "NAMING ERROR"
+  ],
+  "Reject/ThemeNameFromString.elm": [
+    "TYPE MISMATCH"
   ]
 }

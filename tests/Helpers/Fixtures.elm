@@ -194,6 +194,7 @@ leaves =
         ++ selectLeaves
         ++ skeletonLeaves
         ++ statusLeaves
+        ++ swatchLeaves
         ++ swapLeaves
         ++ textareaLeaves
         ++ themeLeaves
@@ -387,6 +388,15 @@ inputLeaves =
                     , placeholder = "Search"
                     , ariaLabel = Just "Search"
                 }
+           , -- `type="color"`, the native picker the theme generator edits a
+             -- `--color-*` variable with.
+             Input
+                { defaultInputConfig
+                    | inputType = InputColor
+                    , value = "#7f5af0"
+                    , ariaLabel = Just "Primary colour"
+                    , onInput = Just Typed
+                }
            ]
 
 
@@ -535,6 +545,19 @@ statusLeaves : List (Leaf Msg)
 statusLeaves =
     List.map (\v -> Status { defaultStatusConfig | color = Just v }) SStatus.allColors
         ++ List.map (\v -> Status { defaultStatusConfig | size = Just v }) SStatus.allSizes
+
+
+{-| Every [`SwatchColor`](Daisy-Tree#SwatchColor), so both colour tokens of each
+of the eleven palette slots are emitted. `Leaf.Swatch` carries no daisyUI class
+at all — the chip is `Daisy.Render`'s own box — so this exercises the token half
+of the budget rather than the schema half.
+-}
+swatchLeaves : List (Leaf Msg)
+swatchLeaves =
+    List.map (\color -> Swatch defaultSwatchConfig color "A") allSwatchColors
+        ++ [ Swatch { defaultSwatchConfig | ariaLabel = Just "Primary colour" } SwatchPrimary ""
+           , Swatch { defaultSwatchConfig | tooltip = Just (tooltip "primary") } SwatchPrimary "A"
+           ]
 
 
 swapLeaves : List (Leaf Msg)

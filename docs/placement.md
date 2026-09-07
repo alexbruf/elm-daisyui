@@ -9,7 +9,7 @@ by its named type.
 
 | Level | Meaning |
 |---|---|
-| **Page** | Page shell, theme, the page header, or the single primary CTA. Chrome that lives outside the section flow. Rendered by `Daisy.Render` from fields on `Page`/`Shell`, never as a `Section`/`Block`/`Leaf`. `Page.header : Maybe (PageHeader msg)` (`{ title, breadcrumbs, actions }`) is here rather than at Section for exactly that reason: a dashboard's title bar is chrome, and the five-section budget is content. `Shell.Dashboard` carries `DashboardShell = { brand, sidebar, sidebarFooter, navbar }`. |
+| **Page** | Page shell, theme (a built-in name or a whole `CustomTheme`), the page header, or the single primary CTA. Chrome that lives outside the section flow. Rendered by `Daisy.Render` from fields on `Page`/`Shell`, never as a `Section`/`Block`/`Leaf`. `Page.header : Maybe (PageHeader msg)` (`{ title, breadcrumbs, actions }`) is here rather than at Section for exactly that reason: a dashboard's title bar is chrome, and the five-section budget is content. `Shell.Dashboard` carries `DashboardShell = { brand, sidebar, sidebarFooter, navbar }`. |
 | **Section** | A top-level band of the page. Constructors are exactly `Hero`, `Navbar`, `Footer`, `Grid`, `Stack`. `Navbar` contains Leaves; `Hero`, `Footer`, `Grid`, `Stack` contain Blocks. Max 5 per page (`Sections1`..`Sections5`). |
 | **Block** | A self-contained content container that sits directly inside a Section. Contains Leaves, or a closed record/list of its own part records. Never contains another Block. |
 | **Leaf** | A terminal control or piece of content. Contains only data (`String`, `Float`, config), never another node. Leaves live inside Blocks, inside `Navbar`, or inside `Toast`/`Modal` via a Block. |
@@ -62,6 +62,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | hero | Section | `Section.Hero` | `List (Block msg)` | Fixed by the spec. `hero-content` wraps the blocks and `hero-overlay` comes from `HeroConfig.overlay`; both parts are renderer-emitted. |
 | (heading) | Leaf | `Leaf.Heading` | `HeadingLevel` (`H1`/`H2`/`H3`) + `String` | Not a daisyUI component and emits no daisyUI class. A page otherwise has no `<h1>`: `Leaf.Text` is a text node and `Block.Prose` is a `<div>`, so Tailwind typography had nothing to style and axe reported `page-has-heading-one` on every demo. |
 | (icon) | Leaf | `Leaf.Icon` | `IconConfig` (`size : IconSize`, `label : Maybe String`) + `Daisy.Icon.Icon` | Not a daisyUI component and emits no daisyUI class, like `Leaf.Heading` and `Leaf.Image`. A closed set of 25 heroicons outline drawings; the path data lives in the internal `Daisy.Render.Icons`, so `Daisy.Icon` stays pure data and no caller can hand the renderer markup. Also reachable as `MenuItem.icon`, `ButtonConfig.icon` and `Cta.icon`, which is where daisyUI's dashboard templates put glyphs. |
+| (swatch) | Leaf | `Leaf.Swatch` | `SwatchConfig` + `SwatchColor` + `String` label | Not a daisyUI component and emits no daisyUI class, like `Leaf.Heading` and `Leaf.Icon` — but unlike them it emits *colour*. A theme editor has to show the colour it is editing, and daisyUI ships no component whose job is that: every colour class it has belongs to a control. `SwatchColor` is a closed eleven-value slot name (three base surfaces plus the eight semantic colours), and `Daisy.Render.swatchClasses` maps each to one `bg-*` / `text-*-content` token pair — the only colour tokens in the table, each with exactly one use site. The caller names a slot, never a class. Added 2026-09-07; see `docs/tree-decisions.md`, "Custom themes and the generator page". |
 | hover-3d | Property | field `hover3d : Bool` on `ImageConfig` and `CardConfig` | none | Decoration only: a wrapper plus eight empty divs the renderer emits. It has no authorable content. |
 | hover-gallery | Leaf | `Leaf.HoverGallery` | `List ImageSrc` (data) | A `<figure class="hover-gallery">` whose children are only `<img>` tags: terminal content with no nodes inside. |
 | indicator | Property | field `indicator : Maybe (Indicator msg)` on Leaf configs (Button, Avatar, Input, Link) | `Indicator` holds `IndicatorConfig` + a `Badge`/`Status` payload (the `indicator-item` part) | Same shape as `tooltip`/`dropdown`: a wrapper that decorates exactly one anchor element. Placing it as a node would let `indicator-item` appear without an anchor. |
@@ -99,7 +100,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | table | Block | `Block.Table TableConfig (List (Row msg))` | `List (Row msg)` where `Row = { cells : List (Leaf msg) }` | Fixed by the spec. Rows hold Leaves, which is what the Admin demo's badge + row-action button needs. |
 | textarea | Leaf | `Leaf.Textarea` | `TextareaConfig` only | Terminal form control. |
 | text-rotate | Leaf | `Leaf.TextRotate` | `List String` | Terminal animated text; its children are only words. |
-| theme-controller | Leaf | `Leaf.ThemeSelect` | `{ themes : List Theme, current : Theme, presentation : ThemePresentation }` (data) | The class only ever sits on a checkbox/radio/select input whose `value` is a theme name. `ThemeAsDropdown` is the compact presentation (daisyUI's documented `dropdown` + `dropdown-content` radios); every other one is a sibling control per theme, which is 35 controls wide with `allThemes`. As a Leaf it can go in the Navbar (Admin demo). `Page.theme` sets the initial `data-theme` on the shell; `ThemeSelect` is the control that changes it. See Unsure. |
+| theme-controller | Leaf | `Leaf.ThemeSelect` | `{ themes : List Theme, current : Theme, presentation : ThemePresentation }` (data) | The class only ever sits on a checkbox/radio/select input whose `value` is a theme name. `ThemeAsDropdown` is the compact presentation (daisyUI's documented `dropdown` + `dropdown-content` radios); every other one is a sibling control per theme, which is 35 controls wide with `allThemes`. As a Leaf it can go in the Navbar (Admin demo). `Page.theme` sets the initial `data-theme` on the shell; `ThemeSelect` is the control that changes it. `ThemeSelectData.themes` is a `List Theme`, so it can offer a `Theme.Custom` beside the thirty-five built-ins — the control writes the whole `Theme`, and `Daisy.Render.page` decides whether that means a `data-theme` name alone or a name plus twenty-nine inline custom properties. See Unsure. |
 | timeline | Block | `Block.Timeline` | `TimelineConfig` (`modifiers : List TimelineModifier`, which omits `timeline-box`) + `List (TimelineItem msg)`, each a parts record `{ start, startBox, middle, end, endBox }` | `timeline-start`/`-middle`/`-end` are `part` classes repeating per item; the container is a content block in a Section. `timeline-box` sits on one *side of one item*, so it is `startBox` / `endBox` there. |
 | toast | Overlay | `Overlay.Toast` | `List (Block msg)` (in practice `Block.Alert`) | Fixed by the spec as an Overlay. Children changed from `List Leaf` to `List Block` because every daisyUI toast example contains `alert`. See Unsure. |
 | toggle | Leaf | `Leaf.Toggle` | `ToggleConfig` + `{ checked : Bool }` | Terminal form control; required by the Settings demo as a `Field.control`. |
@@ -328,6 +329,22 @@ Every element the three demos require (SPEC step 7) maps to a placement above.
 | Labels | `label` is Parts-of the `Field` record |
 | One primary CTA | `Page.cta` — the only `btn-primary` on the page |
 | Modal confirm overlay | `Overlay.Modal cfg [ Block.Prose ..., Block.Alert ... ]`, confirm/cancel rendered from `ModalConfig` into the `modal-action` part |
+
+**Theme generator** (added 2026-09-07)
+
+| Requirement | Placement |
+|---|---|
+| Dashboard shell, page header, debug pane | as Admin |
+| The page renders under the theme being edited | `Page.theme = Theme.Custom (CustomTheme)`; `Daisy.Render.page` writes the twenty-nine declarations onto the page root as one inline `style` attribute |
+| "Start from" any built-in or `acme` | `Leaf.Select` over `List.map themeToString Demo.Themes.startingPoints`; `Daisy.Themes.builtinToCustom` supplies the values behind a built-in's name |
+| One picker per `--color-*` variable | `Leaf.Input` with `inputType = InputColor` as a `Field.control`, so the native picker is named by the variable it edits; `Daisy.Color` converts `#rrggbb` <-> `oklch()` |
+| Radius / size / border steps | `Leaf.Select` over `allRadii` / `allSizes` / `allBorders`, offered under the CSS length each step stands for |
+| `--depth` / `--noise` / dark scheme | `Leaf.Toggle` — a `Bool` in the tree, a `0`/`1` in the CSS |
+| The palette readout | `Leaf.Swatch` per `SwatchColor` in `CardParts.body`, badges in `CardParts.actions` (`card-actions` is `flex flex-wrap`; a `card-body` child would stretch to the full width) |
+| Live preview | ordinary `Leaf.Button` / `Leaf.Badge` / `CardAlert` / `CardForm` / `CardChart` / `CardTable` — the whole page is the preview |
+| The exported CSS | `Block.MockupCode` of `String.lines (customThemeToCss ...)`, in a `Stack` with `align = AlignStretch` |
+| "Copy CSS" | `Page.cta` -> a port (`Ports.copyToClipboard`) |
+| "Open in daisyUI theme generator" | `Leaf.Link` whose `href` is the answer to `Ports.encodeTheme (customThemeToJson ...)` |
 
 **Known gaps** (record in `fixtures/rejected.md`, do not add an escape hatch):
 

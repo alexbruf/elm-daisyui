@@ -133,6 +133,7 @@ navbarParts config =
     , end =
         [ navLink config "Overview" "/"
         , navLink config "Analytics" "/analytics"
+        , navLink config "Theme" "/theme"
         ]
     }
 
