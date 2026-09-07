@@ -56,7 +56,10 @@ is the theme *editor*, so the query picks the palette the editor opens on and
 the page always renders `acme`. `lib/daisy.ts`'s `rootThemeOf` is that rule,
 in one place; `themes.spec.ts` reads it rather than assuming.
 
-It is also the one demo on `Shell.Plain` besides Settings: it reproduces
+It is also the **only** demo on `Shell.Plain` since the live-review pass
+(2026-09-07): Settings moved to `Shell.Dashboard` (`docs/tree-decisions.md`,
+"Fixes from live review"), so `/theme` is what exercises the plain shell in a
+browser. It reproduces
 <https://daisyui.com/theme-generator/>, whose page is a navbar over three
 columns and has no application sidebar. Two consequences for anything written
 against it — its theme list is a `Block.Menu` of buttons rather than a
@@ -129,13 +132,25 @@ animation in it at all — the media query is doing the work, not the injected
 `animation.spec.ts` is therefore the **only** spec that does not go through
 `open()`. It has to set `prefers-reduced-motion` itself, and it must not have
 that stylesheet injected, so it navigates directly and waits for the
-`last-msg:` pane the way `open()` does. Three tests: with motion allowed the
+`last-msg:` pane the way `open()` does. Four tests: with motion allowed the
 bar group carries a running-or-finished `daisy-bar-grow` animation
 (`animation-fill-mode: both`, so the assertion is not a race with the 0.55s
-run); with reduced motion `document.getAnimations()` is empty page-wide; and
+run); with reduced motion `document.getAnimations()` is empty page-wide;
 clicking `Month` on the `Day | Month | Year` strip replays it, which is the
 assertion that would catch `Daisy.Render`'s `Html.Keyed` key being dropped —
-a chart diffed in place would keep the finished animation instead.
+a chart diffed in place would keep the finished animation instead; and
+**hovering never replays it**.
+
+That last one is the regression test for the defect the live review found
+(`docs/tree-decisions.md`, "Fixes from live review", 1). It lets the entry
+animation finish, records `animationName@startTime` for both bar groups off
+`document.getAnimations()`, sweeps four bins, leaves the chart, comes back, and
+asserts the fingerprint is unchanged and every animation is still `finished`.
+A stable `Html.Keyed` key is *not* enough to make that pass: elm-charts renders
+a tooltip as an HTML sibling before the `<svg>` and a hover band as an SVG
+sibling before the series groups, and `elm/virtual-dom` diffs children by
+position, so a decoration appearing or disappearing used to rebuild the whole
+drawing and restart the animation.
 
 ## Determinism
 
@@ -260,7 +275,7 @@ other 36-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 | `overlap.spec.ts` | overlap | full matrix, 4 demos |
 | `overflow.spec.ts` | overflow | full matrix, 4 demos |
 | `layers.spec.ts` | layers | full matrix |
-| `responsive.spec.ts` | responsive | full matrix, 2 dashboards |
+| `responsive.spec.ts` | responsive | full matrix, 3 dashboards (the `stats` row on the 2 that have tiles) |
 | `themes.spec.ts` | themes | `desktop-light`, 36 themes x 4 demos (screenshots skip when the tag has no baselines) |
 | `contrast.spec.ts` | contrast | full matrix + a 36-theme sweep in `desktop-light` |
 | `a11y.spec.ts` | a11y | full matrix, 4 demos + the modal-open state |
@@ -275,10 +290,21 @@ SPEC row, and additionally **prints** the moderate/minor tally for every scan
 as `axe <demo> <theme>: moderate=<n> minor=<n> <rule>[<impact>]x<nodes>`. It
 is reported, never asserted, so a composition change's effect on the findings
 the row does not fail on is visible in the run output. Since the demos gained
-`Leaf.Heading`, `page-has-heading-one` is gone from all three; what is left is
-`region` (6 nodes on Admin, 5 on Analytics, 0 on Settings, 4 on the theme
+`Leaf.Heading`, `page-has-heading-one` is gone from all of them; what is left is
+`region` (6 nodes on Admin, 5 on Analytics, 5 on Settings, 0 on the theme
 generator) — the `Dashboard` shell's navbar sits outside `<main>`, which is a
-`Daisy.Render` shape, not a demo one.
+`Daisy.Render` shape, not a demo one. Settings picked up its five when it moved
+onto that shell; it had none on `Shell.Plain`.
+
+**Why the Settings danger button is solid and not outlined.** The live-review
+note asked for an outline error button on the "Danger zone" card.
+`btn-outline btn-error` paints `--color-error` as a *foreground* over
+`--color-base-100`, which is 2.86:1 in the stock `light` theme — a serious
+`color-contrast` violation here and a composed-row failure in
+`contrast.spec.ts`, covered by neither waiver (both cover daisyUI's own
+`--color-X` under `--color-X-content` pair, which is what the solid button is).
+The card is a quiet panel with a loud button either way; the full-width solid
+`alert` the review objected to is what is gone.
 
 It carries **two** `color-contrast` waivers, and only that rule. The first is a
 class list (`menu-title`, `tab`, `badge-soft`), daisyUI's de-emphasised pairs.
@@ -368,6 +394,31 @@ The generator-link test inflates the `#theme=` hash in the page with
 `DecompressionStream("deflate")` (the zlib wrapper, RFC 1950 — daisyUI's own
 hashes all start `eJx`) and compares the result with daisyUI's exact theme JSON,
 key order included.
+
+## Chart hover, in `interaction.spec.ts`
+
+Every chart on the four demos answers the pointer since the live-review pass, so
+the interaction row covers all three highlight shapes:
+
+- **a bar chart** (`/`, Revenue Statistics) — the band over the hovered bin and
+  the tooltip, plus the assertion that exactly *one* of each is drawn even
+  though a tracked bar chart draws two `C.bars` elements per bin;
+- **a line chart** (`/`, Customer Acquisition) — the crosshair band and a
+  tooltip naming both series, the measured one and the dashed projection;
+- **a donut** (`/analytics`, Sessions by device) — the readout in the ring's
+  hole, asserted as `Desktop`, `54` and `54%`.
+
+Two mechanical notes for anyone extending these. A ring segment is a **stroke**,
+so its bounding box is the whole ring and its centre is the empty hole: the
+pointer has to be put on the painted arc (three o'clock, for a segment that
+starts at twelve and covers more than a quarter), not on `hover()`'s default
+centre. And both charts sit below the fold at 375 and 768 while `page.mouse`
+works in viewport coordinates, so each test calls `scrollIntoViewIfNeeded()`
+before it measures.
+
+All three also assert `last-msg: none` afterwards: hovering is not something the
+application did, and `Main.paneName` ignores `ChartHovered` exactly as it ignores
+`CalendarMsg`.
 
 ## `compare.mjs` and `docshots.mjs`
 

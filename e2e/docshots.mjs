@@ -57,6 +57,17 @@ for (const [route, name] of demos.slice(0, 3)) {
     deviceScaleFactor: 1,
     reducedMotion: "reduce",
   });
+  // The same "kill every transition" stylesheet `shoot()` injects. daisyUI's
+  // `.modal` opens with a 0.3s translate and a 0.2s opacity that its own CSS
+  // does not guard behind `prefers-reduced-motion`, so without this the shot
+  // catches the dialog mid-flight — sometimes at opacity 0.
+  await page.addInitScript(() => {
+    const style = document.createElement("style");
+    style.textContent =
+      "*,*::before,*::after{transition:none!important;animation:none!important;" +
+      "scroll-behavior:auto!important;caret-color:transparent!important}";
+    document.addEventListener("DOMContentLoaded", () => document.head.appendChild(style));
+  });
   await page.goto(`${base}/settings?theme=light`, { waitUntil: "load" });
   await page.locator("text=/^last-msg: /").first().waitFor({ state: "visible" });
   await page.getByRole("button", { name: "Save changes" }).click();

@@ -126,3 +126,74 @@ test("switching the dataset replays the animation", async ({ page }) => {
     )
     .toBe(true);
 });
+
+test("hovering never restarts the entry animation", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/?theme=light", { waitUntil: "load" });
+  await page.locator("text=/^last-msg: /").first().waitFor({ state: "visible" });
+
+  const chart = page.locator(".card", { hasText: "Revenue Statistics" }).first();
+  await chart.locator(BAR_SERIES).first().waitFor();
+
+  // Let the entry animation finish first, so a *restarted* one is unambiguous:
+  // a running animation after this point can only be a new one.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (selector) =>
+          [...document.querySelectorAll(selector)].every((el) =>
+            el.getAnimations().every((a) => a.playState === "finished"),
+          ),
+        BAR_SERIES,
+      ),
+    )
+    .toBe(true);
+
+  /** Every animation on the bar groups, as `name@startTime`. */
+  const fingerprint = () =>
+    page.evaluate(
+      (selector) =>
+        [...document.querySelectorAll(selector)].flatMap((el) =>
+          el
+            .getAnimations()
+            .map(
+              (a) => `${(a as CSSAnimation).animationName}@${a.startTime}`,
+            ),
+        ),
+      BAR_SERIES,
+    );
+
+  const before = await fingerprint();
+  expect(before.length, "the revenue chart draws two bar groups").toBe(2);
+
+  // Sweep several bins, leave the chart, and come back. Every one of those is a
+  // hover state change, and before the fix each of them re-created the SVG:
+  // elm-charts renders the tooltip as an HTML sibling *before* the `<svg>` and
+  // the band as an SVG sibling *before* the bar groups, so a decoration coming
+  // or going shifted every following node and `elm/virtual-dom`, which diffs
+  // children by position, rebuilt the lot.
+  const bars = chart.locator(".elm-charts__bar");
+  for (const index of [7, 5, 3, 9]) {
+    const box = (await bars.nth(index).boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(1);
+  }
+  await page.mouse.move(4, 4);
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(0);
+  const back = (await bars.nth(2).boundingBox())!;
+  await page.mouse.move(back.x + back.width / 2, back.y + back.height / 2);
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(1);
+
+  // No animation was created, and no existing one moved: same names, same
+  // `startTime`s, still finished.
+  expect(await fingerprint()).toEqual(before);
+  expect(
+    await page.evaluate(
+      (selector) =>
+        [...document.querySelectorAll(selector)].every((el) =>
+          el.getAnimations().every((a) => a.playState === "finished"),
+        ),
+      BAR_SERIES,
+    ),
+  ).toBe(true);
+});

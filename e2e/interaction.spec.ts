@@ -218,3 +218,73 @@ test("admin: the Day | Month | Year strip switches the revenue dataset", async (
   await expect(chart).not.toContainText("2016");
   await expect(chart).toContainText("$62.14K");
 });
+
+test("admin: hovering the acquisition line opens its tooltip and marks the series", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/", theme);
+
+  // `DChart.Line { stepped = True }`, two series: the measured one and the
+  // dashed projection. A line chart has no bin, so the hover is resolved by
+  // `CI.sameX` and the highlight is a crosshair band with one dot per series
+  // on it — `docs/tree-decisions.md`, "Fixes from live review".
+  const chart = page
+    .locator(".card", { hasText: "Customer Acquisition" })
+    .first();
+  const svg = chart.locator(".elm-charts__container-inner");
+  await expect(svg).toBeVisible();
+
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(0);
+  await expect(chart.locator(".daisy-anim-band")).toHaveCount(0);
+
+  // The card is below the fold at 375 and 768, and `page.mouse` works in
+  // viewport coordinates: without this the pointer would be moved off-screen.
+  await svg.scrollIntoViewIfNeeded();
+  const box = (await svg.boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.55, box.y + box.height * 0.5);
+
+  const tooltip = chart.locator(".daisy-anim-tooltip");
+  await expect(tooltip).toHaveCount(1);
+  await expect(tooltip).toContainText("Customer");
+  await expect(tooltip).toContainText("Prediction");
+  await expect(chart.locator(".daisy-anim-band")).toHaveCount(1);
+
+  // Hovering is not something the application "did".
+  await expect(page.getByText(pane)).toHaveText("last-msg: none");
+
+  await page.mouse.move(4, 4);
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(0);
+});
+
+test("analytics: hovering a donut segment names it, values it and gives its share", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/analytics", theme);
+
+  // `DChart.Donut` has no x, so its `ChartInteraction` index is a **segment**
+  // — the nth series. `Daisy.Render.donutChart` hangs the handlers off each
+  // stroked arc and draws the readout in the ring's hole.
+  const chart = page.locator(".card", { hasText: "Sessions by device" }).first();
+  const segments = chart.locator("svg circle");
+  await expect(segments).toHaveCount(3);
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(0);
+
+  // A ring segment is a *stroke*: its bounding box is the whole ring and its
+  // centre is the empty hole, so the pointer has to be put on the painted arc.
+  // The first segment starts at twelve o'clock and covers 54% of the ring, so
+  // three o'clock — the right-hand middle of the box — is inside it.
+  await segments.first().scrollIntoViewIfNeeded();
+  const ring = (await segments.first().boundingBox())!;
+  await page.mouse.move(ring.x + ring.width - 3, ring.y + ring.height / 2);
+
+  const readout = chart.locator(".daisy-anim-tooltip");
+  await expect(readout).toHaveCount(1);
+  // Desktop is 54 of 54 + 38 + 8.
+  await expect(readout).toContainText("Desktop");
+  await expect(readout).toContainText("54");
+  await expect(readout).toContainText("54%");
+
+  await expect(page.getByText(pane)).toHaveText("last-msg: none");
+});

@@ -20,10 +20,20 @@ import { open } from "./lib/daisy";
  * checkbox). See `docs/tree-decisions.md`.
  */
 const LG = 1024;
+
+/**
+ * Every demo on `Shell.Dashboard`. Settings joined them in the live-review pass
+ * (`docs/tree-decisions.md`, "Fixes from live review"): it was `Shell.Plain`,
+ * which has no drawer at all, so the row had nothing to say about it.
+ */
 const DASHBOARDS = [
   { name: "admin", path: "/" },
   { name: "analytics", path: "/analytics" },
+  { name: "settings", path: "/settings" },
 ];
+
+/** The two of them that carry `stats` tiles. A settings page has no metrics. */
+const WITH_STATS = DASHBOARDS.filter((d) => d.name !== "settings");
 
 for (const demo of DASHBOARDS) {
   test(`${demo.name}: the drawer matches the viewport`, async ({
@@ -53,6 +63,9 @@ for (const demo of DASHBOARDS) {
     }
   });
 
+}
+
+for (const demo of WITH_STATS) {
   test(`${demo.name}: stat cards wrap without overlapping`, async ({
     page,
     theme,
