@@ -1586,8 +1586,10 @@ and next buttons page.
 
 This is a closed pair rather than an `Int` for the usual reason: `months = 13`
 is not a calendar anyone means, and the renderer would have to decide what to
-do with it. `TwoMonths` stacks the two grids vertically — daisyUI's
-`calendar.css` gives `part="months"` no layout of its own.
+do with it. `TwoMonths` puts the two grids side by side from `sm` up and in one
+column below it: elm-cally's `[part~="months"]` is a bare `<div>` and daisyUI's
+`calendar.css` has no `months` rule, so the layout comes from `Daisy.Render`'s
+own token table (see `Daisy.Render.calendarMonths`).
 
 -}
 type CalendarMonths

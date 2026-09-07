@@ -64,6 +64,11 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
   markup, same `part` attributes, light DOM, no ports). elm-cally's `Config` is built inside `Render`
   from the closed `CalendarConfig`, never exposed — the same rule `Daisy.Chart` follows for elm-charts.
   Its state lives in the app: `Daisy.Render.initCalendar*` / `updateCalendar`, `Daisy.Tree.setCalendarValue`.
+  `TwoMonths` wraps its two `Month.view` grids in a container of Render's own (`grid grid-cols-1
+  sm:grid-cols-2 gap-4`, all four already in `tokens`), because neither elm-cally nor daisyUI styles
+  `[part~=months]` — upstream Cally leaves multi-month layout to the page. Grid, not flex: daisyUI's
+  `.cally calendar-month { width: 100% }` would make flex items each claim a whole line. See
+  `docs/tree-decisions.md` "Calendar via elm-cally" section 7.
 - `Shell.Dashboard` renders as `drawer` + `drawer-open` at `lg:` with `menu` in the side and `navbar` on top.
 
 ## Render conventions
@@ -76,6 +81,15 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
 
 - Use `bun`/`bunx`, never npm/npx. Node scripts in `tools/` run with `bun`.
 - `elm-format` everything Elm. `elm make` must produce zero warnings for `src/`.
+- `tools/gen-cally-css.js` reads elm-cally's stylesheet out of `Cally.Css.stylesheet` (elm-cally 1.1.0+),
+  preferring `~/.elm/0.19.1/packages/alexbruf/elm-cally/<newest>/src/Cally/Css.elm`, then the checkout at
+  `~/elm-calendar/elm-cally/src/Cally/Css.elm`, then the old root `cally.css` for 1.0.0. It decodes the
+  Elm triple-quoted literal and, when the checkout is present, byte-compares the result against that
+  repo's `cally.css`, so a stale generated module fails rather than changing the demo silently. The
+  source it used is recorded in the generated header. `elm.json` still asks for `alexbruf/elm-cally 1.x`
+  and is deliberately **not** bumped: 1.1.0 is committed in the checkout but not published. Once it is,
+  `elm install alexbruf/elm-cally` puts it in `~/.elm` and the package-cache path takes over with no
+  change to the script.
 - Playwright uses the system Chrome: `channel: "chrome"` (no browser download needed). Run headless.
 - Do not write to `vendor/daisyui`. Do not hand-edit `src/Daisy/Schema*.elm`; change `tools/gen-schema.js` and regenerate.
 - No `Html.Attributes.class`/`classList`/`attribute "class"` outside `src/Daisy/Render.elm`. No `Html`/`Html.Attributes`/`Svg` imports under `demo/src`.

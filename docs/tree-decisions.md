@@ -622,10 +622,8 @@ carrying an image role and the label elm-cally would otherwise have written as
 text, so the two paging buttons keep an accessible name (axe's `button-name` is
 clean on all six projects).
 
-`TwoMonths` stacks its two grids rather than placing them side by side:
-daisyUI's `calendar.css` gives `part="months"` no layout of its own, and
-inventing one would mean a token that only the calendar uses. The demo
-therefore shows one month.
+`TwoMonths` puts its two grids side by side. That took a container of the
+renderer's own; section 7 below has the whole story.
 
 ### 4. Styling: two generated stylesheets
 
@@ -638,7 +636,7 @@ small, deterministic outputs — with the generator authoritative. It runs in
 | File | What it is |
 |---|---|
 | `demo/cally-daisy.css` | daisyUI's `.cally { @layer daisyui.l1.l2.l3 { ... } }` block with every `::part(a b)` rewritten to `[part~="a"][part~="b"]`. Nesting, `:hover` suffixes, declaration order, values and the `@layer` are kept byte for byte; `/* ... */` comments are skipped, because daisyUI's own comment inside the block talks *about* `::part()`. |
-| `demo/cally-base.css` | elm-cally's `cally.css`, copied verbatim and wrapped in `@layer base`. The source path and package version are in the header comment. |
+| `demo/cally-base.css` | elm-cally's stylesheet, copied verbatim and wrapped in `@layer base`. Since elm-cally 1.1.0 the bytes come out of the package itself — see section 8 — and the source path, package version and the byte-comparison that verified them are in the header comment. |
 
 The `@layer base` wrapper is the one non-mechanical thing the generator does,
 and it is load-bearing: elm-cally's stylesheet is unlayered upstream, and
@@ -706,3 +704,110 @@ buttons. The only edit is a comment recording that, so the next reader does not
 `contrast` classifier already exempts `[part~=head]`, whose `opacity: 0.5` sits
 on the element rather than on the colour, so the collector measures the opaque
 pair and it passes on its own merits.
+
+### 7. `TwoMonths` side by side, and where that layout has to come from
+
+The original decision above said `TwoMonths` stacks, on the grounds that
+"daisyUI's `calendar.css` gives `part="months"` no layout of its own". That is
+true, and it is not the whole reason. Measured on the built demo at 1440, the
+`[part~=months]` element computes `display: block`, `width: 252px`, and its two
+`calendar-month` children sit at the same `x` with 222px between their `y`s:
+
+```
+months        display: block   width: 252px
+  calendar-month  x 313  y 467  w 252
+  calendar-month  x 313  y 689  w 252
+```
+
+Nothing was fighting anything. Every candidate cause was checked and cleared:
+
+- **Not the `@layer base` wrapping.** A layer can only change which of two
+  competing declarations wins. There is no competing declaration: no rule in
+  either generated stylesheet, in daisyUI's `calendar.css` or in elm-cally's
+  `cally.css` selects `months` at all.
+- **Not the `::part()` rewrite.** The rewrite is faithful; there is no
+  `::part(months)` in daisyUI's `.cally` block to rewrite. Upstream Cally does
+  not style it either — `calendar-base.tsx`'s `styles` covers `container`,
+  `header`, `heading` and `button` and stops. Cally's *own docs* write
+  `::part(months) { display: flex; gap: 1rem }`, in the example page's CSS.
+  Multi-month layout is, upstream, the page's job.
+- **Not the `.cally` wrapper width** (1102px at 1440, 293px at 375) and **not
+  daisyUI's `.cally { font-size: 0.7rem }`**. Both leave a 252px grid at 252px.
+- **Not a missing `flex-wrap`.** There is no flex container to wrap in.
+
+So the layout is the renderer's to supply, and `Daisy.Render.calendarMonths`
+supplies it — without a new escape hatch, and without inventing a daisyUI rule
+that `vendor/daisyui` does not contain. elm-cally's picker `view` takes children
+of type `Context msg -> Html msg` precisely so a consumer can wrap the grids in
+its own DOM (that is the decision recorded in elm-cally's own `CLAUDE.md`), so
+`TwoMonths` now passes **one** child: a `<div>` holding both `Month.view`s.
+
+The div carries four tokens that were already in `Daisy.Render.tokens` —
+`tokenGrid`, `tokenGridCols1`, `tokenGridCols2Sm`, `tokenGap` (`grid
+grid-cols-1 sm:grid-cols-2 gap-4`). No token was added, no CSS rule was written
+into either generated stylesheet, and `OneMonth` still renders the bare grid
+with no wrapper at all.
+
+**Grid, not flex, and that is forced.** daisyUI's own
+`.cally calendar-month { width: 100% }` beats elm-cally's `inline-size:
+fit-content`, so each grid is as wide as the line it is on. As *flex* items with
+`flex-wrap`, each would claim a whole line and they would never sit side by
+side — the wrap rule would guarantee the stacking it was added to fix. As *grid*
+items they fill their track instead, and `grid-cols-1` below `sm` is what keeps
+two 252px grids off a 375px viewport.
+
+Measured after the change, same three viewports the Tier C matrix uses:
+
+| Viewport | `.cally` width | Columns | `calendar-month` boxes | `scrollWidth` |
+|---|---|---|---|---|
+| 375 | 293px | 1 | x 57 y 874, x 57 y 1112 | 375 (no overflow) |
+| 768 | 686px | 2 | x 57 y 850, x 325 y 850 | 768 |
+| 1440 | 1102px | 2 | x 313 y 467, x 581 y 467 | 1440 |
+
+`Demo.Analytics`'s "Date range" card therefore asks for `TwoMonths`, which is
+what a range picker wants, and `docs/screenshots/demo-analytics.png` shows
+September and October beside each other. The 35 `analytics-*` theme baselines
+were regenerated (the other 70 are byte-identical); `overflow`, `overlap`,
+`responsive`, `keyboard`, `a11y`, `contrast` and `layers` all pass unchanged, at
+293 Playwright tests.
+
+### 8. The stylesheet now comes out of the package
+
+`demo/cally-base.css` used to be copied from `cally.css` at the root of the
+elm-cally *checkout*, because the Elm registry publishes only `src/`,
+`elm.json`, `README.md` and `LICENSE` and that file is none of them. elm-cally
+1.1.0 fixes this at its own end: it exposes `Cally.Css`, whose
+`stylesheet : String` is `cally.css` byte for byte, generated and staleness-
+checked by that repo's `scripts/gen-css-module.mjs`.
+
+`tools/gen-cally-css.js` now prefers that module, in this order:
+
+1. `~/.elm/0.19.1/packages/alexbruf/elm-cally/<newest>/src/Cally/Css.elm` — the
+   very code the demo compiles against. Only the newest installed version is
+   considered: falling back to an *older* version that happens to have the
+   module would style the picker with bytes the build does not use.
+2. `~/elm-calendar/elm-cally/src/Cally/Css.elm` — where it is today, since
+   1.1.0 is committed but not published.
+3. `cally.css` from the cache or a checkout, so the script still works against
+   elm-cally 1.0.0.
+
+The Elm literal is decoded back to CSS by inverting elm-cally's escaping
+(`\\` → `\`, `\"` → `"`, left to right), and when the checkout is present the
+result is byte-compared against its `cally.css` — a stale generated module
+fails the run instead of quietly changing the demo. Whichever source won is
+recorded in the generated header, so the committed file says where its bytes
+came from:
+
+```
+ * Source: ~/elm-calendar/elm-cally/src/Cally/Css.elm
+ *         (checkout, `Cally.Css.stylesheet` decoded back to CSS)
+ * Package: alexbruf/elm-cally 1.1.0 (local checkout)
+ * Verified byte-identical to ~/elm-calendar/elm-cally/cally.css
+```
+
+The CSS body of `demo/cally-base.css` did not change by one byte; only those
+header lines did. `elm.json` still asks for `alexbruf/elm-cally 1.x` and was
+**not** bumped: 1.1.0 is not on the registry yet. Once it is published,
+`elm install alexbruf/elm-cally` puts it in `~/.elm` and source 1 takes over on
+its own, with no edit to this script — the header will then read
+`(package cache, ...)` and name the installed version.

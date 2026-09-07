@@ -209,9 +209,11 @@ markup and `part` attributes daisyUI's `cally` class styles, `Main` keeps the
 `Daisy.Render.updateCalendar`, and the caption below echoes whatever
 `onCalendarChange` last reported.
 
-One month, not two: daisyUI's `calendar.css` gives `part="months"` no layout
-of its own, so a second grid would stack under the first and make the card
-twice as tall for no extra information.
+`TwoMonths`, which is what a range picker wants: the second grid sits beside
+the first from `sm` up (the card is 686px wide at 768 and 1102px at 1440, and
+two grids plus the gap need 520px) and drops under it at 375, where the card
+has 293px. `Daisy.Render` gives `[part~="months"]` that layout — neither
+elm-cally nor daisyUI styles it.
 
 -}
 dateRangeCard : Config msg -> Block msg
@@ -252,12 +254,17 @@ calendarConfig :
     }
     -> CalendarConfig msg
 calendarConfig given =
-    Tree.defaultCalendarConfig
-        { id = "analytics-range"
-        , today = given.today
-        , toMsg = given.toMsg
-        , onChange = given.onChange
-        }
+    let
+        base : CalendarConfig msg
+        base =
+            Tree.defaultCalendarConfig
+                { id = "analytics-range"
+                , today = given.today
+                , toMsg = given.toMsg
+                , onChange = given.onChange
+                }
+    in
+    { base | months = Tree.TwoMonths }
 
 
 statItem : String -> String -> String -> StatItem msg

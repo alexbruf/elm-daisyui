@@ -2555,11 +2555,51 @@ calendarHtml extra config state =
 
 {-| One `calendar-month` grid per month the config asks for. elm-cally has no
 shadow DOM, so a child is a function of the picker's `Context`.
+
+`TwoMonths` puts the two grids in a container of this module's own, because
+nothing else will: elm-cally's `[part~=months]` div is bare (upstream
+Cally leaves it to the page's CSS, and its docs write
+`::part(months) { display: flex }` in the _example_, not in the component), and
+daisyUI's `calendar.css` has no `months` rule to translate either. A `display:
+block` container stacks its two block-level grids, which is what the picker did
+before. The layout is therefore the renderer's to give, and it gives it the
+same way it gives every other layout: named tokens from `Render.tokens`, on a
+plain element, with no daisyUI class invented for the occasion.
+
+`grid-cols-1 sm:grid-cols-2` rather than `flex flex-wrap`: daisyUI's own
+`.cally calendar-month { width: 100% }` makes each grid as wide as the line it
+is on, so as flex items they would each claim a whole line and never sit side
+by side. As grid items they fill their track instead, and the single column
+below `sm` is what keeps two 252px grids from overflowing a 375px viewport.
+
 -}
 calendarMonths : CalendarConfig msg -> List (CallyContext.Context msg -> Html msg)
 calendarMonths config =
-    List.range 0 (calendarMonthCount config.months - 1)
-        |> List.map (\offset -> CallyMonth.view { offset = offset })
+    let
+        grids : List (CallyContext.Context msg -> Html msg)
+        grids =
+            List.range 0 (calendarMonthCount config.months - 1)
+                |> List.map (\offset -> CallyMonth.view { offset = offset })
+    in
+    case config.months of
+        OneMonth ->
+            grids
+
+        TwoMonths ->
+            [ calendarMonthsRow grids ]
+
+
+{-| The `TwoMonths` layout container: one row of month grids at `sm` and wider,
+one column below it. See `calendarMonths` for why it exists.
+-}
+calendarMonthsRow :
+    List (CallyContext.Context msg -> Html msg)
+    -> CallyContext.Context msg
+    -> Html msg
+calendarMonthsRow grids context =
+    Html.div
+        [ classes [ tokenGrid, tokenGridCols1, tokenGridCols2Sm, tokenGap ] ]
+        (List.map (\grid -> grid context) grids)
 
 
 calendarMonthCount : CalendarMonths -> Int
