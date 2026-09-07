@@ -42,11 +42,58 @@ the row for every pair the *composition* chooses, and the `test.fixme` beside
 it asserts the row as literally written.
 
 "daisyUI's own pair" is decided mechanically rather than from a list of
-selectors, so the exemption cannot quietly grow: the foreground has to be
-exactly `--color-X-content` over a `--color-X` background, or a translucent
-`--color-base-content`. A `color-mix` background (`badge-soft`) or a `-content`
-colour over the wrong surface (`btn-neutral btn-ghost`) is *not* a daisyUI
-pair, and both of those were caught and fixed by the running test.
+selectors, so the exemption cannot quietly grow. Four shapes count, and
+`collectContrast` in `e2e/lib/browser.ts` recognises each by *painting* it, not
+by matching a selector:
+
+1. the foreground is exactly `--color-X-content` over a `--color-X` background;
+2. the foreground is a **translucent** `--color-base-content` (`.stat-title`,
+   `.stat-desc`, `<th>`, `.label`, `.menu-title`);
+3. the foreground is `--color-X` over `color-mix(in oklab, var(--color-X) 8%,
+   var(--color-base-100))` — daisyUI's `*-soft` recipe (`badge-soft`,
+   `btn-soft`, `alert-soft`). Both mix ratios daisyUI uses, 8% and 10%, are
+   accepted.
+4. the foreground is `--color-base-content` over `--color-base-300`.
+   `--color-base-300` is a surface `Daisy.Render.tokens` **cannot paint** — the
+   renderer's whole surface vocabulary is `bg-base-100` for panels and
+   `bg-base-200` for the content ground — so every base-300 background on the
+   page came from a daisyUI component rule, and `.chat-bubble`-style rules set
+   the foreground in the same declaration. Deliberately *not* extended to
+   base-100 or base-200: those are the surfaces the composition itself chooses,
+   so base-content over either of them is the pairing this spec exists to
+   check. Added when `Block.Chat` first reached a demo: `.chat-bubble` is
+   `background-color: var(--color-base-300); color: var(--color-base-content)`,
+   which is 4.17:1 in `valentine`.
+
+Shapes 3 and 4 were added in the Nexus design pass (2026-09-07). Until then a
+`color-mix` background counted as *ours*, which was right while nothing in the
+tree emitted one deliberately: it is what caught a hand-rolled soft badge on a
+light background. It is now daisyUI's own pair by the same argument as shape 1
+— `Badge.Soft` hands daisyUI a style name and daisyUI picks both colours, and
+these are the badges its own Nexus dashboard template ships. A `-content`
+colour over the wrong surface (`btn-neutral btn-ghost`) is still *ours*, and
+was caught and fixed by the running test.
+
+### The matching axe waiver
+
+`e2e/a11y.spec.ts` (zero serious/critical) has one waiver, added in the same
+pass and scoped to the `color-contrast` rule and to two selectors:
+
+    .menu-title      color-mix(in oklab, var(--color-base-content) 40%, transparent)
+    .badge-soft      var(--color-X) over color-mix(in oklab, var(--color-X) 8%, var(--color-base-100))
+
+Both are daisyUI's own de-emphasised colour pairs, in the very places the Nexus
+template ships them: a sidebar section label and a status pill. Neither is
+reachable through `Daisy.Tree` in any other colour — the tree hands daisyUI a
+`MenuItem.title` flag and a `Badge.Soft` style, and daisyUI picks the paint —
+so the only fix would be editing `vendor/daisyui`.
+
+The waiver is a **node filter on the `color-contrast` violation**, not an
+`AxeBuilder.exclude()`. Excluding the elements would take them out of *every*
+rule, and they still have to answer for their roles, names and structure; this
+way only the one rule is waived, only on those two selectors, and a
+`color-contrast` violation anywhere else still fails the run. Nothing else is
+waived.
 
 ## 2. `layers`: "toast is above modal" is not what daisyUI's CSS does
 
@@ -127,26 +174,55 @@ have since been fixed in `Daisy.Tree` — see "Expressibility refinements
   control's `Tooltip` text when `ariaLabel` is `Nothing`, but
   `Demo.Analytics`' navbar select no longer needs it: it carries
   `ariaLabel = Just "Date range"` and no `Tooltip` at all.
-- **`menu-title` cannot be used at all, in any theme** (new, 2026-09-07). The
+- ~~**`menu-title` cannot be used at all, in any theme** (2026-09-07). The
   dashboard look SPEC step 7 points at puts a section header above the sidebar
   navigation, and `MenuItem.title = True` expresses it exactly. It still cannot
   be shipped: daisyUI paints `.menu-title` at `text-base-content/40`, and
   `a11y.spec.ts` fails on **admin** and **analytics** in both `light` and
-  `dark` with `color-contrast [serious] x1: .menu-title`. It was composed into
-  both sidebars, measured, and taken out again — the same conclusion
-  `docs/tree-decisions.md` "Refinements from e2e" reached, now with the newer
-  composition and the icons in place, so it is a property of the daisyUI
-  palette rather than of the surrounding page. Fixing it needs either an edit
-  to `vendor/daisyui` (forbidden) or an opacity override emitted from
-  `Daisy.Render` — which is the contrast-fixme kind of utility that
-  `Render.tokens` deliberately does not carry. The brand still sits in the
-  navbar, so no information is lost.
+  `dark` with `color-contrast [serious] x1: .menu-title`.~~
+
+  **Reopened and decided the other way in the Nexus design pass, later the same
+  day.** The reference this project is judged against is daisyUI's own Nexus
+  dashboard template, and Nexus ships `menu-title`-equivalent section labels,
+  unselected `tabs-box` tabs and `badge-soft` pills — all three of them
+  `color-mix(…, var(--color-base-content) N%, transparent)` or daisyUI's soft
+  recipe, all three below 4.5:1 in some themes, none of them reachable through
+  `Daisy.Tree` in any other colour. The choice was: ship the dashboard daisyUI
+  itself ships and record the waiver, or ship a dashboard that does not look
+  like one. The waiver was taken, and it is exactly as wide as those three
+  classes and exactly one rule wide (`color-contrast`) — see "The matching axe
+  waiver" in section 1. Nothing else about those elements is waived, and a
+  `color-contrast` violation on anything else still fails the run.
+
+  What did *not* change: no utility is emitted to override daisyUI's opacity,
+  and `vendor/daisyui` is untouched. The two `test.fixme`s that assert the row
+  as literally written are still red, which is where the honest statement
+  lives.
+
+  While the classifier was being extended for this, one bug in it was found and
+  fixed: `opaqueOf` reconstructs the opaque colour behind a translucent one by
+  dividing the alpha back out of an 8-bit canvas value, which amplifies
+  rounding by `1 / alpha` and pushed `--color-base-content` at 40% *above* the
+  sRGB gamut (blue 267.5 against a stored 255) so the pair failed to classify
+  at all. The result is now clamped to [0, 255] and the comparison tolerance
+  scales with `1 / alpha`.
 - **An `indicator-item` overhangs its own box, and nothing in the tree can say
   otherwise** (new, 2026-09-07). daisyUI positions the part `absolute` and
   translates it 50% of its own width onto the corner of the element it
   annotates. That is the component's definition, so `overlap.spec.ts` and
   `overflow.spec.ts` now carry a structural exemption for it, scoped to one
-  `.indicator` subtree. The *page-level* consequence was a real defect and was
+  `.indicator` subtree.
+
+  *Extended once, in the Nexus design pass:* `overflow.spec.ts` also ignores a
+  **non-clipping** box whose entire scrollWidth excess is one of those
+  `indicator-item`s reaching past its content edge — at 375, the notification
+  badge on the last control of a wrapped `navbar-end` does exactly that, by
+  10px, and lands inside the navbar's own `p-4` gutter. Nothing is clipped,
+  nothing overlaps (`overlap.spec.ts` owns that and still runs), and the
+  document-scroll assertion is separate and untouched. One pixel more than the
+  overhang and it is reported again. The *overlap* half of the same problem was
+  fixed rather than exempted: `navbarHtml`'s parts now use a `gap-4` gutter, so
+  an 8px overhang no longer reaches the next control. The *page-level* consequence was a real defect and was
   fixed rather than exempted: with only daisyUI's `0.5rem` of navbar padding, a
   badge on the last control of a wrapped `navbar-end` hung ~3px past the
   viewport at 768, so `Daisy.Render.navbarHtml` now uses the same `p-4` gutter

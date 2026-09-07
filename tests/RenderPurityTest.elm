@@ -97,6 +97,28 @@ emitted =
 {-| Utilities a renderer is tempted to sprinkle inline. None of them may appear
 in any render: spacing, sizing and colour are decided by `Render.tokens`, and
 `btn-primary` may only come from `Page.cta`.
+
+Three entries left this list in the Nexus design pass (2026-09-07), each because
+it became a named `Daisy.Render` token with one job, not because a render wanted
+room:
+
+  - `gap-6` is `tokenGapMd`, the single vertical rhythm between the bands of a
+    page.
+  - `text-xs` is `tokenTextXs`, the caption step — a chart legend, the second
+    line of a `Leaf.UserChip`.
+  - `rounded-lg` is `tokenRoundedLg`, the fixed 8px corner of the small
+    surfaces the renderer paints itself (`stat-figure`'s tile, a boxed user
+    chip). `rounded-box` stays forbidden: it resolves to `--radius-box`, which
+    is 1rem or more in daisyUI's stock themes, so a 36px square would come out
+    a circle.
+
+`opacity-50` also stays: de-emphasis is `tokenTextMuted`
+(`text-base-content/60`), which is the colour daisyUI's own `.stat-title` and
+`.stat-desc` paint, and which `e2e/contrast.spec.ts` therefore classifies as
+daisyUI's own colour pair. A blanket `opacity-*` on an element would dim it
+_without_ changing the computed `color`, which is invisible to that classifier —
+a de-emphasis that fails contrast and reads as passing.
+
 -}
 forbidden : List String
 forbidden =
@@ -105,13 +127,10 @@ forbidden =
     , "px-6"
     , "py-6"
     , "m-2"
-    , "gap-6"
     , "gap-10"
     , "text-lg"
-    , "text-xs"
     , "shadow-xl"
     , "shadow-md"
-    , "rounded-lg"
     , "rounded-box"
     , "w-96"
     , "w-32"
@@ -134,7 +153,8 @@ values themselves (Elm cannot compare functions).
 staticPage : Page Msg
 staticPage =
     Page
-        { shell = Dashboard { sidebar = { config = defaultMenuConfig, items = [ menuItem "Home" ] }, navbar = emptyNavbarParts }
+        { header = Nothing
+        , shell = Dashboard (dashboardShell { config = defaultMenuConfig, items = [ menuItem "Home" ] })
         , sections =
             Sections2
                 (Stack defaultStackConfig [ Card defaultCardConfig { emptyCardParts | title = Just "Title" } ])

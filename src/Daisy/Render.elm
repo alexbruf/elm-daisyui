@@ -59,7 +59,7 @@ import Chart as C
 import Chart.Attributes as CA
 import Chart.Svg as CS
 import Daisy.Chart as Chart exposing (ChartConfig(..), ChartData, Series)
-import Daisy.Icon exposing (Icon)
+import Daisy.Icon as Icon exposing (Icon)
 import Daisy.Render.Icons as Icons
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
@@ -161,18 +161,25 @@ tokens =
     , tokenGridCols3
     , tokenGridCols4
     , tokenGridCols2Sm
+    , tokenGridCols2Lg
     , tokenGridCols3Lg
     , tokenGridCols4Lg
     , tokenGapSm
     , tokenGap
+    , tokenGapMd
     , tokenGapLg
     , tokenPaddingSm
     , tokenPadding
+    , tokenPaddingLg
     , tokenItemsStart
     , tokenItemsCenter
     , tokenItemsEnd
     , tokenItemsStretch
     , tokenJustifyBetween
+    , tokenJustifyCenter
+    , tokenGrow
+    , tokenShrink0
+    , tokenMtAuto
     , tokenWFull
     , tokenWSidebar
     , tokenMinHScreen
@@ -184,13 +191,17 @@ tokens =
     , tokenPointerEventsNone
     , tokenPointerEventsAuto
     , tokenDrawerOpenLg
-    , tokenHiddenLg
     , tokenStatsHorizontalLg
     , tokenProse
     , tokenBgBase
     , tokenBgGround
     , tokenShadowSm
+    , tokenRoundedLg
+    , tokenTextXs
     , tokenTextSm
+    , tokenTextBase
+    , tokenTextMuted
+    , tokenFontMedium
     , tokenFontBold
     , tokenFontSemibold
     , tokenHeading1
@@ -199,6 +210,7 @@ tokens =
     , tokenSizeIconSm
     , tokenSizeIcon
     , tokenSizeIconLg
+    , tokenSizeAvatar
     ]
 
 
@@ -247,6 +259,11 @@ tokenGridCols2Sm =
     "sm:grid-cols-2"
 
 
+tokenGridCols2Lg : String
+tokenGridCols2Lg =
+    "lg:grid-cols-2"
+
+
 tokenGridCols3Lg : String
 tokenGridCols3Lg =
     "lg:grid-cols-3"
@@ -267,6 +284,19 @@ tokenGap =
     "gap-4"
 
 
+{-| The gap between the bands of a page: `gap-6`, 24px.
+
+daisyUI's own dashboard templates set every vertical rhythm on a page from this
+one step — between the header row and the first band, and between one band and
+the next — while the blocks _inside_ a band sit at `tokenGap` (16px). `gap-8`
+below is the wider rhythm a `Footer` uses, where the columns are unrelated.
+
+-}
+tokenGapMd : String
+tokenGapMd =
+    "gap-6"
+
+
 tokenGapLg : String
 tokenGapLg =
     "gap-8"
@@ -280,6 +310,19 @@ tokenPaddingSm =
 tokenPadding : String
 tokenPadding =
     "p-4"
+
+
+{-| The content column's gutter: `p-6`, 24px.
+
+The same figure daisyUI's dashboard templates set on the region between the
+navbar and the sidebar. `tokenPadding` (16px) stays the chrome's gutter — the
+navbar, a mockup frame — because a 24px navbar would be taller than the 64px row
+every one of those templates uses.
+
+-}
+tokenPaddingLg : String
+tokenPaddingLg =
+    "p-6"
 
 
 tokenItemsStart : String
@@ -305,6 +348,40 @@ tokenItemsStretch =
 tokenJustifyBetween : String
 tokenJustifyBetween =
     "justify-between"
+
+
+tokenJustifyCenter : String
+tokenJustifyCenter =
+    "justify-center"
+
+
+{-| `grow`: the one flex child of a fixed-height column that takes the slack —
+the sidebar's `menu` between the brand row and the footer, and the text column
+of a `Leaf.UserChip` between the portrait and the edge.
+-}
+tokenGrow : String
+tokenGrow =
+    "grow"
+
+
+{-| The flex child that must keep its natural width.
+
+A `breadcrumbs` trail is `overflow-x: auto`, so a flex parent is free to shrink
+it below its content and let the tail scroll out of sight — which is what the
+page header's `justify-between` row did to the last crumb. `shrink-0` on the
+group that holds it says the row wraps instead.
+
+-}
+tokenShrink0 : String
+tokenShrink0 =
+    "shrink-0"
+
+
+{-| Pins the last child of the sidebar column to the bottom of the panel.
+-}
+tokenMtAuto : String
+tokenMtAuto =
+    "mt-auto"
 
 
 tokenWFull : String
@@ -368,11 +445,6 @@ tokenDrawerOpenLg =
     "lg:drawer-open"
 
 
-tokenHiddenLg : String
-tokenHiddenLg =
-    "lg:hidden"
-
-
 {-| Tailwind's `lg` variant prefix. Never emitted on its own: it only exists so
 a responsive class can be built from a schema class instead of being retyped as
 a literal.
@@ -431,9 +503,68 @@ tokenShadowSm =
     "shadow-sm"
 
 
+{-| The fixed 8px corner of the small painted surfaces the renderer draws
+itself: a `stat-figure`'s tile, a `Leaf.UserChip`'s panel.
+
+Deliberately **not** `rounded-box`. That utility resolves to `--radius-box`,
+which is 1rem in daisyUI's stock themes and 2rem in a few of them, so a 36px
+square would come out a circle. daisyUI's own templates override `--radius-box`
+to 4px before using it there; a package cannot, so the corner is a constant.
+
+-}
+tokenRoundedLg : String
+tokenRoundedLg =
+    "rounded-lg"
+
+
+{-| The caption step, 12px: the second line of a `Leaf.UserChip`, a chart
+legend.
+-}
+tokenTextXs : String
+tokenTextXs =
+    "text-xs"
+
+
 tokenTextSm : String
 tokenTextSm =
     "text-sm"
+
+
+{-| 16px: a `card-title` in a dashboard.
+
+daisyUI's `.card-title` is 1.25rem/600, which is a heading for a marketing card.
+Every card in daisyUI's dashboard templates is a panel in a grid of panels
+instead, and titles them one step down at 1rem/500 — `tokenTextBase` with
+`tokenFontMedium` — so the panel's _content_ is what the eye lands on.
+
+-}
+tokenTextBase : String
+tokenTextBase =
+    "text-base"
+
+
+{-| De-emphasised body text: `text-base-content/60`.
+
+This is the very colour daisyUI paints `.stat-title`, `.stat-desc` and a table
+header with — `color-mix(in oklab, var(--color-base-content) 60%, transparent)`
+— written as a Tailwind utility so the renderer can reach it on an element that
+is not one of those parts (a chart's caption, a user chip's handle).
+
+It carries daisyUI's own contrast trade-off with it: 60% of `--color-base-content`
+is under 4.5:1 against `--color-base-100` in some themes. `e2e/contrast.spec.ts`
+classifies a translucent `--color-base-content` as daisyUI's own colour pair for
+exactly that reason, and it is the reason no _new_ de-emphasis level was
+invented here.
+
+-}
+tokenTextMuted : String
+tokenTextMuted =
+    "text-base-content/60"
+
+
+tokenFontMedium : String
+tokenFontMedium =
+    "font-medium"
 
 
 tokenFontBold : String
@@ -488,6 +619,15 @@ e.g. a `stat-figure`.
 tokenSizeIconLg : String
 tokenSizeIconLg =
     "size-6"
+
+
+{-| A portrait: 32px, the size daisyUI's own examples give an `avatar` in a
+navbar, a table row or a chat bubble. It is a `size-*` utility rather than
+daisyUI's `w-*`/`h-*` pair for the same reason `tokenSizeIcon` is.
+-}
+tokenSizeAvatar : String
+tokenSizeAvatar =
+    "size-8"
 
 
 {-| The daisyUI classes that no `Daisy.Tree` value can reach.
@@ -1049,26 +1189,29 @@ page (Page p) =
         [ Attr.attribute "data-theme" (Tree.themeToString p.theme)
         , classes [ tokenMinHScreen, tokenBgBase ]
         ]
-        (shell p.shell p.cta p.sections
+        (shell p.shell p.header p.cta p.sections
             ++ [ overlayLayer p.overlays p.dock p.fab ]
         )
 
 
-shell : Shell msg -> Cta msg -> Sections msg -> List (Html msg)
-shell theShell theCta theSections =
+shell : Shell msg -> Maybe (PageHeader msg) -> Cta msg -> Sections msg -> List (Html msg)
+shell theShell theHeader theCta theSections =
     case theShell of
         Plain ->
             [ Html.main_
                 [ classes
                     [ tokenFlex
                     , tokenFlexCol
-                    , tokenGapLg
-                    , tokenPadding
+                    , tokenGapMd
+                    , tokenPaddingLg
                     , tokenMinHScreen
                     , tokenBgGround
+                    , tokenTextSm
                     ]
                 ]
-                (sectionList [ ctaHtml theCta ] theSections)
+                (maybeHtml pageHeaderHtml theHeader
+                    ++ sectionList [ ctaHtml theCta ] theSections
+                )
             ]
 
         Dashboard d ->
@@ -1095,18 +1238,112 @@ shell theShell theCta theSections =
                         [ shellDrawerButton ]
                         [ ctaHtml theCta ]
                     , Html.main_
-                        [ classes [ tokenFlex, tokenFlexCol, tokenGapLg, tokenPadding ] ]
-                        (sectionList [] theSections)
+                        [ classes [ tokenFlex, tokenFlexCol, tokenGapMd, tokenPaddingLg, tokenTextSm ] ]
+                        (maybeHtml pageHeaderHtml theHeader
+                            ++ sectionList [] theSections
+                        )
                     ]
                 , Html.div
                     [ classes [ drawerSidePart ] ]
                     [ Html.label
                         [ Attr.for shellDrawerId, classes [ drawerOverlayPart ] ]
                         []
-                    , menuHtml [ tokenWSidebar, tokenMinHScreen, tokenBgBase ] d.sidebar
+                    , sidebarHtml d
                     ]
                 ]
             ]
+
+
+{-| The sidebar panel: an optional brand row, the menu, and an optional footer
+pinned to the bottom of the column.
+
+The panel, not the `menu`, is what carries the width and the surface now: with a
+brand row above the menu and a user chip below it, the three have to share one
+`bg-base-100` column of a fixed width, which is how daisyUI's own dashboard
+templates build it.
+
+-}
+sidebarHtml : DashboardShell msg -> Html msg
+sidebarHtml d =
+    Html.div
+        [ classes
+            [ tokenFlex
+            , tokenFlexCol
+            , tokenWSidebar
+            , tokenMinHScreen
+            , tokenBgBase
+            , tokenTextSm
+            ]
+        ]
+        (maybeHtml brandHtml d.brand
+            ++ [ menuHtml [ tokenWFull, tokenGrow ] d.sidebar ]
+            ++ maybeHtml
+                (\f -> Html.div [ classes [ tokenPaddingSm, tokenMtAuto ] ] [ leaf f ])
+                d.sidebarFooter
+        )
+
+
+brandHtml : Brand -> Html msg
+brandHtml b =
+    Html.div
+        [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm, tokenPadding ] ]
+        [ iconHtml [] brandIconConfig b.icon
+        , Html.span [ classes [ tokenHeading3, tokenFontSemibold ] ] [ Html.text b.name ]
+        ]
+
+
+brandIconConfig : IconConfig
+brandIconConfig =
+    { size = IconLg, label = Nothing }
+
+
+{-| The page's title bar: the name on the left, the `breadcrumbs` trail and any
+`actions` on the right.
+
+It is rendered by the shell, above the sections and inside the same content
+column, so it lands in the same place whichever shell the page uses and it costs
+none of the five-section budget.
+
+-}
+pageHeaderHtml : PageHeader msg -> Html msg
+pageHeaderHtml h =
+    Html.div
+        [ classes
+            [ tokenFlex
+            , tokenFlexWrap
+            , tokenItemsCenter
+            , tokenJustifyBetween
+            , tokenGap
+            ]
+        ]
+        (Html.h1
+            [ classes [ tokenTextBase, tokenFontSemibold ] ]
+            [ Html.text h.title ]
+            :: (if List.isEmpty h.actions then
+                    -- With nothing beside it, the trail is a direct child of
+                    -- the row. daisyUI gives `.breadcrumbs` `margin-inline-
+                    -- start: -.25rem` and its `<ul>` a matching
+                    -- `padding-inline-start`, so the element's *outer* width is
+                    -- 4px less than its content — and since it is also
+                    -- `max-width: 100%; overflow-x: auto`, a parent sized to
+                    -- that outer width clips the last 4px of the last crumb.
+                    -- A parent that is the whole row cannot.
+                    breadcrumbsHtml h.breadcrumbs
+
+                else
+                    [ Html.div
+                        [ classes
+                            [ tokenFlex
+                            , tokenFlexWrap
+                            , tokenItemsCenter
+                            , tokenGap
+                            , tokenShrink0
+                            ]
+                        ]
+                        (breadcrumbsHtml h.breadcrumbs ++ List.map leaf h.actions)
+                    ]
+               )
+        )
 
 
 shellDrawerId : String
@@ -1114,13 +1351,31 @@ shellDrawerId =
     "daisy-shell-drawer"
 
 
+{-| daisyUI's `drawer-button`, offered at every width.
+
+It used to be `lg:hidden`, on the grounds that `lg:drawer-open` docks the
+sidebar from `lg` up so the control has nothing left to do there. daisyUI's own
+dashboard templates keep it in the navbar at every width anyway — it is the
+left-most control of the row, and the row reads as broken without it — so it
+stays visible and is simply inert once the sidebar is docked.
+
+-}
 shellDrawerButton : Html msg
 shellDrawerButton =
     Html.label
         [ Attr.for shellDrawerId
-        , classes [ drawerButtonPart, SButton.component, SButton.styleToClass SButton.Ghost, tokenHiddenLg ]
+        , classes
+            [ drawerButtonPart
+            , SButton.component
+            , SButton.styleToClass SButton.Ghost
+            , SButton.sizeToClass SButton.Sm
+            , SButton.modifierToClass SButton.Square
+            ]
         ]
-        [ Html.text "☰" ]
+        -- The name is on the glyph, not on the `<label>`: a `<label>` has no
+        -- implicit ARIA role, so `aria-label` on it is `aria-prohibited-attr`
+        -- (serious) — the label takes its name from its content instead.
+        [ iconHtml [] { size = IconMd, label = Just "Toggle navigation" } Icon.Menu ]
 
 
 ctaHtml : Cta msg -> Html msg
@@ -1238,6 +1493,13 @@ document a horizontal scrollbar (`e2e/overflow.spec.ts`). `tokenPadding` is the
 same `p-4` the `<main>` content column already uses, so the chrome and the
 content now share one gutter and an out-of-flow decoration has room to sit in.
 
+The gutter _between_ the controls of a part is `tokenGap` (16px) for the same
+reason, one scale down: an `indicator-item` reaches half its own width past the
+corner of the control it annotates — about 8px for a `badge-xs` — so an 8px gap
+let a notification badge sit on top of the next control in the row
+(`e2e/overlap.spec.ts`, which exempts an `indicator-item` only _inside its own_
+`.indicator`).
+
 -}
 navbarHtml : NavbarParts msg -> List (Html msg) -> List (Html msg) -> Html msg
 navbarHtml parts before after =
@@ -1247,11 +1509,11 @@ navbarHtml parts before after =
         -- contents overlap rather than shrink once they no longer fit; they
         -- wrap inside their own half instead.
         [ Html.div
-            [ classes [ navbarStartPart, tokenFlexWrap, tokenGapSm ] ]
+            [ classes [ navbarStartPart, tokenFlexWrap, tokenGap ] ]
             (before ++ List.map leaf parts.start)
         , Html.div [ classes [ navbarCenterPart ] ] (List.map leaf parts.center)
         , Html.div
-            [ classes [ navbarEndPart, tokenFlexWrap, tokenGapSm ] ]
+            [ classes [ navbarEndPart, tokenFlexWrap, tokenGap ] ]
             (List.map leaf parts.end ++ after)
         ]
 
@@ -1261,7 +1523,8 @@ navbarHtml parts before after =
 `grid-cols-N` on its own is `repeat(N, minmax(0, 1fr))`, so at 375px four
 tracks are ~85px wide and every child wider than its track spills over its
 neighbour. The counts are therefore breakpoints, not a constant: one column on
-a phone, two from `sm`, the asked-for count from `lg`. `Cols1` has nothing to
+a phone, and the asked-for count from `sm` (`Cols3`/`Cols4`, whose cells are
+tiles) or from `lg` (`Cols2`, whose cells are panels). `Cols1` has nothing to
 step through.
 
 -}
@@ -1272,7 +1535,15 @@ gridColumnsTokens columns =
             [ tokenGridCols1 ]
 
         Cols2 ->
-            [ tokenGridCols1, tokenGridCols2Sm ]
+            -- `lg`, not `sm`. A two-column band is two *panels* — a card with a
+            -- table in it, a form group — and at 768 a half of the content
+            -- column is 304px of card body, which is narrower than the
+            -- min-content width of a six-column table (checkbox, thumbnail and
+            -- name, price, date, status, two row actions). The table then
+            -- renders wider than its own card and reaches over the panel
+            -- beside it (`e2e/overlap.spec.ts`). Cols3 and Cols4 step through
+            -- `sm` because their cells are tiles, not panels.
+            [ tokenGridCols1, tokenGridCols2Lg ]
 
         Cols3 ->
             [ tokenGridCols1, tokenGridCols2Sm, tokenGridCols3Lg ]
@@ -1310,12 +1581,18 @@ flagHtml on html =
 -- BLOCK ---------------------------------------------------------------------
 
 
-{-| Where a block sits. Only `footer-title` depends on it: the `footer-title`
-part is emitted for a `Nav` block only when the block is a direct child of a
-`Footer` section, so the part can never escape its component.
+{-| Where a block sits.
+
+Two things depend on it. The `footer-title` part is emitted for a `Nav` block
+only when the block is a direct child of a `Footer` section, so the part can
+never escape its component. And a `stats` container paints its own panel
+(`bg-base-100 shadow-sm`) everywhere except `InCard`, where the card is already
+that panel.
+
 -}
 type BlockContext
     = InFooter
+    | InCard
     | Anywhere
 
 
@@ -1338,9 +1615,7 @@ blockIn context theBlock =
             alertHtml config leaves
 
         Breadcrumbs leaves ->
-            Html.div
-                [ classes [ SBreadcrumbs.component, tokenTextSm ] ]
-                [ Html.ul [] (List.map (\l -> Html.li [] [ leaf l ]) leaves) ]
+            breadcrumbsBlock leaves
 
         Card config parts ->
             cardHtml config parts
@@ -1363,9 +1638,7 @@ blockIn context theBlock =
             chartHtml config data
 
         Chat messages ->
-            Html.div
-                [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
-                (List.map chatMessageHtml messages)
+            chatHtml messages
 
         Collapse config parts ->
             Html.div
@@ -1466,7 +1739,7 @@ blockIn context theBlock =
                 (List.map leaf leaves)
 
         Stat config items ->
-            statsHtml config items
+            statsHtml Anywhere config items
 
         Steps config steps ->
             Html.ul
@@ -1477,16 +1750,7 @@ blockIn context theBlock =
             tableHtml config rows
 
         Tabs config tabs ->
-            Html.div
-                [ classes
-                    ([ STab.component ]
-                        ++ opt STab.styleToClass config.style
-                        ++ opt STab.sizeToClass config.size
-                        ++ opt STab.placementToClass config.placement
-                    )
-                , Attr.attribute "role" "tablist"
-                ]
-                (List.concatMap tabHtml tabs)
+            tabsHtml config tabs
 
         Timeline config items ->
             Html.ul
@@ -1501,13 +1765,32 @@ blockIn context theBlock =
                 (List.map timelineItemHtml items)
 
 
+breadcrumbsBlock : List (Leaf msg) -> Html msg
+breadcrumbsBlock leaves =
+    Html.div
+        [ classes [ SBreadcrumbs.component, tokenTextSm ] ]
+        [ Html.ul [] (List.map (\l -> Html.li [] [ leaf l ]) leaves) ]
+
+
+{-| The same trail, or nothing at all when there is none — what the page header
+needs, where an empty `breadcrumbs` would still paint its own padding.
+-}
+breadcrumbsHtml : List (Leaf msg) -> List (Html msg)
+breadcrumbsHtml leaves =
+    if List.isEmpty leaves then
+        []
+
+    else
+        [ breadcrumbsBlock leaves ]
+
+
 navTitleHtml : BlockContext -> String -> Html msg
 navTitleHtml context title =
     case context of
         InFooter ->
             Html.h6 [ classes [ footerTitlePart ] ] [ Html.text title ]
 
-        Anywhere ->
+        _ ->
             Html.h6 [ classes [ tokenFontBold, tokenTextSm ] ] [ Html.text title ]
 
 
@@ -1540,7 +1823,7 @@ cardHtml config parts =
         (maybeHtml (\f -> Html.figure [] [ leaf f ]) parts.figure
             ++ [ Html.div
                     [ classes [ cardBodyPart ] ]
-                    (maybeHtml (\t -> Html.h2 [ classes [ cardTitlePart ] ] [ Html.text t ]) parts.title
+                    (cardHeaderHtml parts
                         ++ List.map cardChildHtml parts.body
                         ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map leaf parts.actions) ]
                     )
@@ -1548,6 +1831,52 @@ cardHtml config parts =
         )
         |> withHover3d config.hover3d
         |> withAura config.aura
+
+
+{-| The card's header row: `titleIcon` and `card-title` on the left,
+`headerTabs` and `headerActions` on the right.
+
+The row exists only when something is in it, and it is a plain row when the only
+thing in it is the title — so a card with nothing but a `title` renders the
+`card-title` heading it always did, byte for byte.
+
+`card-title` is sized down here (`tokenTextBase` + `tokenFontMedium`) from
+daisyUI's own 1.25rem/600. daisyUI's dashboard templates title every panel that
+way, because a grid of panels wants the numbers inside them to be the loudest
+thing on the page.
+
+-}
+cardHeaderHtml : CardParts msg -> List (Html msg)
+cardHeaderHtml parts =
+    let
+        titleHtml =
+            maybeHtml
+                (\t ->
+                    Html.h2
+                        [ classes [ cardTitlePart, tokenTextBase, tokenFontMedium ] ]
+                        (maybeHtml (iconHtml [] defaultIconConfig) parts.titleIcon
+                            ++ [ Html.text t ]
+                        )
+                )
+                parts.title
+
+        rightHtml =
+            maybeHtml (\spec -> tabsHtml spec.config spec.tabs) parts.headerTabs
+                ++ List.map leaf parts.headerActions
+    in
+    if List.isEmpty rightHtml then
+        titleHtml
+
+    else
+        [ Html.div
+            [ classes [ tokenFlex, tokenFlexWrap, tokenItemsCenter, tokenJustifyBetween, tokenGap ] ]
+            (titleHtml
+                ++ [ Html.div
+                        [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
+                        rightHtml
+                   ]
+            )
+        ]
 
 
 {-| One child of a `card-body`.
@@ -1569,11 +1898,14 @@ cardChildHtml child =
         CardChart config data ->
             chartHtml config data
 
+        CardChat messages ->
+            chatHtml messages
+
         CardTable config rows ->
             tableHtml config rows
 
         CardStat config items ->
-            statsHtml config items
+            statsHtml InCard config items
 
         CardForm fieldsets ->
             formHtml fieldsets
@@ -1600,8 +1932,8 @@ formHtml fieldsets =
         (List.map fieldsetHtml fieldsets)
 
 
-statsHtml : StatConfig -> List (StatItem msg) -> Html msg
-statsHtml config items =
+statsHtml : BlockContext -> StatConfig -> List (StatItem msg) -> Html msg
+statsHtml context config items =
     Html.div
         [ classes
             (SStat.component
@@ -1610,11 +1942,24 @@ statsHtml config items =
                 -- examples write `stats bg-base-100 border ...` / `stats
                 -- shadow`, which is what makes a tile row a panel on the
                 -- `bg-base-200` content ground instead of four numbers loose
-                -- on the page. Same pair a `card` gets, for the same reason.
-                ++ [ tokenBgBase, tokenShadowSm ]
+                -- on the page. Same pair a `card` gets, for the same reason —
+                -- and for the same reason it is left off inside a card, which
+                -- is already that panel. A second one nested in it reads as a
+                -- box in a box.
+                ++ surfaceFor context
             )
         ]
         (List.map statItemHtml items)
+
+
+surfaceFor : BlockContext -> List String
+surfaceFor context =
+    case context of
+        InCard ->
+            []
+
+        _ ->
+            [ tokenBgBase, tokenShadowSm ]
 
 
 {-| `stats-vertical lg:stats-horizontal` is daisyUI's own responsive idiom:
@@ -1677,6 +2022,13 @@ stackedAlignModifier align =
             SStack.End
 
 
+chatHtml : List (ChatMessage msg) -> Html msg
+chatHtml messages =
+    Html.div
+        [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
+        (List.map chatMessageHtml messages)
+
+
 chatMessageHtml : ChatMessage msg -> Html msg
 chatMessageHtml message =
     Html.div
@@ -1685,7 +2037,7 @@ chatMessageHtml message =
             (\src ->
                 Html.div
                     [ classes [ chatImagePart, SAvatar.component ] ]
-                    [ Html.img [ Attr.src src, Attr.alt "", classes [ tokenSizeIcon ] ] [] ]
+                    [ Html.img [ Attr.src src, Attr.alt "", classes [ tokenSizeAvatar ] ] [] ]
             )
             message.image
             ++ maybeHtml (\h -> Html.div [ classes [ chatHeaderPart ] ] [ Html.text h ]) message.header
@@ -1823,15 +2175,50 @@ menuItemHtml (MenuItem item) =
             ]
 
 
+{-| One `stat` tile.
+
+Three departures from daisyUI's stock `stat`, all of them what daisyUI's own
+dashboard templates do to it:
+
+  - the type scale. `.stat-title`/`.stat-desc` are 0.75rem and `.stat-value` is
+    2rem/800, which is a hero number. A tile in a four-across metric row reads at
+    `text-sm` / `text-2xl font-semibold` instead. The de-emphasised _colour_
+    stays daisyUI's, because it is the one those two parts already paint.
+  - `trend` shares the `stat-value` line, so the number and its delta badge are
+    one baseline rather than two rows.
+  - `stat-figure` is a painted tile — `bg-base-200` and a fixed 8px corner around
+    the glyph — instead of a bare icon floating at the edge.
+
+-}
 statItemHtml : StatItem msg -> Html msg
 statItemHtml item =
     Html.div
         [ classes [ statPart ] ]
-        (maybeHtml (\f -> Html.div [ classes [ statFigurePart ] ] [ leaf f ]) item.figure
-            ++ [ Html.div [ classes [ statTitlePart ] ] [ Html.text item.title ]
-               , Html.div [ classes [ statValuePart ] ] [ Html.text item.value ]
+        (maybeHtml
+            (\f ->
+                Html.div
+                    [ classes [ statFigurePart, tokenBgGround, tokenRoundedLg, tokenPaddingSm ] ]
+                    [ leaf f ]
+            )
+            item.figure
+            ++ [ Html.div
+                    [ classes [ statTitlePart, tokenTextSm, tokenFontMedium ] ]
+                    [ Html.text item.title ]
+               , Html.div
+                    [ classes
+                        [ statValuePart
+                        , tokenHeading2
+                        , tokenFontSemibold
+                        , tokenFlex
+                        , tokenItemsCenter
+                        , tokenGapSm
+                        ]
+                    ]
+                    (Html.text item.value :: maybeHtml leaf item.trend)
                ]
-            ++ maybeHtml (\d -> Html.div [ classes [ statDescPart ] ] [ Html.text d ]) item.desc
+            ++ maybeHtml
+                (\d -> Html.div [ classes [ statDescPart, tokenTextSm ] ] [ Html.text d ])
+                item.desc
             ++ [ Html.div [ classes [ statActionsPart ] ] (List.map leaf item.actions) ]
         )
 
@@ -1861,9 +2248,21 @@ tableHtml config rows =
                 )
             ]
             [ Html.thead []
-                (List.map (\r -> Html.tr [] (List.map (\c -> Html.th [] (tableCellHtml c)) r.cells)) headers)
+                (List.map
+                    (\r ->
+                        Html.tr []
+                            (List.map (\c -> Html.th [] (tableCellHtml c)) r.cells)
+                    )
+                    headers
+                )
             , Html.tbody []
-                (List.map (\r -> Html.tr [] (List.map (\c -> Html.td [] (tableCellHtml c)) r.cells)) body)
+                (List.map
+                    (\r ->
+                        Html.tr []
+                            (List.map (\c -> Html.td [] (tableCellHtml c)) r.cells)
+                    )
+                    body
+                )
             ]
         ]
 
@@ -1889,9 +2288,31 @@ tableCellHtml cell =
             ]
 
 
+tabsHtml : TabsConfig -> List (Tab msg) -> Html msg
+tabsHtml config tabs =
+    Html.div
+        [ classes
+            ([ STab.component ]
+                ++ opt STab.styleToClass config.style
+                ++ opt STab.sizeToClass config.size
+                ++ opt STab.placementToClass config.placement
+            )
+        , Attr.attribute "role" "tablist"
+        ]
+        (List.concatMap tabHtml tabs)
+
+
+{-| One tab, and the `tab-content` panel it owns — if it owns one.
+
+daisyUI shows the panel that follows the active tab (`.tab-active +
+.tab-content { display: block }`), so an empty panel behind the active tab of a
+`tabs-box` segmented control would open an empty block inside the row it sits
+in. A tab with no content therefore emits no panel at all.
+
+-}
 tabHtml : Tab msg -> List (Html msg)
 tabHtml tab =
-    [ Html.a
+    Html.a
         [ classes
             ([ tabPart ]
                 ++ flag tab.active (STab.modifierToClass STab.Active)
@@ -1900,8 +2321,12 @@ tabHtml tab =
         , Attr.attribute "role" "tab"
         ]
         [ Html.text tab.label ]
-    , Html.div [ classes [ tabContentPart ] ] (List.map leaf tab.content)
-    ]
+        :: (if List.isEmpty tab.content then
+                []
+
+            else
+                [ Html.div [ classes [ tabContentPart ] ] (List.map leaf tab.content) ]
+           )
 
 
 timelineItemHtml : TimelineItem msg -> Html msg
@@ -2221,6 +2646,9 @@ leafWith extra theLeaf =
         ThemeSelect data ->
             themeSelectHtml extra data
 
+        UserChip config data ->
+            userChipHtml extra config data
+
         Toggle config data ->
             Html.input
                 (classes
@@ -2237,6 +2665,46 @@ leafWith extra theLeaf =
                 )
                 []
                 |> withTooltip config.tooltip
+
+
+{-| Who is signed in: portrait, name, and one de-emphasised line under it.
+
+The two lines of text are what the tree could not otherwise say — a `Leaf` is
+terminal, so stacking them would need a container leaf and a container leaf
+would hand layout back to the caller. This is the whole composite, decided once:
+an `avatar` with daisyUI's `mask-squircle`, then a column of `text-sm
+font-medium` over `text-xs` in daisyUI's own de-emphasis colour.
+
+`boxed` paints it as a panel (`bg-base-200`, the 8px corner, `p-2`) — the shape
+a sidebar footer wants. Unboxed it is bare chrome, which is what a navbar wants.
+
+-}
+userChipHtml : List String -> UserChipConfig msg -> UserChipData -> Html msg
+userChipHtml extra config data =
+    Html.div
+        (classes
+            ([ tokenFlex, tokenItemsCenter, tokenGapSm ]
+                ++ flag config.boxed tokenBgGround
+                ++ flag config.boxed tokenRoundedLg
+                ++ flag config.boxed tokenPaddingSm
+                ++ extra
+            )
+            :: onClickAttrs config.onClick
+        )
+        [ Html.div
+            [ classes [ SAvatar.component ] ]
+            [ Html.div
+                [ classes [ SMask.component, SMask.styleToClass SMask.Squircle, tokenSizeAvatar ] ]
+                [ Html.img [ Attr.src data.avatar, Attr.alt "" ] [] ]
+            ]
+        , Html.div
+            [ classes [ tokenFlex, tokenFlexCol, tokenGrow ] ]
+            [ Html.span [ classes [ tokenTextSm, tokenFontMedium ] ] [ Html.text data.name ]
+            , Html.span [ classes [ tokenTextXs, tokenTextMuted ] ] [ Html.text data.subtitle ]
+            ]
+        ]
+        |> withTooltip config.tooltip
+        |> withDropdown config.dropdown
 
 
 headingHtml : List String -> HeadingLevel -> String -> Html msg
@@ -2327,7 +2795,7 @@ avatarHtml extra config src =
             )
         ]
         [ Html.div
-            [ classes (maskClasses config.mask ++ [ tokenSizeIcon ]) ]
+            [ classes (maskClasses config.mask ++ [ tokenSizeAvatar ]) ]
             [ Html.img [ Attr.src src, Attr.alt "" ] [] ]
         ]
         |> withIndicator config.indicator
@@ -2431,28 +2899,50 @@ filterResetHtml name reset =
         []
 
 
+{-| A text field, in one of daisyUI's two shapes for it.
+
+Without an icon it is the plain `input` element it has always been. With
+one it is the
+wrapper form daisyUI's docs use for a decorated field: the component class moves
+to a `<label>`, which `.input` lays out as a flex row, and the glyph and a bare
+growing `<input>` sit inside it. The label wrapping the control is also
+what keeps the field named when the glyph is the only thing beside it.
+
+-}
 inputHtml : List String -> InputConfig msg -> Html msg
 inputHtml extra config =
-    Html.input
-        (classes
-            ([ SInput.component ]
+    let
+        componentClasses =
+            [ SInput.component ]
                 ++ opt SInput.colorToClass config.color
                 ++ opt SInput.styleToClass config.style
                 ++ opt SInput.sizeToClass config.size
                 ++ extra
-            )
-            :: Attr.type_ (inputTypeAttr config.inputType)
-            :: Attr.placeholder config.placeholder
-            :: Attr.value config.value
-            :: Attr.required config.required
-            :: (optAttr Attr.pattern config.pattern
-                    ++ optAttr Attr.minlength config.minLength
-                    ++ optAttr Attr.maxlength config.maxLength
-                    ++ ariaLabelAttrs config.ariaLabel config.tooltip
-                    ++ onInputAttrs config.onInput
-               )
-        )
-        []
+
+        controlAttrs own =
+            classes own
+                :: Attr.type_ (inputTypeAttr config.inputType)
+                :: Attr.placeholder config.placeholder
+                :: Attr.value config.value
+                :: Attr.required config.required
+                :: (optAttr Attr.pattern config.pattern
+                        ++ optAttr Attr.minlength config.minLength
+                        ++ optAttr Attr.maxlength config.maxLength
+                        ++ ariaLabelAttrs config.ariaLabel config.tooltip
+                        ++ onInputAttrs config.onInput
+                   )
+    in
+    (case config.icon of
+        Nothing ->
+            Html.input (controlAttrs componentClasses) []
+
+        Just icon ->
+            Html.label
+                [ classes componentClasses ]
+                [ iconHtml [ tokenTextMuted ] buttonIconConfig icon
+                , Html.input (controlAttrs [ tokenGrow ]) []
+                ]
+    )
         |> withIndicator config.indicator
         |> withTooltip config.tooltip
 
@@ -2652,7 +3142,12 @@ themeSelectHtml extra data =
             -- wide no matter how many themes it offers.
             Html.div
                 [ classes (SDropdown.component :: extra) ]
-                [ Html.div
+                [ -- Exactly daisyUI's documented trigger: a bare `btn` with
+                  -- the control's name in it. `tests/CorpusTest` compares this
+                  -- against the docs example class for class, so it cannot be
+                  -- restyled into the icon-only circle a dashboard navbar
+                  -- would prefer (`docs/tree-decisions.md`, Nexus design pass).
+                  Html.div
                     [ Attr.tabindex 0
                     , Attr.attribute "role" "button"
                     , classes [ SButton.component ]
@@ -3309,23 +3804,98 @@ labelFor labels value =
 chartHtml : ChartConfig -> ChartData -> Html msg
 chartHtml config data =
     Html.div
-        [ classes [ tokenChartHeight, tokenWFull, tokenPadding ] ]
-        [ case config of
-            Line ->
-                seriesChart [ CA.monotone ] data
+        [ classes [ tokenFlex, tokenFlexCol, tokenGapSm, tokenWFull ] ]
+        [ Html.div
+            [ classes [ tokenChartHeight, tokenWFull, tokenPadding ] ]
+            [ case config of
+                Line ->
+                    seriesChart [ CA.monotone ] data
 
-            Area ->
-                seriesChart [ CA.monotone, CA.opacity 0.25 ] data
+                Area ->
+                    seriesChart [ CA.monotone, CA.opacity 0.25 ] data
 
-            Bar ->
-                barChart False data
+                Bar ->
+                    barChart False data
 
-            StackedBar ->
-                barChart True data
+                StackedBar ->
+                    barChart True data
 
-            Donut ->
-                donutChart data
+                Donut ->
+                    donutChart data
+            ]
+        , chartLegend data
         ]
+
+
+{-| The key under a chart: one `status` dot per series, in the series' own
+colour, and the name beside it.
+
+`terezka/elm-charts` can draw a legend inside the SVG, but an SVG legend cannot
+be themed by a daisyUI class and cannot wrap. This is the row every dashboard
+chart carries instead, built from daisyUI's `status` component — the same eight
+semantic colours `Daisy.Chart.SemanticColor` offers, so the dot and the line it
+labels are the same variable.
+
+-}
+chartLegend : ChartData -> Html msg
+chartLegend data =
+    Html.div
+        [ classes
+            [ tokenFlex
+            , tokenFlexWrap
+            , tokenItemsCenter
+            , tokenJustifyCenter
+            , tokenGap
+            , tokenTextXs
+            ]
+        ]
+        (List.map
+            (\series ->
+                Html.span
+                    [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
+                    [ Html.span
+                        [ classes
+                            [ SStatus.component
+                            , SStatus.colorToClass (statusColorFor series.color)
+                            ]
+                        ]
+                        []
+                    , Html.text series.name
+                    ]
+            )
+            data.series
+        )
+
+
+{-| A chart series colour as the matching `status-*` class. The two enumerations
+are daisyUI's eight semantic colours, so the mapping is total and one-to-one.
+-}
+statusColorFor : Chart.SemanticColor -> SStatus.Color
+statusColorFor color =
+    case color of
+        Chart.Primary ->
+            SStatus.Primary
+
+        Chart.Secondary ->
+            SStatus.Secondary
+
+        Chart.Accent ->
+            SStatus.Accent
+
+        Chart.Info ->
+            SStatus.Info
+
+        Chart.Success ->
+            SStatus.Success
+
+        Chart.Warning ->
+            SStatus.Warning
+
+        Chart.Error ->
+            SStatus.Error
+
+        Chart.Neutral ->
+            SStatus.Neutral
 
 
 seriesChart : List (CA.Attribute CS.Interpolation) -> ChartData -> Html msg

@@ -116,12 +116,19 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
   `[part~=months]` — upstream Cally leaves multi-month layout to the page. Grid, not flex: daisyUI's
   `.cally calendar-month { width: 100% }` would make flex items each claim a whole line. See
   `docs/tree-decisions.md` "Calendar via elm-cally" section 7.
-- `Shell.Dashboard` renders as `drawer` + `drawer-open` at `lg:` with `menu` in the side and `navbar` on top.
+- `Shell.Dashboard` renders as `drawer` + `drawer-open` at `lg:` with the sidebar panel in `drawer-side`
+  and `navbar` on top. The panel is `DashboardShell = { brand, sidebar, sidebarFooter, navbar }`: a brand
+  row, the `menu`, and a footer leaf pinned to the bottom. The `drawer-button` is offered at every width.
+- `Page.header : Maybe (PageHeader msg)` (`{ title, breadcrumbs, actions }`) is the page's title bar. It is
+  **not** a `Section` — the five-section budget is content, and a title bar is chrome — so the shell draws
+  it above the sections under both `Plain` and `Dashboard`.
 
 ## Render conventions
 
-- All spacing/layout Tailwind tokens live in one constant table `Daisy.Render.tokens : List String` (gap, grid-cols, padding, height per size, icon size, and the two surface tokens `bg-base-200` / `shadow-sm`). RenderPurityTest asserts every emitted class is in `Schema.allClasses` or `tokens`, and `tools/render-class-audit.js` asserts every entry is a named `token*` constant with no daisyUI class in it. Before adding one, check `tests/RenderPurityTest.elm`'s `forbidden` list — `rounded-box`, `border`, `shadow-md`/`-xl` and the opacity variants are there on purpose and that list is not to be edited to make room. 47 entries today.
-- Surfaces are the renderer's job, not the caller's: `card` and `stats` emit `bg-base-100 shadow-sm`, the dashboard `drawer-content` and the plain `<main>` emit `bg-base-200`, and `navbar` emits `p-4` (the same gutter as the content column, so an `indicator-item` cannot overhang the viewport). daisyUI paints none of these itself; its own docs examples add them as utilities.
+- All spacing/layout Tailwind tokens live in one constant table `Daisy.Render.tokens : List String` (gap, grid-cols, padding, height per size, icon size, and the two surface tokens `bg-base-200` / `shadow-sm`). RenderPurityTest asserts every emitted class is in `Schema.allClasses` or `tokens`, and `tools/render-class-audit.js` asserts every entry is a named `token*` constant with no daisyUI class in it. Before adding one, check `tests/RenderPurityTest.elm`'s `forbidden` list — `rounded-box`, `border`, `shadow-md`/`-xl` and `opacity-50` are there on purpose and that list is not to be edited to make room. 58 entries today. (`gap-6`, `text-xs` and `rounded-lg` *were* promoted out of `forbidden` into named tokens in the Nexus design pass — see `docs/tree-decisions.md` — which is the only way an entry may leave that list: it becomes one named constant with one job, never room for a sprinkled utility.)
+- Surfaces are the renderer's job, not the caller's: `card` and `stats` emit `bg-base-100 shadow-sm` (a
+  `stats` inside a `card` emits neither — the card is already that panel), a `stat-figure` gets a
+  `bg-base-200 rounded-lg p-2` tile, the dashboard `drawer-content` and the plain `<main>` emit `bg-base-200`, and `navbar` emits `p-4` (the same gutter as the content column, so an `indicator-item` cannot overhang the viewport). daisyUI paints none of these itself; its own docs examples add them as utilities.
 - `Leaf.Icon` emits no daisyUI class at all, only a `size-*` token. Path data lives in `Daisy.Render.Icons`, which stays out of `elm.json`'s `exposed-modules`; `Daisy.Icon` is data only. heroicons is a `devDependency` of `demo/` used to copy the `d` attributes once — never a runtime dependency.
 - Overlays render after sections, order: drawer, modal, toast, inside one fixed wrapper.
 - Chart colors are `var(--color-primary)` etc. via `Daisy.Chart.SemanticColor`. Chart height is fixed per block size token.

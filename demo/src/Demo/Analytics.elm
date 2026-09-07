@@ -77,14 +77,16 @@ type alias Config msg =
 page : Config msg -> Page msg
 page config =
     Page
-        { shell =
+        { header = Just (headerBar config)
+        , shell =
             Dashboard
-                { sidebar = sidebar config
+                { brand = Just { icon = Icon.ChartBar, name = "Acme" }
+                , sidebar = sidebar config
+                , sidebarFooter = Just sidebarUser
                 , navbar = navbar config
                 }
         , sections =
-            Sections4
-                headerSection
+            Sections3
                 (statsSection config)
                 breakdownSection
                 (trafficSection config)
@@ -102,14 +104,29 @@ page config =
 
 sidebar : Config msg -> MenuSpec msg
 sidebar config =
-    { config = { defaultMenu | size = Just SMenu.Lg }
+    { config = defaultMenu
     , items =
-        [ navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") False
+        [ sectionTitle "Dashboards"
+        , navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") False
         , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") True
+        , sectionTitle "Workspace"
         , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False
         , docsItem config
         ]
     }
+
+
+{-| A `menu-title` row: it labels the group under it and is not a link. The
+same two groups `Demo.Admin` uses, so the shell is identical on both
+dashboards.
+-}
+sectionTitle : String -> MenuItem msg
+sectionTitle label =
+    let
+        (MenuItem base) =
+            Tree.menuItem label
+    in
+    MenuItem { base | title = True }
 
 
 {-| The generated documentation site, which lives beside the demo in
@@ -179,9 +196,9 @@ each, so anything between them has no width to shrink into at 375.
 -}
 navbar : Config msg -> NavbarParts msg
 navbar config =
-    { start = [ Text "Acme Console" ]
+    { start = []
     , center = []
-    , end = [ dateRangeSelect config, notificationsButton config, userChip ]
+    , end = [ notificationsButton config, navbarUser ]
     }
 
 
@@ -196,6 +213,7 @@ notificationsButton config =
             | icon = Just Icon.Bell
             , ariaLabel = Just "Notifications"
             , style = Just SButton.Ghost
+            , size = Just SButton.Sm
             , modifiers = [ SButton.Circle ]
             , indicator =
                 Just
@@ -223,11 +241,25 @@ defaultBadge =
 {-| The signed-in user. The portrait is an inline `data:` URI so the 105 theme
 screenshots are byte-identical everywhere: no network, no fonts.
 -}
-userChip : Leaf msg
-userChip =
-    Avatar
-        { defaultAvatar | mask = Just { defaultMask | style = Just SMask.Circle } }
-        avatarSrc
+navbarUser : Leaf msg
+navbarUser =
+    UserChip
+        defaultUserChip
+        { avatar = avatarSrc, name = "Denish N", subtitle = "Team" }
+
+
+{-| The same person, boxed, pinned to the bottom of the sidebar panel.
+-}
+sidebarUser : Leaf msg
+sidebarUser =
+    UserChip
+        { defaultUserChip | boxed = True }
+        { avatar = avatarSrc, name = "Denish N", subtitle = "@withden" }
+
+
+defaultUserChip : Tree.UserChipConfig msg
+defaultUserChip =
+    Tree.defaultUserChipConfig
 
 
 defaultAvatar : Tree.AvatarConfig msg
@@ -257,10 +289,10 @@ downloadCta config =
         base =
             Tree.cta "Download CSV" config.onDownload
     in
-    { base | icon = Just Icon.Download }
+    { base | icon = Just Icon.Download, size = Just SButton.Sm }
 
 
-{-| The navbar has no `Field` to label it, so the select names itself with
+{-| The card header has no `Field` to label it, so the select names itself with
 `ariaLabel`. It used to borrow the name from a `Tooltip` it did not otherwise
 want — `SelectConfig` had no label field at all — and that workaround is gone.
 -}
@@ -292,14 +324,28 @@ dateRanges =
 -- SECTIONS ------------------------------------------------------------------
 
 
-headerSection : Section msg
-headerSection =
-    Stack Tree.defaultStackConfig
-        [ Prose
-            [ Heading H1 "Acquisition"
-            , Text "Where sessions come from, what they cost, and how many of them convert."
+{-| Title on the left, trail on the right — the same band `Demo.Admin` carries,
+rendered by the shell above the sections rather than costing one.
+-}
+headerBar : Config msg -> Tree.PageHeader msg
+headerBar _ =
+    let
+        base : Tree.PageHeader msg
+        base =
+            Tree.pageHeader "Acquisition"
+    in
+    { base
+        | breadcrumbs =
+            [ Link { defaultLink | href = "#" } "Acme"
+            , Text "Dashboards"
+            , Text "Acquisition"
             ]
-        ]
+    }
+
+
+defaultLink : Tree.LinkConfig msg
+defaultLink =
+    Tree.defaultLinkConfig
 
 
 {-| One `Stat` block holding all four tiles, with `direction = Responsive`.
@@ -314,8 +360,7 @@ overflow-x-auto` — which is why this used to be four separate blocks in a
 statsSection : Config msg -> Section msg
 statsSection config =
     Grid { columns = Tree.Cols1 }
-        [ Prose [ Heading H2 "Key metrics" ]
-        , Stat { direction = Responsive }
+        [ Stat { direction = Responsive }
             [ statItem Icon.Users "Sessions" "486,204" "9.1% week over week"
             , statItem Icon.ArrowTrendingUp "Conversion" "3.24%" "0.31 points above plan"
             , statItem Icon.CurrencyDollar "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"
@@ -345,6 +390,8 @@ dateRangeCard config =
     Card borderedCard
         { emptyCard
             | title = Just "Date range"
+            , titleIcon = Just Icon.Calendar
+            , headerActions = [ dateRangeSelect config ]
             , body =
                 [ CardLeaf
                     (Calendar
@@ -406,7 +453,7 @@ statItem icon title value desc =
 -}
 figureIcon : Icon.Icon -> Leaf msg
 figureIcon icon =
-    Icon { defaultIcon | size = Tree.IconLg } icon
+    Icon { defaultIcon | size = Tree.IconMd } icon
 
 
 defaultIcon : Tree.IconConfig
@@ -490,8 +537,7 @@ stretching the last section cannot reach it.
 trafficSection : Config msg -> Section msg
 trafficSection config =
     Stack { align = AlignStretch }
-        [ Prose [ Heading H2 "Traffic" ]
-        , chartCard ("Sessions and signups — " ++ config.dateRange)
+        [ chartCard ("Sessions and signups — " ++ config.dateRange)
             (CardChart DChart.Area trafficSeries)
         , debugPane config
         ]

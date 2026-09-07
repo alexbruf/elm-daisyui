@@ -232,9 +232,18 @@ decoratedButtonFuzzer =
 
 inputConfigFuzzer : Fuzzer (InputConfig Msg)
 inputConfigFuzzer =
-    Fuzz.map2
-        (\base ( inputType, required, aria ) ->
-            { base | inputType = inputType, required = required, ariaLabel = aria }
+    Fuzz.map3
+        (\base ( inputType, required, aria ) icon ->
+            { base
+                | inputType = inputType
+                , required = required
+                , ariaLabel = aria
+
+                -- `icon` switches the whole element: `Just` wraps the control
+                -- in a `<label class="input">` and leaves the `<input>` bare,
+                -- so both shapes have to be explored.
+                , icon = icon
+            }
         )
         plainInputConfigFuzzer
         (Fuzz.triple
@@ -242,6 +251,7 @@ inputConfigFuzzer =
             Fuzz.bool
             (Fuzz.maybe (Fuzz.constant "Contact email"))
         )
+        (Fuzz.maybe (Fuzz.oneOfValues DIcon.allIcons))
 
 
 plainInputConfigFuzzer : Fuzzer (InputConfig Msg)
@@ -409,6 +419,16 @@ leafFuzzers =
       )
     , ( "image", Fuzz.map (\mask -> Image { defaultImageConfig | mask = Just mask } "a.png") maskFuzzer )
     , ( "input", Fuzz.map Input inputConfigFuzzer )
+    , ( "user-chip"
+      , Fuzz.map2
+            (\boxed drop ->
+                UserChip
+                    { defaultUserChipConfig | boxed = boxed, dropdown = drop }
+                    { avatar = "a.png", name = "Ada Lovelace", subtitle = "@ada" }
+            )
+            Fuzz.bool
+            (Fuzz.maybe dropdownFuzzer)
+      )
     , ( "join"
       , Fuzz.map3
             (\direction button config ->
@@ -592,6 +612,16 @@ blockFuzzers =
                     { style = style, size = size, modifiers = modifiers, aura = aura, hover3d = True }
                     { figure = Just (Image defaultImageConfig "a.png")
                     , title = Just "Title"
+                    , titleIcon = Just DIcon.ChartBar
+                    , headerTabs =
+                        Just
+                            { config = { style = Just STab.Box, size = Just STab.Xs, placement = Nothing }
+                            , tabs =
+                                [ { label = "Day", active = False, disabled = False, content = [] }
+                                , { label = "Year", active = True, disabled = False, content = [] }
+                                ]
+                            }
+                    , headerActions = [ Button defaultButtonConfig "Report" ]
                     , body = cardChildren
                     , actions = [ Button defaultButtonConfig "Buy" ]
                     }
@@ -688,6 +718,16 @@ blockFuzzers =
                     [ { figure = Just (Loading defaultLoadingConfig)
                       , title = "Downloads"
                       , value = "31K"
+                      , trend =
+                            Just
+                                (Badge
+                                    { defaultBadgeConfig
+                                        | color = Just SBadge.Success
+                                        , style = Just SBadge.Soft
+                                        , size = Just SBadge.Sm
+                                    }
+                                    "+10.8%"
+                                )
                       , desc = Just "Jan 1st"
                       , actions = [ Button defaultButtonConfig "Details" ]
                       }
@@ -807,7 +847,24 @@ pageFuzzer =
     Fuzz.map4
         (\theme dockSize fabModifiers ctaConfig ->
             Page
-                { shell = Dashboard { sidebar = { config = defaultMenuConfig, items = [ menuItem "Home" ] }, navbar = emptyNavbarParts }
+                { header =
+                    Just
+                        { title = "Overview"
+                        , breadcrumbs = [ Link defaultLinkConfig "Acme", Text "Overview" ]
+                        , actions = [ Button defaultButtonConfig "Export" ]
+                        }
+                , shell =
+                    Dashboard
+                        { brand = Just { icon = DIcon.Home, name = "Acme" }
+                        , sidebar = { config = defaultMenuConfig, items = [ menuItem "Home" ] }
+                        , sidebarFooter =
+                            Just
+                                (UserChip
+                                    { defaultUserChipConfig | boxed = True }
+                                    { avatar = "a.png", name = "Ada", subtitle = "@ada" }
+                                )
+                        , navbar = emptyNavbarParts
+                        }
                 , sections = Sections1 (Stack defaultStackConfig [ Prose [ Text "one" ] ])
                 , cta = ctaConfig
                 , overlays = []

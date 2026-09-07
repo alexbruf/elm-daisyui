@@ -2,13 +2,18 @@ module Demo.Admin exposing (Config, page)
 
 {-| The admin dashboard demo (SPEC.md step 7, row "Admin").
 
-Dashboard shell, four `Stat` tiles in a four-column `Grid`, one `Chart Line`
-and one `Table` (with badges and a per-row action button) each inside a `Card`
-with a `card-title`, one `Toast` overlay shown after the page CTA fires, and a
-`ThemeSelect` switcher in the navbar that offers all 35 themes as a dropdown.
+It is a recreation of daisyUI's own **Nexus** e-commerce dashboard
+(<https://nexus.daisyui.com/dashboards/ecommerce>), composed entirely out of
+`Daisy.Tree`: the same sidebar (brand row, `menu-title` sections, a soft badge,
+a user card pinned to the bottom), the same navbar (drawer toggle, a search
+field with a leading glyph, icon-only controls and a user chip), the same page
+header (title left, `breadcrumbs` right), the same four metric tiles (label,
+number with a soft delta badge, "vs. last period" caption, glyph in a shaded
+tile), the same two chart panels and the same orders table (checkbox column,
+squircle thumbnail, soft status badges, icon-only row actions).
 
-Section titles are `Leaf.Heading` leaves inside `Prose`: one `H1` for the page
-and an `H2` per following section, which is the page's document outline.
+Where Nexus reaches for its own CSS this reaches for a `Daisy.Render` token
+instead; `docs/tree-decisions.md` ("Nexus design pass") lists what that costs.
 
 Built only from `Daisy.Tree` / `Daisy.Chart` / `Daisy.Schema.*` constructors —
 this module imports no `Html`, so every class on the page comes from
@@ -28,17 +33,19 @@ import Daisy.Icon as Icon
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Badge as SBadge
 import Daisy.Schema.Button as SButton
-import Daisy.Schema.Card as SCard
+import Daisy.Schema.Chat as SChat
+import Daisy.Schema.Checkbox as SCheckbox
 import Daisy.Schema.Input as SInput
 import Daisy.Schema.Mask as SMask
-import Daisy.Schema.Menu as SMenu
+import Daisy.Schema.Tab as STab
 import Daisy.Schema.Table as STable
 import Daisy.Tree as Tree
     exposing
         ( Align(..)
         , Block(..)
         , CardChild(..)
-        , HeadingLevel(..)
+        , ChatMessage
+        , DashboardShell
         , IndicatorPayload(..)
         , InputType(..)
         , Leaf(..)
@@ -52,6 +59,7 @@ import Daisy.Tree as Tree
         , Sections(..)
         , Shell(..)
         , StatItem
+        , Tab
         , Theme
         , ThemePresentation(..)
         )
@@ -79,17 +87,14 @@ type alias Config msg =
 page : Config msg -> Page msg
 page config =
     Page
-        { shell =
-            Dashboard
-                { sidebar = sidebar config
-                , navbar = navbar config
-                }
+        { header = Just headerBar
+        , shell = Dashboard (dashboard config)
         , sections =
             Sections4
-                headerSection
-                statsSection
-                chartSection
-                (ordersSection config)
+                (metricsSection config)
+                (chartsSection config)
+                (activitySection config)
+                (debugSection config)
         , cta = exportCta config
         , overlays =
             if config.toastVisible then
@@ -107,16 +112,46 @@ page config =
 -- SHELL ---------------------------------------------------------------------
 
 
+dashboard : Config msg -> DashboardShell msg
+dashboard config =
+    { brand = Just { icon = Icon.ChartBar, name = "Acme" }
+    , sidebar = sidebar config
+    , sidebarFooter = Just (sidebarUser config)
+    , navbar = navbar config
+    }
+
+
+{-| The sidebar, in the two labelled groups Nexus splits its own into.
+
+The four entries are the demo's four real destinations: three routes plus the
+generated documentation site. Nexus lists about twenty; the rest of its list
+would be dead links here, and a dead link in a demo is worse than a short one
+(`docs/tree-decisions.md`).
+
+-}
 sidebar : Config msg -> MenuSpec msg
 sidebar config =
-    { config = { defaultMenu | size = Just SMenu.Lg }
+    { config = Tree.defaultMenuConfig
     , items =
-        [ navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") True
-        , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") False
-        , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False
+        [ sectionTitle "Dashboards"
+        , navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") True Nothing
+        , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") False (Just "New")
+        , sectionTitle "Workspace"
+        , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False Nothing
         , docsItem config
         ]
     }
+
+
+{-| A `menu-title` row. It labels the group under it and is not a link.
+-}
+sectionTitle : String -> MenuItem msg
+sectionTitle label =
+    let
+        (MenuItem base) =
+            Tree.menuItem label
+    in
+    MenuItem { base | title = True }
 
 
 {-| The generated documentation site, which lives beside the demo in
@@ -127,23 +162,15 @@ the single-page app instead of routing inside it.
 -}
 docsItem : Config msg -> MenuItem msg
 docsItem config =
+    let
+        (MenuItem base) =
+            Tree.menuItem "Docs"
+    in
     MenuItem
-        { label = "Docs"
-        , icon = Just Icon.Document
-        , badge = Nothing
-        , active = False
-        , disabled = False
-        , focus = False
-        , title = False
-        , href = Just (href config "/docs/")
-        , onClick = Nothing
-        , submenu = []
+        { base
+            | icon = Just Icon.Document
+            , href = Just (href config "/docs/")
         }
-
-
-defaultMenu : Tree.MenuConfig
-defaultMenu =
-    Tree.defaultMenuConfig
 
 
 {-| A route as it must appear in an `href`: the demo's own path with the
@@ -159,27 +186,55 @@ href config path =
 {-| A sidebar entry. It carries both a real `href` (so it is a focusable link
 that `Browser.application` intercepts as a `UrlRequest`) and an `onClick` that
 pushes the same url, so navigation works with either.
+
+`badge` is the soft primary pill Nexus puts on a new section.
+
 -}
-navItem : String -> Icon.Icon -> String -> msg -> Bool -> MenuItem msg
-navItem label icon path onClick active =
+navItem : String -> Icon.Icon -> String -> msg -> Bool -> Maybe String -> MenuItem msg
+navItem label icon path onClick active badge =
+    let
+        (MenuItem base) =
+            Tree.menuItem label
+    in
     MenuItem
-        { label = label
-        , icon = Just icon
-        , badge = Nothing
-        , active = active
-        , disabled = False
-        , focus = False
-        , title = False
-        , href = Just path
-        , onClick = Just onClick
-        , submenu = []
+        { base
+            | icon = Just icon
+            , active = active
+            , href = Just path
+            , onClick = Just onClick
+            , badge = Maybe.map softBadge badge
         }
 
 
-{-| The dashboard chrome: brand and search on the left, notifications, the
-signed-in user and the theme switcher on the right. `Daisy.Render` appends
-`Page.cta` after `navbar-end`, so "Export report" is the last control in the
-row.
+softBadge : String -> Tree.MenuBadge
+softBadge label =
+    { config =
+        { defaultBadge
+            | color = Just SBadge.Primary
+            , style = Just SBadge.Soft
+            , size = Just SBadge.Sm
+        }
+    , label = label
+    }
+
+
+{-| The signed-in user, as the card pinned to the bottom of the sidebar panel.
+-}
+sidebarUser : Config msg -> Leaf msg
+sidebarUser _ =
+    UserChip
+        { defaultUserChip | boxed = True }
+        { avatar = avatarSrc "slateblue", name = "Denish N", subtitle = "@withden" }
+
+
+defaultUserChip : Tree.UserChipConfig msg
+defaultUserChip =
+    Tree.defaultUserChipConfig
+
+
+{-| The dashboard chrome. `Daisy.Render` puts the drawer toggle before
+`navbar-start` and `Page.cta` after `navbar-end`, so the row reads: toggle,
+search, then the theme switcher, notifications, the user chip and "Export".
 
 Nothing goes in `navbar-center`: daisyUI fixes `navbar-start` and `navbar-end`
 at 50% each, so a centre section has no width of its own to shrink into and its
@@ -188,23 +243,25 @@ contents would overlap the two halves at 375.
 -}
 navbar : Config msg -> NavbarParts msg
 navbar config =
-    { start = [ Text "Acme Console", searchInput config ]
+    { start = [ searchInput config ]
     , center = []
-    , end = [ notificationsButton config, userChip, themeSwitcher config ]
+    , end = [ themeSwitcher config, notificationsButton config, navbarUser ]
     }
 
 
-{-| A real `type="search"` control, named by `ariaLabel` because a navbar has no
-`Field` to label it (the same reason `Demo.Analytics`' date-range `Select` has
-one).
+{-| A real `type="search"` control with a leading glyph, which switches
+`Daisy.Render` to the `label`-wrapped shape daisyUI's docs use for a decorated
+field. It is named by `ariaLabel` because a navbar has no `Field` to label it
+(the same reason `Demo.Analytics`' date-range `Select` has one).
 -}
 searchInput : Config msg -> Leaf msg
 searchInput config =
     Input
         { defaultInput
             | size = Just SInput.Sm
+            , icon = Just Icon.Search
             , inputType = InputSearch
-            , placeholder = "Search orders"
+            , placeholder = "Search"
             , value = config.search
             , ariaLabel = Just "Search orders"
             , onInput = Just config.onSearch
@@ -228,6 +285,7 @@ notificationsButton config =
             | icon = Just Icon.Bell
             , ariaLabel = Just "Notifications"
             , style = Just SButton.Ghost
+            , size = Just SButton.Sm
             , modifiers = [ SButton.Circle ]
             , indicator =
                 Just
@@ -247,33 +305,24 @@ defaultBadge =
     Tree.defaultBadgeConfig
 
 
-{-| The signed-in user, as daisyUI's own dashboard navbars draw them.
+{-| The same person as the sidebar card, unboxed, at the end of the navbar —
+which is where Nexus puts theirs as well.
+-}
+navbarUser : Leaf msg
+navbarUser =
+    UserChip
+        defaultUserChip
+        { avatar = avatarSrc "slateblue", name = "Denish N", subtitle = "Team" }
+
+
+{-| A flat vector portrait, one colour per person. No text, so it renders
+identically wherever the suite runs.
 
 The image is an inline `data:` URI rather than a file or a remote photo:
 `e2e/themes.spec.ts` compares 105 full-page screenshots byte for byte, so the
 avatar has to be there on the first paint, in every environment, with no
 network and no font metrics involved.
 
--}
-userChip : Leaf msg
-userChip =
-    Avatar
-        { defaultAvatar | mask = Just { defaultMask | style = Just SMask.Circle } }
-        (avatarSrc "slateblue")
-
-
-defaultAvatar : Tree.AvatarConfig msg
-defaultAvatar =
-    Tree.defaultAvatarConfig
-
-
-defaultMask : Tree.MaskConfig
-defaultMask =
-    Tree.defaultMaskConfig
-
-
-{-| A flat vector portrait, one colour per person. No text, so it renders
-identically wherever the suite runs.
 -}
 avatarSrc : String -> String
 avatarSrc fill =
@@ -284,7 +333,19 @@ avatarSrc fill =
         ++ "%3Cpath%20d='M7%2040c0-7.2%205.8-12%2013-12s13%204.8%2013%2012z'%20fill='white'/%3E%3C/svg%3E"
 
 
-{-| The page CTA, with a leading `Download` glyph.
+{-| A product thumbnail: a flat two-tone square, same reasoning as `avatarSrc`.
+-}
+productSrc : String -> String
+productSrc fill =
+    "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2040%2040'%3E"
+        ++ "%3Crect%20width='40'%20height='40'%20fill='"
+        ++ fill
+        ++ "'/%3E%3Crect%20x='10'%20y='12'%20width='20'%20height='16'%20rx='3'%20fill='white'"
+        ++ "%20fill-opacity='0.75'/%3E%3C/svg%3E"
+
+
+{-| The page CTA, with a leading `Download` glyph. `btn-sm`, so it is the same
+height as the icon buttons it shares the navbar with.
 -}
 exportCta : Config msg -> Tree.Cta msg
 exportCta config =
@@ -293,7 +354,7 @@ exportCta config =
         base =
             Tree.cta "Export report" config.onExport
     in
-    { base | icon = Just Icon.Download }
+    { base | icon = Just Icon.Download, size = Just SButton.Sm }
 
 
 {-| Every theme `Daisy.Tree.allThemes` knows, as one control.
@@ -317,54 +378,93 @@ themeSwitcher config =
 
 
 
+-- PAGE HEADER ---------------------------------------------------------------
+
+
+{-| Title on the left, trail on the right, in one row above the first section.
+-}
+headerBar : Tree.PageHeader msg
+headerBar =
+    let
+        base : Tree.PageHeader msg
+        base =
+            Tree.pageHeader "Business Overview"
+    in
+    { base
+        | breadcrumbs =
+            [ Link { defaultLink | href = "#" } "Acme"
+            , Text "Dashboards"
+            , Text "Ecommerce"
+            ]
+    }
+
+
+defaultLink : Tree.LinkConfig msg
+defaultLink =
+    Tree.defaultLinkConfig
+
+
+
 -- SECTIONS ------------------------------------------------------------------
 
 
-headerSection : Section msg
-headerSection =
-    Stack Tree.defaultStackConfig
-        [ Prose
-            [ Heading H1 "Revenue overview"
-            , Text "Revenue, orders and account health across every channel, refreshed hourly."
-            ]
-        ]
-
-
-{-| The tile row. Each tile carries a `stat-figure` icon, which is what turns
-four numbers into the header band daisyUI's dashboard templates open with.
+{-| The metric row: four `stats` panels across, one tile each.
 
 One `Stat` block per tile inside a `Grid`, not one block of four tiles:
 daisyUI's `.stats` is `grid-flow-col overflow-x-auto`, so a single block would
 scroll sideways at 375 rather than wrap.
 
 -}
-statsSection : Section msg
-statsSection =
+metricsSection : Config msg -> Section msg
+metricsSection _ =
     Grid { columns = Tree.Cols4 }
-        [ statBlock Icon.CurrencyDollar "Revenue (MTD)" "$248,930" "18.2% vs last month"
-        , statBlock Icon.ShoppingCart "Orders" "3,412" "402 awaiting fulfilment"
-        , statBlock Icon.Users "Active users" "12,847" "1,204 new this week"
-        , statBlock Icon.ArrowTrendingDown "Refund rate" "1.8%" "0.4 points below target"
+        [ metric Icon.CurrencyDollar "Revenue" "$587.54" (up "10.8%") "vs. $494.16 last period"
+        , metric Icon.ShoppingCart "Sales" "4,500" (up "21.2%") "vs. 3,845 last period"
+        , metric Icon.Users "Customers" "2,242" (down "6.8%") "vs. 2,448 last period"
+        , metric Icon.Pencil "Spending" "$112.54" (up "8.5%") "vs. $98.14 last period"
         ]
 
 
-statBlock : Icon.Icon -> String -> String -> String -> Block msg
-statBlock icon title value desc =
+metric : Icon.Icon -> String -> String -> Leaf msg -> String -> Block msg
+metric icon title value trend desc =
     let
         base : StatItem msg
         base =
             Tree.emptyStatItem title value
     in
     Stat Tree.defaultStatConfig
-        [ { base | desc = Just desc, figure = Just (figureIcon icon) } ]
+        [ { base | trend = Just trend, desc = Just desc, figure = Just (figureIcon icon) } ]
 
 
-{-| A `stat-figure` glyph: the largest of the three icon sizes, and decorative
-— the tile's own `stat-title` is what names the number.
+{-| The delta pill beside a number: a soft badge with a leading arrow, exactly
+what Nexus puts there.
+-}
+up : String -> Leaf msg
+up value =
+    trendBadge SBadge.Success Icon.ArrowTrendingUp value
+
+
+down : String -> Leaf msg
+down value =
+    trendBadge SBadge.Error Icon.ArrowTrendingDown value
+
+
+trendBadge : SBadge.Color -> Icon.Icon -> String -> Leaf msg
+trendBadge color _ value =
+    Badge
+        { defaultBadge
+            | color = Just color
+            , style = Just SBadge.Soft
+            , size = Just SBadge.Sm
+        }
+        value
+
+
+{-| A `stat-figure` glyph. `Daisy.Render` paints the shaded tile around it.
 -}
 figureIcon : Icon.Icon -> Leaf msg
 figureIcon icon =
-    Icon { defaultIcon | size = Tree.IconLg } icon
+    Icon { defaultIcon | size = Tree.IconMd } icon
 
 
 defaultIcon : Tree.IconConfig
@@ -372,23 +472,76 @@ defaultIcon =
     Tree.defaultIconConfig
 
 
-{-| `AlignStretch`, so the card fills the band. The other three `Align` values
-shrink every block to its content width, which is what used to force a
-one-column `Grid` here.
+{-| The two chart panels, side by side.
 -}
-chartSection : Section msg
-chartSection =
-    Stack { align = AlignStretch }
-        [ Prose [ Heading H2 "Revenue trend" ]
-        , Card borderedCard
+chartsSection : Config msg -> Section msg
+chartsSection _ =
+    Grid { columns = Tree.Cols2 }
+        [ Card Tree.defaultCardConfig
             { emptyCard
-                | title = Just "Net revenue vs. operating cost"
+                | title = Just "Revenue Statistics"
+                , headerTabs = Just { config = segmentedConfig, tabs = periodTabs }
                 , body =
-                    [ CardLeaf (Text "Last twelve months, thousands USD.")
-                    , CardChart DChart.Line revenueSeries
+                    [ CardStat Tree.defaultStatConfig
+                        [ headline "Total income" "$184.78K" (up "3.24%") "in this year" ]
+                    , CardChart DChart.Bar revenueSeries
+                    ]
+            }
+        , Card Tree.defaultCardConfig
+            { emptyCard
+                | title = Just "Customer Acquisition"
+                , headerActions = [ predictionBadge ]
+                , body =
+                    [ -- `Responsive` is daisyUI's `stats-vertical
+                      -- lg:stats-horizontal`: two tiles side by side in a
+                      -- half-width card at 1440, stacked below `lg`. A `Fixed`
+                      -- horizontal pair is `grid-flow-col overflow-x-auto`, so
+                      -- at 375 it becomes a scrollable region no keyboard can
+                      -- reach — axe's `scrollable-region-focusable`, serious.
+                      CardStat { direction = Tree.Responsive }
+                        [ headline "Advertise" "$148" (up "4.78%") "spend per customer"
+                        , headline "Customers" "427" (up "3.15%") "acquired this month"
+                        ]
+                    , CardChart DChart.Line acquisitionSeries
                     ]
             }
         ]
+
+
+headline : String -> String -> Leaf msg -> String -> StatItem msg
+headline title value trend desc =
+    let
+        base : StatItem msg
+        base =
+            Tree.emptyStatItem title value
+    in
+    { base | trend = Just trend, desc = Just desc }
+
+
+{-| `tabs tabs-box tabs-xs`, the segmented control Nexus uses to pick a period.
+Every tab has an empty `content`, so `Daisy.Render` emits no `tab-content`
+panel behind it and the strip stays a control rather than a tab set.
+-}
+segmentedConfig : Tree.TabsConfig
+segmentedConfig =
+    { style = Just STab.Box, size = Just STab.Xs, placement = Nothing }
+
+
+periodTabs : List (Tab msg)
+periodTabs =
+    [ segment "Day" False, segment "Month" False, segment "Year" True ]
+
+
+segment : String -> Bool -> Tab msg
+segment label active =
+    { label = label, active = active, disabled = False, content = [] }
+
+
+predictionBadge : Leaf msg
+predictionBadge =
+    Badge
+        { defaultBadge | style = Just SBadge.Soft, size = Just SBadge.Sm }
+        "Prediction"
 
 
 emptyCard : Tree.CardParts msg
@@ -396,146 +549,245 @@ emptyCard =
     Tree.emptyCardParts
 
 
-{-| `card-border`. `Daisy.Render` now paints every card `bg-base-100 shadow-sm`
-on the `bg-base-200` content ground, so the card already reads as a raised
-panel; the border is what daisyUI's own dashboard examples add on top of that.
--}
-borderedCard : Tree.CardConfig
-borderedCard =
-    { defaultCard | style = Just SCard.Border }
-
-
-defaultCard : Tree.CardConfig
-defaultCard =
-    Tree.defaultCardConfig
-
-
 revenueSeries : DChart.ChartData
 revenueSeries =
     { xLabels =
-        [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+        [ "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025" ]
     , series =
-        [ { name = "Net revenue"
-          , color = DChart.Primary
-          , points = [ 142, 151, 149, 168, 181, 176, 193, 205, 214, 226, 239, 249 ]
+        [ { name = "Orders"
+          , color = DChart.Warning
+          , points = [ 42, 51, 49, 68, 81, 76, 93, 105, 114, 126 ]
           }
-        , { name = "Operating cost"
-          , color = DChart.Secondary
-          , points = [ 98, 101, 104, 109, 112, 115, 118, 121, 124, 128, 131, 134 ]
+        , { name = "Revenue"
+          , color = DChart.Primary
+          , points = [ 98, 101, 124, 129, 142, 155, 168, 181, 194, 212 ]
           }
         ]
     }
 
 
-{-| An `AlignStretch` stack: the table's card fills the band, and the debug
-pane sits under it. The shell is `Dashboard`, so the page CTA lives in the
-navbar and stretching the last section cannot reach it.
+acquisitionSeries : DChart.ChartData
+acquisitionSeries =
+    { xLabels =
+        [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" ]
+    , series =
+        [ { name = "Customer"
+          , color = DChart.Info
+          , points = [ 18, 24, 22, 31, 38, 35, 44, 47, 52, 58, 61, 67 ]
+          }
+        , { name = "Advertise"
+          , color = DChart.Neutral
+          , points = [ 12, 15, 17, 19, 24, 26, 28, 31, 33, 36, 38, 41 ]
+          }
+        ]
+    }
+
+
+{-| The bottom band: the orders table and the message list beside it.
 -}
-ordersSection : Config msg -> Section msg
-ordersSection config =
-    Stack { align = AlignStretch }
-        [ Prose [ Heading H2 "Orders" ]
-        , Card borderedCard
+activitySection : Config msg -> Section msg
+activitySection config =
+    Grid { columns = Tree.Cols2 }
+        [ Card Tree.defaultCardConfig
             { emptyCard
-                | title = Just "Most recent orders"
+                | title = Just "Recent Orders"
+                , titleIcon = Just Icon.ShoppingCart
+                , headerActions = [ reportButton config ]
                 , body =
                     [ CardTable
-                        { size = Nothing, modifiers = [ STable.Zebra ] }
+                        { size = Just STable.Sm, modifiers = [] }
                         (headerRow :: List.map (orderRow config) orders)
                     ]
             }
-        , debugPane config
+        , Card Tree.defaultCardConfig
+            { emptyCard
+                | title = Just "Quick Chat"
+                , titleIcon = Just Icon.User
+                , headerActions = [ chatButton config ]
+                , body = [ CardChat (List.map chatMessage messages) ]
+            }
         ]
+
+
+reportButton : Config msg -> Leaf msg
+reportButton config =
+    Button
+        { defaultButton
+            | icon = Just Icon.Download
+            , style = Just SButton.Outline
+            , size = Just SButton.Sm
+            , onClick = Just config.onExport
+        }
+        "Report"
+
+
+chatButton : Config msg -> Leaf msg
+chatButton config =
+    Button
+        { defaultButton
+            | style = Just SButton.Outline
+            , size = Just SButton.Sm
+            , onClick = Just config.onNotifications
+        }
+        "Go To Chat"
 
 
 {-| The debug pane the Tier C "interaction" spec reads. Always present, always
 exactly `last-msg: <constructor name of the last Msg the router handled>`.
 -}
-debugPane : Config msg -> Block msg
-debugPane config =
-    Prose [ Text ("last-msg: " ++ config.lastMsg) ]
+debugSection : Config msg -> Section msg
+debugSection config =
+    Stack Tree.defaultStackConfig [ Prose [ Text ("last-msg: " ++ config.lastMsg) ] ]
 
 
 headerRow : Row msg
 headerRow =
     { header = True
     , cells =
-        List.map Tree.tableCell
-            [ Text "Order"
-            , Text "Customer"
-            , Text "State"
-            , Text "Total"
-            , Text "Action"
-            ]
+        Tree.tableCell (Checkbox { defaultCheckbox | ariaLabel = Just "Select all orders" })
+            :: List.map Tree.tableCell
+                [ Text "Product"
+                , Text "Price"
+                , Text "Date"
+                , Text "Status"
+                , Text "Action"
+                ]
     }
+
+
+defaultCheckbox : Tree.CheckboxConfig msg
+defaultCheckbox =
+    Tree.defaultCheckboxConfig
 
 
 type alias Order =
     { reference : String
-    , customer : String
-    , avatar : String
+    , product : String
+    , swatch : String
+    , price : String
+    , date : String
     , state : String
     , tone : SBadge.Color
-    , total : String
     }
 
 
 orders : List Order
 orders =
-    [ Order "AC-10432" "Nadia Kowalski" "slateblue" "Paid" SBadge.Success "$1,240.00"
-    , Order "AC-10431" "Bright Harbour Ltd" "teal" "Pending" SBadge.Warning "$18,905.00"
-    , Order "AC-10429" "Tomás Ferreira" "sienna" "Paid" SBadge.Success "$312.50"
-    , Order "AC-10427" "Halcyon Studio" "darkslategray" "Refunded" SBadge.Error "$2,180.00"
-    , Order "AC-10425" "Meridian Foods" "seagreen" "Paid" SBadge.Success "$7,640.00"
+    [ Order "AC-10432" "Trail shoes" "seagreen" "$99" "25 Jun" "Delivered" SBadge.Success
+    , Order "AC-10431" "Cocooil oil" "goldenrod" "$75" "22 Jun" "On Going" SBadge.Info
+    , Order "AC-10429" "Freeze Air" "steelblue" "$47" "17 Jun" "Confirmed" SBadge.Primary
+    , Order "AC-10427" "Tote bag" "sienna" "$52" "23 Jun" "Canceled" SBadge.Error
+    , Order "AC-10425" "Desk lamp" "slateblue" "$120" "14 Jun" "Delivered" SBadge.Success
     ]
 
 
-{-| The customer cell is a `TableCell` with a `leading` avatar, which is the
-avatar-and-name idiom daisyUI's "table with visual elements" example uses. The
-row action is an icon-only `Eye` button named by `ariaLabel`.
+{-| The product cell is a `TableCell` with a `leading` thumbnail, which is the
+image-and-name idiom daisyUI's "table with visual elements" example uses. The
+action cell carries the two icon-only buttons the same way: `leading` is the
+first, `content` the second.
 -}
 orderRow : Config msg -> Order -> Row msg
 orderRow config order =
     { header = False
     , cells =
-        [ Tree.tableCell (Text order.reference)
-        , { leading =
-                Just
-                    (Avatar
-                        { defaultAvatar | mask = Just { defaultMask | style = Just SMask.Circle } }
-                        (avatarSrc order.avatar)
-                    )
-          , content = Text order.customer
+        [ Tree.tableCell
+            (Checkbox
+                { defaultCheckbox
+                    | size = Just SCheckbox.Sm
+                    , ariaLabel = Just ("Select order " ++ order.reference)
+                }
+            )
+        , { leading = Just (thumbnail order.swatch)
+          , content = Text order.product
           }
+        , Tree.tableCell (Text order.price)
+        , Tree.tableCell (Text order.date)
         , Tree.tableCell
             (Badge
-                { color = Just order.tone
-                , style = Nothing
-                , size = Nothing
-                , tooltip = Nothing
+                { defaultBadge
+                    | color = Just order.tone
+                    , style = Just SBadge.Soft
+                    , size = Just SBadge.Sm
                 }
                 order.state
             )
-        , Tree.tableCell (Text order.total)
-        , Tree.tableCell
-            (Button
-                { defaultButton
-                    | icon = Just Icon.Eye
-                    , ariaLabel = Just ("View order " ++ order.reference)
-                    , style = Just SButton.Ghost
-                    , size = Just SButton.Xs
-                    , modifiers = [ SButton.Square ]
-                    , onClick = Just (config.onRowAction order.reference)
-                }
-                ""
-            )
+        , { leading = Just (rowAction config Icon.Eye "View order " order.reference)
+          , content = rowAction config Icon.Trash "Delete order " order.reference
+          }
         ]
     }
+
+
+{-| The product thumbnail, as an `Avatar` rather than an `Image`.
+
+`Leaf.Image` is a bare `<img>` at its natural size — right for a `card-figure`
+or a `carousel-item`, wrong for a 32px chip in a table row. `Leaf.Avatar` is the
+sized, masked frame daisyUI puts around exactly this: `avatar` > a
+`mask-squircle` box > the image, which is the markup Nexus's own orders table
+uses for its product pictures.
+
+-}
+thumbnail : String -> Leaf msg
+thumbnail swatch =
+    Avatar
+        { defaultAvatar | mask = Just { defaultMask | style = Just SMask.Squircle } }
+        (productSrc swatch)
+
+
+defaultAvatar : Tree.AvatarConfig msg
+defaultAvatar =
+    Tree.defaultAvatarConfig
+
+
+defaultMask : Tree.MaskConfig
+defaultMask =
+    Tree.defaultMaskConfig
+
+
+rowAction : Config msg -> Icon.Icon -> String -> String -> Leaf msg
+rowAction config icon verb reference =
+    Button
+        { defaultButton
+            | icon = Just icon
+            , ariaLabel = Just (verb ++ reference)
+            , style = Just SButton.Ghost
+            , size = Just SButton.Xs
+            , modifiers = [ SButton.Square ]
+            , onClick = Just (config.onRowAction reference)
+        }
+        ""
 
 
 defaultButton : Tree.ButtonConfig msg
 defaultButton =
     Tree.defaultButtonConfig
+
+
+type alias Message =
+    { author : String
+    , avatar : String
+    , text : String
+    , time : String
+    }
+
+
+messages : List Message
+messages =
+    [ Message "Mia Johnson" "teal" "It's called 'Dreamscape.' A must-watch." "11:35 AM"
+    , Message "Ethan Patel" "sienna" "Shipping labels are queued for the morning." "09:58 AM"
+    , Message "Ava Chen" "darkslategray" "Refund for AC-10427 has been approved." "09:12 AM"
+    ]
+
+
+chatMessage : Message -> ChatMessage msg
+chatMessage message =
+    { placement = SChat.Start
+    , color = Nothing
+    , image = Just (avatarSrc message.avatar)
+    , header = Just (message.author ++ " · " ++ message.time)
+    , bubble = [ Text message.text ]
+    , footer = Nothing
+    }
 
 
 

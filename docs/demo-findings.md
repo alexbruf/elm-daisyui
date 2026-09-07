@@ -229,8 +229,12 @@ each `HeadingLevel` a fixed Tailwind type-scale pair from `tokens`, independent
 of whether the heading sits inside a `Block.Prose`: H1 gets `tokenHeading1`
 (`text-3xl`) + `tokenFontBold` (`font-bold`), H2 gets `tokenHeading2`
 (`text-2xl`) + `tokenFontBold`, H3 gets `tokenHeading3` (`text-xl`) +
-`tokenFontSemibold` (`font-semibold`). `docs/screenshots/demo-admin.png` now
-shows "Revenue trend" and "Orders" ranked correctly above the body copy.
+`tokenFontSemibold` (`font-semibold`).
+
+*Since the Nexus design pass (2026-09-07) the dashboards no longer use section
+headings at all:* the page's own title is `Page.header` and every band is a
+titled `Card`, which is how daisyUI's dashboard templates are laid out. The type
+scale above is still what `Leaf.Heading` renders wherever a page does use one.
 
 ## Not a finding, just a note
 

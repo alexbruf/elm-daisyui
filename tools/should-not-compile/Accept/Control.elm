@@ -14,7 +14,8 @@ import Daisy.Tree as Tree exposing (..)
 value : Page ()
 value =
     Page
-        { shell = Plain
+        { header = Nothing
+        , shell = Plain
         , sections = Sections1 (Stack defaultStackConfig [ Prose [ Text "Hello" ] ])
         , cta = cta "Save" ()
         , overlays = []

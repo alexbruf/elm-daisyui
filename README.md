@@ -98,14 +98,11 @@ view model =
     in
     Daisy.Render.page
         (Page
-            { shell = Plain
+            { header = Just (pageHeader "Clicker")
+            , shell = Plain
             , sections =
                 Sections1
-                    (Stack defaultStackConfig
-                        [ Prose [ Heading H1 "Clicker" ]
-                        , Card defaultCardConfig card
-                        ]
-                    )
+                    (Stack defaultStackConfig [ Card defaultCardConfig card ])
             , cta = cta "Click me" Clicked
             , overlays = []
             , theme = Dark
@@ -118,6 +115,11 @@ view model =
 `Daisy.Render.page` returns `Html msg`, so it fits `Browser.sandbox`, `Browser.element` and
 `Browser.document` alike. It writes `data-theme` on the page root itself, which is what switches
 the daisyUI theme.
+
+`header` is the page's title bar — a title, an optional `breadcrumbs` trail and optional
+right-hand controls — rendered by the shell above the sections. It is chrome, not content, so it
+costs none of the five-section budget and it lands in the same place under `Plain` and under
+`Dashboard`. Pass `Nothing` for a page that does not want one.
 
 ## Configs
 
@@ -325,59 +327,122 @@ router (`demo/src/Main.elm`) and are live at <https://alexbruf.github.io/elm-dai
 dashboard sidebars also link to the documentation site at `/docs/`, which `tools/build-docs-site.js`
 generates from the repository's markdown as part of the demo build.
 
-**[Dashboard shell, stats and a chart card](demo/src/Demo/Admin.elm)** — `Shell.Dashboard` (a
-daisyUI `drawer` that is open from `lg:` up), four `Stat` tiles with icon figures in a four-column
-`Grid`, a `Chart Line` inside a `Card`, a `Table` whose customer cell pairs an `Avatar` with a name,
-and a `Toast` overlay:
+The Admin demo is a deliberate recreation of daisyUI's own **Nexus** e-commerce dashboard
+(<https://nexus.daisyui.com/dashboards/ecommerce>) — reference on the left, the tree's output on
+the right, both at 1440x900:
+
+![Nexus and Demo.Admin side by side](docs/screenshots/nexus-vs-admin.png)
+
+Everything on the right comes out of `Daisy.Tree`: no `Html.Attributes.class`, no raw markup, every
+class either a `Daisy.Schema.*` value or one of `Daisy.Render`'s 58 layout tokens.
+`docs/tree-decisions.md` ("Nexus design pass") lists what was added to the tree to get there and
+what is still deliberately different.
+
+**[The dashboard shell](demo/src/Demo/Admin.elm)** — `Shell.Dashboard` is a daisyUI `drawer` open
+from `lg:` up. It carries the whole sidebar panel (brand row, menu, footer chip) plus the navbar:
 
 ```elm
-statsSection : Section msg
-statsSection =
+dashboard : Config msg -> DashboardShell msg
+dashboard config =
+    { brand = Just { icon = Icon.ChartBar, name = "Acme" }
+    , sidebar = sidebar config
+    , sidebarFooter = Just (UserChip { defaultUserChipConfig | boxed = True } denish)
+    , navbar = navbar config
+    }
+```
+
+`menu-title` rows label the groups and a `MenuItem.badge` is the soft pill on a new entry:
+
+```elm
+sidebar : Config msg -> MenuSpec msg
+sidebar config =
+    { config = Tree.defaultMenuConfig
+    , items =
+        [ sectionTitle "Dashboards"
+        , navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") True Nothing
+        , navItem "Analytics" Icon.ChartBar (href config "/analytics") (config.onNavigate "/analytics") False (Just "New")
+        , sectionTitle "Workspace"
+        , navItem "Settings" Icon.Cog (href config "/settings") (config.onNavigate "/settings") False Nothing
+        , docsItem config
+        ]
+    }
+```
+
+**Metric tiles** — one `Stat` block per tile in a four-column `Grid`. `trend` is the delta badge
+that shares the number's baseline; `Daisy.Render` paints the shaded tile around the `stat-figure`:
+
+```elm
+metricsSection : Section msg
+metricsSection =
     Grid { columns = Tree.Cols4 }
-        [ statBlock Icon.CurrencyDollar "Revenue (MTD)" "$248,930" "18.2% vs last month"
-        , statBlock Icon.ShoppingCart "Orders" "3,412" "402 awaiting fulfilment"
-        , statBlock Icon.Users "Active users" "12,847" "1,204 new this week"
-        , statBlock Icon.ArrowTrendingDown "Refund rate" "1.8%" "0.4 points below target"
+        [ metric Icon.CurrencyDollar "Revenue" "$587.54" (up "10.8%") "vs. $494.16 last period"
+        , metric Icon.ShoppingCart "Sales" "4,500" (up "21.2%") "vs. 3,845 last period"
+        , metric Icon.Users "Customers" "2,242" (down "6.8%") "vs. 2,448 last period"
+        , metric Icon.Pencil "Spending" "$112.54" (up "8.5%") "vs. $98.14 last period"
         ]
 
 
-statBlock : Icon.Icon -> String -> String -> String -> Block msg
-statBlock icon title value desc =
+metric : Icon.Icon -> String -> String -> Leaf msg -> String -> Block msg
+metric icon title value trend desc =
     let
         base : StatItem msg
         base =
             Tree.emptyStatItem title value
     in
     Stat Tree.defaultStatConfig
-        [ { base | desc = Just desc, figure = Just (Icon { defaultIcon | size = Tree.IconLg } icon) } ]
+        [ { base | trend = Just trend, desc = Just desc, figure = Just (Icon defaultIcon icon) } ]
 ```
 
-A row of the orders table, with the avatar-and-name cell and the icon-only row action:
+**A card with a header row** — glyph and title on the left, a `tabs tabs-box tabs-xs` segmented
+control and any leaves on the right. A `Tab` with empty `content` owns no panel, which is what
+makes `tabs-box` usable as a control:
+
+```elm
+Card Tree.defaultCardConfig
+    { emptyCardParts
+        | title = Just "Revenue Statistics"
+        , headerTabs = Just { config = segmentedConfig, tabs = periodTabs }
+        , body =
+            [ CardStat Tree.defaultStatConfig
+                [ headline "Total income" "$184.78K" (up "3.24%") "in this year" ]
+            , CardChart DChart.Bar revenueSeries
+            ]
+    }
+```
+
+**The orders table** — a `Checkbox` column, a squircle thumbnail beside the product name, soft
+status badges and two icon-only row actions. A `TableCell` is `{ leading : Maybe (Leaf msg),
+content : Leaf msg }`, so a cell can hold a pair without a container node:
 
 ```elm
 orderRow : Config msg -> Order -> Row msg
 orderRow config order =
     { header = False
     , cells =
-        [ Tree.tableCell (Text order.reference)
-        , { leading = Just (Avatar circleAvatar (avatarSrc order.avatar))
-          , content = Text order.customer
+        [ Tree.tableCell (Checkbox { defaultCheckbox | size = Just SCheckbox.Sm })
+        , { leading = Just (thumbnail order.swatch), content = Text order.product }
+        , Tree.tableCell (Text order.price)
+        , Tree.tableCell (Text order.date)
+        , Tree.tableCell (Badge { defaultBadge | color = Just order.tone, style = Just SBadge.Soft, size = Just SBadge.Sm } order.state)
+        , { leading = Just (rowAction config Icon.Eye "View order " order.reference)
+          , content = rowAction config Icon.Trash "Delete order " order.reference
           }
-        , Tree.tableCell (Badge { defaultBadge | color = Just order.tone } order.state)
-        , Tree.tableCell (Text order.total)
-        , Tree.tableCell
-            (Button
-                { defaultButton
-                    | icon = Just Icon.Eye
-                    , ariaLabel = Just ("View order " ++ order.reference)
-                    , style = Just SButton.Ghost
-                    , size = Just SButton.Xs
-                    , modifiers = [ SButton.Square ]
-                    , onClick = Just (config.onRowAction order.reference)
-                }
-                ""
-            )
         ]
+    }
+```
+
+**A search field with a leading glyph** — `InputConfig.icon` selects daisyUI's `<label
+class="input"><svg/><input/></label>` shape over the plain one:
+
+```elm
+Input
+    { defaultInputConfig
+        | size = Just SInput.Sm
+        , icon = Just Icon.Search
+        , inputType = InputSearch
+        , placeholder = "Search"
+        , ariaLabel = Just "Search orders"
+        , onInput = Just config.onSearch
     }
 ```
 
@@ -398,7 +463,8 @@ themeSwitcher config =
 
 **[Form with a validator and a modal](demo/src/Demo/Settings.elm)** — `Shell.Plain`, `Form` blocks
 of `Fieldset`s carrying toggles, selects and inputs (one a real `type="email" required` field, so
-daisyUI's `validator-hint` shows), the page's single CTA, and a `Modal` confirm overlay:
+daisyUI's `validator-hint` shows), the page's single CTA, and a `Modal` confirm overlay. It uses
+the same page header, density and card rules as the two dashboards:
 
 ```elm
 emailField : Config msg -> Field msg
@@ -417,7 +483,9 @@ emailField config =
 ```
 
 The third demo, [Analytics](demo/src/Demo/Analytics.elm), is the chart-heavy one: `Bar`, `Donut`
-and `Area` charts, a stat row and a two-month `Leaf.Calendar` range picker.
+and `Area` charts (each with a `status`-dot legend the renderer draws under it), a responsive stat
+row and a two-month `Leaf.Calendar` range picker in a card whose header holds the date-range
+`Select`.
 
 ## What is deliberately inexpressible
 

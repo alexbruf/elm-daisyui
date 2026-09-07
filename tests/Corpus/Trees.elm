@@ -184,7 +184,8 @@ pageBlocks : Cta Msg -> List (Block Msg) -> Node
 pageBlocks primary list =
     PageNode
         (Page
-            { shell = Plain
+            { header = Nothing
+            , shell = Plain
             , sections = Sections1 (Stack defaultStackConfig list)
             , cta = primary
             , overlays = []
@@ -280,6 +281,9 @@ cardParts : CardParts Msg
 cardParts =
     { figure = Just (Image defaultImageConfig img)
     , title = Just "Card Title"
+    , titleIcon = Nothing
+    , headerTabs = Nothing
+    , headerActions = []
     , body = cardBody [ Text "A card component has a figure, a body part, and inside body there are title and actions parts" ]
     , actions = []
     }
@@ -675,6 +679,7 @@ statEntries =
             { figure = Nothing
             , title = "Total Page Views"
             , value = "89,400"
+            , trend = Nothing
             , desc = Just "21% more than last month"
             , actions = []
             }
@@ -904,7 +909,8 @@ heroEntries =
         hero overlayFlag content =
             PageNode
                 (Page
-                    { shell = Plain
+                    { header = Nothing
+                    , shell = Plain
                     , sections = Sections1 (Hero { overlay = overlayFlag } content)
                     , cta = cta "Get Started" Clicked
                     , overlays = []
@@ -1079,7 +1085,8 @@ modalEntries =
         modal config =
             PageNode
                 (Page
-                    { shell = Plain
+                    { header = Nothing
+                    , shell = Plain
                     , sections = Sections1 (Stack defaultStackConfig [ Prose [ Button btn "open modal" ] ])
                     , cta = cta "Close" Clicked
                     , overlays = [ Modal config [ Prose [ Text "Press ESC key or click the button below to close" ] ] ]
@@ -1447,7 +1454,8 @@ dockEntries =
         dock size =
             PageNode
                 (Page
-                    { shell = Plain
+                    { header = Nothing
+                    , shell = Plain
                     , sections = Sections1 (Stack defaultStackConfig [ Prose [ Text "page" ] ])
                     , cta = cta "Save" Clicked
                     , overlays = []
@@ -1485,7 +1493,8 @@ fabEntries =
         fabWith config main mainAction actions close =
             PageNode
                 (Page
-                    { shell = Plain
+                    { header = Nothing
+                    , shell = Plain
                     , sections = Sections1 (Stack defaultStackConfig [ Prose [ Text "page" ] ])
                     , cta = cta "Save" Clicked
                     , overlays = []

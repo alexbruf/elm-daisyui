@@ -252,3 +252,20 @@ page's single `btn-primary` CTA, `--color-primary` under
 exactly one primary CTA and that is what `Daisy.Render` emits, so the three
 `fixme`s stay as they are rather than being un-fixme'd into a per-project
 flake.
+
+## `compare.mjs`
+
+Not a test. It composites `docs/screenshots/nexus-vs-admin.png`: the daisyUI
+Nexus e-commerce dashboard on the left, `Demo.Admin` on the right, both at
+1440x900, so the recreation can be judged side by side. It renders a small local
+page in the same Chrome the suite uses and photographs it, so there is no image
+library to install.
+
+```
+cd e2e
+bunx tsx compare.mjs <reference.png> <ours.png> ../docs/screenshots/nexus-vs-admin.png
+```
+
+The right-hand image is `snapshots/<tag>/admin-light.png` cropped to the fold,
+or any 1440x900 capture of `/?theme=light`. The reference is a 1440x900
+screenshot of <https://nexus.daisyui.com/dashboards/ecommerce>.

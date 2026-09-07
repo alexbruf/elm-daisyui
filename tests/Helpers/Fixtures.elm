@@ -198,6 +198,7 @@ leaves =
         ++ textareaLeaves
         ++ themeLeaves
         ++ toggleLeaves
+        ++ userChipLeaves
         ++ plainLeaves
 
 
@@ -377,7 +378,35 @@ inputLeaves =
                     , maxLength = Just 64
                     , ariaLabel = Just "Contact email"
                 }
+           , -- The label-wrapped shape: `icon` moves the `input` class onto a
+             -- `<label>` and puts the glyph inside it.
+             Input
+                { defaultInputConfig
+                    | icon = Just DIcon.Search
+                    , inputType = InputSearch
+                    , placeholder = "Search"
+                    , ariaLabel = Just "Search"
+                }
            ]
+
+
+userChipLeaves : List (Leaf Msg)
+userChipLeaves =
+    [ UserChip defaultUserChipConfig chipData
+    , UserChip { defaultUserChipConfig | boxed = True } chipData
+    , UserChip
+        { defaultUserChipConfig
+            | onClick = Just Clicked
+            , tooltip = Just (tooltip "Signed in")
+            , dropdown = Just { config = defaultDropdownConfig, menu = sidebarMenu }
+        }
+        chipData
+    ]
+
+
+chipData : UserChipData
+chipData =
+    { avatar = "a.png", name = "Ada Lovelace", subtitle = "@ada" }
 
 
 joinLeaves : List (Leaf Msg)
@@ -649,9 +678,19 @@ cardParts : CardParts Msg
 cardParts =
     { figure = Just (Image defaultImageConfig "a.png")
     , title = Just "Title"
+    , titleIcon = Just DIcon.ChartBar
+    , headerTabs = Just { config = defaultTabsConfig, tabs = [ segmentTab "Day" False, segmentTab "Year" True ] }
+    , headerActions = [ Button defaultButtonConfig "Report" ]
     , body = [ CardLeaf (Text "body") ]
     , actions = [ Button defaultButtonConfig "Buy" ]
     }
+
+
+{-| One entry of a `tabs-box` segmented control: a tab with no panel behind it.
+-}
+segmentTab : String -> Bool -> Tab Msg
+segmentTab label active =
+    { label = label, active = active, disabled = False, content = [] }
 
 
 {-| A card whose body holds one of each block-shaped `CardChild`.
@@ -663,6 +702,15 @@ cardBlockChildren =
             [ CardLeaf (Text "body")
             , CardAlert defaultAlertConfig [ Text "Saved" ]
             , CardChart Chart.Line chartData
+            , CardChat
+                [ { placement = firstChatPlacement
+                  , color = Nothing
+                  , image = Just "a.png"
+                  , header = Just "Obi-Wan"
+                  , footer = Nothing
+                  , bubble = [ Text "Hello there" ]
+                  }
+                ]
             , CardTable defaultTableConfig tableRows
             , CardStat defaultStatConfig statItems
             , CardForm formFieldsets
@@ -841,6 +889,7 @@ statItems =
     [ { figure = Just (Loading defaultLoadingConfig)
       , title = "Downloads"
       , value = "31K"
+      , trend = Just (Badge { defaultBadgeConfig | color = Just SBadge.Success, style = Just SBadge.Soft, size = Just SBadge.Sm } "+10.8%")
       , desc = Just "Jan 1st"
       , actions = [ Button defaultButtonConfig "Details" ]
       }
@@ -979,6 +1028,35 @@ toastBlocks =
     [ Alert defaultAlertConfig [ Text "Saved" ] ]
 
 
+{-| A dashboard shell with every part filled: brand row, menu, footer chip and
+a navbar.
+-}
+dashboardWithChrome : DashboardShell Msg
+dashboardWithChrome =
+    { brand = Just { icon = DIcon.Home, name = "Acme" }
+    , sidebar = sidebarMenu
+    , sidebarFooter = Just sidebarChip
+    , navbar = { start = [ Text "start" ], center = [], end = [ Text "end" ] }
+    }
+
+
+sidebarChip : Leaf Msg
+sidebarChip =
+    UserChip
+        { defaultUserChipConfig | boxed = True }
+        { avatar = "a.png", name = "Ada", subtitle = "@ada" }
+
+
+{-| A page header with a title, a trail and a right-hand control.
+-}
+fullPageHeader : PageHeader Msg
+fullPageHeader =
+    { title = "Overview"
+    , breadcrumbs = [ Link defaultLinkConfig "Acme", Text "Overview" ]
+    , actions = [ Button defaultButtonConfig "Export" ]
+    }
+
+
 
 -- PAGES ---------------------------------------------------------------------
 
@@ -988,7 +1066,8 @@ toastBlocks =
 pages : List (Page Msg)
 pages =
     [ Page
-        { shell = Plain
+        { header = Nothing
+        , shell = Plain
         , sections = Sections1 (Stack defaultStackConfig [ Prose [ Text "one" ] ])
         , cta = cta "Save" Clicked
         , overlays = []
@@ -997,7 +1076,8 @@ pages =
         , fab = Nothing
         }
     , Page
-        { shell = Dashboard { sidebar = sidebarMenu, navbar = emptyNavbarParts }
+        { header = Just fullPageHeader
+        , shell = Dashboard dashboardWithChrome
         , sections =
             Sections5 plainSection plainSection plainSection plainSection plainSection
         , cta = fullCta
@@ -1007,7 +1087,8 @@ pages =
         , fab = Just fab
         }
     , Page
-        { shell = Plain
+        { header = Just (pageHeader "Bare")
+        , shell = Plain
         , sections = Sections2 plainSection plainSection
         , cta = ctaWithProperties
         , overlays = []
@@ -1016,7 +1097,8 @@ pages =
         , fab = Nothing
         }
     , Page
-        { shell = Plain
+        { header = Nothing
+        , shell = Plain
         , sections = Sections3 plainSection plainSection plainSection
         , cta = cta "Save" Clicked
         , overlays = []
@@ -1025,7 +1107,8 @@ pages =
         , fab = Nothing
         }
     , Page
-        { shell = Plain
+        { header = Nothing
+        , shell = Plain
         , sections = Sections4 plainSection plainSection plainSection plainSection
         , cta = cta "Save" Clicked
         , overlays = []
@@ -1040,7 +1123,8 @@ pages =
 dockPage : SDock.Size -> Page Msg
 dockPage size =
     Page
-        { shell = Plain
+        { header = Nothing
+        , shell = Plain
         , sections = Sections1 plainSection
         , cta = cta "Save" Clicked
         , overlays = []

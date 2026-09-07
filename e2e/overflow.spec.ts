@@ -12,8 +12,12 @@ import { findOverflows } from "./lib/browser";
  *   2. no daisyUI element has content wider than its own box, unless it is a
  *      container the composition deliberately made scrollable
  *      (`overflow-x: auto|scroll` — the renderer's `overflow-x-auto` table
- *      wrapper is the only one in these demos) or an `.indicator`, whose
- *      `indicator-item` child daisyUI deliberately translates outside the box;
+ *      wrapper is the only one in these demos), or an `.indicator`, whose
+ *      `indicator-item` child daisyUI deliberately translates outside the box,
+ *      or a non-clipping box whose whole excess is one of those
+ *      `indicator-item`s reaching past its content edge (at 375 the
+ *      notification badge on the last control of a wrapped `navbar-end` does
+ *      exactly that, by 10px, landing in the navbar's own `p-4` gutter);
  *   3. no daisyUI element's rect escapes the nearest ancestor that clips
  *      horizontally.
  */

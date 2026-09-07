@@ -97,11 +97,11 @@ band, and a stretched _last_ section would stretch the CTA across the page.
 page : Config msg -> Page msg
 page config =
     Page
-        { shell = Plain
+        { header = Just headerBar
+        , shell = Plain
         , sections =
-            Sections5
+            Sections4
                 (navSection config)
-                headerSection
                 (formsSection config)
                 (dangerSection config)
                 (footerSection config)
@@ -151,14 +151,29 @@ defaultLink =
     Tree.defaultLinkConfig
 
 
-headerSection : Section msg
-headerSection =
-    Stack Tree.defaultStackConfig
-        [ Prose
-            [ Heading H1 "Workspace settings"
-            , Text "Workspace settings apply to everyone on the Acme account."
+{-| The same title band the two dashboards carry, rendered by the shell above
+the sections.
+
+SPEC.md pins this demo to `Shell.Plain`, so it keeps its own `Navbar` section
+for cross-demo navigation; everything below that — the header row, the `text-sm`
+content density, the `gap-6` rhythm between bands and the card sizing — is the
+shell's, shared with `Demo.Admin` and `Demo.Analytics`.
+
+-}
+headerBar : Tree.PageHeader msg
+headerBar =
+    let
+        base : Tree.PageHeader msg
+        base =
+            Tree.pageHeader "Workspace settings"
+    in
+    { base
+        | breadcrumbs =
+            [ Link { defaultLink | href = "#" } "Acme"
+            , Text "Workspace"
+            , Text "Settings"
             ]
-        ]
+    }
 
 
 {-| The two form groups, each in a `Card`. The `card-title` is the group's

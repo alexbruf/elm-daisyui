@@ -145,9 +145,32 @@ export function findOverflows(input: { classes: string[]; tol: number }) {
     // corner), so its scrollWidth is always wider than its clientWidth. That
     // is the component's definition, not an overflow.
     const indicatorBox = el.classList.contains("indicator");
+    // ...and the same fact one level up. A box that *contains* an
+    // `.indicator` inherits that overhang in its own `scrollWidth`: at 375 the
+    // notification badge on the last control of a wrapped `navbar-end` is 10px
+    // past that half's content edge. It is not an overflow either — nothing is
+    // clipped (the box does not clip), nothing overlaps (`overlap.spec.ts`
+    // owns that), the document does not scroll (asserted separately), and the
+    // badge lands inside the navbar's own `p-4` gutter.
+    //
+    // Scoped as tightly as the fact allows: the box must not clip, and the
+    // excess must be no more than the furthest an `indicator-item` inside it
+    // reaches past its content edge. One pixel more and it is reported.
+    const indicatorOverhang = (box: Element): number => {
+      const right = box.getBoundingClientRect().right;
+      let max = 0;
+      for (const item of box.querySelectorAll(".indicator-item")) {
+        max = Math.max(max, item.getBoundingClientRect().right - right);
+      }
+      return max;
+    };
+    const excess = el.scrollWidth - el.clientWidth;
+    const fromIndicator =
+      !indicatorBox && excess > tol && excess <= indicatorOverhang(el) + tol;
     if (
       !scrollable &&
       !indicatorBox &&
+      !fromIndicator &&
       el.scrollWidth > el.clientWidth + tol &&
       el.clientWidth > 0
     ) {
@@ -214,10 +237,16 @@ export type ContrastHit = {
  * are involved.
  *
  * Each failure is classified: `daisyPalettePair` is true when the pair is one
- * daisyUI's own themes define — either a `--color-X` background under its
- * `--color-X-content` foreground, or a translucent `--color-base-content`
- * de-emphasis (`.stat-title`, `.label`, table headers). Those pairs are what
- * daisyUI's `contrast.test.js` owns; a failure outside them is ours.
+ * daisyUI's own themes define — a `--color-X` background under its
+ * `--color-X-content` foreground, a translucent `--color-base-content`
+ * de-emphasis (`.stat-title`, `.stat-desc`, `.label`, `.menu-title`, table
+ * headers), the "soft" pattern (`--color-X` as the *foreground* over a
+ * `color-mix()` of the same `--color-X` with `--color-base-100`, which is how
+ * daisyUI paints `.badge-soft`, `.btn-soft` and `.alert-soft`), or
+ * `--color-base-content` over `--color-base-300` — a surface the renderer's
+ * token table cannot paint, so both sides came from a daisyUI component rule
+ * (`.chat-bubble`). Those pairs are what daisyUI's `contrast.test.js` owns; a
+ * failure outside them is ours.
  */
 export function collectContrast(): ContrastHit[] {
   const cv = document.createElement("canvas");
@@ -244,11 +273,24 @@ export function collectContrast(): ContrastHit[] {
     const b = paint([color], "#000000");
     return 1 - (w[0] - b[0]) / 255;
   }
+  /**
+   * The opaque colour behind a translucent one: paint it over black (which
+   * premultiplies it) and divide the alpha back out.
+   *
+   * The division amplifies the canvas's 8-bit rounding by `1 / alpha` — at
+   * `alpha = 0.4` a one-unit rounding becomes 2.5 — and a channel that was
+   * already at the top of the gamut then lands *above* 255. `.menu-title` is
+   * `--color-base-content` at 40%, and in `dark` its blue channel came back as
+   * 267.5 against a stored 255, which is why the result is clamped: an sRGB
+   * colour the canvas composited cannot be outside [0, 255], so anything
+   * outside it is reconstruction error and nothing else.
+   */
   function opaqueOf(color: string): number[] | null {
     const a = alphaOf(color);
     if (a < 0.02) return null;
     const b = paint([color], "#000000");
-    return [b[0] / a, b[1] / a, b[2] / a];
+    const clamp = (v: number) => Math.min(255, Math.max(0, v / a));
+    return [clamp(b[0]), clamp(b[1]), clamp(b[2])];
   }
   function near(a: number[] | null, b: number[] | null, tol: number): boolean {
     if (!a || !b) return false;
@@ -288,6 +330,47 @@ export function collectContrast(): ContrastHit[] {
   const baseContent = opaqueOf(
     rootStyle.getPropertyValue("--color-base-content").trim(),
   );
+
+  /**
+   * daisyUI's `*-soft` recipe, painted rather than parsed: the background is
+   * `color-mix(in oklab, var(--color-X) 8%, var(--color-base-100))` and the
+   * foreground is `var(--color-X)` itself. Mixing it here through the same 1x1
+   * canvas means the comparison survives whatever colour space Chrome hands
+   * back, exactly like every other colour in this file.
+   *
+   * The two mix ratios daisyUI uses are 8% (`badge-soft`, `btn-soft`) and 10%
+   * (their border), so both are accepted.
+   */
+  /**
+   * `--color-base-300`: a surface `Daisy.Render.tokens` cannot paint.
+   *
+   * The renderer's whole surface vocabulary is `bg-base-100` (panels) and
+   * `bg-base-200` (the content ground); `bg-base-300` is not a token and never
+   * will be one, so every base-300 background on the page was painted by a
+   * daisyUI component rule — `.chat-bubble` is the one the demos reach. When
+   * daisyUI also picks the foreground (`.chat-bubble` sets
+   * `color: var(--color-base-content)` in the same declaration), both sides of
+   * the pair are daisyUI's, exactly as they are for `--color-X` /
+   * `--color-X-content`, and the pair belongs to daisyUI's own contrast tests.
+   *
+   * Deliberately *not* extended to base-100 or base-200: those are the
+   * surfaces the composition itself chooses, so base-content over either of
+   * them is the pairing this spec exists to check.
+   */
+  const base300 = opaqueOf(rootStyle.getPropertyValue("--color-base-300").trim());
+
+  const softBackgrounds = pairs.flatMap((p) =>
+    [8, 10].map((pct) => ({
+      name: p.name,
+      fg: p.bg,
+      bg: over([
+        "#ffffff",
+        `color-mix(in oklab, ${rootStyle.getPropertyValue("--color-" + p.name).trim()} ${pct}%, ${rootStyle.getPropertyValue("--color-base-100").trim()})`,
+      ]),
+      pct,
+    })),
+  );
+
 
   function visible(el: Element): boolean {
     for (let n: Element | null = el; n; n = n.parentElement) {
@@ -352,10 +435,37 @@ export function collectContrast(): ContrastHit[] {
         break;
       }
     }
-    if (!daisyPalettePair && alpha < 0.999 && near(fgOpaque, baseContent, 3)) {
+    // The tolerance grows as the alpha shrinks, for the same reconstruction
+    // reason `opaqueOf` clamps: dividing an 8-bit value by 0.4 turns a
+    // half-unit rounding into a 1.25-unit one on every channel.
+    const translucentTolerance = Math.max(3, Math.ceil(2 / Math.max(alpha, 0.05)));
+    if (
+      !daisyPalettePair &&
+      alpha < 0.999 &&
+      near(fgOpaque, baseContent, translucentTolerance)
+    ) {
       daisyPalettePair = true;
       pairing =
         "--color-base-content at " + Math.round(alpha * 100) + "% opacity";
+    }
+    if (
+      !daisyPalettePair &&
+      alpha > 0.999 &&
+      near(fgOpaque, baseContent, 3) &&
+      near(bg, base300, 3)
+    ) {
+      daisyPalettePair = true;
+      pairing = "--color-base-content / --color-base-300";
+    }
+    if (!daisyPalettePair) {
+      for (const s of softBackgrounds) {
+        if (near(bg, s.bg, 3) && near(fgOpaque, s.fg, 3)) {
+          daisyPalettePair = true;
+          pairing =
+            "--color-" + s.name + " over color-mix(" + s.pct + "%, base-100)";
+          break;
+        }
+      }
     }
 
     out.push({

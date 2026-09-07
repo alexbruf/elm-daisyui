@@ -1,5 +1,6 @@
 module Daisy.Tree exposing
-    ( Page(..), Sections(..), Shell(..), Cta, cta
+    ( Page(..), Sections(..), Shell(..), DashboardShell, dashboardShell, Brand, Cta, cta
+    , PageHeader, pageHeader
     , Theme(..), allThemes, themeToString
     , Section(..)
     , HeroConfig, defaultHeroConfig
@@ -25,7 +26,7 @@ module Daisy.Tree exposing
     , StatConfig, defaultStatConfig, StatDirection(..), StatItem, emptyStatItem
     , StepsConfig, defaultStepsConfig, Step
     , TableConfig, defaultTableConfig, Row, TableCell, tableCell
-    , TabsConfig, defaultTabsConfig, Tab
+    , TabsConfig, defaultTabsConfig, Tab, TabsSpec
     , TimelineConfig, defaultTimelineConfig, TimelineModifier(..), allTimelineModifiers, timelineModifierToSchema, TimelineItem
     , Leaf(..), ImageSrc, HeadingLevel(..)
     , AvatarConfig, defaultAvatarConfig, AvatarItem
@@ -57,6 +58,7 @@ module Daisy.Tree exposing
     , TextareaConfig, defaultTextareaConfig
     , ThemeSelectData, ThemePresentation(..)
     , ToggleConfig, defaultToggleConfig, ToggleData
+    , UserChipConfig, defaultUserChipConfig, UserChipData
     , Tooltip, TooltipConfig, defaultTooltipConfig, tooltip
     , Dropdown, DropdownConfig, defaultDropdownConfig
     , Indicator, IndicatorConfig, defaultIndicatorConfig, IndicatorPayload(..)
@@ -102,7 +104,8 @@ that can emit a class.
 
 # Page
 
-@docs Page, Sections, Shell, Cta, cta
+@docs Page, Sections, Shell, DashboardShell, dashboardShell, Brand, Cta, cta
+@docs PageHeader, pageHeader
 
 
 # Theme
@@ -140,7 +143,7 @@ that can emit a class.
 @docs StatConfig, defaultStatConfig, StatDirection, StatItem, emptyStatItem
 @docs StepsConfig, defaultStepsConfig, Step
 @docs TableConfig, defaultTableConfig, Row, TableCell, tableCell
-@docs TabsConfig, defaultTabsConfig, Tab
+@docs TabsConfig, defaultTabsConfig, Tab, TabsSpec
 @docs TimelineConfig, defaultTimelineConfig, TimelineModifier, allTimelineModifiers, timelineModifierToSchema, TimelineItem
 
 
@@ -176,6 +179,7 @@ that can emit a class.
 @docs TextareaConfig, defaultTextareaConfig
 @docs ThemeSelectData, ThemePresentation
 @docs ToggleConfig, defaultToggleConfig, ToggleData
+@docs UserChipConfig, defaultUserChipConfig, UserChipData
 
 
 # Leaf properties
@@ -276,6 +280,7 @@ it goes. `overlays` is the only place a modal, drawer or toast can appear.
 type Page msg
     = Page
         { shell : Shell msg
+        , header : Maybe (PageHeader msg)
         , sections : Sections msg
         , cta : Cta msg
         , overlays : List (Overlay msg)
@@ -283,6 +288,37 @@ type Page msg
         , dock : Maybe (Dock msg)
         , fab : Maybe (Fab msg)
         }
+
+
+{-| The band above the first section: the page's name on the left, a
+[`Breadcrumbs`](#Block) trail and any number of leaves on the right.
+
+It is **not** a [`Section`](#Section). The section budget is five, fixed by the
+SPEC, and a dashboard's title bar is chrome rather than content — the same
+argument that keeps the navbar and the sidebar out of the budget. Putting it
+here also means the shell owns its placement, so the title sits in the same
+place under `Plain` and under `Dashboard` instead of depending on which section
+the author happened to put it in.
+
+`breadcrumbs` holds the leaves of one `breadcrumbs` trail (daisyUI wraps each
+in its own `<li>`); `actions` holds right-aligned controls after it.
+
+-}
+type alias PageHeader msg =
+    { title : String
+    , breadcrumbs : List (Leaf msg)
+    , actions : List (Leaf msg)
+    }
+
+
+{-| A page header with a title and nothing beside it.
+
+    pageHeader "Business Overview"
+
+-}
+pageHeader : String -> PageHeader msg
+pageHeader title =
+    { title = title, breadcrumbs = [], actions = [] }
 
 
 {-| One to five sections. There is no constructor for zero or six, so the page
@@ -305,7 +341,46 @@ and the navbar on top of `drawer-content`.
 -}
 type Shell msg
     = Plain
-    | Dashboard { sidebar : MenuSpec msg, navbar : NavbarParts msg }
+    | Dashboard (DashboardShell msg)
+
+
+{-| The parts of a [`Shell.Dashboard`](#Shell).
+
+`brand` is the row above the sidebar menu — a glyph and the product's name, the
+way every daisyUI dashboard template opens its sidebar. `sidebarFooter` is the
+leaf pinned to the bottom of the same panel, which is where those templates put
+the signed-in user ([`Leaf.UserChip`](#Leaf)).
+
+-}
+type alias DashboardShell msg =
+    { brand : Maybe Brand
+    , sidebar : MenuSpec msg
+    , sidebarFooter : Maybe (Leaf msg)
+    , navbar : NavbarParts msg
+    }
+
+
+{-| A dashboard shell with a sidebar menu and nothing else.
+
+    dashboardShell { config = defaultMenuConfig, items = [ menuItem "Home" ] }
+
+-}
+dashboardShell : MenuSpec msg -> DashboardShell msg
+dashboardShell sidebar =
+    { brand = Nothing
+    , sidebar = sidebar
+    , sidebarFooter = Nothing
+    , navbar = emptyNavbarParts
+    }
+
+
+{-| The product mark at the top of a dashboard sidebar: one
+[`Daisy.Icon.Icon`](Daisy-Icon#Icon) and the name beside it.
+-}
+type alias Brand =
+    { icon : Icon
+    , name : String
+    }
 
 
 {-| The page's single primary call to action. Rendered as `btn btn-primary`,
@@ -766,10 +841,24 @@ defaultCardConfig =
 
 {-| The `card-*` parts. A part record makes `card-body` outside a card
 unrepresentable.
+
+`title`, `titleIcon`, `headerTabs` and `headerActions` are one row: the glyph
+and the `card-title` on the left, then the segmented control and the controls on
+the right. Every dashboard card in daisyUI's own templates is built that way (a
+"Report" button, a `Day | Month | Year` switch), and keeping the row in the part
+record means the renderer owns the alignment instead of each caller inventing a
+flex container.
+
+`actions` is unrelated: it is daisyUI's `card-actions` part, at the _bottom_ of
+the body.
+
 -}
 type alias CardParts msg =
     { figure : Maybe (Leaf msg)
     , title : Maybe String
+    , titleIcon : Maybe Icon
+    , headerTabs : Maybe (TabsSpec msg)
+    , headerActions : List (Leaf msg)
     , body : List (CardChild msg)
     , actions : List (Leaf msg)
     }
@@ -789,6 +878,7 @@ type CardChild msg
     = CardLeaf (Leaf msg)
     | CardAlert AlertConfig (List (Leaf msg))
     | CardChart ChartConfig ChartData
+    | CardChat (List (ChatMessage msg))
     | CardTable TableConfig (List (Row msg))
     | CardStat StatConfig (List (StatItem msg))
     | CardForm (List (Fieldset msg))
@@ -798,7 +888,14 @@ type CardChild msg
 -}
 emptyCardParts : CardParts msg
 emptyCardParts =
-    { figure = Nothing, title = Nothing, body = [], actions = [] }
+    { figure = Nothing
+    , title = Nothing
+    , titleIcon = Nothing
+    , headerTabs = Nothing
+    , headerActions = []
+    , body = []
+    , actions = []
+    }
 
 
 {-| Where a carousel snaps its items. daisyUI declares these under `modifier`
@@ -1158,11 +1255,18 @@ defaultStatConfig =
 
 {-| One tile: the `stat`, `stat-figure`, `stat-title`, `stat-value`,
 `stat-desc` and `stat-actions` parts.
+
+`trend` sits on the same line as `value`, inside `stat-value`. It is the delta
+badge every dashboard metric carries (`+10.8%` beside `$587.54`); a `Leaf`
+rather than a string so it can be the soft `Badge` with a leading arrow that
+daisyUI's own templates use.
+
 -}
 type alias StatItem msg =
     { figure : Maybe (Leaf msg)
     , title : String
     , value : String
+    , trend : Maybe (Leaf msg)
     , desc : Maybe String
     , actions : List (Leaf msg)
     }
@@ -1172,7 +1276,13 @@ type alias StatItem msg =
 -}
 emptyStatItem : String -> String -> StatItem msg
 emptyStatItem title value =
-    { figure = Nothing, title = title, value = value, desc = Nothing, actions = [] }
+    { figure = Nothing
+    , title = title
+    , value = value
+    , trend = Nothing
+    , desc = Nothing
+    , actions = []
+    }
 
 
 {-| Groups of the daisyUI `steps` component. The colour classes are `step-*` and
@@ -1267,7 +1377,24 @@ defaultTabsConfig =
     { style = Nothing, size = Nothing, placement = Nothing }
 
 
+{-| A tab strip referenced from somewhere other than `Block.Tabs`, namely
+[`CardParts.headerTabs`](#CardParts). The same pair of fields
+[`MenuSpec`](#MenuSpec) uses, for the same reason: the block constructor takes
+the config and the items as two arguments, and a field cannot.
+-}
+type alias TabsSpec msg =
+    { config : TabsConfig
+    , tabs : List (Tab msg)
+    }
+
+
 {-| One tab and the panel it owns.
+
+A tab with an empty `content` owns no panel: `Daisy.Render` then emits the
+`tab` alone, with no `tab-content` sibling. That is what makes `tabs-box` usable
+as a segmented control (`Day | Month | Year`), where the tabs pick a shape for
+something already on the page rather than swapping panels.
+
 -}
 type alias Tab msg =
     { label : String
@@ -1384,6 +1511,7 @@ type Leaf msg
     | Textarea (TextareaConfig msg)
     | ThemeSelect (ThemeSelectData msg)
     | Toggle (ToggleConfig msg) ToggleData
+    | UserChip (UserChipConfig msg) UserChipData
 
 
 {-| The `src` of an image. `Leaf.Image` is not a daisyUI component; it exists
@@ -1889,11 +2017,18 @@ show.
 
 `pattern` is a regular expression (the HTML `pattern` attribute), never a class.
 
+`icon` is a leading [`Daisy.Icon.Icon`](Daisy-Icon#Icon). It switches the
+renderer to the wrapper form daisyUI's own docs use for a decorated field —
+`<label class="input"><svg/><input/></label>` — where the component class is on
+the label and the `<input>` inside it is bare. Without an icon the markup is the
+plain `<input class="input">` it has always been.
+
 -}
 type alias InputConfig msg =
     { color : Maybe SInput.Color
     , style : Maybe SInput.Style
     , size : Maybe SInput.Size
+    , icon : Maybe Icon
     , placeholder : String
     , value : String
     , inputType : InputType
@@ -1915,6 +2050,7 @@ defaultInputConfig =
     { color = Nothing
     , style = Nothing
     , size = Nothing
+    , icon = Nothing
     , placeholder = ""
     , value = ""
     , inputType = InputText
@@ -2403,6 +2539,49 @@ defaultToggleConfig =
 -}
 type alias ToggleData =
     { checked : Bool }
+
+
+{-| Who is signed in: a portrait, a name and one line under it.
+
+A dashboard's navbar and its sidebar footer both show this, and it is the one
+shape the tree could not express — `Leaf` is terminal, so two stacked lines of
+text beside an image needs either a container leaf (which would open the tree up
+to arbitrary layout) or a named composite. This is the named composite: three
+strings in, one fixed piece of markup out, no layout decision left to the
+caller.
+
+-}
+type alias UserChipData =
+    { avatar : ImageSrc
+    , name : String
+    , subtitle : String
+    }
+
+
+{-| The properties of a [`Leaf.UserChip`](#Leaf).
+
+`boxed` paints the chip as a panel on the surface below it — the shaded card a
+sidebar footer sits in. A navbar chip leaves it `False` and reads as plain
+chrome.
+
+-}
+type alias UserChipConfig msg =
+    { boxed : Bool
+    , onClick : Maybe msg
+    , dropdown : Maybe (Dropdown msg)
+    , tooltip : Maybe Tooltip
+    }
+
+
+{-| An unboxed, inert user chip.
+-}
+defaultUserChipConfig : UserChipConfig msg
+defaultUserChipConfig =
+    { boxed = False
+    , onClick = Nothing
+    , dropdown = Nothing
+    , tooltip = Nothing
+    }
 
 
 

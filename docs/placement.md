@@ -9,7 +9,7 @@ by its named type.
 
 | Level | Meaning |
 |---|---|
-| **Page** | Page shell, theme, or the single primary CTA. Chrome that is fixed to the viewport and lives outside the section flow. Rendered by `Daisy.Render` from fields on `Page`/`Shell`, never as a `Section`/`Block`/`Leaf`. |
+| **Page** | Page shell, theme, the page header, or the single primary CTA. Chrome that lives outside the section flow. Rendered by `Daisy.Render` from fields on `Page`/`Shell`, never as a `Section`/`Block`/`Leaf`. `Page.header : Maybe (PageHeader msg)` (`{ title, breadcrumbs, actions }`) is here rather than at Section for exactly that reason: a dashboard's title bar is chrome, and the five-section budget is content. `Shell.Dashboard` carries `DashboardShell = { brand, sidebar, sidebarFooter, navbar }`. |
 | **Section** | A top-level band of the page. Constructors are exactly `Hero`, `Navbar`, `Footer`, `Grid`, `Stack`. `Navbar` contains Leaves; `Hero`, `Footer`, `Grid`, `Stack` contain Blocks. Max 5 per page (`Sections1`..`Sections5`). |
 | **Block** | A self-contained content container that sits directly inside a Section. Contains Leaves, or a closed record/list of its own part records. Never contains another Block. |
 | **Leaf** | A terminal control or piece of content. Contains only data (`String`, `Float`, config), never another node. Leaves live inside Blocks, inside `Navbar`, or inside `Toast`/`Modal` via a Block. |
@@ -43,7 +43,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | breadcrumbs | Block | `Block.Breadcrumbs` | `List (Leaf msg)` (Link/Text leaves) | A `<div class="breadcrumbs">` wrapping a `<ul>` of links: it holds multiple leaves, so it cannot be a Leaf. |
 | button | Leaf | `Leaf.Button` | `String` label | Fixed by the spec sketch. `ButtonColor` omits `Primary`; the only primary button is `Page.cta`. |
 | calendar | Leaf | `Leaf.Calendar` | `CalendarConfig msg` + `CalendarState` (data, not nodes) | A terminal control. `cally` is the theming hook for the Cally *web component*, and `alexbruf/elm-cally` is a pure-Elm port of it that renders the same markup and the same `part` attributes in the light DOM — so the class lands on a real picker and no foreign markup or JS mount is needed. `react-day-picker` and `vc` stay unreachable (see Excluded). Moved here 2026-09-07; see `docs/tree-decisions.md`, "Calendar via elm-cally". |
-| card | Block | `Block.Card` | `CardParts msg` = `{ figure : Maybe (Leaf msg), title : Maybe String, body : List (CardChild msg), actions : List (Leaf msg) }` | Fixed by the spec sketch; `card-title`/`card-body`/`card-actions` are `part` classes, so a parts record makes `card-body` outside a card unrepresentable. `CardChild` is `CardLeaf`/`CardChart`/`CardTable`/`CardStat`/`CardForm` — the block shapes a dashboard card is made of, with no `CardCard`, so a card still cannot hold a card. |
+| card | Block | `Block.Card` | `CardParts msg` = `{ figure : Maybe (Leaf msg), title : Maybe String, titleIcon : Maybe Icon, headerTabs : Maybe (TabsSpec msg), headerActions : List (Leaf msg), body : List (CardChild msg), actions : List (Leaf msg) }` | Fixed by the spec sketch; `card-title`/`card-body`/`card-actions` are `part` classes, so a parts record makes `card-body` outside a card unrepresentable. `CardChild` is `CardLeaf`/`CardAlert`/`CardChart`/`CardChat`/`CardTable`/`CardStat`/`CardForm` — the block shapes a dashboard card is made of, with no `CardCard`, so a card still cannot hold a card. `titleIcon`/`headerTabs`/`headerActions` are the card's **header row** (glyph and title left, segmented control and controls right): every dashboard card in daisyUI's templates has one, and keeping it in the parts record means the renderer owns the alignment rather than each caller inventing a flex container (2026-09-07). |
 | carousel | Block | `Block.Carousel` | `List (CarouselItem msg)`, each `{ content : List (Leaf msg) }` (the `carousel-item` part) | A scroll-snap container of items; sits directly in a Section like any other content container. |
 | chat | Block | `Block.Chat` | `List (ChatMessage msg)`, each a parts record `{ placement, image, header, footer, bubble }` | `chat-image`/`chat-header`/`chat-footer`/`chat-bubble` are `part` classes and repeat per message, so one parts record per message inside a Block-level list. |
 | checkbox | Leaf | `Leaf.Checkbox` | `CheckboxConfig` only | A terminal form control; used both inside a `Form` field and standalone inside a table row header. |
@@ -65,7 +65,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | hover-3d | Property | field `hover3d : Bool` on `ImageConfig` and `CardConfig` | none | Decoration only: a wrapper plus eight empty divs the renderer emits. It has no authorable content. |
 | hover-gallery | Leaf | `Leaf.HoverGallery` | `List ImageSrc` (data) | A `<figure class="hover-gallery">` whose children are only `<img>` tags: terminal content with no nodes inside. |
 | indicator | Property | field `indicator : Maybe (Indicator msg)` on Leaf configs (Button, Avatar, Input, Link) | `Indicator` holds `IndicatorConfig` + a `Badge`/`Status` payload (the `indicator-item` part) | Same shape as `tooltip`/`dropdown`: a wrapper that decorates exactly one anchor element. Placing it as a node would let `indicator-item` appear without an anchor. |
-| input | Leaf | `Leaf.Input` | `InputConfig` only | Fixed by the spec sketch; the canonical terminal form control. `InputConfig` also carries the HTML validation constraints (`inputType`, `required`, `pattern`, `minLength`, `maxLength`) daisyUI's `validator` / `validator-hint` pair needs to ever fire, plus `ariaLabel`. |
+| input | Leaf | `Leaf.Input` | `InputConfig` only | Fixed by the spec sketch; the canonical terminal form control. `InputConfig` also carries the HTML validation constraints (`inputType`, `required`, `pattern`, `minLength`, `maxLength`) daisyUI's `validator` / `validator-hint` pair needs to ever fire, plus `ariaLabel`, plus `icon : Maybe Icon` (2026-09-07). `icon` selects between daisyUI's two documented shapes for a field: without one it is a plain `<input class="input">`, with one the component class moves to a `<label>` and the glyph sits inside beside a bare growing `<input>`. |
 | join | Leaf | `Leaf.Join` | `List (JoinItem msg)`, a closed non-recursive type (`JoinButton`/`JoinInput`/`JoinSelect`/`JoinText`) | It groups adjacent *controls* into one unit and must be usable as a `Field.control` (docs: "Fieldset with multiple join items") and inside a Navbar, both of which only accept Leaves. `JoinItem` being a separate type keeps `Leaf` non-recursive. |
 | kbd | Leaf | `Leaf.Kbd` | `String` | Terminal inline content. |
 | label | Parts-of | fields on `Field msg`: `{ label : Maybe String, labelPlacement : Start \| End \| Floating }` | none | `label` and `floating-label` only wrap or precede a control; as a record field the label cannot exist without its input. |
@@ -91,7 +91,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | select | Leaf | `Leaf.Select` | `SelectConfig` + `{ options : List String, selected : Maybe String }` | Terminal form control. Required as a Navbar Leaf by the Analytics demo (date range). |
 | skeleton | Leaf | `Leaf.Skeleton` | `SkeletonConfig` only | A placeholder shape with no content. |
 | stack | Block | `Block.Stacked` | `List (Leaf msg)` | daisyUI `stack` overlaps its children; it is a content container in a Section, so Block is its level. Named `Stacked` because `Section.Stack` already exists and is a different thing. See Unsure. |
-| stat | Block | `Block.Stat` | `StatConfig` (`direction : StatDirection` = `Fixed (Maybe Direction)` or `Responsive`) + `List (StatItem msg)`, each a parts record `{ figure, title, value, desc, actions }` | The component class is `stats`; `stat`, `stat-title`, `stat-value`, `stat-desc`, `stat-figure`, `stat-actions` are `part` classes that repeat per tile, so the Block holds a list of part records. See Unsure. |
+| stat | Block | `Block.Stat` | `StatConfig` (`direction : StatDirection` = `Fixed (Maybe Direction)` or `Responsive`) + `List (StatItem msg)`, each a parts record `{ figure, title, value, trend, desc, actions }` (`trend` is a `Leaf` on the `stat-value` line — the delta badge every dashboard metric carries, 2026-09-07) | The component class is `stats`; `stat`, `stat-title`, `stat-value`, `stat-desc`, `stat-figure`, `stat-actions` are `part` classes that repeat per tile, so the Block holds a list of part records. See Unsure. |
 | status | Leaf | `Leaf.Status` | `StatusConfig` only | A terminal coloured dot, typically used as the payload of an `indicator` or inside a table cell. |
 | steps | Block | `Block.Steps` | `List (Step msg)`, each `{ label : String, color : Maybe StepColor, icon : Maybe String }` (`step`, `step-icon` parts) | Progress container placed in a Section; its per-step colour lives on the `step` part, not the container. |
 | swap | Leaf | `Leaf.Swap` | `{ on : String, off : String, indeterminate : Maybe String }` (the three part classes) | One checkbox-driven control with exactly two/three fixed faces: terminal. |
@@ -103,6 +103,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | timeline | Block | `Block.Timeline` | `TimelineConfig` (`modifiers : List TimelineModifier`, which omits `timeline-box`) + `List (TimelineItem msg)`, each a parts record `{ start, startBox, middle, end, endBox }` | `timeline-start`/`-middle`/`-end` are `part` classes repeating per item; the container is a content block in a Section. `timeline-box` sits on one *side of one item*, so it is `startBox` / `endBox` there. |
 | toast | Overlay | `Overlay.Toast` | `List (Block msg)` (in practice `Block.Alert`) | Fixed by the spec as an Overlay. Children changed from `List Leaf` to `List Block` because every daisyUI toast example contains `alert`. See Unsure. |
 | toggle | Leaf | `Leaf.Toggle` | `ToggleConfig` + `{ checked : Bool }` | Terminal form control; required by the Settings demo as a `Field.control`. |
+| (user chip) | Leaf | `Leaf.UserChip` | `UserChipConfig msg` + `UserChipData` = `{ avatar, name, subtitle }` (data, not nodes) | **Not a daisyUI component**, like `Leaf.Icon` and `Leaf.Heading`: it is the portrait-plus-two-lines composite daisyUI's dashboard templates put in a navbar and in a sidebar footer, and it is the one shape the tree could not otherwise express — a `Leaf` is terminal, so stacking two lines of text beside an image needs either a container leaf (which hands arbitrary layout back to the caller) or one named composite. It emits `avatar` and `mask mask-squircle` plus tokens, nothing else. Added 2026-09-07; see `docs/tree-decisions.md`, "Nexus design pass". |
 | tooltip | Property | field `tooltip : Maybe Tooltip` on every Leaf config | `Tooltip = { text : String, config : TooltipConfig }` (`tooltip-content` part) | Fixed by the spec: tooltip is a property on a Leaf, not a node. |
 | validator | Parts-of | fields on `Field msg`: `{ validate : Bool, hint : Maybe String }` | none | `validator` goes on the input itself and `validator-hint` must be the immediately following sibling; only a record keeps the two adjacent and makes an orphan hint unrepresentable. |
 
@@ -291,8 +292,15 @@ Every element the three demos require (SPEC step 7) maps to a placement above.
 
 | Requirement | Placement |
 |---|---|
-| Dashboard shell | `Page.shell = Shell.Dashboard { sidebar : Menu msg, navbar : Navbar msg }` → `drawer` + `drawer-open` at `lg:` (drawer placed at Overlay, referenced here) |
-| Sidebar menu | the `Menu msg` named type placed at Block, referenced by `Shell.Dashboard.sidebar` |
+| Dashboard shell | `Page.shell = Shell.Dashboard (DashboardShell msg)` = `{ brand, sidebar, sidebarFooter, navbar }` → `drawer` + `drawer-open` at `lg:` (drawer placed at Overlay, referenced here) |
+| Sidebar menu | the `MenuSpec msg` named type placed at Block, referenced by `Shell.Dashboard.sidebar`; section labels are `MenuItem.title = True` (`menu-title`) and the "New" pill is `MenuItem.badge` |
+| Sidebar brand row and user card | `DashboardShell.brand : Maybe Brand` and `.sidebarFooter : Maybe (Leaf msg)` (a `Leaf.UserChip`) |
+| Page title + breadcrumbs in one row | `Page.header : Maybe (PageHeader msg)` — not a section |
+| Metric tile with a delta badge and a glyph tile | `Block.Stat` with `StatItem.trend : Maybe (Leaf msg)`; `Daisy.Render` paints the `stat-figure` tile |
+| Card header row (`Day \| Month \| Year`, a "Report" button) | `CardParts.headerTabs : Maybe (TabsSpec msg)` and `.headerActions : List (Leaf msg)` |
+| Navbar search field with a leading glyph | `Leaf.Input` with `icon = Just Search` |
+| Navbar user chip | `Leaf.UserChip` in `NavbarParts.end` |
+| Chat panel inside a card | `CardChild.CardChat` |
 | Navbar | `Section.Navbar` with `NavbarParts` of Leaves |
 | 4 Stat cards | `Section.Grid [ Block.Stat cfg [ StatItem, StatItem, StatItem, StatItem ] ]` |
 | Chart Line | `Block.Chart Line data` (`Daisy.Chart`, not a daisyUI component) |
@@ -307,7 +315,7 @@ Every element the three demos require (SPEC step 7) maps to a placement above.
 | Dashboard shell | as above |
 | Chart Bar / Donut / Area | `Block.Chart` ×3 inside `Section.Grid` |
 | Stat row | `Block.Stat` with a `List StatItem` |
-| Date-range Select in navbar | `Leaf.Select` in `NavbarParts.end` (Select is a Leaf, and Navbar takes Leaves) |
+| Date-range Select | `Leaf.Select` in `CardParts.headerActions` of the "Date range" card. It was in `NavbarParts.end` until 2026-09-07: daisyUI's `.select` is `width: clamp(3rem, 20rem, 100%)`, whose max-content contribution is indeterminate, so in a `flex-wrap` row it takes a line of its own — which is what it did to the navbar. In a card header there is room for it. |
 
 **Settings**
 
