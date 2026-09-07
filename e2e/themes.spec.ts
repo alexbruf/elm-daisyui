@@ -64,7 +64,13 @@ for (const themeName of ALL_THEMES) {
         testInfo.project.name !== SWEEP_PROJECT,
         `screenshot baselines are taken in ${SWEEP_PROJECT} only`,
       );
-      test.skip(!HAVE_BASELINES, NO_BASELINES_REASON);
+      // Skip only when there is nothing to compare against AND this run is
+      // not writing baselines. `--update-snapshots` sets updateSnapshots to
+      // "changed"/"all"; the CI default is "none", the local default "missing".
+      test.skip(
+        !HAVE_BASELINES && testInfo.config.updateSnapshots === "none",
+        NO_BASELINES_REASON,
+      );
       await open(page, demo.path, themeName);
       await expect(page).toHaveScreenshot(`${demo.name}-${themeName}.png`, {
         fullPage: true,
