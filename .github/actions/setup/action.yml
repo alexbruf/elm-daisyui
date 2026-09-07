@@ -1,0 +1,78 @@
+name: Set up the elm-daisyui toolchain
+description: >-
+  Everything tools/ci.sh and the Playwright suite need on a fresh
+  ubuntu-latest runner: bun, the pinned Elm toolchain, a warm ~/.elm cache,
+  vendor/daisyui at the pinned SHA, the three bun installs, and Google Chrome
+  for Playwright. Used by both ci.yml and update-snapshots.yml so the two
+  cannot drift apart. The calling job must have run actions/checkout first —
+  a local composite action is read out of the checked-out tree.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    # bun only (CLAUDE.md); never npm/npx. The four npm packages below are
+    # the ones that ship the `elm`, `elm-test`, `elm-review` and
+    # `elm-format` binaries. Versions are pinned to the toolchain the
+    # repository is developed against: `elm@latest` is now the 0.19.2
+    # pre-release, and this is an Elm 0.19.1 package.
+    - name: Install the Elm toolchain
+      shell: bash
+      run: |
+        bun add -g elm@0.19.1-6 elm-test@0.19.1-revision17 elm-review@2.13.5 elm-format@0.8.8
+        echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
+    - name: Report toolchain versions
+      shell: bash
+      run: |
+        bun --version
+        elm --version
+        elm-test --version
+        elm-review --version
+        elm-format --help | head -n 1
+
+    # The Elm package cache. `elm make` populates it from
+    # package.elm-lang.org, so a warm cache saves the download for every
+    # dependency of the library, the demo and the review config.
+    - name: Cache the Elm package cache
+      uses: actions/cache@v6
+      with:
+        path: ~/.elm
+        key: elm-${{ runner.os }}-${{ hashFiles('elm.json', 'demo/elm.json', 'review/elm.json') }}
+        restore-keys: |
+          elm-${{ runner.os }}-
+
+    # vendor/daisyui is the oracle: tools/gen-schema.js reads its docs
+    # frontmatter and tools/extract-corpus.js its example bodies, and the
+    # `bun run build` inside it is what writes the class.json files the
+    # schema diff is checked against. It is gitignored, so CI has to make it.
+    - name: Vendor daisyUI at the pinned SHA
+      shell: bash
+      run: bash tools/vendor.sh
+
+    - name: Install tool dependencies
+      shell: bash
+      run: bun install
+
+    # demo/'s dependencies include @fontsource-variable/inter, the bundled
+    # web font the screenshot baselines depend on (demo/app.css).
+    - name: Install demo dependencies
+      shell: bash
+      working-directory: demo
+      run: bun install
+
+    - name: Install e2e dependencies
+      shell: bash
+      working-directory: e2e
+      run: bun install
+
+    # e2e/playwright.config.ts pins `channel: "chrome"`, so install Google
+    # Chrome itself rather than the bundled Chromium.
+    - name: Install Chrome for Playwright
+      shell: bash
+      working-directory: e2e
+      run: bunx playwright install --with-deps chrome

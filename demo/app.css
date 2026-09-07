@@ -20,6 +20,29 @@
 @import "./cally-daisy.css";
 
 /*
+ * Bundled web font. Screenshot baselines are pixel-exact, so text must not
+ * depend on whatever sans-serif the host OS happens to install: this machine
+ * resolves the generic `sans-serif` to DejaVu Sans, a GitHub Actions runner to
+ * something else, and every glyph in all 105 theme baselines differs while the
+ * layout is identical.
+ *
+ * `@fontsource-variable/inter` is a plain dependency of `demo/`, so the woff2
+ * files are served from the build output (`dist/assets/*.woff2`) — self-hosted,
+ * no CDN, nothing fetched at test time from the network. Tailwind inlines this
+ * `@import` and rebases the `url()`s onto the package directory, and Vite then
+ * emits them as build assets.
+ *
+ * `--font-sans` is the Tailwind 4 theme variable that `theme.css` feeds into
+ * `--default-font-family`, which preflight sets on `html`; daisyUI adds no
+ * font-family of its own, so every component inherits this.
+ */
+@import "@fontsource-variable/inter";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
  * vite-plugin-elm compiles Elm in-memory (dev server transform, or inlined
  * into the JS bundle at build time) — it never writes a `.elm.js`/`.html`
  * file to disk. That means Tailwind's content scanner has no build artifact

@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 import { execSync } from "node:child_process";
 import type { DaisyOptions } from "./fixtures";
+import { SNAPSHOT_TAG, warnIfNoBaselines } from "./lib/snapshot-tag";
 
 // Fixed port for the built demo's `vite preview` server. We ask `devports`
 // (https://github.com/bendechrai/devports) for a stable per-project
@@ -37,6 +38,11 @@ function resolvePreviewPort(): number {
   }
   return 4173;
 }
+
+// One line at the top of the run when this environment has no committed
+// baselines yet; themes.spec.ts then skips the 105 comparisons rather than
+// silently writing them. `desktop-light` is the project that owns them.
+warnIfNoBaselines("desktop-light");
 
 const PORT = resolvePreviewPort();
 const BASE_URL = `http://localhost:${PORT}`;
@@ -93,10 +99,13 @@ for (const [viewportName, viewport] of Object.entries(VIEWPORTS)) {
 export default defineConfig({
   testDir: ".",
   snapshotDir: "./snapshots",
-  // Flat, project-independent snapshot names: `themes.spec.ts` takes its
-  // baselines in one project only (see the file's header), so a per-project
-  // path would only add noise.
-  snapshotPathTemplate: "{snapshotDir}/{arg}{ext}",
+  // Flat, project-independent snapshot names under one environment tag:
+  // `themes.spec.ts` takes its baselines in one project only (see the file's
+  // header), so a per-project path would only add noise — but the *rendering
+  // environment* does change the bytes, so it is in the path.
+  // The tag comes from `SNAPSHOT_TAG` (default `local`); see
+  // `lib/snapshot-tag.ts` for why the baselines are per environment.
+  snapshotPathTemplate: `{snapshotDir}/${SNAPSHOT_TAG}/{arg}{ext}`,
   timeout: 60_000,
   expect: {
     timeout: 10_000,

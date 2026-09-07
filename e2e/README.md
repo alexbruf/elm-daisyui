@@ -97,13 +97,104 @@ kills transitions, animations, smooth scrolling and the text caret *before*
 first paint, waits for the demo's `last-msg:` pane, and awaits
 `document.fonts.ready`. `deviceScaleFactor` is pinned to 1 per project.
 
+### Fonts
+
+The demo bundles its text face rather than inheriting one from the OS.
+`demo/package.json` depends on `@fontsource-variable/inter`; `demo/app.css`
+imports its stylesheet and sets Tailwind 4's font theme variable:
+
+```css
+@import "@fontsource-variable/inter";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+```
+
+Tailwind's `theme.css` feeds `--font-sans` into `--default-font-family`, which
+preflight sets on `html`, and daisyUI declares no `font-family` of its own — so
+every component inherits it. The woff2 files are emitted into
+`demo/dist/assets/` by the Vite build and served from there: self-hosted, no
+CDN, nothing fetched from the network during a run.
+
+Why it matters: before this, text was drawn in whatever the browser resolved
+the generic `sans-serif` to — DejaVu Sans on a Debian workstation, something
+else on a GitHub Actions runner. Every glyph in all 105 baselines differed
+between the two while the layout was identical, which is what made the CI
+screenshot comparisons fail. `open()` already awaited `document.fonts.ready`,
+so the bundled face is loaded before anything is photographed.
+
 ## Snapshots
 
-`snapshotDir` is `e2e/snapshots`, with a flat `{arg}{ext}` path template.
-`themes.spec.ts` owns all of them: **105 baselines**, 3 demos x 35 themes, and
-they are committed. A later diff fails the run and needs a human decision (see
-SPEC.md step 6 Tier C, "themes"). Regenerate deliberately with
-`bunx playwright test themes.spec.ts --update-snapshots`.
+`snapshotDir` is `e2e/snapshots`, and the path template is
+`{snapshotDir}/<tag>/{arg}{ext}` — flat filenames under one **environment
+tag**. `themes.spec.ts` owns all of them: **105 baselines**, 3 demos x 35
+themes, per tag, and they are committed. A later diff fails the run and needs a
+human decision (see SPEC.md step 6 Tier C, "themes").
+
+### The tag convention
+
+`toHaveScreenshot` here is exact — `maxDiffPixels: 0`, no tolerance — so a
+baseline is only comparable against the environment that took it. Bundling the
+font (above) removed the OS font from the picture; the Chrome build and its
+rasteriser are still environment-specific. Rather than loosen the comparison,
+one committed set of baselines per environment:
+
+| Tag | Directory | Taken by |
+|---|---|---|
+| `local` (default) | `e2e/snapshots/local/` | a developer machine |
+| `ci` | `e2e/snapshots/ci/` | `ubuntu-latest`, via `.github/workflows/update-snapshots.yml` |
+
+`SNAPSHOT_TAG` selects the set (`lib/snapshot-tag.ts`, read by
+`playwright.config.ts` for the path template and by `themes.spec.ts` for the
+gate). `.github/workflows/ci.yml` sets `SNAPSHOT_TAG: ci` for the whole job;
+everything else defaults to `local`.
+
+Regenerate the local set deliberately:
+
+```
+cd e2e && bunx playwright test themes.spec.ts --project=desktop-light --update-snapshots
+```
+
+Add a tag by running that same command with `SNAPSHOT_TAG=<tag>` and committing
+the directory it writes.
+
+### When a tag has no baselines yet
+
+A tag whose directory does not exist has never been generated. The 105
+screenshot comparisons then **skip** with the reason
+
+```
+[snapshots] no screenshot baselines for SNAPSHOT_TAG=ci (…/e2e/snapshots/ci does not exist) — run the `Update screenshot baselines` workflow (Actions -> update-snapshots -> Run workflow) on this branch, then re-run CI
+```
+
+printed once at the top of the run (from `playwright.config.ts`, so it lands in
+the CI log) and attached to every skipped test. Skipping is the point: without
+it, `--update-snapshots` semantics would have the very run that is supposed to
+check the baselines write all 105 of them and pass. Nothing else is affected —
+the chart-colour sweep in `themes.spec.ts` and the contrast sweep in
+`contrast.spec.ts` measure computed values, not pixels, and run under every
+tag.
+
+### Generating the CI baselines
+
+`.github/workflows/update-snapshots.yml`, `workflow_dispatch` only (Actions ->
+*Update screenshot baselines* -> Run workflow, on the branch you want them
+for). It shares `.github/actions/setup` with `ci.yml`, so the environment that
+takes the baselines is the environment that later compares against them; then
+it builds the demo, runs
+
+```
+SNAPSHOT_TAG=ci bunx playwright test themes.spec.ts --project=desktop-light --update-snapshots
+```
+
+and commits `e2e/snapshots/ci/**` back to the same branch as
+`github-actions[bot]` (`permissions: contents: write`, default `GITHUB_TOKEN`).
+It commits nothing when nothing changed.
+
+**A push made with `GITHUB_TOKEN` does not trigger other workflows.** CI will
+not start itself off that commit — start it by hand: Actions -> *CI* -> Run
+workflow (`ci.yml` carries a `workflow_dispatch` trigger for exactly this).
 
 They are taken in the `desktop-light` project only. Doing it in all six would
 be 630 images for the same information: a theme is a set of colours, and the
@@ -121,7 +212,7 @@ other 35-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 | `overflow.spec.ts` | overflow | full matrix, 3 demos |
 | `layers.spec.ts` | layers | full matrix |
 | `responsive.spec.ts` | responsive | full matrix, 2 dashboards |
-| `themes.spec.ts` | themes | `desktop-light`, 35 themes |
+| `themes.spec.ts` | themes | `desktop-light`, 35 themes (screenshots skip when the tag has no baselines) |
 | `contrast.spec.ts` | contrast | full matrix + a 35-theme sweep in `desktop-light` |
 | `a11y.spec.ts` | a11y | full matrix, 3 demos + the modal-open state |
 | `keyboard.spec.ts` | keyboard | full matrix |

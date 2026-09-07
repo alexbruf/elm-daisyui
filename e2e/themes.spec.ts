@@ -1,4 +1,5 @@
 import { test, expect } from "./fixtures";
+import { haveBaselines, noBaselinesReason } from "./lib/snapshot-tag";
 import { ALL_THEMES, DEMOS, open } from "./lib/daisy";
 import { collectChartColors } from "./lib/browser";
 
@@ -19,7 +20,20 @@ import { collectChartColors } from "./lib/browser";
  *
  * Determinism: reduced motion is emulated and transitions/animations/caret are
  * killed before first paint (`lib/daisy.ts`), `deviceScaleFactor` is pinned to
- * 1 in `playwright.config.ts`, and `document.fonts.ready` is awaited.
+ * 1 in `playwright.config.ts`, the demo bundles its own font (`Inter Variable`
+ * via `@fontsource-variable/inter`, so no OS font is in the picture), and
+ * `document.fonts.ready` is awaited.
+ *
+ * ## Environment tag
+ *
+ * Baselines are still machine-specific below the font layer (Chrome build,
+ * rasteriser), and `maxDiffPixels` is 0, so they are committed per environment
+ * under `e2e/snapshots/<tag>/` — `local` by default, `ci` on GitHub Actions
+ * (`SNAPSHOT_TAG`, see `playwright.config.ts`). A tag whose directory does not
+ * exist yet has never been generated: the comparison then *skips* with the
+ * command to generate it rather than writing 105 new baselines into a run that
+ * would then trivially pass. The chart-colour sweep below is unaffected — it
+ * measures computed colours, not pixels, and runs under every tag.
  *
  * ## Chart colours
  *
@@ -33,6 +47,14 @@ import { collectChartColors } from "./lib/browser";
  */
 const SWEEP_PROJECT = "desktop-light";
 
+/**
+ * Whether this environment's baselines have been generated at all. Resolved
+ * once, at collection time, so the reason is identical on all 105 tests.
+ * `playwright.config.ts` prints the same sentence once at the top of the run.
+ */
+const HAVE_BASELINES = haveBaselines();
+const NO_BASELINES_REASON = noBaselinesReason(SWEEP_PROJECT);
+
 for (const themeName of ALL_THEMES) {
   for (const demo of DEMOS) {
     test(`${demo.name} in ${themeName} matches its baseline`, async ({
@@ -42,6 +64,7 @@ for (const themeName of ALL_THEMES) {
         testInfo.project.name !== SWEEP_PROJECT,
         `screenshot baselines are taken in ${SWEEP_PROJECT} only`,
       );
+      test.skip(!HAVE_BASELINES, NO_BASELINES_REASON);
       await open(page, demo.path, themeName);
       await expect(page).toHaveScreenshot(`${demo.name}-${themeName}.png`, {
         fullPage: true,

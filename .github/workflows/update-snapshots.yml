@@ -1,0 +1,77 @@
+name: Update screenshot baselines
+
+# Deliberate, manual only. Regenerating baselines is a decision, never a
+# side effect of a push: a diff in e2e/snapshots/ is exactly the signal
+# themes.spec.ts exists to raise (SPEC.md step 6, Tier C, "themes").
+on:
+  workflow_dispatch:
+
+# The job pushes e2e/snapshots/ci/** back to the branch it ran on.
+permissions:
+  contents: write
+
+concurrency:
+  group: update-snapshots-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Regenerate e2e/snapshots/ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      # The whole point: write the `ci` set, not the `local` one.
+      SNAPSHOT_TAG: ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Same composite action ci.yml uses, so the environment that takes the
+      # baselines is the environment that later compares against them.
+      - name: Set up the toolchain
+        uses: ./.github/actions/setup
+
+      # tools/ci.sh's demo-build step, on its own: `vite preview` (the
+      # Playwright webServer) serves demo/dist, and the bundled Inter font
+      # is part of that build.
+      - name: Build the demo
+        working-directory: demo
+        run: bun run build
+
+      # Only the screenshot sweep, and only in the project that owns the
+      # baselines. The chart-colour sweep in the same file is a pixel-free
+      # assertion and is not what --update-snapshots is for.
+      - name: Regenerate the baselines
+        working-directory: e2e
+        run: bunx playwright test themes.spec.ts --project=desktop-light --update-snapshots
+
+      - name: Commit the baselines
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ ! -d e2e/snapshots/ci ]; then
+            echo "::error::the sweep wrote no baselines to e2e/snapshots/ci" >&2
+            exit 1
+          fi
+          git add -A -- e2e/snapshots/ci
+          if git diff --cached --quiet; then
+            echo "e2e/snapshots/ci is unchanged — nothing to commit."
+            exit 0
+          fi
+          git commit -m "e2e: regenerate CI screenshot baselines (SNAPSHOT_TAG=ci)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "Pushed with GITHUB_TOKEN, which does not trigger other workflows."
+          echo "Start CI by hand: Actions -> CI -> Run workflow, on ${GITHUB_REF_NAME}."
+
+      - name: Upload the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: update-snapshots-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
+          if-no-files-found: ignore
