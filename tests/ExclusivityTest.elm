@@ -675,10 +675,10 @@ cardChildren : List (CardChild Msg)
 cardChildren =
     [ CardLeaf (Text "body")
     , CardAlert defaultAlertConfig [ Text "Saved" ]
-    , CardChart (Chart.Line Chart.defaultLineStyle) { series = [], xLabels = [] } Nothing
+    , CardChart (Chart.Line Chart.defaultLineStyle) Chart.ChartRegular { series = [], xLabels = [] } Nothing
     , CardTable defaultTableConfig [ { header = True, cells = [ tableCell (Text "Name") ] } ]
     , CardStat defaultStatConfig [ emptyStatItem "Downloads" "31K" ]
-    , CardForm [ { legend = Just "Account", fields = [ field "Email" (Input defaultInputConfig) ] } ]
+    , CardForm [ { legend = Just "Account", columns = OneColumn, fields = [ field "Email" (Input defaultInputConfig) ] } ]
     ]
 
 
@@ -709,6 +709,7 @@ blockFuzzers =
                     { figure = Just (Image defaultImageConfig "a.png")
                     , title = Just "Title"
                     , titleIcon = Just DIcon.ChartBar
+                    , description = Nothing
                     , headerTabs =
                         Just
                             { config = { style = Just STab.Box, size = Just STab.Xs, placement = Nothing }
@@ -798,16 +799,18 @@ blockFuzzers =
       )
     , ( "chart"
       , -- Every `ChartConfig` — both line styles, all eight bar styles, the
-        -- donut and the area — crossed with hovering nothing and hovering a
-        -- bin, which is what decides whether the band and the tooltip are
-        -- drawn at all.
-        Fuzz.map2
-            (\config hovered ->
+        -- donut and the area — crossed with both `ChartSize`s and with
+        -- hovering nothing or a bin, which is what decides whether the band,
+        -- the dots and the tooltip are painted at all.
+        Fuzz.map3
+            (\config size hovered ->
                 Chart config
+                    size
                     chartFuzzData
                     (Just { hovered = hovered, onHover = Hovered })
             )
             (Fuzz.oneOfValues Chart.allChartConfigs)
+            (Fuzz.oneOfValues Chart.allChartSizes)
             (Fuzz.oneOfValues [ Nothing, Just 0, Just 1, Just 2 ])
       )
     , ( "pagination"
@@ -868,6 +871,7 @@ blockFuzzers =
                       , cells =
                             [ { leading = Just (Avatar defaultAvatarConfig "a.png")
                               , content = Text "Cy"
+                              , truncate = False
                               }
                             ]
                       }

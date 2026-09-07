@@ -168,13 +168,15 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
 
 ## Render conventions
 
-- All spacing/layout Tailwind tokens live in one constant table `Daisy.Render.tokens : List String` (gap, grid-cols, padding, height per size, icon size, and the two surface tokens `bg-base-200` / `shadow-sm`). RenderPurityTest asserts every emitted class is in `Schema.allClasses` or `tokens`, and `tools/render-class-audit.js` asserts every entry is a named `token*` constant with no daisyUI class in it. Before adding one, check `tests/RenderPurityTest.elm`'s `forbidden` list — `rounded-box`, `shadow-md`/`-xl` and `opacity-50` are there on purpose and that list is not to be edited to make room (`border` left it in the generator-chips pass as `tokenBorderBox`, one use site). 122 entries today: the 58 of the Nexus pass, the 18 colour tokens `Leaf.Swatch` paints a palette
+- All spacing/layout Tailwind tokens live in one constant table `Daisy.Render.tokens : List String` (gap, grid-cols, padding, height per size, icon size, and the two surface tokens `bg-base-200` / `shadow-sm`). RenderPurityTest asserts every emitted class is in `Schema.allClasses` or `tokens`, and `tools/render-class-audit.js` asserts every entry is a named `token*` constant with no daisyUI class in it. Before adding one, check `tests/RenderPurityTest.elm`'s `forbidden` list — `rounded-box`, `shadow-md`/`-xl` and `opacity-50` are there on purpose and that list is not to be edited to make room (`border` left it in the generator-chips pass as `tokenBorderBox`, one use site). 127 entries today: the 58 of the Nexus pass, the 18 colour tokens `Leaf.Swatch` paints a palette
   chip from, and the 24 of the charts-and-fidelity pass — `lg:grid-cols-12` plus twelve
   `lg:col-span-*` (the `GridSection.Spans` band) and `xl:grid-cols-3` (`CellColumns.CellThree`),
   `p-5` (`CardPadding.PaddingDashboard`), `self-start`
   (the `stat-figure` tile), `border-b`/`border-r`/`border-base-300` (`DashboardShell.edges`),
   `overflow-hidden` (clipping the chart tooltip's header row) and the four `daisy-anim-*` classes
-  whose rules are `Daisy.Css`'s. Nothing left `forbidden` in that pass: `border` (all four sides on
+  whose rules are `Daisy.Css`'s, plus the 5 of the live-review pass — `h-24`
+  (`ChartSize.ChartCompact`) and `truncate` / `max-w-0` / `whitespace-nowrap`, the three halves of
+  `TableCell.truncate`, all emitted from `Daisy.Render.tableCellAttrs`. Nothing left `forbidden` in that pass: `border` (all four sides on
   an arbitrary element) stays, because a one-sided rule on chrome the renderer owns with one use
   site is a different thing (`bg-primary` + `text-primary-content` and so on, one pair per `SwatchColor`, each with
   exactly one use site in `swatchClasses`). Those are the only *colour* tokens — everywhere else
@@ -203,10 +205,18 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
 - Chart colors are `var(--color-primary)` etc. via `Daisy.Chart.SemanticColor`. Chart height is fixed per block size token.
   A bar chart's track and a hovered column's band are `var(--color-base-200)` / `var(--color-base-300)`,
   module constants in `Daisy.Chart` rather than `SemanticColor` values — a *series* must not be able to
-  pick the colour of the panel it is drawn on. `Block.Chart` / `CardChild.CardChart` take an optional
-  `ChartInteraction msg` keyed on the **x index**; elm-charts' `Chart.Item` never leaves `Daisy.Render`.
-  The drawing is wrapped in `Html.Keyed` under a key derived from the config and the data, so replacing a
-  dataset remounts the SVG and replays the CSS animation while hovering does not.
+  pick the colour of the panel it is drawn on. `Block.Chart` / `CardChild.CardChart` take a
+  `Daisy.Chart.ChartSize` (`ChartCompact` = a fixed `h-24` strip with no axis, labels or legend;
+  `ChartRegular` = the `min-h-64` dashboard panel) and an optional `ChartInteraction msg` keyed on the
+  **index** of the thing under the pointer — the x for `Line`/`Area`/`Bar`, the segment for `Donut`;
+  elm-charts' `Chart.Item` never leaves `Daisy.Render`.
+  The drawing is wrapped in `Html.Keyed` under a key derived from the config, the size and the data, so
+  replacing a dataset remounts the SVG and replays the CSS animation.
+  **Hovering must not, and a stable key is not enough:** elm-charts renders a tooltip as an HTML sibling
+  *before* the `<svg>` and a hover band as an SVG sibling *before* the series groups, and
+  `elm/virtual-dom` diffs children by position — so an interactive chart draws its band, its dots and
+  its tooltip anchor *always*, painted when something is hovered and transparent-and-empty when nothing
+  is (`Daisy.Render.chartHover`). See `docs/tree-decisions.md`, "Fixes from live review".
 
 ## Tooling rules
 

@@ -88,7 +88,8 @@ type alias Config msg =
     , toastVisible : Bool
     , search : String
     , chartRange : ChartRange
-    , hoveredBar : Maybe Int
+    , hoveredRevenue : Maybe Int
+    , hoveredAcquisition : Maybe Int
     , onNavigate : String -> msg
     , onTheme : Theme -> msg
     , onSearch : String -> msg
@@ -96,7 +97,8 @@ type alias Config msg =
     , onExport : msg
     , onRowAction : String -> msg
     , onChartRange : ChartRange -> msg
-    , onChartHover : Maybe Int -> msg
+    , onRevenueHover : Maybe Int -> msg
+    , onAcquisitionHover : Maybe Int -> msg
     }
 
 
@@ -605,10 +607,11 @@ revenueCard config =
                 [ CardStat Tree.defaultStatConfig
                     [ totalIncome (revenueTotal config.chartRange) (up "3.24%") (revenueCaption config.chartRange) ]
                 , CardChart revenueChartConfig
+                    DChart.ChartRegular
                     (revenueSeries config.chartRange)
                     (Just
-                        { hovered = config.hoveredBar
-                        , onHover = config.onChartHover
+                        { hovered = config.hoveredRevenue
+                        , onHover = config.onRevenueHover
                         }
                     )
                 ]
@@ -623,8 +626,16 @@ revenueChartConfig =
     DChart.Bar { stacked = True, track = True, rounded = True }
 
 
+{-| Nexus's Customer Acquisition panel: two metric tiles, then a stepped line
+for the measured series and a dashed one for the projection.
+
+It answers the pointer like every other chart on the demos (2026-09-07): a line
+has no bin, so the highlight is a crosshair band at the hovered x with a dot on
+each series where it crosses, and the same tooltip card the bar chart draws.
+
+-}
 acquisitionCard : Config msg -> Block msg
-acquisitionCard _ =
+acquisitionCard config =
     Card dashboardCard
         { emptyCard
             | title = Just "Customer Acquisition"
@@ -640,7 +651,14 @@ acquisitionCard _ =
                     [ headline "Advertise" "$148" (up "4.78%") "spend per customer"
                     , headline "Customers" "427" (up "3.15%") "acquired this month"
                     ]
-                , CardChart (DChart.Line { stepped = True }) acquisitionSeries Nothing
+                , CardChart (DChart.Line { stepped = True })
+                    DChart.ChartRegular
+                    acquisitionSeries
+                    (Just
+                        { hovered = config.hoveredAcquisition
+                        , onHover = config.onAcquisitionHover
+                        }
+                    )
                 ]
         }
 
@@ -940,6 +958,7 @@ orderRow config order =
             )
         , { leading = Just (thumbnail order.swatch)
           , content = Text order.product
+          , truncate = False
           }
         , Tree.tableCell (Text order.price)
         , Tree.tableCell (Text order.date)
@@ -954,6 +973,7 @@ orderRow config order =
             )
         , { leading = Just (rowAction config Icon.Eye "View order " order.reference)
           , content = rowAction config Icon.Trash "Delete order " order.reference
+          , truncate = False
           }
         ]
     }

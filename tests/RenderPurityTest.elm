@@ -132,11 +132,15 @@ The fifth went in the colour-chip pass (2026-09-07):
     A chip painted `--color-base-100` sits on a `card-body` that is also
     `--color-base-100`, so without the hairline the control is not visible at
     all — the same argument `border-b` / `border-r` already carry as
-    `DashboardShell.edges`, one step further round the box. It has exactly one
-    use site, `Daisy.Render.colorChipHtml`, its colour is the existing
-    `tokenBorderEdge`, and no caller can reach either: `Leaf.ColorChips` takes
-    colours and labels, never a class. daisyUI's own generator draws the same
-    hairline on the same chip.
+    `DashboardShell.edges`, one step further round the box. Its colour is the
+    existing `tokenBorderEdge`, and no caller can reach either:
+    `Leaf.ColorChips` takes colours and labels, never a class. daisyUI's own
+    generator draws the same hairline on the same chip.
+
+    It gained a second use site in the live-review pass (2026-09-07),
+    `LabelPlacement.LabelRow`'s bordered settings row, which is the same kind
+    of thing: chrome the renderer owns, drawn around an element the renderer
+    chose, with the caller naming a placement rather than a class.
 
 `text-primary` did **not** follow it and stays forbidden: it is a _foreground_
 utility over an arbitrary element, which is exactly the sprinkled colour this

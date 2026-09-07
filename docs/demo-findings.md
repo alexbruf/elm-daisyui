@@ -9,6 +9,15 @@ Each entry says what the demo did instead. Nothing here was added to the tree
 *at the time*; the struck entries were fixed later, each in one closed, typed
 addition recorded in `docs/tree-decisions.md`.
 
+**One standing note, 2026-09-07.** Several entries below describe `Demo.Settings`
+as a `Shell.Plain` page — its `Leaf.Link` navigation instead of a sidebar menu,
+its last section kept `AlignStart` so the appended `Page.cta` is not stretched
+across the width. That was true when they were written. Settings moved to
+`Shell.Dashboard` in the live-review pass (`docs/tree-decisions.md`, "Fixes from
+live review", 4), so its CTA is now `CtaPlacement.InHeader` and its navigation
+is the shared sidebar `Menu`. The findings themselves are unchanged and still
+hold for any page on the plain shell — `/theme` is the demo that is one now.
+
 ## ~~1. No heading leaf, so a page has no document outline~~ — fixed
 
 **Struck.** `Daisy.Tree` gained `Leaf.Heading HeadingLevel String`

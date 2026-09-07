@@ -789,6 +789,7 @@ plainBlocks =
 formFieldsets : List (Fieldset Msg)
 formFieldsets =
     [ { legend = Just "Account"
+      , columns = Tree.OneColumn
       , fields =
             [ { label = Just "Email"
               , labelPlacement = LabelStart
@@ -807,6 +808,27 @@ formFieldsets =
               , control = Input defaultInputConfig
               , validate = True
               , hint = Just "Tell us your name"
+              }
+            ]
+      }
+
+    -- The other `FieldsetColumns` and the fourth `LabelPlacement`: the
+    -- two-track settings grid, and the switch row whose label is on one side
+    -- and whose control is on the other inside a bordered box.
+    , { legend = Nothing
+      , columns = Tree.Columns2
+      , fields =
+            [ { label = Just "Weekly digest"
+              , labelPlacement = LabelRow
+              , control = Toggle defaultToggleConfig { checked = True }
+              , validate = False
+              , hint = Nothing
+              }
+            , { label = Just "Timezone"
+              , labelPlacement = LabelStart
+              , control = Select defaultSelectConfig { options = [ "UTC" ], selected = Just "UTC" }
+              , validate = False
+              , hint = Nothing
               }
             ]
       }
@@ -852,6 +874,7 @@ cardParts =
     { figure = Just (Image defaultImageConfig "a.png")
     , title = Just "Title"
     , titleIcon = Just DIcon.ChartBar
+    , description = Just "One line about the panel."
     , headerTabs = Just { config = defaultTabsConfig, tabs = [ segmentTab "Day" False, segmentTab "Year" True ] }
     , headerActions = [ Button defaultButtonConfig "Report" ]
     , body = [ CardLeaf (Text "body") ]
@@ -874,7 +897,7 @@ cardBlockChildren =
         | body =
             [ CardLeaf (Text "body")
             , CardAlert defaultAlertConfig [ Text "Saved" ]
-            , CardChart (Chart.Line Chart.defaultLineStyle) chartData Nothing
+            , CardChart (Chart.Line Chart.defaultLineStyle) Chart.ChartCompact chartData Nothing
             , CardChat
                 [ { placement = firstChatPlacement
                   , color = Nothing
@@ -908,18 +931,22 @@ carouselItems =
 
 chartBlocks : List (Block Msg)
 chartBlocks =
-    List.map (\config -> Chart config chartData Nothing) Chart.allChartConfigs
-        ++ -- Both interaction states of both interactive shapes: a bar chart
-           -- (whose hover band comes from the bin elm-charts resolved) and a
-           -- line chart (whose band is the crosshair around a single x).
+    List.concatMap
+        (\size -> List.map (\config -> Chart config size chartData Nothing) Chart.allChartConfigs)
+        Chart.allChartSizes
+        ++ -- Both interaction states of all three interactive shapes: a bar
+           -- chart (whose hover band comes from the bin elm-charts resolved),
+           -- a line chart (whose band is the crosshair around a single x, with
+           -- a dot per series on it) and a donut (whose index is a segment).
            List.concatMap
             (\config ->
-                [ Chart config chartData (Just (chartInteraction Nothing))
-                , Chart config chartData (Just (chartInteraction (Just 1)))
+                [ Chart config Chart.ChartRegular chartData (Just (chartInteraction Nothing))
+                , Chart config Chart.ChartRegular chartData (Just (chartInteraction (Just 1)))
                 ]
             )
             [ Chart.Bar { stacked = True, track = True, rounded = True }
             , Chart.Line { stepped = True }
+            , Chart.Donut
             ]
 
 
@@ -1122,12 +1149,22 @@ tableRows =
     [ { header = True, cells = [ tableCell (Text "Name") ] }
     , { header = False, cells = [ tableCell (Text "Cy Ganderton") ] }
 
+    -- A row with a clipped cell: `truncate` on the name, and the
+    -- `whitespace-nowrap` its neighbour gets because of it.
+    , { header = False
+      , cells =
+            [ { leading = Nothing, content = Text "Amanda Anderson", truncate = True }
+            , tableCell (Text "Completed")
+            ]
+      }
+
     -- A cell with a `leading` leaf: the avatar-and-name idiom, which is the
     -- only branch of `tableCellHtml` that emits a wrapper.
     , { header = False
       , cells =
             [ { leading = Just (Avatar defaultAvatarConfig "a.png")
               , content = Text "Hart Hagerty"
+              , truncate = False
               }
             ]
       }

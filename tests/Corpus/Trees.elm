@@ -200,7 +200,7 @@ pageBlocks primary list =
 -}
 fieldsetOf : String -> List (Field Msg) -> Block Msg
 fieldsetOf legend fields =
-    Form [ { legend = Just legend, fields = fields } ]
+    Form [ { legend = Just legend, columns = OneColumn, fields = fields } ]
 
 
 {-| A labelled control with a `validator` class and a `validator-hint`.
@@ -282,6 +282,7 @@ cardParts =
     { figure = Just (Image defaultImageConfig img)
     , title = Just "Card Title"
     , titleIcon = Nothing
+    , description = Nothing
     , headerTabs = Nothing
     , headerActions = []
     , body = cardBody [ Text "A card component has a figure, a body part, and inside body there are title and actions parts" ]
@@ -611,13 +612,13 @@ formEntries =
     , ( "input--09", leaf (Input inp) )
     , ( "input--10", leaf (Input inp) )
     , ( "input--11", leaf (Input inp) )
-    , ( "input--12", block (Form [ { legend = Nothing, fields = [ validated "Username" (Input inp) "Must be 3 to 30 characters" ] } ]) )
+    , ( "input--12", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "Username" (Input inp) "Must be 3 to 30 characters" ] } ]) )
     , ( "input--13", leaf (Input inp) )
-    , ( "input--14", block (Form [ { legend = Nothing, fields = [ validated "Email" (Input inp) "Enter valid email address" ] } ]) )
-    , ( "input--16", block (Form [ { legend = Nothing, fields = [ validated "Password" (Input inp) "Must be more than 8 characters" ] } ]) )
-    , ( "input--17", block (Form [ { legend = Nothing, fields = [ validated "Number" (Input inp) "Must be between be 1 to 10" ] } ]) )
-    , ( "input--18", block (Form [ { legend = Nothing, fields = [ validated "Phone" (Input inp) "Must be 10 digits" ] } ]) )
-    , ( "input--19", block (Form [ { legend = Nothing, fields = [ validated "URL" (Input inp) "Must be valid URL" ] } ]) )
+    , ( "input--14", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "Email" (Input inp) "Enter valid email address" ] } ]) )
+    , ( "input--16", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "Password" (Input inp) "Must be more than 8 characters" ] } ]) )
+    , ( "input--17", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "Number" (Input inp) "Must be between be 1 to 10" ] } ]) )
+    , ( "input--18", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "Phone" (Input inp) "Must be 10 digits" ] } ]) )
+    , ( "input--19", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "URL" (Input inp) "Must be valid URL" ] } ]) )
     , ( "link--00", leaf (Link lnk "Click me") )
     , ( "link--01", leaf (Link lnk "Click me") )
     , ( "link--02", leaf (Link { lnk | color = Just SLink.Primary } "Click me") )
@@ -933,6 +934,7 @@ heroEntries =
                     | body =
                         [ CardForm
                             [ { legend = Nothing
+                              , columns = OneColumn
                               , fields =
                                     [ field "Email" (Input inp)
                                     , field "Password" (Input { inp | inputType = InputPassword })
@@ -1597,6 +1599,7 @@ fieldsetEntries =
       , block
             (Form
                 [ { legend = Nothing
+                  , columns = OneColumn
                   , fields =
                         [ { label = Just ".com"
                           , labelPlacement = LabelEnd
@@ -1611,11 +1614,12 @@ fieldsetEntries =
       )
     , ( "label--02", block (fieldsetOf "Login" [ field "Currency" (Select sel selData) ]) )
     , ( "label--03", block (fieldsetOf "Login" [ field "Publish date" (Input inp) ]) )
-    , ( "label--04", block (Form [ { legend = Nothing, fields = [ floating "Your name" (Input { inp | size = Just SInput.Md }) ] } ]) )
+    , ( "label--04", block (Form [ { legend = Nothing, columns = OneColumn, fields = [ floating "Your name" (Input { inp | size = Just SInput.Md }) ] } ]) )
     , ( "label--05"
       , block
             (Form
                 [ { legend = Nothing
+                  , columns = OneColumn
                   , fields =
                         List.map
                             (\size -> floating "Your name" (Input { inp | size = Just size }))
@@ -1628,6 +1632,7 @@ fieldsetEntries =
       , block
             (Form
                 [ { legend = Nothing
+                  , columns = OneColumn
                   , fields =
                         [ floating "Your name" (Input { inp | size = Just SInput.Xs })
                         , floating "Your bio" (Textarea { txa | size = Just STextarea.Xs })
@@ -2303,7 +2308,7 @@ validatorEntries : List ( String, Node )
 validatorEntries =
     let
         validator control hint =
-            block (Form [ { legend = Nothing, fields = [ validated "Value" control hint ] } ])
+            block (Form [ { legend = Nothing, columns = OneColumn, fields = [ validated "Value" control hint ] } ])
 
         input =
             validator (Input inp) "Enter a valid value"
@@ -2312,6 +2317,7 @@ validatorEntries =
       , block
             (Form
                 [ { legend = Nothing
+                  , columns = OneColumn
                   , fields =
                         [ { label = Nothing
                           , labelPlacement = LabelStart
@@ -2337,6 +2343,7 @@ validatorEntries =
       , block
             (Form
                 [ { legend = Nothing
+                  , columns = OneColumn
                   , fields =
                         [ validated "Browser" (Select sel selData) "Required"
                         , { label = Nothing
@@ -2354,6 +2361,7 @@ validatorEntries =
       , block
             (Form
                 [ { legend = Just "Login"
+                  , columns = OneColumn
                   , fields =
                         [ validated "Email" (Input inp) "Enter valid email address"
                         , { label = Nothing

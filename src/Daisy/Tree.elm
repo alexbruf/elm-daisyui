@@ -25,7 +25,7 @@ module Daisy.Tree exposing
     , ChatMessage
     , CollapseConfig, defaultCollapseConfig, CollapseParts
     , DiffParts
-    , Fieldset, Field, LabelPlacement(..), field
+    , Fieldset, FieldsetColumns(..), allFieldsetColumns, fieldset, Field, LabelPlacement(..), field
     , ListRow, ListCell, listCell
     , MenuConfig, defaultMenuConfig, MenuActiveStyle(..), allMenuActiveStyles, MenuItem(..), MenuGlyph(..), allMenuGlyphs, MenuBadge, MenuSpec, menuItem
     , MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
@@ -164,7 +164,7 @@ format has.
 @docs ChatMessage
 @docs CollapseConfig, defaultCollapseConfig, CollapseParts
 @docs DiffParts
-@docs Fieldset, Field, LabelPlacement, field
+@docs Fieldset, FieldsetColumns, allFieldsetColumns, fieldset, Field, LabelPlacement, field
 @docs ListRow, ListCell, listCell
 @docs MenuConfig, defaultMenuConfig, MenuActiveStyle, allMenuActiveStyles, MenuItem, MenuGlyph, allMenuGlyphs, MenuBadge, MenuSpec, menuItem
 @docs MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
@@ -248,7 +248,7 @@ always owns the wrapper element and the anchor can never go missing.
 import Cally.Date as CallyDate
 import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
-import Daisy.Chart exposing (ChartConfig, ChartData, ChartInteraction, SemanticColor)
+import Daisy.Chart exposing (ChartConfig, ChartData, ChartInteraction, ChartSize, SemanticColor)
 import Daisy.Color as Color
 import Daisy.Icon exposing (Icon, allIcons)
 import Daisy.Schema.Accordion as SAccordion
@@ -1452,7 +1452,7 @@ type Block msg
     | Breadcrumbs (List (Leaf msg))
     | Card CardConfig (CardParts msg)
     | Carousel CarouselConfig (List (CarouselItem msg))
-    | Chart ChartConfig ChartData (Maybe (ChartInteraction msg))
+    | Chart ChartConfig ChartSize ChartData (Maybe (ChartInteraction msg))
     | Chat (List (ChatMessage msg))
     | Collapse CollapseConfig (CollapseParts msg)
     | Diff (DiffParts msg)
@@ -1574,6 +1574,13 @@ the right. Every dashboard card in daisyUI's own templates is built that way (a
 record means the renderer owns the alignment instead of each caller inventing a
 flex container.
 
+`description` is the sentence under that row: what the panel is for, in the
+de-emphasised caption step. It is a field rather than a `CardLeaf (Text ...)`
+first in the body so that it cannot end up anywhere but directly under the
+title, and so that its colour is the renderer's to decide — a settings page is a
+grid of "title, one line about it, then the controls", and the one line is
+chrome.
+
 `actions` is unrelated: it is daisyUI's `card-actions` part, at the _bottom_ of
 the body.
 
@@ -1582,6 +1589,7 @@ type alias CardParts msg =
     { figure : Maybe (Leaf msg)
     , title : Maybe String
     , titleIcon : Maybe Icon
+    , description : Maybe String
     , headerTabs : Maybe (TabsSpec msg)
     , headerActions : List (Leaf msg)
     , body : List (CardChild msg)
@@ -1602,7 +1610,7 @@ the same helper, so a chart in a card and a bare chart are the same markup.
 type CardChild msg
     = CardLeaf (Leaf msg)
     | CardAlert AlertConfig (List (Leaf msg))
-    | CardChart ChartConfig ChartData (Maybe (ChartInteraction msg))
+    | CardChart ChartConfig ChartSize ChartData (Maybe (ChartInteraction msg))
     | CardChat (List (ChatMessage msg))
     | CardTable TableConfig (List (Row msg))
     | CardList (List (ListRow msg))
@@ -1617,6 +1625,7 @@ emptyCardParts =
     { figure = Nothing
     , title = Nothing
     , titleIcon = Nothing
+    , description = Nothing
     , headerTabs = Nothing
     , headerActions = []
     , body = []
@@ -1704,8 +1713,44 @@ its fieldset.
 -}
 type alias Fieldset msg =
     { legend : Maybe String
+    , columns : FieldsetColumns
     , fields : List (Field msg)
     }
+
+
+{-| How a [`Fieldset`](#Fieldset) lays its fields out.
+
+`OneColumn` is daisyUI's own `fieldset`: one field under the next, which is
+what a narrow panel or a modal wants. `Columns2` deals them into two tracks
+from `sm` up (one on a phone), which is the settings-page shape every dashboard
+uses — a name beside an email, a timezone beside a format.
+
+It is a closed pair on the **fieldset**, not a grid class on the block, because
+the run of fields a fieldset holds is the thing being laid out: two fieldsets in
+one form can want different shapes, and a `Form` has nothing to say about
+either.
+
+-}
+type FieldsetColumns
+    = OneColumn
+    | Columns2
+
+
+{-| Both [`FieldsetColumns`](#FieldsetColumns) values.
+-}
+allFieldsetColumns : List FieldsetColumns
+allFieldsetColumns =
+    [ OneColumn, Columns2 ]
+
+
+{-| A one-column fieldset with a legend.
+
+    fieldset "Workspace" [ field "Name" (Input defaultInputConfig) ]
+
+-}
+fieldset : String -> List (Field msg) -> Fieldset msg
+fieldset legend fields =
+    { legend = Just legend, columns = OneColumn, fields = fields }
 
 
 {-| One labelled, optionally validated control.
@@ -1724,13 +1769,24 @@ type alias Field msg =
     }
 
 
-{-| Where a field's label sits: before the control, after it, or floating over
-it (`floating-label`).
+{-| Where a field's label sits.
+
+`LabelStart` puts it above the control and `LabelEnd` after it — the two
+stacked shapes daisyUI writes for an input and for a checkbox. `LabelFloating`
+is its `floating-label`.
+
+`LabelRow` is the settings row: the label on one side, the control on the
+other, inside a bordered box. It is the shape a toggle wants — the switch is the
+whole control, so a column of "label above a 48px switch" wastes a line per
+setting — and it is a _placement_ rather than a card of its own, because the
+label still names the control and the two are still one `<label>` element.
+
 -}
 type LabelPlacement
     = LabelStart
     | LabelEnd
     | LabelFloating
+    | LabelRow
 
 
 {-| A labelled field with no validation.
@@ -2126,10 +2182,20 @@ exactly the markup a plain cell has always produced; only a cell that really has
 a leading leaf gets a wrapper. That is the rule [`ListCell`](#ListCell) already
 follows for `list-col-grow`.
 
+`truncate` keeps the cell's text on one line and ends it with an ellipsis when
+the column is too narrow for it. It is on the **cell**, not the table, because
+exactly one column of a dashboard table is the one that may be clipped — the
+name — and every other column (a status badge, a date, an amount) has to keep
+its whole content. `Daisy.Render` emits `truncate` together with the `max-w-0`
+that makes it work: a `<td>` contributes its content's width to the column
+unless something caps it, so `white-space: nowrap` on its own would widen the
+table instead of shortening the text.
+
 -}
 type alias TableCell msg =
     { leading : Maybe (Leaf msg)
     , content : Leaf msg
+    , truncate : Bool
     }
 
 
@@ -2140,7 +2206,7 @@ type alias TableCell msg =
 -}
 tableCell : Leaf msg -> TableCell msg
 tableCell content =
-    { leading = Nothing, content = content }
+    { leading = Nothing, content = content, truncate = False }
 
 
 {-| Groups of the daisyUI `tab` component. `tab-active` and `tab-disabled`

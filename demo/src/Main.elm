@@ -217,7 +217,56 @@ type alias Model =
     , generatorUrl : String
     , themeSeed : Int
     , chartRange : Demo.Admin.ChartRange
-    , hoveredBar : Maybe Int
+    , hoveredCharts : List ( ChartId, Int )
+    }
+
+
+{-| Every chart on the four demos that answers a pointer, as a closed type.
+
+The hover state is one field on the model rather than one per chart
+(`hoveredCharts`), keyed by this: adding a chart to a demo is then a
+constructor here and two `Config` fields there, and `update` does not grow a
+branch. It is an association list rather than a `Dict` because `ChartId` is not
+`comparable` and making it one would mean carrying a `String` key that could
+name a chart that does not exist.
+
+-}
+type ChartId
+    = RevenueChart
+    | AcquisitionChart
+    | ChannelChart
+    | DeviceChart
+    | TrafficChart
+    | SalesVolumeChart
+
+
+{-| What the pointer is over on one chart, or `Nothing`.
+-}
+hoveredIn : ChartId -> Model -> Maybe Int
+hoveredIn chart model =
+    model.hoveredCharts
+        |> List.filter (\( id, _ ) -> id == chart)
+        |> List.head
+        |> Maybe.map Tuple.second
+
+
+{-| Record (or clear) what the pointer is over on one chart, leaving every
+other chart's hover alone.
+-}
+setHovered : ChartId -> Maybe Int -> Model -> Model
+setHovered chart index model =
+    let
+        rest =
+            List.filter (\( id, _ ) -> id /= chart) model.hoveredCharts
+    in
+    { model
+        | hoveredCharts =
+            case index of
+                Just i ->
+                    ( chart, i ) :: rest
+
+                Nothing ->
+                    rest
     }
 
 
@@ -243,7 +292,7 @@ init flags url key =
       , generatorUrl = generatorFallback
       , themeSeed = 0
       , chartRange = Demo.Admin.Year
-      , hoveredBar = Nothing
+      , hoveredCharts = []
       }
     , Ports.encodeTheme (ThemeGenerator.exportJson (Demo.Themes.rename (themeFromUrl url)))
     )
@@ -328,7 +377,7 @@ type Msg
     | ThemeExported
     | ThemeLinkReady String
     | ChartRangeChanged Demo.Admin.ChartRange
-    | ChartHovered (Maybe Int)
+    | ChartHovered ChartId (Maybe Int)
 
 
 {-| The constructor name of a `Msg`, for the debug pane, or `Nothing` for a
@@ -352,7 +401,7 @@ paneName msg =
         ThemeLinkReady _ ->
             Nothing
 
-        ChartHovered _ ->
+        ChartHovered _ _ ->
             Nothing
 
         _ ->
@@ -443,7 +492,7 @@ msgName msg =
         ChartRangeChanged _ ->
             "ChartRangeChanged"
 
-        ChartHovered _ ->
+        ChartHovered _ _ ->
             "ChartHovered"
 
 
@@ -577,10 +626,10 @@ step msg model =
             -- over belongs to the old bins, and `Daisy.Render` remounts the
             -- drawing (its `Html.Keyed` key is the dataset), so a stale index
             -- would highlight a column that is no longer under the pointer.
-            ( { model | chartRange = range, hoveredBar = Nothing }, Cmd.none )
+            ( setHovered RevenueChart Nothing { model | chartRange = range }, Cmd.none )
 
-        ChartHovered index ->
-            ( { model | hoveredBar = index }, Cmd.none )
+        ChartHovered chart index ->
+            ( setHovered chart index model, Cmd.none )
 
 
 {-| The caption under the picker. A `Cally.Range` value is sorted already, so
@@ -658,7 +707,8 @@ pageFor model =
                 , toastVisible = model.toastVisible
                 , search = model.search
                 , chartRange = model.chartRange
-                , hoveredBar = model.hoveredBar
+                , hoveredRevenue = hoveredIn RevenueChart model
+                , hoveredAcquisition = hoveredIn AcquisitionChart model
                 , onNavigate = NavigateTo
                 , onTheme = ThemeChanged
                 , onSearch = SearchChanged
@@ -666,7 +716,8 @@ pageFor model =
                 , onExport = ExportClicked
                 , onRowAction = OrderViewed
                 , onChartRange = ChartRangeChanged
-                , onChartHover = ChartHovered
+                , onRevenueHover = ChartHovered RevenueChart
+                , onAcquisitionHover = ChartHovered AcquisitionChart
                 }
 
         AnalyticsRoute ->
@@ -678,6 +729,12 @@ pageFor model =
                 , dateRangeCaption = model.dateRangeCaption
                 , calendar = model.calendar
                 , today = today
+                , hoveredChannel = hoveredIn ChannelChart model
+                , hoveredDevice = hoveredIn DeviceChart model
+                , hoveredTraffic = hoveredIn TrafficChart model
+                , onChannelHover = ChartHovered ChannelChart
+                , onDeviceHover = ChartHovered DeviceChart
+                , onTrafficHover = ChartHovered TrafficChart
                 , onNavigate = NavigateTo
                 , onRangeSelect = RangeSelected
                 , onCalendarMsg = CalendarMsg
@@ -698,6 +755,9 @@ pageFor model =
                 , digest = model.digest
                 , anonymize = model.anonymize
                 , modalOpen = model.modalOpen
+                , onNavigate = NavigateTo
+                , onTheme = ThemeChanged
+                , onNotifications = NotificationsOpened
                 , onWorkspaceName = WorkspaceNameChanged
                 , onContactEmail = ContactEmailChanged
                 , onCurrency = CurrencySelected
@@ -716,6 +776,8 @@ pageFor model =
                 , edited = editedTheme model.theme
                 , lastMsg = model.lastMsg
                 , generatorUrl = model.generatorUrl
+                , hoveredSales = hoveredIn SalesVolumeChart model
+                , onSalesHover = ChartHovered SalesVolumeChart
                 , onNavigate = NavigateTo
                 , onEdit = ThemeEdited
                 , onExport = ThemeExported

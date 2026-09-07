@@ -55,6 +55,7 @@ import Daisy.Icon as Icon
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Badge as SBadge
 import Daisy.Schema.Button as SButton
+import Daisy.Schema.Card as SCard
 import Daisy.Schema.Chat as SChat
 import Daisy.Schema.Checkbox as SCheckbox
 import Daisy.Schema.Input as SInput
@@ -122,6 +123,8 @@ type alias Config msg =
     , edited : CustomTheme
     , lastMsg : String
     , generatorUrl : String
+    , hoveredSales : Maybe Int
+    , onSalesHover : Maybe Int -> msg
     , onNavigate : String -> msg
     , onEdit : ThemeEdit -> msg
     , onExport : msg
@@ -829,12 +832,28 @@ baseCard =
     Tree.defaultCardConfig
 
 
-{-| Every panel on this page: `card card-sm`-sized padding, which is the
-`card ... card-sm` daisyUI's own generator gives every block of its preview.
+defaultTable : Tree.TableConfig
+defaultTable =
+    Tree.defaultTableConfig
+
+
+{-| Every panel on this page, and it is daisyUI's own class list rather than an
+approximation of it.
+
+Read off <https://daisyui.com/theme-generator/>, every preview block is
+`card bg-base-100 card-border border-base-300 card-sm` — so this is
+`SCard.Border` plus `SCard.Sm`, and `CardPadding.PaddingDefault`, which leaves
+`card-sm`'s own `--card-p` (1rem) and its 0.875rem body text alone.
+
+It used to be `PaddingDashboard` with no size: a 20px gutter and 1rem text in a
+258px card, which is where the loose preview came from. The dashboards keep
+`PaddingDashboard` — that is Nexus's figure, and this page is reproducing a
+different reference.
+
 -}
 previewCard : Tree.CardConfig
 previewCard =
-    { baseCard | padding = Tree.PaddingDashboard }
+    { baseCard | style = Just SCard.Border, size = Just SCard.Sm }
 
 
 
@@ -978,6 +997,7 @@ nameCard config =
             | body =
                 [ CardForm
                     [ { legend = Nothing
+                      , columns = Tree.OneColumn
                       , fields = [ Tree.field "Name" (nameInput config) ]
                       }
                     ]
@@ -1173,6 +1193,7 @@ sizeCard config =
                 , CardLeaf (borderChoice config)
                 , CardForm
                     [ { legend = Just "Effects"
+                      , columns = Tree.OneColumn
                       , fields =
                             [ Tree.field "Dark color scheme" (schemeToggle config)
                             , Tree.field "Depth effect" (effectToggle config SetDepth config.edited.depth)
@@ -1316,7 +1337,15 @@ paletteCard config =
         { emptyCard
             | title = Just "Palette"
             , titleIcon = Just Icon.Eye
-            , body = CardLeaf (ThemeDots (Custom config.edited)) :: List.map swatchRow swatches
+
+            -- Beside the title, not above the swatches. A `Leaf.ThemeDots` is
+            -- an 18px tile, and a `card-body` is a stretch column: as a body
+            -- child it became a full-width white strip with four dots stranded
+            -- at its left edge. `headerActions` is a shrink-to-fit row, which
+            -- is the shape the tile was drawn for (it is what a theme-list row
+            -- carries).
+            , headerActions = [ ThemeDots (Custom config.edited) ]
+            , body = List.map swatchRow swatches
         }
 
 
@@ -1380,7 +1409,7 @@ previewCards config =
     , signUpCard config
 
     -- column two
-    , salesVolumeCard
+    , salesVolumeCard config
     , pageScoreCard
     , recentOrdersCard
     , revenueCard
@@ -1468,6 +1497,7 @@ weekCard config =
                     )
                 , CardForm
                     [ { legend = Nothing
+                      , columns = Tree.OneColumn
                       , fields =
                             [ Tree.field "Search for events" (previewInput "Search for events")
                             , Tree.field "Show all day events" (Toggle defaultToggle { checked = True })
@@ -1627,6 +1657,7 @@ signUpCard config =
                 [ CardLeaf (Text "Registration is free and only takes a minute")
                 , CardForm
                     [ { legend = Nothing
+                      , columns = Tree.OneColumn
                       , fields =
                             [ Tree.field "Username" (previewInput "Username")
                             , Tree.field "Password" (passwordInput config)
@@ -1677,15 +1708,16 @@ The chart is also what proves a theme's semantic colours reach an SVG:
 back off the same element in all thirty-six themes.
 
 -}
-salesVolumeCard : Block msg
-salesVolumeCard =
+salesVolumeCard : Config msg -> Block msg
+salesVolumeCard config =
     Card previewCard
         { emptyCard
             | body =
                 [ CardChart
                     (DChart.Bar { stacked = False, track = False, rounded = True })
+                    DChart.ChartCompact
                     previewSeries
-                    Nothing
+                    (Just { hovered = config.hoveredSales, onHover = config.onSalesHover })
                 , CardLeaf (Text "Sales volume reached $12,450 this week, showing a 15% increase from the previous period.")
                 ]
             , actions =
@@ -1749,13 +1781,32 @@ pageScoreStat =
     }
 
 
+{-| Their orders card: one row per order, the name on the left and its state as
+a soft `badge-xs` on the right.
+
+A `table table-sm`, not the `CardList` this was. daisyUI's own rows are 8px of
+padding and 12px text under a hairline, and `list-row`'s padding is a fixed
+`1rem` with a `1rem` gap that no size class changes — so a `list` here was 16px
+of padding and 16px text in a 258px card, which is what wrapped every name onto
+two lines. `table-sm` **is** daisyUI's compact row (`padding-block: .5rem`,
+`font-size: .75rem`, a `base-content/5` rule between rows), so this is their
+density expressed as their class rather than as a padding override of ours.
+
+The name cell is `truncate`, so a longer name than these five ends in an
+ellipsis instead of wrapping.
+
+-}
 recentOrdersCard : Block msg
 recentOrdersCard =
     Card previewCard
         { emptyCard
             | title = Just "Recent orders"
             , titleIcon = Just Icon.ShoppingCart
-            , body = [ CardList (List.map orderRow orders) ]
+            , body =
+                [ CardTable
+                    { defaultTable | size = Just STable.Sm }
+                    (List.map orderRow orders)
+                ]
         }
 
 
@@ -1769,12 +1820,12 @@ orders =
     ]
 
 
-orderRow : ( String, ( SBadge.Color, String ) ) -> Tree.ListRow msg
+orderRow : ( String, ( SBadge.Color, String ) ) -> Tree.Row msg
 orderRow ( name, ( tone, state ) ) =
-    { cells =
-        [ Tree.listCell (Icon { defaultIcon | size = Tree.IconSm } Icon.User)
-        , { content = Text name, grow = True, wrap = False }
-        , Tree.listCell
+    { header = False
+    , cells =
+        [ { leading = Nothing, content = Text name, truncate = True }
+        , Tree.tableCell
             (Badge { defaultBadge | color = Just tone, style = Just SBadge.Soft, size = Just SBadge.Xs } state)
         ]
     }

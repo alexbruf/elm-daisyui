@@ -65,6 +65,12 @@ type alias Config msg =
     , dateRangeCaption : String
     , calendar : CalendarState
     , today : Date
+    , hoveredChannel : Maybe Int
+    , hoveredDevice : Maybe Int
+    , hoveredTraffic : Maybe Int
+    , onChannelHover : Maybe Int -> msg
+    , onDeviceHover : Maybe Int -> msg
+    , onTrafficHover : Maybe Int -> msg
     , onNavigate : String -> msg
     , onRangeSelect : String -> msg
     , onCalendarMsg : CalendarMsg -> msg
@@ -91,7 +97,7 @@ page config =
         , sections =
             Sections3
                 (statsSection config)
-                breakdownSection
+                (breakdownSection config)
                 (trafficSection config)
         , cta = downloadCta config
         , overlays = []
@@ -480,11 +486,21 @@ defaultIcon =
 them would only repeat the same rank — and a `Prose` block in a two-column grid
 would take one of the two cells.
 -}
-breakdownSection : Section msg
-breakdownSection =
+breakdownSection : Config msg -> Section msg
+breakdownSection config =
     gridSection Tree.Cols2
-        [ chartCard "Sessions by channel" (CardChart channelChartConfig channelSeries Nothing)
-        , chartCard "Sessions by device" (CardChart DChart.Donut deviceSeries Nothing)
+        [ chartCard "Sessions by channel"
+            (CardChart channelChartConfig
+                DChart.ChartRegular
+                channelSeries
+                (Just { hovered = config.hoveredChannel, onHover = config.onChannelHover })
+            )
+        , chartCard "Sessions by device"
+            (CardChart DChart.Donut
+                DChart.ChartRegular
+                deviceSeries
+                (Just { hovered = config.hoveredDevice, onHover = config.onDeviceHover })
+            )
         ]
 
 
@@ -572,7 +588,11 @@ trafficSection : Config msg -> Section msg
 trafficSection config =
     Stack { align = AlignStretch }
         [ chartCard ("Sessions and signups — " ++ config.dateRange)
-            (CardChart DChart.Area trafficSeries Nothing)
+            (CardChart DChart.Area
+                DChart.ChartRegular
+                trafficSeries
+                (Just { hovered = config.hoveredTraffic, onHover = config.onTrafficHover })
+            )
         , funnelCard
         , debugPane config
         ]

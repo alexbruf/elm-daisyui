@@ -2,6 +2,7 @@ module Daisy.Chart exposing
     ( ChartConfig(..), allChartConfigs
     , BarStyle, defaultBarStyle, allBarStyles
     , LineStyle, defaultLineStyle, allLineStyles
+    , ChartSize(..), allChartSizes
     , ChartData, Series, series
     , ChartInteraction
     , SemanticColor(..), allSemanticColors, semanticColorToCss
@@ -24,6 +25,11 @@ selected without the renderer knowing any concrete colour.
 @docs ChartConfig, allChartConfigs
 @docs BarStyle, defaultBarStyle, allBarStyles
 @docs LineStyle, defaultLineStyle, allLineStyles
+
+
+# Size
+
+@docs ChartSize, allChartSizes
 
 
 # Data
@@ -143,6 +149,33 @@ allChartConfigs =
         ++ [ Donut, Area ]
 
 
+{-| How much room a chart is given, and therefore how much of its furniture it
+draws.
+
+  - `ChartRegular` is the dashboard panel: a `min-h-64` box, the y axis and its
+    grid, the x labels under the bins, and the legend of series names below.
+  - `ChartCompact` is the mini chart daisyUI's own theme generator puts in a
+    256px preview card: a fixed `h-24` strip of bars or line and nothing else —
+    no axis, no bin labels, no legend, and margins of nothing, so the drawing
+    fills the strip edge to edge.
+
+It is a closed pair rather than a height, for the reason every other size in
+this package is: a height is a spacing decision, and spacing belongs to
+`Daisy.Render.tokens`.
+
+-}
+type ChartSize
+    = ChartCompact
+    | ChartRegular
+
+
+{-| Both [`ChartSize`](#ChartSize) values.
+-}
+allChartSizes : List ChartSize
+allChartSizes =
+    [ ChartCompact, ChartRegular ]
+
+
 {-| The data a chart draws.
 
 `xLabels` labels the bins along the x axis; each `Series` should have one point
@@ -184,15 +217,26 @@ series name color points =
     { name = name, color = color, points = points, dashed = False }
 
 
-{-| Hovering a chart, by x index.
+{-| Hovering a chart, by index.
 
-`hovered` is the index into `ChartData.xLabels` the pointer is nearest, or
-`Nothing`. `onHover` is fired with that index on pointer move and on click (so
-a touch works too) and with `Nothing` when the pointer leaves.
+`hovered` is the index the pointer is nearest, or `Nothing`. `onHover` is fired
+with that index on pointer move and on click (so a touch works too) and with
+`Nothing` when the pointer leaves.
 
-It is an _index_, not an elm-charts item: the application therefore stores an
-`Int` and the library keeps its `Chart.Item` plumbing to itself, exactly as it
-keeps `Chart.Attributes`.
+Which index it is follows the chart kind, because that is what a reader of the
+chart points at:
+
+  - `Line`, `Area` and `Bar` read it as an index into `ChartData.xLabels` — the
+    bin or the x the pointer is over. Every series is highlighted at that x at
+    once, which is what a shared crosshair tooltip is.
+  - `Donut` reads it as an index into `ChartData.series`: a donut has no x, and
+    the thing under the pointer is one **segment**.
+
+It is an _index_ either way, not an elm-charts item: the application therefore
+stores an `Int` and the library keeps its `Chart.Item` plumbing to itself,
+exactly as it keeps `Chart.Attributes`. That is also why the donut did not need
+a second interaction type — a segment is the nth series, and `Maybe Int` already
+says that.
 
 -}
 type alias ChartInteraction msg =

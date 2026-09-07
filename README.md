@@ -230,6 +230,7 @@ revenueCard =
             | title = Just "Net revenue vs. operating cost"
             , body =
                 [ CardChart (Chart.Line Chart.defaultLineStyle)
+                    Chart.ChartRegular
                     { xLabels = [ "Jan", "Feb", "Mar" ]
                     , series =
                         [ Chart.series "Revenue" Chart.Primary [ 182, 201, 226 ]
@@ -252,24 +253,48 @@ Series colours are the daisyUI semantic palette (`Primary … Neutral`), emitted
 any concrete colour. The **track** behind a bar and the **band** behind a hovered column are
 `var(--color-base-200)` and `var(--color-base-300)`; they are module constants
 (`Chart.trackColorToCss`, `Chart.bandColorToCss`) rather than `SemanticColor` values, so a *series*
-can never be painted the colour of the panel it is drawn on. Chart height is fixed per block size
-token; there is no per-call override.
+can never be painted the colour of the panel it is drawn on.
+
+### Size
+
+The second argument is a `ChartSize`, and there is no per-call height:
+
+| | `ChartRegular` | `ChartCompact` |
+| --- | --- | --- |
+| box | `min-h-64` with a `p-4` gutter | a fixed `h-24`, no gutter |
+| y axis and grid | drawn | none |
+| bin labels | drawn | none |
+| legend under the drawing | drawn | none |
+| margin around the plot | room for the labels | none — the drawing reaches all four edges |
+
+`ChartCompact` is the mini chart a 250px dashboard card holds: a strip of bars or a line, with the
+sentence about it underneath. Its height is *fixed* rather than a minimum, and the renderer
+stretches the SVG into it, so a compact chart is 96px tall in a card of any width.
 
 ### Hovering
 
-The third argument of `Block.Chart` / `CardChild.CardChart` is an optional interaction:
+The fourth argument of `Block.Chart` / `CardChild.CardChart` is an optional interaction:
 
 ```elm
 type alias ChartInteraction msg =
-    { hovered : Maybe Int          -- index into ChartData.xLabels
+    { hovered : Maybe Int          -- the index of the thing under the pointer
     , onHover : Maybe Int -> msg
     }
 ```
 
-The state is an **x index**, not an elm-charts item, so the application stores an `Int`. Given one,
-the renderer highlights the hovered column and draws a tooltip card listing every series' colour
-dot, name and value at that x. It fires on pointer move, on click (a touch produces no
-`mousemove`) and with `Nothing` on leave.
+The state is an **index**, not an elm-charts item, so the application stores an `Int`. For `Line`,
+`Area` and `Bar` it indexes `ChartData.xLabels` — the bin or the x under the pointer; for `Donut`
+it indexes `ChartData.series`, because a donut has no x and the thing under the pointer is one
+segment. Given one, the renderer draws:
+
+- **`Bar`** — a band over the hovered bin, and a tooltip card listing every series' colour dot,
+  name and value at that x.
+- **`Line` / `Area`** — a crosshair band at that x, a dot on each series where it crosses, and the
+  same tooltip card.
+- **`Donut`** — the hovered segment thickened and left at full strength while the rest are dimmed,
+  and a card in the ring's hole with the segment's name, its value and its share of the total.
+
+It fires on pointer move, on click (a touch produces no `mousemove`) and with `Nothing` on leave.
 
 A hover message arrives on every mouse move, so treat it the way this repository's demo router
 does — apply it to the model, and leave it out of anything that records "the last thing the user
@@ -284,7 +309,16 @@ so a `.css` file in a package never reaches you. Write it to a real stylesheet a
 
 Everything in it is inside `@media (prefers-reduced-motion: no-preference)`, so a reader who has
 asked for less motion gets the undecorated page. The drawing is keyed by its data, so replacing a
-dataset replays the animation and hovering does not.
+dataset replays the animation.
+
+**Hovering never replays it**, and that costs more than a stable key. `elm/virtual-dom` diffs a
+node's children by position, and elm-charts renders a tooltip as an HTML sibling *before* the
+`<svg>` and a hover band as an SVG sibling *before* the series groups — so a decoration that comes
+and goes shifts everything after it and the whole drawing is rebuilt, restarting every CSS
+animation on it. An interactive chart therefore draws its band, its dots and its tooltip anchor
+*always*, painted when something is hovered and transparent when nothing is; only attributes and
+the tooltip's contents change. `docs/tree-decisions.md`, "Fixes from live review", has the
+measurement.
 
 ## Custom views
 
@@ -608,8 +642,9 @@ Card { Tree.defaultCardConfig | padding = Tree.PaddingDashboard }
                 [ headline "Total income" (revenueTotal config.chartRange) (up "3.24%") caption ]
             , CardChart
                 (DChart.Bar { stacked = True, track = True, rounded = True })
+                DChart.ChartRegular
                 (revenueSeries config.chartRange)
-                (Just { hovered = config.hoveredBar, onHover = config.onChartHover })
+                (Just { hovered = config.hoveredRevenue, onHover = config.onRevenueHover })
             ]
     }
 ```
@@ -683,10 +718,13 @@ themeSwitcher config =
         }
 ```
 
-**[Form with a validator and a modal](demo/src/Demo/Settings.elm)** — `Shell.Plain`, `Form` blocks
-of `Fieldset`s carrying toggles, selects and inputs (one a real `type="email" required` field, so
-daisyUI's `validator-hint` shows), the page's single CTA, and a `Modal` confirm overlay. It uses
-the same page header, density and card rules as the two dashboards:
+**[Form with a validator and a modal](demo/src/Demo/Settings.elm)** — the same `Shell.Dashboard`
+and header band as the two consoles, then a two-column grid of settings cards. Each is a
+`card-title`, a one-line `CardParts.description` and a `Form` of `Fieldset`s carrying toggles,
+selects and inputs (one a real `type="email" required` field, so daisyUI's `validator-hint`
+shows); a "Danger zone" card; a save bar; and a `Modal` confirm overlay. `Fieldset.columns`
+(`OneColumn | Columns2`) lays a pair of text fields side by side from `sm` up, and
+`LabelPlacement.LabelRow` is the switch row — label left, control right, in a bordered box:
 
 ```elm
 emailField : Config msg -> Field msg

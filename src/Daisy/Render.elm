@@ -142,6 +142,7 @@ import Html.Keyed as Keyed
 import Json.Decode as Decode
 import Svg
 import Svg.Attributes as SvgA
+import Svg.Events as SvgE
 
 
 
@@ -219,9 +220,13 @@ tokens =
     , tokenWSidebar
     , tokenMinHScreen
     , tokenChartHeight
+    , tokenChartHeightCompact
     , tokenEmbedHeightSm
     , tokenEmbedHeightMd
     , tokenEmbedHeightLg
+    , tokenTruncate
+    , tokenMaxW0
+    , tokenWhitespaceNowrap
     , tokenOverflowXAuto
     , tokenOverflowHidden
     , tokenBorderBottom
@@ -733,6 +738,21 @@ tokenChartHeight =
     "min-h-64"
 
 
+{-| A `ChartSize.ChartCompact` chart's _fixed_ height: 96px, daisyUI's own
+`h-24` mini-chart strip.
+
+Fixed, not a minimum, and that is the difference between the two: a compact
+chart draws no axis and no labels, so nothing in it needs room the drawing did
+not ask for — and `Daisy.Render.compactContainerAttrs` stretches the SVG into
+this box instead of letting the viewBox ratio pick a height, which is what
+leaves 160px of empty card under a mini chart when it does not.
+
+-}
+tokenChartHeightCompact : String
+tokenChartHeightCompact =
+    "h-24"
+
+
 {-| The three `Leaf.Embed` box heights: 160px, 256px, 384px.
 
 They are `h-`, not the `min-h-` a chart gets, and that is the difference
@@ -761,6 +781,30 @@ tokenEmbedHeightMd =
 tokenEmbedHeightLg : String
 tokenEmbedHeightLg =
     "h-96"
+
+
+{-| One line, clipped with an ellipsis. Always emitted with `tokenMaxW0` on a
+table cell — see `tableCellAttrs` for why neither is any use alone.
+-}
+tokenTruncate : String
+tokenTruncate =
+    "truncate"
+
+
+{-| `max-width: 0`, the cap that makes `truncate` mean something inside a table
+cell.
+-}
+tokenMaxW0 : String
+tokenMaxW0 =
+    "max-w-0"
+
+
+{-| One line, no wrapping. Emitted on the cells of a table row that has a
+clipped one (`tableCellAttrs`), never on its own.
+-}
+tokenWhitespaceNowrap : String
+tokenWhitespaceNowrap =
+    "whitespace-nowrap"
 
 
 tokenOverflowXAuto : String
@@ -2688,8 +2732,8 @@ blockIn theme context theBlock =
                     items
                 )
 
-        Chart config data interaction ->
-            chartHtml config data interaction
+        Chart config size data interaction ->
+            chartHtml config size data interaction
 
         Chat messages ->
             chatHtml theme messages
@@ -2938,11 +2982,21 @@ cardHeaderHtml theme parts =
         rightHtml =
             maybeHtml (\spec -> tabsHtml theme spec.config spec.tabs) parts.headerTabs
                 ++ List.map (leafOf theme) parts.headerActions
+
+        -- A `<div>`, not a `<p>`: daisyUI's `.card-body p { flex-grow: 1 }` is
+        -- written for the one paragraph a marketing card holds, and it makes a
+        -- description absorb every pixel a stretched grid row adds — which
+        -- pushed the controls of the shortest card in a row a centimetre down
+        -- the panel.
+        descriptionHtml =
+            maybeHtml
+                (\d -> Html.div [ classes [ tokenTextXs, tokenTextMuted ] ] [ Html.text d ])
+                parts.description
     in
-    if List.isEmpty rightHtml then
+    (if List.isEmpty rightHtml then
         titleHtml
 
-    else
+     else
         [ Html.div
             [ classes [ tokenFlex, tokenFlexWrap, tokenItemsCenter, tokenJustifyBetween, tokenGap ] ]
             (titleHtml
@@ -2952,6 +3006,8 @@ cardHeaderHtml theme parts =
                    ]
             )
         ]
+    )
+        ++ descriptionHtml
 
 
 {-| One child of a `card-body`.
@@ -2970,8 +3026,8 @@ cardChildHtml theme child =
         CardAlert config leaves ->
             alertHtml theme config leaves
 
-        CardChart config data interaction ->
-            chartHtml config data interaction
+        CardChart config size data interaction ->
+            chartHtml config size data interaction
 
         CardChat messages ->
             chatHtml theme messages
@@ -3159,6 +3215,15 @@ maybeAttr f maybe =
             []
 
 
+{-| One `fieldset`, with its legend and its fields.
+
+`FieldsetColumns.Columns2` wraps the fields in a grid rather than putting the
+grid classes on the `<fieldset>` itself: daisyUI's `.fieldset` is already a
+`display: grid`, so a `sm:grid-cols-2` on it would put the **legend** in the
+first cell and the first field beside it. The wrapper keeps the legend spanning
+the group, which is what a legend is.
+
+-}
 fieldsetHtml : Theme -> Fieldset msg -> Html msg
 fieldsetHtml theme fs =
     Html.fieldset
@@ -3166,8 +3231,21 @@ fieldsetHtml theme fs =
         (maybeHtml
             (\l -> Html.legend [ classes [ fieldsetLegendPart ] ] [ Html.text l ])
             fs.legend
-            ++ List.map (fieldHtml theme) fs.fields
+            ++ fieldsetFieldsHtml theme fs
         )
+
+
+fieldsetFieldsHtml : Theme -> Fieldset msg -> List (Html msg)
+fieldsetFieldsHtml theme fs =
+    case fs.columns of
+        OneColumn ->
+            List.map (fieldHtml theme) fs.fields
+
+        Columns2 ->
+            [ Html.div
+                [ classes [ tokenGrid, tokenGridCols1, tokenGridCols2Sm, tokenGap ] ]
+                (List.map (fieldHtml theme) fs.fields)
+            ]
 
 
 fieldHtml : Theme -> Field msg -> Html msg
@@ -3217,6 +3295,29 @@ fieldHtml theme f =
                     [ classes [ floatingLabelClass ] ]
                     ([ Html.span [] [ Html.text labelText ], control ] ++ hint)
                 ]
+
+        -- The settings row: the name on the left, the control hard against the
+        -- right edge, the whole thing in a bordered box. The hint, when there
+        -- is one, goes under both — it is about the setting, not about the
+        -- half of the row the control is in.
+        LabelRow ->
+            Html.label
+                [ classes
+                    [ tokenFlex
+                    , tokenFlexWrap
+                    , tokenItemsCenter
+                    , tokenJustifyBetween
+                    , tokenGap
+                    , tokenBorderBox
+                    , tokenBorderEdge
+                    , tokenRoundedLg
+                    , tokenPaddingSm
+                    ]
+                ]
+                (Html.span [ classes [ labelClass ] ] [ Html.text labelText ]
+                    :: control
+                    :: hint
+                )
 
 
 menuHtml : List String -> MenuSpec msg -> Html msg
@@ -3420,23 +3521,64 @@ tableHtml theme config rows =
                 )
             ]
             [ Html.thead []
-                (List.map
-                    (\r ->
-                        Html.tr []
-                            (List.map (\c -> Html.th [] (tableCellHtml theme c)) r.cells)
-                    )
-                    headers
-                )
+                (List.map (tableRowHtml theme Html.th) headers)
             , Html.tbody []
-                (List.map
-                    (\r ->
-                        Html.tr []
-                            (List.map (\c -> Html.td [] (tableCellHtml theme c)) r.cells)
-                    )
-                    body
-                )
+                (List.map (tableRowHtml theme Html.td) body)
             ]
         ]
+
+
+{-| One `<tr>`, as `<th>`s or as `<td>`s.
+
+The row, not the cell, is the unit because `TableCell.truncate` is a claim
+about a _column against its neighbours_: see `tableCellAttrs`.
+
+-}
+tableRowHtml :
+    Theme
+    -> (List (Html.Attribute msg) -> List (Html msg) -> Html msg)
+    -> Row msg
+    -> Html msg
+tableRowHtml theme cellNode row =
+    let
+        clipped =
+            List.any .truncate row.cells
+    in
+    Html.tr []
+        (List.map
+            (\c -> cellNode (tableCellAttrs clipped c) (tableCellHtml theme c))
+            row.cells
+        )
+
+
+{-| A cell's own attributes, given whether anything in its row is clipped.
+
+`truncate` alone would not clip anything. A `<td>` contributes its content's
+width to its column, so `white-space: nowrap` widens the table instead of
+shortening the text; `max-w-0` drops that contribution to zero, and `w-full`
+then claims whatever the row's other columns leave over, which is the width the
+ellipsis is finally measured against. The three go together so a caller cannot
+ask for one of them — on its own, `max-w-0` collapses the column to an ellipsis
+and nothing else, and `truncate` overflows the panel.
+
+`w-full` is a _percentage_ width, and a percentage column in an auto table
+layout claims the whole table: its neighbours are then squeezed down to their
+**min-content**, which wraps a two-word status badge onto two lines inside a
+fixed-height pill. So every other cell of a clipped row is `whitespace-nowrap`,
+which raises its min-content to its full text and gives it the width back. That
+is why this is decided per row.
+
+-}
+tableCellAttrs : Bool -> TableCell msg -> List (Html.Attribute msg)
+tableCellAttrs clipped cell =
+    if cell.truncate then
+        [ classes [ tokenTruncate, tokenMaxW0, tokenWFull ] ]
+
+    else if clipped then
+        [ classes [ tokenWhitespaceNowrap ] ]
+
+    else
+        []
 
 
 {-| One `<th>`/`<td>`'s content.
@@ -5607,20 +5749,81 @@ what replays the entry animation: the `daisy-anim-*` rules in `Daisy.Css` are
 CSS animations on elements elm-charts creates, and a CSS animation runs when its
 element is created, not when its attributes change.
 
+**Hovering must not remount it, and keeping the key stable is not enough.**
+`elm/virtual-dom` diffs a node's children by _position_, and elm-charts renders
+both hover decorations as siblings of the elements the animation is on: the
+tooltip is an HTML div placed **before** the `<svg>` inside
+`.elm-charts__container-inner`, and the band is an SVG `<path>` placed **before**
+the `.elm-charts__bar-series` groups. A decoration that comes and goes therefore
+shifts every following sibling by one, the diff compares a `<path>` against a
+`<g>` and an `<svg>` against a `<div>`, and the whole drawing — animated groups
+included — is thrown away and rebuilt. The entry animation then replays on every
+hover, which is the defect this note exists to explain.
+
+The fix is in [`chartHover`](#chartHover): an interactive chart draws its band,
+its dots and its tooltip anchor **always**, painted when something is hovered and
+transparent-and-empty when nothing is. The hovered index then changes only
+attributes and the tooltip's contents, both of which `elm/virtual-dom` patches in
+place, so the animated groups are never recreated. `e2e/animation.spec.ts`
+asserts it by reading `startTime` off `document.getAnimations()` before and after
+a hover sweep.
+
 -}
-chartHtml : ChartConfig -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
-chartHtml config data interaction =
+chartHtml : ChartConfig -> Chart.ChartSize -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+chartHtml config size data interaction =
     Html.div
         [ classes [ tokenFlex, tokenFlexCol, tokenGapSm, tokenWFull ] ]
-        [ Keyed.node "div"
+        (Keyed.node "div"
             [ classes
-                ([ tokenChartHeight, tokenWFull, tokenPadding ]
+                (chartBoxTokens size
                     ++ chartAnimationTokens config
                 )
             ]
-            [ ( chartKey config data, chartFigure config data interaction ) ]
-        , chartLegend data
-        ]
+            [ ( chartKey config size data, chartFigure config size data interaction ) ]
+            :: chartLegendFor size data
+        )
+
+
+{-| The box a drawing is given.
+
+`ChartRegular` is the dashboard panel: `min-h-64` with the `p-4` gutter the
+axis labels need. `ChartCompact` is daisyUI's own `h-24` mini-chart strip, with
+no gutter at all — the drawing fills it edge to edge, which is only possible
+because a compact chart draws no axis and no bin labels to fall outside.
+
+The height is a **fixed** `h-24` rather than a minimum, and `chartFigure`
+stretches the drawing into it (see `compactContainerAttrs`): a compact chart is
+a strip of a stated height in a card whose width the caller does not control, so
+letting the SVG's own aspect ratio pick the height is exactly the defect this
+size exists to fix.
+
+-}
+chartBoxTokens : Chart.ChartSize -> List String
+chartBoxTokens size =
+    case size of
+        Chart.ChartCompact ->
+            [ tokenChartHeightCompact, tokenWFull ]
+
+        Chart.ChartRegular ->
+            [ tokenChartHeight, tokenWFull, tokenPadding ]
+
+
+{-| The key under a chart, or nothing at all.
+
+A compact chart has no legend: daisyUI's own mini charts are a strip of bars
+with the sentence about them underneath, and a legend row under a 96px strip
+would be half the block. It is also why a compact chart is a poor place for
+more than one series — nothing would name them.
+
+-}
+chartLegendFor : Chart.ChartSize -> ChartData -> List (Html msg)
+chartLegendFor size data =
+    case size of
+        Chart.ChartCompact ->
+            []
+
+        Chart.ChartRegular ->
+            [ chartLegend data ]
 
 
 {-| The identity of a drawing, as a string: the chart kind, the bin labels and
@@ -5632,15 +5835,26 @@ hover (which changes only `ChartInteraction.hovered`) diffs in place and does
 **not** restart the animation.
 
 -}
-chartKey : ChartConfig -> ChartData -> String
-chartKey config data =
+chartKey : ChartConfig -> Chart.ChartSize -> ChartData -> String
+chartKey config size data =
     String.join "/"
         (chartKindKey config
+            :: chartSizeKey size
             :: data.xLabels
             ++ List.concatMap
                 (\s -> s.name :: List.map String.fromFloat s.points)
                 data.series
         )
+
+
+chartSizeKey : Chart.ChartSize -> String
+chartSizeKey size =
+    case size of
+        Chart.ChartCompact ->
+            "Compact"
+
+        Chart.ChartRegular ->
+            "Regular"
 
 
 chartKindKey : ChartConfig -> String
@@ -5697,20 +5911,88 @@ chartAnimationTokens config =
             []
 
 
-chartFigure : ChartConfig -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
-chartFigure config data interaction =
+chartFigure : ChartConfig -> Chart.ChartSize -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+chartFigure config size data interaction =
     case config of
         Line style ->
-            seriesChart (interpolationFor style) data interaction
+            seriesChart (interpolationFor style) size data interaction
 
         Area ->
-            seriesChart (CA.monotone :: CA.opacity 0.25 :: []) data interaction
+            seriesChart (CA.monotone :: CA.opacity 0.25 :: []) size data interaction
 
         Bar style ->
-            barChart style data interaction
+            barChart style size data interaction
 
         Donut ->
-            donutChart data
+            donutChart size data interaction
+
+
+{-| What a compact drawing adds to `C.chart`.
+
+The strip is a fixed 96px (`chartBoxTokens`) and the card it sits in is
+whatever width the layout gives it, so the SVG has to fill the box rather than
+derive its height from the viewBox ratio: `height: 100%` plus a
+`preserveAspectRatio` of `none` is exactly that, and elm-charts' own pointer maths
+already scales x and y independently from the element's rect, so hover still
+resolves correctly under the stretch.
+
+The `style` attribute repeats elm-charts' own `overflow: visible` because it
+_replaces_ it: `elm/virtual-dom` keys attributes by name, and the library's
+default container carries a `style` attribute of its own.
+
+-}
+compactContainerAttrs : Chart.ChartSize -> List (CA.Attribute { a | attrs : List (Svg.Attribute msg) })
+compactContainerAttrs size =
+    case size of
+        Chart.ChartCompact ->
+            [ CA.attrs
+                [ SvgA.preserveAspectRatio "none"
+                , SvgA.style "overflow: visible; height: 100%"
+                ]
+            ]
+
+        Chart.ChartRegular ->
+            []
+
+
+{-| The axis furniture of a drawing: the y grid and the x bin labels, or
+nothing at all.
+
+A compact chart draws neither. It is 96px tall and about 250px wide — a label
+row would be a third of it — and it has no gutter for a y axis to sit in.
+
+-}
+chartAxes : Chart.ChartSize -> ChartData -> List (C.Element Point msg)
+chartAxes size data =
+    case size of
+        Chart.ChartCompact ->
+            []
+
+        Chart.ChartRegular ->
+            [ C.yLabels [ CA.withGrid ]
+            , C.xLabels
+                [ CA.amount (List.length data.xLabels)
+                , CA.ints
+                , CA.format (labelFor data.xLabels)
+                ]
+            ]
+
+
+{-| The margin a drawing reserves for its own furniture.
+
+`ChartRegular` keeps `chartMargin`, which is the room the axis labels need.
+`ChartCompact` has none of them, so it has no margin either and the bars reach
+all four edges of the strip — daisyUI's own mini chart is exactly that.
+
+-}
+chartMarginFor : Chart.ChartSize -> { top : Float, bottom : Float, left : Float, right : Float } -> { top : Float, bottom : Float, left : Float, right : Float }
+chartMarginFor size regular =
+    case size of
+        Chart.ChartCompact ->
+            { top = 0, bottom = 0, left = 0, right = 0 }
+
+        Chart.ChartRegular ->
+            regular
 
 
 interpolationFor : Chart.LineStyle -> List (CA.Attribute CS.Interpolation)
@@ -5827,24 +6109,32 @@ hoveredIndex items =
     List.head items |> Maybe.map (CI.getData >> .x >> round)
 
 
-{-| The band behind the hovered column, and the tooltip card above it.
+{-| The band behind the hovered column, the dots on the hovered x, and the
+tooltip card above them.
 
-Both are drawn from the _group_ elm-charts resolved for the hovered x, never
-from arithmetic of ours: `CI.getLimits` gives the bin's own extent, so the band
-lines up with the bars whatever spacing or margin the bar series uses.
+All three are drawn from the _group_ elm-charts resolved for the hovered x,
+never from arithmetic of ours: `CI.getLimits` gives the bin's own extent, so the
+band lines up with the bars whatever spacing or margin the bar series uses, and
+`CI.getMembers` gives one item per series at that x, which is where the dots go.
 
 A line or area chart has no bin, so the group's limits are a single x; the band
 is widened to `bandHalfWidth` either side of it, which is the crosshair every
 dashboard draws there.
 
+**The shape of what this returns does not depend on the hover.** That is the
+whole reason it takes the `ChartInteraction` rather than the hovered index: an
+interactive chart always draws exactly one band, one dot set and one tooltip
+anchor, painted when something is hovered and transparent-and-empty when
+nothing is. See [`chartHtml`](#chartHtml) for why that has to be so.
+
 -}
 chartHover : Bool -> ChartData -> Maybe (Chart.ChartInteraction msg) -> List (C.Element Point msg)
 chartHover binned data interaction =
-    case Maybe.andThen .hovered interaction of
+    case interaction of
         Nothing ->
             []
 
-        Just index ->
+        Just handlers ->
             let
                 -- Only the items of the series the *caller* named, which is
                 -- what excludes the track: a tracked bar chart draws two
@@ -5862,23 +6152,37 @@ chartHover binned data interaction =
                         )
                         (CI.named (List.map .name data.series))
 
-                overGroup toElements =
+                -- The group the decorations hang off: the hovered one, or the
+                -- first when nothing is hovered. There is always exactly one,
+                -- so the drawing's DOM never changes shape.
+                --
+                -- Clamped, and that is part of the same guarantee rather than
+                -- politeness about a bad index: an index past the last bin
+                -- would match no group, emit nothing, and change the shape —
+                -- which is exactly the remount this whole arrangement exists to
+                -- prevent. A stale index paints the wrong bin for one frame; a
+                -- missing one replays the entry animation.
+                anchor =
+                    clamp 0 (max 0 (List.length data.xLabels - 1)) (Maybe.withDefault 0 handlers.hovered)
+
+                overAnchor toElements =
                     C.eachCustom grouping
                         (\_ group ->
-                            if round (CI.getOneData group).x == index then
+                            if round (CI.getOneData group).x == anchor then
                                 toElements group
 
                             else
                                 []
                         )
             in
-            [ overGroup (hoverBand binned)
-            , overGroup (hoverTooltip data index)
+            [ overAnchor (hoverBand binned handlers.hovered)
+            , overAnchor (hoverDots binned data handlers.hovered)
+            , overAnchor (hoverTooltip data handlers.hovered)
             ]
 
 
-hoverBand : Bool -> CI.Many Point CI.Any -> List (C.Element Point msg)
-hoverBand binned group =
+hoverBand : Bool -> Maybe Int -> CI.Many Point CI.Any -> List (C.Element Point msg)
+hoverBand binned hovered group =
     let
         limits =
             CI.getLimits group
@@ -5889,16 +6193,38 @@ hoverBand binned group =
 
             else
                 ( limits.x1 - bandHalfWidth, limits.x2 + bandHalfWidth )
+
+        paint =
+            case hovered of
+                Just _ ->
+                    [ CA.opacity bandOpacity
+                    , CA.attrs [ svgClasses [ tokenAnimBand ] ]
+                    ]
+
+                Nothing ->
+                    -- `CA.opacity` is the *fill's* alone: elm-charts strokes a
+                    -- rect's border at full strength whatever it says, so an
+                    -- unhovered band also has to give up its border width, or
+                    -- its outline stays drawn around the first bin.
+                    [ CA.opacity 0, CA.borderWidth 0 ]
     in
     [ C.rect
-        [ CA.x1 x1
-        , CA.x2 x2
-        , CA.color Chart.bandColorToCss
-        , CA.border Chart.bandColorToCss
-        , CA.opacity 0.55
-        , CA.attrs [ svgClasses [ tokenAnimBand ] ]
-        ]
+        ([ CA.x1 x1
+         , CA.x2 x2
+         , CA.color Chart.bandColorToCss
+         , CA.border Chart.bandColorToCss
+         ]
+            ++ paint
+        )
     ]
+
+
+{-| How much of the band shows through: enough to read as a highlight behind
+the columns, not enough to change their colour.
+-}
+bandOpacity : Float
+bandOpacity =
+    0.55
 
 
 {-| Half the width of the crosshair band on a chart with no bins, in x units.
@@ -5909,8 +6235,76 @@ bandHalfWidth =
     0.4
 
 
-hoverTooltip : ChartData -> Int -> CI.Many Point CI.Any -> List (C.Element Point msg)
-hoverTooltip data index group =
+{-| One dot per series at the hovered x, on a line or area chart.
+
+A bar chart needs none — the band already says which column, and every column
+is a filled shape. A line does: the guide alone leaves the reader to judge
+where the line crosses it, and the dot is what every dashboard puts there.
+
+`CI.getMembers` is the group's own items, so a dot lands exactly on the drawn
+point rather than on a recomputed one; the colour is that member's series
+colour, matched by name.
+
+-}
+hoverDots : Bool -> ChartData -> Maybe Int -> CI.Many Point CI.Any -> List (C.Element Point msg)
+hoverDots binned data hovered group =
+    if binned then
+        []
+
+    else
+        List.map (hoverDot data hovered) (CI.getMembers group)
+
+
+hoverDot : ChartData -> Maybe Int -> CI.One Point CI.Any -> C.Element Point msg
+hoverDot data hovered item =
+    let
+        color =
+            data.series
+                |> List.filter (\s -> s.name == CI.getName item)
+                |> List.head
+                |> Maybe.map (.color >> Chart.semanticColorToCss)
+                |> Maybe.withDefault Chart.bandColorToCss
+    in
+    C.svgAt
+        (\_ -> CI.getX item)
+        (\_ -> CI.getY item)
+        0
+        0
+        [ Svg.circle
+            [ SvgA.r (String.fromFloat hoverDotRadius)
+            , SvgA.fill color
+            , SvgA.stroke Chart.trackColorToCss
+            , SvgA.strokeWidth "2"
+            , SvgA.opacity (hoverDotOpacity hovered)
+            ]
+            []
+        ]
+
+
+{-| A hover dot is painted only while something is hovered. It is drawn either
+way so that the drawing's DOM keeps its shape — see `chartHover`.
+-}
+hoverDotOpacity : Maybe Int -> String
+hoverDotOpacity hovered =
+    case hovered of
+        Just _ ->
+            String.fromInt 1
+
+        Nothing ->
+            String.fromInt 0
+
+
+{-| A hover dot's radius, in viewBox user units (the drawing is 800 wide — see
+`chartWidth`), so it scales with the chart the way every other length in it
+does.
+-}
+hoverDotRadius : Float
+hoverDotRadius =
+    5
+
+
+hoverTooltip : ChartData -> Maybe Int -> CI.Many Point CI.Any -> List (C.Element Point msg)
+hoverTooltip data hovered group =
     [ C.tooltip group
         [ CA.onTopOrBottom, CA.offset 10, CA.noArrow ]
         -- elm-charts paints its own 5px/8px box with a background, a 1px
@@ -5923,7 +6317,16 @@ hoverTooltip data index group =
         , Attr.style "border" "0"
         , Attr.style "border-radius" "0"
         ]
-        [ tooltipCard data index ]
+        -- Never `[]`: `Chart.tooltip` reads an empty content list as "use the
+        -- library's own default card". The empty text node is what keeps the
+        -- anchor present, and empty, when nothing is hovered.
+        [ case hovered of
+            Just index ->
+                tooltipCard data index
+
+            Nothing ->
+                Html.text ""
+        ]
     ]
 
 
@@ -5996,10 +6399,11 @@ formatValue value =
 
 seriesChart :
     List (CA.Attribute CS.Interpolation)
+    -> Chart.ChartSize
     -> ChartData
     -> Maybe (Chart.ChartInteraction msg)
     -> Html msg
-seriesChart interpolation data interaction =
+seriesChart interpolation size data interaction =
     let
         points =
             toPoints data
@@ -6007,17 +6411,13 @@ seriesChart interpolation data interaction =
     C.chart
         (CA.height chartViewboxHeight
             :: CA.width chartWidth
-            :: CA.margin chartMargin
-            :: chartEvents interaction
+            :: CA.margin (chartMarginFor size chartMargin)
+            :: compactContainerAttrs size
+            ++ chartEvents interaction
         )
         (chartHover False data interaction
-            ++ [ C.yLabels [ CA.withGrid ]
-               , C.xLabels
-                    [ CA.amount (List.length data.xLabels)
-                    , CA.ints
-                    , CA.format (labelFor data.xLabels)
-                    ]
-               , C.series .x
+            ++ chartAxes size data
+            ++ [ C.series .x
                     (List.indexedMap
                         (\i s ->
                             C.named s.name
@@ -6049,8 +6449,8 @@ dashedAttrs series =
         []
 
 
-barChart : Chart.BarStyle -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
-barChart style data interaction =
+barChart : Chart.BarStyle -> Chart.ChartSize -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+barChart style size data interaction =
     let
         points =
             toPoints data
@@ -6078,15 +6478,16 @@ barChart style data interaction =
     C.chart
         (CA.height chartViewboxHeight
             :: CA.width chartWidth
-            :: CA.margin (barMargin style)
+            :: CA.margin (chartMarginFor size (barMargin style))
             :: barDomain style top
+            ++ compactContainerAttrs size
             ++ chartEvents interaction
         )
         (chartHover True data interaction
-            ++ trackBars style top barAttrs points
-            ++ barAxis style
-            ++ [ C.binLabels .label [ CA.moveDown 18 ]
-               , C.bars barLayout
+            ++ trackBars size style top barAttrs points
+            ++ barAxis size style
+            ++ binLabels size
+            ++ [ C.bars (barLayout size)
                     (if style.stacked then
                         -- `C.stacked` puts the *first* property at the top of
                         -- the column. A reader takes the first series in the
@@ -6115,14 +6516,15 @@ them.
 
 -}
 trackBars :
-    Chart.BarStyle
+    Chart.ChartSize
+    -> Chart.BarStyle
     -> Float
     -> List (CA.Attribute CS.Bar)
     -> List Point
     -> List (C.Element Point msg)
-trackBars style top barAttrs points =
+trackBars size style top barAttrs points =
     if style.track then
-        [ C.bars barLayout
+        [ C.bars (barLayout size)
             [ C.bar (always top) (CA.color Chart.trackColorToCss :: barAttrs) ]
             points
         ]
@@ -6171,13 +6573,26 @@ behind a painted track reads as a second, contradicting one. An untracked chart
 keeps the labelled grid it has always had.
 
 -}
-barAxis : Chart.BarStyle -> List (C.Element Point msg)
-barAxis style =
-    if style.track then
+barAxis : Chart.ChartSize -> Chart.BarStyle -> List (C.Element Point msg)
+barAxis size style =
+    if style.track || size == Chart.ChartCompact then
         []
 
     else
         [ C.yLabels [ CA.withGrid ] ]
+
+
+{-| The bin labels under a bar chart — the one piece of axis furniture a
+tracked chart keeps, and the one a compact chart drops with everything else.
+-}
+binLabels : Chart.ChartSize -> List (C.Element Point msg)
+binLabels size =
+    case size of
+        Chart.ChartCompact ->
+            []
+
+        Chart.ChartRegular ->
+            [ C.binLabels .label [ CA.moveDown 18 ] ]
 
 
 {-| How much of each bin is air.
@@ -6188,9 +6603,18 @@ is what turns a filled area into a row of columns. The track element and the
 real one share it, so the two line up exactly.
 
 -}
-barLayout : List (CA.Attribute { x | margin : Float })
-barLayout =
-    [ CA.margin 0.26 ]
+barLayout : Chart.ChartSize -> List (CA.Attribute { x | margin : Float })
+barLayout size =
+    case size of
+        -- daisyUI's own mini chart is `flex gap-2` over `*:w-full`, i.e. a
+        -- little under a fifth of each slot: tighter than a dashboard chart,
+        -- because a 250px strip reads as bars rather than as ticks only if the
+        -- bars are the wider part of the bin.
+        Chart.ChartCompact ->
+            [ CA.margin 0.16 ]
+
+        Chart.ChartRegular ->
+            [ CA.margin 0.26 ]
 
 
 {-| A tracked bar chart's margin.
@@ -6271,12 +6695,32 @@ chartHeight =
     240
 
 
+{-| `tokenChartHeightCompact` as a number, for the one drawing that sets its own
+pixel height (the donut). 96px, i.e. Tailwind's `h-24`.
+-}
+compactChartPx : Float
+compactChartPx =
+    96
+
+
 {-| elm-charts has no pie or donut element, so this one is hand-rolled SVG. It
 is drawn as one ring of stroked arcs, which needs no arc-path maths and keeps
 the whole thing inside this module.
+
+Its `ChartInteraction` reads `hovered` as a **segment** index — the nth
+`Series` — because a donut has no x for an x index to name (see
+`Daisy.Chart.ChartInteraction`). The hovered segment is drawn thicker and at
+full opacity while the rest are dimmed, and the card in the ring's hole names
+it with its value and its share of the total.
+
+The hole is where the card goes rather than a floating tooltip beside the
+pointer, and that is deliberate twice over: it is where every donut in
+daisyUI's own dashboards puts its readout, and it needs no pointer arithmetic,
+so the card cannot end up off the panel in a narrow column.
+
 -}
-donutChart : ChartData -> Html msg
-donutChart data =
+donutChart : Chart.ChartSize -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+donutChart size data interaction =
     let
         totals =
             List.map (\s -> ( s, List.sum s.points )) data.series
@@ -6287,7 +6731,10 @@ donutChart data =
         circumference =
             2 * pi * donutRadius
 
-        segment ( s, value, offset ) =
+        hovered =
+            Maybe.andThen .hovered interaction
+
+        segment ( index, ( s, value, offset ) ) =
             let
                 length =
                     if total <= 0 then
@@ -6295,18 +6742,32 @@ donutChart data =
 
                     else
                         value / total * circumference
+
+                isHovered =
+                    hovered == Just index
             in
             Svg.circle
-                [ SvgA.cx "50"
-                , SvgA.cy "50"
-                , SvgA.r (String.fromFloat donutRadius)
-                , SvgA.fill "none"
-                , SvgA.stroke (Chart.semanticColorToCss s.color)
-                , SvgA.strokeWidth "14"
-                , SvgA.strokeDasharray (String.fromFloat length ++ " " ++ String.fromFloat circumference)
-                , SvgA.strokeDashoffset (String.fromFloat -offset)
-                , SvgA.transform "rotate(-90 50 50)"
-                ]
+                ([ SvgA.cx "50"
+                 , SvgA.cy "50"
+                 , SvgA.r (String.fromFloat donutRadius)
+                 , SvgA.fill "none"
+                 , SvgA.stroke (Chart.semanticColorToCss s.color)
+                 , SvgA.strokeWidth
+                    (String.fromFloat
+                        (if isHovered then
+                            donutHoveredWidth
+
+                         else
+                            donutWidth
+                        )
+                    )
+                 , SvgA.strokeDasharray (String.fromFloat length ++ " " ++ String.fromFloat circumference)
+                 , SvgA.strokeDashoffset (String.fromFloat -offset)
+                 , SvgA.transform "rotate(-90 50 50)"
+                 , SvgA.opacity (String.fromFloat (donutSegmentOpacity hovered index))
+                 ]
+                    ++ donutSegmentEvents interaction index
+                )
                 []
 
         withOffsets =
@@ -6320,17 +6781,166 @@ donutChart data =
                 totals
                 |> Tuple.first
     in
-    Svg.svg
-        [ SvgA.viewBox "0 0 100 100"
-        , SvgA.width "100%"
+    Html.div
+        [ classes [ tokenRelative, tokenWFull ] ]
+        [ Svg.svg
+            [ SvgA.viewBox "0 0 100 100"
+            , SvgA.width "100%"
 
-        -- A square viewBox with `height="100%"` against an auto-height parent
-        -- resolves to the intrinsic 1:1 ratio, i.e. as tall as the block is
-        -- wide. Pinning the height to `chartHeight` keeps a donut the same
-        -- height as every other chart and inside `tokenChartHeight`.
-        , SvgA.height (String.fromFloat chartHeight)
+            -- A square viewBox with `height="100%"` against an auto-height
+            -- parent resolves to the intrinsic 1:1 ratio, i.e. as tall as the
+            -- block is wide. Pinning the height keeps a donut the same height
+            -- as every other chart and inside its box.
+            , SvgA.height (String.fromFloat (donutHeight size))
+            ]
+            (List.map segment (List.indexedMap Tuple.pair withOffsets))
+        , donutReadout data total hovered
         ]
-        (List.map segment withOffsets)
+
+
+{-| The hover handlers of one donut segment, or none at all when the chart is
+decorative.
+
+`mouseover`/`mouseout` rather than the `mousemove` a `C.chart` uses, because a
+segment is a real element the pointer is either on or not; `click` fires the
+same message for the same reason the elm-charts charts do — a touch produces no
+`mouseover`.
+
+-}
+donutSegmentEvents : Maybe (Chart.ChartInteraction msg) -> Int -> List (Svg.Attribute msg)
+donutSegmentEvents interaction index =
+    case interaction of
+        Nothing ->
+            []
+
+        Just handlers ->
+            [ SvgE.onMouseOver (handlers.onHover (Just index))
+            , SvgE.onClick (handlers.onHover (Just index))
+            , SvgE.onMouseOut (handlers.onHover Nothing)
+            ]
+
+
+{-| How visible a segment is: everything at full strength while nothing is
+hovered, and every segment but the hovered one dimmed once one is.
+-}
+donutSegmentOpacity : Maybe Int -> Int -> Float
+donutSegmentOpacity hovered index =
+    case hovered of
+        Nothing ->
+            1
+
+        Just i ->
+            if i == index then
+                1
+
+            else
+                donutDimmedOpacity
+
+
+{-| The card in the ring's hole: the hovered segment's name, its value and its
+share of the total.
+
+The wrapper is there whether or not anything is hovered, so the hover changes
+the card's contents rather than the drawing's shape — the same rule
+`chartHover` follows, for the same reason.
+
+-}
+donutReadout : ChartData -> Float -> Maybe Int -> Html msg
+donutReadout data total hovered =
+    Html.div
+        [ classes
+            [ tokenAbsolute
+            , tokenInset0
+            , tokenFlex
+            , tokenItemsCenter
+            , tokenJustifyCenter
+            , tokenPointerEventsNone
+            ]
+        ]
+        (case Maybe.andThen (\i -> List.head (List.drop i data.series)) hovered of
+            Nothing ->
+                []
+
+            Just s ->
+                [ donutReadoutCard s (List.sum s.points) total ]
+        )
+
+
+donutReadoutCard : Series -> Float -> Float -> Html msg
+donutReadoutCard s value total =
+    Html.div
+        [ classes
+            [ tokenAnimTooltip
+            , tokenFlex
+            , tokenFlexCol
+            , tokenItemsCenter
+            , tokenGapDot
+            , tokenBgBase
+            , tokenRoundedLg
+            , tokenShadowSm
+            , tokenPaddingSm
+            , tokenTextXs
+            ]
+        ]
+        [ Html.span
+            [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
+            [ Html.span
+                [ classes [ SStatus.component, SStatus.colorToClass (statusColorFor s.color) ] ]
+                []
+            , Html.text s.name
+            ]
+        , Html.span [ classes [ tokenFontMedium ] ] [ Html.text (formatValue value) ]
+        , Html.span
+            [ classes [ tokenTextMuted ] ]
+            [ Html.text (percentOf value total) ]
+        ]
+
+
+{-| A segment's share of the ring, to a whole percent. `0%` when the ring is
+empty, rather than a division by zero.
+-}
+percentOf : Float -> Float -> String
+percentOf value total =
+    if total <= 0 then
+        "0%"
+
+    else
+        String.fromInt (round (value / total * 100)) ++ "%"
+
+
+{-| The stroke width of a donut segment, in the ring's 0..100 viewBox, and of
+the hovered one: two units thicker, which reads as "this one" without moving
+the ring's outer edge enough to clip against the box.
+-}
+donutWidth : Float
+donutWidth =
+    14
+
+
+donutHoveredWidth : Float
+donutHoveredWidth =
+    18
+
+
+{-| How far the segments that are _not_ hovered are dimmed.
+-}
+donutDimmedOpacity : Float
+donutDimmedOpacity =
+    0.35
+
+
+{-| A donut's drawn height in pixels, per size. `ChartCompact` matches the
+`h-24` strip `chartBoxTokens` gives it; `ChartRegular` is the same 240px every
+other regular chart draws inside `min-h-64`.
+-}
+donutHeight : Chart.ChartSize -> Float
+donutHeight size =
+    case size of
+        Chart.ChartCompact ->
+            compactChartPx
+
+        Chart.ChartRegular ->
+            chartHeight
 
 
 donutRadius : Float

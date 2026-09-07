@@ -2298,3 +2298,211 @@ root, so an embed is proven to reach a theme no stylesheet declares.
 free, because the funnel's SVG attributes are `var(--color-*)` exactly like a
 chart series'.
 
+
+## Fixes from live review (2026-09-07)
+
+Four defects reported against <https://alexbruf.github.io/elm-daisyui/>, each
+fixed at its root rather than at the demo that showed it.
+
+### 1. Charts re-animated on every hover
+
+**The report.** Hovering the Revenue Statistics bars replayed the bar grow-in
+every time the hovered column changed.
+
+**The root cause, and it is not the `Html.Keyed` key.** `Daisy.Render.chartHtml`
+keys the drawing by `chartKey config size data`, which the hover does not touch,
+so the keyed node was matched and diffed exactly as intended. The damage was one
+level down, inside what `terezka/elm-charts` renders:
+
+- `C.tooltip` is an `HtmlElement`, and elm-charts puts every html element
+  **before** the `<svg>` inside `.elm-charts__container-inner`. Measured on the
+  built demo: `svg` on its own with nothing hovered, `DIV.elm-charts__tooltip-top
+  | svg` with something hovered.
+- the hover band is a `C.rect`, i.e. an `SvgElement`, and `chartHover`'s
+  elements were prepended to the element list, so the band's `<path>` landed
+  **before** the `.elm-charts__bar-series` groups the animation is on.
+
+`elm/virtual-dom` diffs a node's children by **position**. A decoration that
+comes and goes therefore shifts every following sibling by one, the diff
+compares a `<div>` against an `<svg>` and a `<path>` against a `<g>`, and it
+throws the subtree away and rebuilds it. A CSS animation runs when its element
+is *created* — so the bar groups, recreated, replayed `daisy-bar-grow`. Tagging
+the DOM nodes with an expando before hovering and reading it back afterwards
+showed `["NEW", "NEW"]`, which is the whole diagnosis in one line.
+
+**The fix.** An interactive chart's drawing has a shape that does not depend on
+the hover. `chartHover` now takes the whole `ChartInteraction` rather than
+`Maybe Int`, anchors on `Maybe.withDefault 0 hovered`, and always emits exactly
+one band, one dot set and one tooltip anchor:
+
+| State | Band | Dots (line/area) | Tooltip anchor |
+| --- | --- | --- | --- |
+| nothing hovered | drawn at bin 0, `opacity 0` **and `borderWidth 0`** | drawn, `opacity="0"` | drawn, content `Html.text ""` |
+| bin *i* hovered | drawn at bin *i*, `opacity 0.55`, `daisy-anim-band` | drawn, `opacity="1"` | drawn, content is the card |
+
+Two details are load-bearing. `CA.opacity` on a `C.rect` is the **fill's** only —
+elm-charts strokes the border at full strength regardless — so an invisible band
+also has to give up its border width, or an outline stays drawn around the first
+bin. And the tooltip's content list may never be `[]`: `Chart.tooltip` reads an
+empty list as "use the library's own default card", so the empty state is an
+empty text node.
+
+What the caller sees is unchanged — `.daisy-anim-band` and `.daisy-anim-tooltip`
+still appear only while something is hovered, because the class and the card are
+what the hover switches — and switching the dataset still remounts and still
+replays, because that is still the key's job.
+
+`e2e/animation.spec.ts` gained a fourth test: with motion allowed, read
+`animationName@startTime` off `document.getAnimations()` for both bar groups
+after the entry animation has finished, sweep four bins, leave the chart, come
+back, and assert the fingerprint is byte-identical and every animation is still
+`finished`.
+
+### 2. Every chart answers the pointer
+
+`Block.Chart` / `CardChart` always could take a `ChartInteraction`; only one
+chart in the demos passed one. Now all six do, and the two chart kinds that had
+no highlight of their own grew one.
+
+| Demo | Chart | Kind | What a hover draws |
+| --- | --- | --- | --- |
+| Admin | Revenue Statistics | `Bar { stacked, track, rounded }` | band over the bin, tooltip |
+| Admin | Customer Acquisition | `Line { stepped = True }` + dashed projection | crosshair band, **a dot per series at that x**, tooltip |
+| Analytics | Sessions by channel | `Bar { track, rounded }`, three series | band over the bin, tooltip |
+| Analytics | Sessions by device | `Donut` | **segment thickened and undimmed, the rest dimmed**, readout in the hole |
+| Analytics | Sessions and signups | `Area` | crosshair band, dot per series, tooltip |
+| Theme generator | Sales volume | `Bar`, `ChartCompact` | band over the bin, tooltip |
+
+- **Dots.** `hoverDots` maps `CI.getMembers` of the resolved group to a
+  `C.svgAt` circle at `CI.getX` / `CI.getY`, filled with the member's own series
+  colour (matched by `CI.getName`) and ringed in `trackColorToCss`. A bar chart
+  gets none: the band already says which column, and every column is a filled
+  shape.
+- **The donut needed no new type.** `ChartInteraction.hovered` is documented as
+  "the index of the thing under the pointer", and for a donut that is the *nth
+  series*, because a donut has no x. `donutChart` hangs
+  `mouseover`/`mouseout`/`click` off each stroked arc, draws the hovered one at
+  `donutHoveredWidth` (18 against 14) at full opacity with the rest at
+  `donutDimmedOpacity` (0.35), and puts a card with the name, the value and the
+  share in the ring's hole — where every donut in daisyUI's dashboards puts its
+  readout, and where no pointer arithmetic can push it off a narrow panel.
+- **The demo models it per chart.** `Main` gained
+  `type ChartId = RevenueChart | AcquisitionChart | ChannelChart | DeviceChart |
+  TrafficChart | SalesVolumeChart`, one model field
+  `hoveredCharts : List ( ChartId, Int )`, and `hoveredIn` / `setHovered`. `Msg`
+  is `ChartHovered ChartId (Maybe Int)` and is still one of the three
+  constructors `paneName` ignores, for the reason it always was: it fires on
+  every `mousemove` across a chart. An association list rather than a `Dict`
+  because `ChartId` is not `comparable`, and making it one would mean carrying a
+  `String` that could name a chart that does not exist.
+
+`e2e/interaction.spec.ts` gained two tests: hovering the acquisition line opens
+a tooltip naming both series, and hovering the donut's first arc — at three
+o'clock, because a ring segment is a *stroke* whose bounding-box centre is the
+empty hole — reads `Desktop`, `54` and `54%`.
+
+### 3. Generator preview spacing
+
+Measured against <https://daisyui.com/theme-generator/> by reading its own DOM,
+not by eye.
+
+| Their markup | What we had | What we have |
+| --- | --- | --- |
+| `card bg-base-100 card-border border-base-300 card-sm` on every preview block | `card` + `PaddingDashboard` (20px, 1rem text), no size, no border | `SCard.Border` + `SCard.Sm` + `PaddingDefault`, i.e. daisyUI's own `--card-p: 1rem` / `--card-fs: .75rem` / `--cardtitle-fs: 1rem` |
+| `<div class="mt-4 flex h-24 items-end gap-2">` of `*:w-full` bars | a `min-h-64` chart whose SVG resolved to ~97px, leaving ~160px of empty card above the sentence | `ChartSize.ChartCompact` |
+| `<div class="flex flex-col text-xs">` rows, `py-2`, hairline between | `list` / `list-row`: 1rem padding, 1rem gap, 0.875rem text, `word-break: break-word` — every name on two lines | `CardTable` with `table-sm` |
+| the palette block has no theme tile in its body | `CardLeaf (ThemeDots ...)` first in the `card-body` | `headerActions = [ ThemeDots ... ]` |
+
+- **`ChartSize`.** `Daisy.Chart.ChartSize = ChartCompact | ChartRegular`, a
+  fourth argument to `Block.Chart` / `CardChild.CardChart`. `ChartRegular` is
+  what every chart drew before: `min-h-64`, `p-4`, the y grid, the bin labels
+  and the legend. `ChartCompact` is `h-24` and nothing else — no axis, no bin
+  labels, no legend, `chartMarginFor` zeroes the margin so the bars reach all
+  four edges, and `barLayout` tightens the bin margin from 0.26 to 0.16, because a strip
+  250px wide reads as bars rather than as ticks only if the bars are wider than
+  a dashboard chart's (daisyUI's own is `flex gap-2` over `*:w-full`, a little
+  under a fifth of each slot). The height is **fixed**, not a minimum, and
+  `compactContainerAttrs` makes the SVG fill it (`height: 100%` plus a
+  `preserveAspectRatio` of `none`); letting the viewBox ratio pick the height is
+  exactly the defect being fixed, and elm-charts' own pointer maths already
+  scales x and y independently from the element's rect, so hover still resolves
+  under the stretch.
+- **A compact chart cannot be a `list`, and could not be a padding override.**
+  daisyUI's `.list-row` is `padding: 1rem; gap: 1rem` with no size class of any
+  kind, so matching their row density from a `list` would have meant overriding
+  their padding with a utility of ours. `table-sm` **is** their compact row
+  expressed as their own class — `padding-block: .5rem`, `font-size: .75rem`, a
+  `base-content/5` rule between rows — which is why the orders card is a
+  `CardTable` now.
+- **`TableCell.truncate`.** One line, ellipsis, never a wrap. `whitespace-nowrap`
+  alone was rejected in an earlier pass because a non-shrinking table overflowed
+  its panel, and it would again: a `<td>` contributes its content's width to its
+  column. The flag emits **three** tokens together — `truncate max-w-0 w-full` —
+  because `max-w-0` on its own collapses the column to an ellipsis and
+  `truncate` on its own overflows. `w-full` is a *percentage* width, and a
+  percentage column in an auto table layout starves its neighbours down to
+  min-content (which wrapped "In progress" inside a fixed-height `badge-xs`), so
+  `tableRowHtml` gives every **other** cell of a clipped row `whitespace-nowrap`.
+  That is why the decision is per row and not per cell.
+- **`CardParts.description`.** The one line under a card's title, in the caption
+  step and the muted colour. A field rather than a first `CardLeaf (Text ...)`
+  so it cannot end up anywhere but under the title and so its colour is the
+  renderer's.
+
+### 4. Settings, rebuilt on the dashboard shell
+
+**The deviation, stated.** SPEC.md step 7 pins this demo to `Shell.Plain`. It is
+now `Shell.Dashboard`, with the same brand, the same two labelled sidebar groups,
+the same navbar (theme switcher, notifications, user chip) and the same header
+band as `Demo.Admin`. The live-review fidelity bar overrides the spec sketch
+here: a workspace settings screen inside a console is not a standalone page, and
+on the plain shell it read as a floating navbar strip over a loose form with an
+empty right-hand card and a full-width red alert.
+
+`Shell.Plain` is not left untested. `/theme` is still on it,
+`tests/Helpers/Fixtures.elm` and `tools/should-not-compile/` still build plain
+pages, and `e2e/layers.spec.ts` still reads the plain `<main>`.
+
+**The layout**, modelled on <https://nexus.daisyui.com/pages/settings>: a
+two-column grid of cards, each a `card-title`, a one-line `description` and a
+`Form`; a "Danger zone" card whose warning is its description and whose action
+is one destructive button; a save bar; the debug pane. Four sections.
+
+Two tree additions carry it:
+
+| Addition | Shape | Why it could not be composed |
+| --- | --- | --- |
+| `Fieldset.columns` | `FieldsetColumns = OneColumn \| Columns2` | Two text fields in a half-width card is the shape every settings page has, and stacking them made the card twice as tall as the one beside it. It is on the **fieldset** because the run of fields is the thing being laid out — two fieldsets in one form can want different shapes, and a `Form` has nothing to say about either. `Daisy.Render` wraps the fields in the grid rather than putting `sm:grid-cols-2` on the `<fieldset>`, because daisyUI's `.fieldset` is already a `display: grid` and the **legend** would take the first cell. |
+| `LabelPlacement.LabelRow` | one constructor | The label on one side, the control on the other, in a bordered box. It is what a toggle wants: the switch is the whole control, so "label above a 48px switch" wastes a line per setting. A placement rather than a card of its own, because the label still names the control and the two are still one `<label>`. |
+
+`Cta.placement = InHeader`, so the page's single `btn-primary` ("Save changes")
+sits at the right-hand end of the title band and the save bar carries the
+secondary half of the pair. The modal confirm, the fieldsets, the toggle, the
+selects and the `type="email" required` validator input are all still there.
+
+**One thing the report asked for and did not get: the danger button is solid,
+not outlined.** `btn-outline btn-error` paints `--color-error` as a *foreground*
+on `--color-base-100`, which is 2.86:1 in the stock `light` theme. Both
+`e2e/contrast.spec.ts`'s composed row and axe's `color-contrast` fail it as
+serious, and neither waiver covers it — they cover daisyUI's own `--color-X`
+under `--color-X-content` pair, which is exactly what the solid button *is*. The
+same reasoning already makes the generator's link back to daisyUI a plain `link`
+rather than `link-primary`. The reported defect (a full-width solid `alert`
+band) is gone either way.
+
+`e2e/responsive.spec.ts` now runs its drawer row against Settings as well; the
+`stats` row does not, because a settings page has no metric tiles.
+
+### 5. `Daisy.Render.tokens`: 122 -> 127
+
+Five entries, each with one job and one use site:
+
+- `tokenChartHeightCompact` (`h-24`) — the `ChartSize.ChartCompact` strip.
+- `tokenTruncate` (`truncate`), `tokenMaxW0` (`max-w-0`) and
+  `tokenWhitespaceNowrap` (`whitespace-nowrap`) — the three halves of
+  `TableCell.truncate`, all emitted from `tableCellAttrs` and nowhere else.
+
+Nothing left `RenderPurityTest`'s `forbidden` list. `tokenBorderBox` (`border`)
+gained a second use site, `LabelPlacement.LabelRow`'s bordered row, which is the
+same kind of thing the entry was let out for: chrome the renderer owns, with the
+colour coming from the existing `tokenBorderEdge`.
