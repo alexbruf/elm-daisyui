@@ -61,8 +61,10 @@ import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
 import Daisy.Tree exposing (..)
+import Date
 import Dict exposing (Dict)
 import Html exposing (Html)
+import Time
 
 
 {-| Corpus trees carry no behaviour; handlers exist only where a constructor
@@ -331,6 +333,35 @@ entries =
         ++ tooltipEntries
         ++ validatorEntries
         ++ indicatorEntries
+        ++ calendarEntries
+
+
+{-| daisyUI's Cally examples. `Leaf.Calendar` renders `alexbruf/elm-cally`,
+which produces the same `<calendar-date>` / `<calendar-month>` markup and the
+same `part` attributes as the web component the docs load from a CDN, so the
+`cally` class lands on a real picker rather than on foreign markup.
+
+`calendar--01` is not here: it puts the picker inside a `dropdown` popover, and
+`Dropdown.menu` is a closed `MenuSpec`. See `fixtures/rejected.md`.
+
+-}
+calendarEntries : List ( String, Node )
+calendarEntries =
+    let
+        today : Date.Date
+        today =
+            Date.fromCalendarDate 2026 Time.Sep 7
+
+        config : CalendarConfig Msg
+        config =
+            defaultCalendarConfig
+                { id = "corpus-calendar"
+                , today = today
+                , toMsg = always Clicked
+                , onChange = always Clicked
+                }
+    in
+    [ ( "calendar--00", leaf (Calendar config (Render.initCalendarDate config Nothing)) ) ]
 
 
 alertEntries : List ( String, Node )

@@ -24,8 +24,7 @@ type alias Rejection =
 all : List Rejection
 all =
     [ { id = "accordion--04", reason = "inexpressible: a `collapse` carrying `join-item`; `JoinItem` is a closed list of button, input, select and text, so a block cannot be joined" }
-    , { id = "calendar--00", reason = "inexpressible: the `cally` / `react-day-picker` / `vc` classes are theming hooks for third-party calendar widgets, which need foreign markup (calendar is Excluded in docs/placement.md)" }
-    , { id = "calendar--01", reason = "inexpressible: the `cally` / `react-day-picker` / `vc` classes are theming hooks for third-party calendar widgets, which need foreign markup (calendar is Excluded in docs/placement.md)" }
+    , { id = "calendar--01", reason = "inexpressible: the `cally` picker itself is expressible as `Leaf.Calendar`, but this example puts it inside a `dropdown` popover, and a dropdown's content is a closed `MenuSpec` — the same rule that rejects a card as `dropdown-content`" }
     , { id = "card--15", reason = "inexpressible: a `card` carrying `join-item`; `JoinItem` is a closed list of button, input, select and text, so a block cannot be joined" }
     , { id = "drawer--01", reason = "inexpressible: a `navbar` and a horizontal `menu` inside `drawer-content`; `Overlay.Drawer` holds sections in `drawer-side` only, and its toggle button is `btn drawer-button` with no further classes" }
     , { id = "drawer--03", reason = "inexpressible: the `is-drawer-open:` / `is-drawer-close:` selector prefixes; they are Tailwind variants, not classes an element can carry (see Render.unreachableClasses)" }

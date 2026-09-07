@@ -1,6 +1,7 @@
 module Daisy.Render exposing
     ( page
     , section, block, leaf, overlay
+    , initCalendarDate, initCalendarRange, initCalendarMulti, updateCalendar
     , tokens, unreachableClasses
     )
 
@@ -29,12 +30,31 @@ an application needs.
 @docs section, block, leaf, overlay
 
 
+# The calendar picker's state
+
+`Leaf.Calendar` is the one leaf whose state the application has to keep, and
+these are the three constructors and the one `update` that go with it. They
+live here rather than in `Daisy.Tree` because they need the
+`alexbruf/elm-cally` `Config` record that this module builds out of
+`Daisy.Tree.CalendarConfig` — the same record `Leaf.Calendar` is rendered
+with, so paging and focus behave the same in `update` as they look in `view`.
+`Daisy.Tree.setCalendarValue` completes the loop on the way back.
+
+@docs initCalendarDate, initCalendarRange, initCalendarMulti, updateCalendar
+
+
 # Class budget
 
 @docs tokens, unreachableClasses
 
 -}
 
+import Cally.Context as CallyContext
+import Cally.Date as CallyDate
+import Cally.Locale as CallyLocale
+import Cally.Month as CallyMonth
+import Cally.Multi as CallyMulti
+import Cally.Range as CallyRange
 import Chart as C
 import Chart.Attributes as CA
 import Chart.Svg as CS
@@ -108,6 +128,7 @@ import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
 import Daisy.Schema.Validator as SValidator
 import Daisy.Tree as Tree exposing (..)
+import Date exposing (Date)
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Ev
@@ -416,18 +437,19 @@ tokenSizeIcon =
 {-| The daisyUI classes that no `Daisy.Tree` value can reach.
 
 `CoverageTest` asserts that the classes emitted across all constructors equal
-`Daisy.Schema.allClasses` minus this list. Keeping it short is the point: five
+`Daisy.Schema.allClasses` minus this list. Keeping it short is the point: four
 entries out of 554.
 
 -}
 unreachableClasses : List String
 unreachableClasses =
-    [ -- `calendar` is Excluded in docs/placement.md: its three component classes
-      -- are theming hooks for third-party widgets (a `<calendar-date>` web
-      -- component, React DayPicker, Vanilla Calendar Pro). Emitting them needs
-      -- foreign markup, i.e. an escape hatch.
-      classAt 0 SCalendar.componentClasses
-    , classAt 1 SCalendar.componentClasses
+    [ -- `cally` (index 0) is reachable: `Leaf.Calendar` renders the
+      -- `alexbruf/elm-cally` picker, which produces the very markup and `part`
+      -- attributes daisyUI's `calendar.css` styles. The other two `calendar`
+      -- component classes stay unreachable: `react-day-picker` and `vc` are
+      -- theming hooks for a React component and a JavaScript library that this
+      -- package does not render, so emitting them would need foreign markup.
+      classAt 1 SCalendar.componentClasses
     , classAt 2 SCalendar.componentClasses
 
     -- The `drawer` `variant` group is a pair of Tailwind selector *prefixes*
@@ -1800,6 +1822,9 @@ leafWith extra theLeaf =
         Button config label ->
             buttonHtml extra config label
 
+        Calendar config state ->
+            calendarHtml extra config state
+
         Checkbox config ->
             Html.input
                 (classes
@@ -2488,6 +2513,217 @@ themePresentationInputType presentation =
 
         ThemeAsDropdown ->
             "radio"
+
+
+
+-- CALENDAR ------------------------------------------------------------------
+--
+-- `Leaf.Calendar` is rendered by `alexbruf/elm-cally`, a pure-Elm port of the
+-- Cally web component. It emits the same element names (`calendar-date`,
+-- `calendar-month`, ...) and the same `part` attributes as Cally, in the light
+-- DOM, which is what daisyUI's `calendar.css` styles through `.cally`. The
+-- wrapper below is the only element this module puts a class on: elm-cally's
+-- own markup carries `part` attributes and its two internal helper classes
+-- (`vh`, `num`), never a daisyUI class.
+
+
+{-| The picker, wrapped in daisyUI's `cally` element.
+
+daisyUI's `.cally` rules are written as `::part(x)`, which only matches a real
+shadow root; against elm-cally's light DOM they are the descendant selectors
+`.cally [part~="x"]` (`tools/gen-cally-css.js` performs that rewrite for the
+demo). Both forms are descendant selectors, so the class goes on a wrapper
+around `<calendar-date>` rather than on the element itself — which is also
+where the docs example's `bg-base-100 border rounded-box` utilities sit.
+
+-}
+calendarHtml : List String -> CalendarConfig msg -> CalendarState -> Html msg
+calendarHtml extra config state =
+    Html.div
+        [ classes (SCalendar.component :: extra) ]
+        [ case state of
+            SelectDate value model ->
+                CallyDate.view (callyDateConfig config) value model (calendarMonths config)
+
+            SelectRange value model ->
+                CallyRange.view (callyRangeConfig config) value model (calendarMonths config)
+
+            SelectMulti value model ->
+                CallyMulti.view (callyMultiConfig config) value model (calendarMonths config)
+        ]
+
+
+{-| One `calendar-month` grid per month the config asks for. elm-cally has no
+shadow DOM, so a child is a function of the picker's `Context`.
+-}
+calendarMonths : CalendarConfig msg -> List (CallyContext.Context msg -> Html msg)
+calendarMonths config =
+    List.range 0 (calendarMonthCount config.months - 1)
+        |> List.map (\offset -> CallyMonth.view { offset = offset })
+
+
+calendarMonthCount : CalendarMonths -> Int
+calendarMonthCount months =
+    case months of
+        OneMonth ->
+            1
+
+        TwoMonths ->
+            2
+
+
+callyLocale : CalendarLocale -> CallyLocale.Locale
+callyLocale locale =
+    case locale of
+        EnGB ->
+            CallyLocale.enGB
+
+        EnUS ->
+            CallyLocale.enUS
+
+
+callyDateConfig : CalendarConfig msg -> CallyDate.Config msg
+callyDateConfig config =
+    let
+        base : CallyDate.Config msg
+        base =
+            CallyDate.defaultConfig
+                { id = config.id
+                , today = config.today
+                , locale = callyLocale config.locale
+                , toMsg = config.toMsg << CalendarDateMsg
+                , onChange = config.onChange << PickedDate
+                }
+    in
+    { base
+        | months = calendarMonthCount config.months
+        , previous = calendarPreviousArrow
+        , next = calendarNextArrow
+    }
+
+
+callyRangeConfig : CalendarConfig msg -> CallyRange.Config msg
+callyRangeConfig config =
+    let
+        base : CallyRange.Config msg
+        base =
+            CallyRange.defaultConfig
+                { id = config.id
+                , today = config.today
+                , locale = callyLocale config.locale
+                , toMsg = config.toMsg << CalendarRangeMsg
+                , onChange = config.onChange << PickedRange
+                }
+    in
+    { base
+        | months = calendarMonthCount config.months
+        , previous = calendarPreviousArrow
+        , next = calendarNextArrow
+    }
+
+
+callyMultiConfig : CalendarConfig msg -> CallyMulti.Config msg
+callyMultiConfig config =
+    let
+        base : CallyMulti.Config msg
+        base =
+            CallyMulti.defaultConfig
+                { id = config.id
+                , today = config.today
+                , locale = callyLocale config.locale
+                , toMsg = config.toMsg << CalendarMultiMsg
+                , onChange = config.onChange << PickedDates
+                }
+    in
+    { base
+        | months = calendarMonthCount config.months
+        , previous = calendarPreviousArrow
+        , next = calendarNextArrow
+    }
+
+
+{-| daisyUI's own calendar example fills Cally's `previous` / `next` slots with
+a chevron. The `<svg>` is given an image role plus the label elm-cally would
+otherwise have written as text, so the paging button keeps an accessible name.
+-}
+calendarPreviousArrow : Html msg
+calendarPreviousArrow =
+    calendarArrow "Previous" "M15.75 19.5 8.25 12l7.5-7.5"
+
+
+calendarNextArrow : Html msg
+calendarNextArrow =
+    calendarArrow "Next" "m8.25 4.5 7.5 7.5-7.5 7.5"
+
+
+calendarArrow : String -> String -> Html msg
+calendarArrow label path =
+    Svg.svg
+        [ SvgA.viewBox "0 0 24 24"
+        , SvgA.class tokenSizeIcon
+        , Attr.attribute "role" "img"
+        , Attr.attribute "aria-label" label
+        ]
+        [ Svg.path [ SvgA.fill "currentColor", SvgA.d path ] [] ]
+
+
+
+-- CALENDAR STATE ------------------------------------------------------------
+
+
+{-| A single-date picker's starting state, focused on the value or on
+`CalendarConfig.today`.
+-}
+initCalendarDate : CalendarConfig msg -> Maybe Date -> CalendarState
+initCalendarDate config value =
+    SelectDate value (CallyDate.init (callyDateConfig config) value)
+
+
+{-| A date-range picker's starting state. The pair is start-then-end and is
+always kept sorted by the picker.
+-}
+initCalendarRange : CalendarConfig msg -> Maybe ( Date, Date ) -> CalendarState
+initCalendarRange config value =
+    SelectRange value (CallyRange.init (callyRangeConfig config) value)
+
+
+{-| A multiple-date picker's starting state.
+-}
+initCalendarMulti : CalendarConfig msg -> List Date -> CalendarState
+initCalendarMulti config value =
+    SelectMulti value (CallyMulti.init (callyMultiConfig config) value)
+
+
+{-| Advance the picker's own state.
+
+Route every `CalendarMsg` your `CalendarConfig.toMsg` produced through here and
+run the returned command: it carries both the `onChange` callback and the
+`Browser.Dom.focus` call that the roving `tabindex` needs after an arrow key.
+The new _selection_ arrives separately, as `CalendarConfig.onChange`; store it
+with `Daisy.Tree.setCalendarValue`.
+
+A message for one kind of picker cannot act on another kind's state — the pair
+is impossible to build from a single `Leaf.Calendar` — so a mismatch is a
+no-op rather than a runtime error.
+
+-}
+updateCalendar : CalendarConfig msg -> CalendarMsg -> CalendarState -> ( CalendarState, Cmd msg )
+updateCalendar config msg state =
+    case ( msg, state ) of
+        ( CalendarDateMsg sub, SelectDate value model ) ->
+            CallyDate.update (callyDateConfig config) value sub model
+                |> Tuple.mapFirst (SelectDate value)
+
+        ( CalendarRangeMsg sub, SelectRange value model ) ->
+            CallyRange.update (callyRangeConfig config) value sub model
+                |> Tuple.mapFirst (SelectRange value)
+
+        ( CalendarMultiMsg sub, SelectMulti value model ) ->
+            CallyMulti.update (callyMultiConfig config) value sub model
+                |> Tuple.mapFirst (SelectMulti value)
+
+        _ ->
+            ( state, Cmd.none )
 
 
 

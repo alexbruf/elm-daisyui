@@ -402,6 +402,14 @@ export function collectChartColors() {
  *
  *   - **Radio groups.** A group is a single tab stop — the checked radio, or
  *     the first one when none is checked — and the arrow keys move inside it.
+ *   - **Roving tabindex.** `Leaf.Calendar` (`alexbruf/elm-cally`) gives exactly
+ *     one in-month day button `tabindex="0"` and every other day
+ *     `tabindex="-1"`; the arrow keys move the roving stop, as ARIA's grid
+ *     pattern requires. The `tabIndex >= 0` filter below is what models that:
+ *     a month of 30 day buttons is one tab stop, not 30, and the two paging
+ *     buttons are two more. Nothing is exempted — a day the browser *would*
+ *     stop at is still collected, so this neither loosens nor special-cases
+ *     the assertion.
  *   - **Disclosure widgets.** daisyUI's `dropdown` hides its `dropdown-content`
  *     with `display:none` until the wrapper is `:focus-within`, so tabbing to
  *     the trigger is what reveals the panel and the *next* Tab lands inside it.

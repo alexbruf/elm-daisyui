@@ -16,7 +16,7 @@ by its named type.
 | **Overlay** | `Modal`, `Drawer`, `Toast` only. Lives exclusively in `Page.overlays` and is rendered after all sections in one fixed wrapper (order: drawer, modal, toast). |
 | **Property** | Not a node at all: a field on another node's config (like `tooltip` and `dropdown`). The renderer emits the wrapper element and the classes; the author cannot place it standalone. |
 | **Parts-of** | Only exists as a part record inside one named parent (e.g. `card-body` inside `Card`). Has no constructor of its own, so it is unrepresentable outside its parent. |
-| **Excluded** | Cannot be placed without an escape hatch. Its classes must be listed as expected-uncovered in `CoverageTest`, and its docs examples go in `fixtures/rejected.md`. |
+| **Excluded** | Cannot be placed without an escape hatch. Its classes must be listed as expected-uncovered in `CoverageTest`, and its docs examples go in `fixtures/rejected.md`. **Now empty** — see the Excluded section. |
 
 Two support types are not daisyUI components and appear in the tree anyway: `Block.Prose` (Tailwind typography)
 and `Block.Chart` (`Daisy.Chart` over `terezka/elm-charts`). `Leaf.Image` is also not a daisyUI component but is
@@ -39,7 +39,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | badge | Leaf | `Leaf.Badge` | `String` | Fixed by the spec sketch; a terminal status label, used inside table rows, menu items and card bodies. |
 | breadcrumbs | Block | `Block.Breadcrumbs` | `List (Leaf msg)` (Link/Text leaves) | A `<div class="breadcrumbs">` wrapping a `<ul>` of links: it holds multiple leaves, so it cannot be a Leaf. |
 | button | Leaf | `Leaf.Button` | `String` label | Fixed by the spec sketch. `ButtonColor` omits `Primary`; the only primary button is `Page.cta`. |
-| calendar | Excluded | — | — | The three `component` classes (`cally`, `react-day-picker`, `vc`) are styling hooks for third-party JS widgets (a web component and two React/JS libraries). Rendering them needs foreign markup the tree cannot generate. |
+| calendar | Leaf | `Leaf.Calendar` | `CalendarConfig msg` + `CalendarState` (data, not nodes) | A terminal control. `cally` is the theming hook for the Cally *web component*, and `alexbruf/elm-cally` is a pure-Elm port of it that renders the same markup and the same `part` attributes in the light DOM — so the class lands on a real picker and no foreign markup or JS mount is needed. `react-day-picker` and `vc` stay unreachable (see Excluded). Moved here 2026-09-07; see `docs/tree-decisions.md`, "Calendar via elm-cally". |
 | card | Block | `Block.Card` | `CardParts msg` = `{ figure : Maybe (Leaf msg), title : Maybe String, body : List (CardChild msg), actions : List (Leaf msg) }` | Fixed by the spec sketch; `card-title`/`card-body`/`card-actions` are `part` classes, so a parts record makes `card-body` outside a card unrepresentable. `CardChild` is `CardLeaf`/`CardChart`/`CardTable`/`CardStat`/`CardForm` — the block shapes a dashboard card is made of, with no `CardCard`, so a card still cannot hold a card. |
 | carousel | Block | `Block.Carousel` | `List (CarouselItem msg)`, each `{ content : List (Leaf msg) }` (the `carousel-item` part) | A scroll-snap container of items; sits directly in a Section like any other content container. |
 | chat | Block | `Block.Chat` | `List (ChatMessage msg)`, each a parts record `{ placement, image, header, footer, bubble }` | `chat-image`/`chat-header`/`chat-footer`/`chat-bubble` are `part` classes and repeat per message, so one parts record per message inside a Block-level list. |
@@ -176,11 +176,23 @@ alternative and why.
 
 ## Excluded
 
-| Component | Reason |
-|---|---|
-| calendar | Its `component` classes (`cally`, `react-day-picker`, `vc`) are theming hooks for third-party widgets: a `<calendar-date>` web component, React DayPicker, and Vanilla Calendar Pro. Producing any of them requires emitting foreign custom elements or mounting JS the tree does not model, i.e. an escape hatch. `CoverageTest` must list `cally`, `react-day-picker` and `vc` as expected-uncovered, and every `calendar` docs example belongs in `fixtures/rejected.md`. |
+No component is excluded any more. `calendar` was the only one, and it moved to
+Leaf on 2026-09-07 (see the row above): `alexbruf/elm-cally` is a pure-Elm port
+of the Cally web component, so `Leaf.Calendar` produces the very markup and
+`part` attributes `cally` styles, with no ports, no custom element and no
+shadow DOM.
 
-Nothing else is excluded: all other 67 components are placed.
+Two of `calendar`'s three `component` classes are still **unreachable**, which
+is a narrower thing than an excluded component and is recorded in
+`Daisy.Render.unreachableClasses` rather than here:
+
+| Class | Reason |
+|---|---|
+| `react-day-picker` | The theming hook for the React DayPicker *component*. This package renders Elm, not React, so there is nothing for the class to sit on. |
+| `vc` | The theming hook for Vanilla Calendar Pro, a JavaScript library that builds its own DOM after mounting. Emitting the class without mounting it would style nothing. |
+
+`CoverageTest` lists exactly those two (plus the drawer's two Tailwind variant
+prefixes) as expected-uncovered. All 68 components are placed.
 
 ## Config field inventory
 
@@ -264,7 +276,8 @@ Legend for the group columns: `-` = group absent in frontmatter, otherwise the n
 
 Components with **no** group at all and therefore no `XConfig` beyond parts/data: breadcrumbs, countdown, diff,
 hero, hover-3d, hover-gallery, mockup-code, mockup-window, navbar, radial-progress, text-rotate,
-theme-controller, validator, fieldset, label, filter, mockup-browser, mockup-phone, calendar (excluded).
+theme-controller, validator, fieldset, label, filter, mockup-browser, mockup-phone, calendar (its config is
+pure data: `id`, `today`, `locale`, `months`, `toMsg`, `onChange`).
 
 ## Demo expressibility
 

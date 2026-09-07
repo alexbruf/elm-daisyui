@@ -31,6 +31,7 @@ module Daisy.Tree exposing
     , AvatarConfig, defaultAvatarConfig, AvatarItem
     , BadgeConfig, defaultBadgeConfig
     , ButtonConfig, defaultButtonConfig, ButtonColor(..), allButtonColors, buttonColorToSchema
+    , CalendarConfig, defaultCalendarConfig, CalendarLocale(..), CalendarMonths(..), CalendarState(..), CalendarValue(..), CalendarMsg(..), setCalendarValue
     , CheckboxConfig, defaultCheckboxConfig
     , DividerConfig, defaultDividerConfig
     , FileInputConfig, defaultFileInputConfig
@@ -148,6 +149,7 @@ that can emit a class.
 @docs AvatarConfig, defaultAvatarConfig, AvatarItem
 @docs BadgeConfig, defaultBadgeConfig
 @docs ButtonConfig, defaultButtonConfig, ButtonColor, allButtonColors, buttonColorToSchema
+@docs CalendarConfig, defaultCalendarConfig, CalendarLocale, CalendarMonths, CalendarState, CalendarValue, CalendarMsg, setCalendarValue
 @docs CheckboxConfig, defaultCheckboxConfig
 @docs DividerConfig, defaultDividerConfig
 @docs FileInputConfig, defaultFileInputConfig
@@ -201,6 +203,9 @@ always owns the wrapper element and the anchor can never go missing.
 
 -}
 
+import Cally.Date as CallyDate
+import Cally.Multi as CallyMulti
+import Cally.Range as CallyRange
 import Daisy.Chart exposing (ChartConfig, ChartData)
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
@@ -250,6 +255,7 @@ import Daisy.Schema.Timeline as STimeline
 import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
+import Date exposing (Date)
 
 
 
@@ -1307,6 +1313,7 @@ type Leaf msg
     | AvatarGroup (List (AvatarItem msg))
     | Badge BadgeConfig String
     | Button (ButtonConfig msg) String
+    | Calendar (CalendarConfig msg) CalendarState
     | Checkbox (CheckboxConfig msg)
     | Countdown Float
     | Divider DividerConfig (Maybe String)
@@ -1495,6 +1502,158 @@ defaultButtonConfig =
     , aura = Nothing
     , onClick = Nothing
     }
+
+
+{-| Everything the calendar picker needs that is not its own state.
+
+The leaf is a typed front for the pure-Elm package `alexbruf/elm-cally`, a
+port of the Cally web component that renders the same markup and the same
+`part` attributes in the light DOM — which is exactly what daisyUI's
+`calendar.css` styles through its `cally` class. No ports, no custom element
+registration, no shadow DOM.
+
+`Daisy.Render` builds elm-cally's own `Config` record from this one; it is
+never exposed raw, the same way `Daisy.Chart` hides `terezka/elm-charts`.
+
+**The update flow.** A calendar is the second stateful leaf after
+[`ThemeSelect`](#Leaf), and the only one whose state the application must
+store, because a date picker remembers which day holds the roving `tabindex`
+and which month is on screen:
+
+1.  Keep a [`CalendarState`](#CalendarState) in your `Model`, built once with
+    `Daisy.Render.initCalendarRange` (or `initCalendarDate` /
+    `initCalendarMulti`).
+2.  Give `toMsg` a constructor of your own `Msg` that carries a
+    [`CalendarMsg`](#CalendarMsg), and forward it in `update` to
+    `Daisy.Render.updateCalendar`, storing the state it returns and running
+    the `Cmd` it returns (that command carries the picker's own
+    `Browser.Dom.focus` call, so keyboard navigation needs it).
+3.  `onChange` fires with a [`CalendarValue`](#CalendarValue) whenever the
+    selection changes; store that too if you want to show it.
+4.  Rebuild `Leaf.Calendar config state` from the model on every `view`. The
+    leaf is data, so nothing is retained between renders.
+
+`id` prefixes every DOM id the picker renders (day buttons, the two paging
+buttons), so it must be unique on the page and stable across renders.
+
+-}
+type alias CalendarConfig msg =
+    { id : String
+    , today : Date
+    , locale : CalendarLocale
+    , months : CalendarMonths
+    , toMsg : CalendarMsg -> msg
+    , onChange : CalendarValue -> msg
+    }
+
+
+{-| A calendar in `EnGB` showing one month.
+
+Unlike every other `defaultXConfig` this is a function, not a value: a picker
+cannot exist without an `id`, a `today` and somewhere to send its messages,
+and elm-cally's own `defaultConfig` takes the same four.
+
+-}
+defaultCalendarConfig :
+    { id : String
+    , today : Date
+    , toMsg : CalendarMsg -> msg
+    , onChange : CalendarValue -> msg
+    }
+    -> CalendarConfig msg
+defaultCalendarConfig given =
+    { id = given.id
+    , today = given.today
+    , locale = EnGB
+    , months = OneMonth
+    , toMsg = given.toMsg
+    , onChange = given.onChange
+    }
+
+
+{-| The two locales `alexbruf/elm-cally` bundles. Elm has no `Intl`, so a
+locale is a table of formatting functions rather than a language tag, and the
+package ships exactly these two; a closed type keeps an unbuildable one from
+being asked for.
+-}
+type CalendarLocale
+    = EnGB
+    | EnUS
+
+
+{-| How many month grids the picker shows, and therefore how far its previous
+and next buttons page.
+
+This is a closed pair rather than an `Int` for the usual reason: `months = 13`
+is not a calendar anyone means, and the renderer would have to decide what to
+do with it. `TwoMonths` stacks the two grids vertically — daisyUI's
+`calendar.css` gives `part="months"` no layout of its own.
+
+-}
+type CalendarMonths
+    = OneMonth
+    | TwoMonths
+
+
+{-| What the picker selects, and everything it remembers for itself.
+
+The three constructors are the three pickers elm-cally provides, and each one
+carries that picker's `Value` and `Model` as opaque data — the same way
+`Leaf.ThemeSelect` carries the current `Theme`. Build one with
+`Daisy.Render.initCalendarDate` / `initCalendarRange` / `initCalendarMulti`
+and hand it back to `Daisy.Render.updateCalendar`; nothing else can construct
+the `Model` inside, so the picker's invariants stay elm-cally's business.
+
+-}
+type CalendarState
+    = SelectDate CallyDate.Value CallyDate.Model
+    | SelectRange CallyRange.Value CallyRange.Model
+    | SelectMulti CallyMulti.Value CallyMulti.Model
+
+
+{-| The selection `CalendarConfig.onChange` reports, one constructor per
+[`CalendarState`](#CalendarState) constructor. A range is always sorted.
+-}
+type CalendarValue
+    = PickedDate (Maybe Date)
+    | PickedRange (Maybe ( Date, Date ))
+    | PickedDates (List Date)
+
+
+{-| One of the picker's own messages, on its way back to
+`Daisy.Render.updateCalendar`. The payloads are elm-cally's opaque `Msg`
+types, so an application can route one but cannot invent one.
+-}
+type CalendarMsg
+    = CalendarDateMsg CallyDate.Msg
+    | CalendarRangeMsg CallyRange.Msg
+    | CalendarMultiMsg CallyMulti.Msg
+
+
+{-| Write the selection `CalendarConfig.onChange` reported back into the
+state, so the next render draws it.
+
+`Daisy.Render.updateCalendar` advances everything the picker remembers for
+_itself_ (the focused day and the page on screen); the value is the
+application's, which is why it comes back as its own message and goes back in
+through this function. A value of a different kind than the state is a no-op:
+one `Leaf.Calendar` only ever produces one kind.
+
+-}
+setCalendarValue : CalendarValue -> CalendarState -> CalendarState
+setCalendarValue value state =
+    case ( value, state ) of
+        ( PickedDate new, SelectDate _ model ) ->
+            SelectDate new model
+
+        ( PickedRange new, SelectRange _ model ) ->
+            SelectRange new model
+
+        ( PickedDates new, SelectMulti _ model ) ->
+            SelectMulti new model
+
+        _ ->
+            state
 
 
 {-| Groups of the daisyUI `checkbox` component.

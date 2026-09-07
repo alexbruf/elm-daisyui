@@ -12,11 +12,26 @@ Conventions the Tier C specs rely on:
     any of the 35 values `Daisy.Tree.themeToString` produces. The navbar
     switcher writes the same field, so a theme chosen on one demo survives
     navigation to the others.
+
   - **Debug pane.** Every demo renders a `Prose` block whose text is
     `last-msg: <Name>`, where `<Name>` is the constructor name of the last
     `Msg` `update` handled (`none` before the first one). It is expressed in
     the tree like everything else, because `demo/src` may not import
     `Html.Attributes`.
+
+    One constructor is deliberately invisible to it: `CalendarMsg`, the
+    picker's own internal traffic. `Daisy.Render.updateCalendar` batches the
+    `onChange` callback with the `Browser.Dom.focus` call the roving
+    `tabindex` needs, and that focus task comes back as another `CalendarMsg`
+    — arriving _after_ `DateRangeChanged` about half the time. Stamping it
+    would make the pane say "CalendarMsg" for every calendar-driven change and
+    make the assertion racy, so `paneName` reports the last message the
+    application acted on rather than the last one the runtime delivered.
+
+  - **Today.** `Leaf.Calendar` needs a `today`, and the theme screenshots have
+    to be byte-identical from one run to the next, so it is the fixed date
+    `2026-09-07` rather than a `Time.now` task. A real application would read
+    the clock in `init`; nothing else about the wiring would change.
 
 This module imports no `Html` at all: `Browser.Document` gives the `view`
 signature and `Daisy.Render.page` produces the body.
@@ -27,11 +42,13 @@ import Browser
 import Browser.Navigation as Nav
 import Daisy.Render
 import Daisy.Tree as Tree exposing (Theme(..))
+import Date exposing (Date)
 import Demo.Admin
 import Demo.Analytics
 import Demo.Settings
 import Process
 import Task
+import Time
 import Url
 
 
@@ -128,6 +145,8 @@ type alias Model =
     , toastVisible : Bool
     , modalOpen : Bool
     , dateRange : String
+    , calendar : Tree.CalendarState
+    , dateRangeCaption : String
     , workspaceName : String
     , contactEmail : String
     , currency : String
@@ -146,6 +165,8 @@ init _ url key =
       , toastVisible = False
       , modalOpen = False
       , dateRange = firstOr "Last 30 days" (List.drop 1 Demo.Analytics.dateRanges)
+      , calendar = Daisy.Render.initCalendarRange analyticsCalendarConfig Nothing
+      , dateRangeCaption = noRangeCaption
       , workspaceName = "Acme Inc"
       , contactEmail = "ops@acme.test"
       , currency = firstOr "USD" Demo.Settings.currencies
@@ -162,6 +183,35 @@ firstOr fallback list =
     Maybe.withDefault fallback (List.head list)
 
 
+{-| The demo's "today". Fixed on purpose: `e2e/themes.spec.ts` compares 105
+full-page screenshots byte for byte, and a calendar drawn from the real clock
+would move its `today` highlight — and, at a month boundary, its whole grid —
+every day. A real application would use `Task.perform ... Date.today` in
+`init`.
+-}
+today : Date
+today =
+    Date.fromCalendarDate 2026 Time.Sep 7
+
+
+{-| The one `CalendarConfig` for the analytics range picker. `Demo.Analytics`
+owns it (the id and month count must match what it renders); `init` and
+`update` use it to build and advance the state.
+-}
+analyticsCalendarConfig : Tree.CalendarConfig Msg
+analyticsCalendarConfig =
+    Demo.Analytics.calendarConfig
+        { today = today
+        , toMsg = CalendarMsg
+        , onChange = DateRangeChanged
+        }
+
+
+noRangeCaption : String
+noRangeCaption =
+    "No range picked yet — click a start day, then an end day."
+
+
 
 -- UPDATE --------------------------------------------------------------------
 
@@ -175,6 +225,8 @@ type Msg
     | ToastDismissed
     | OrderViewed String
     | RangeSelected String
+    | CalendarMsg Tree.CalendarMsg
+    | DateRangeChanged Tree.CalendarValue
     | DownloadClicked
     | WorkspaceNameChanged String
     | ContactEmailChanged String
@@ -187,9 +239,23 @@ type Msg
     | ModalCancelled
 
 
-{-| The constructor name of a `Msg`, for the debug pane. Payloads are left off
-so the pane's text is exactly one stable token per constructor.
+{-| The constructor name of a `Msg`, for the debug pane, or `Nothing` for a
+message the pane deliberately ignores. Payloads are left off so the pane's
+text is exactly one stable token per constructor.
+
+`CalendarMsg` is the only `Nothing`: see the module comment.
+
 -}
+paneName : Msg -> Maybe String
+paneName msg =
+    case msg of
+        CalendarMsg _ ->
+            Nothing
+
+        _ ->
+            Just (msgName msg)
+
+
 msgName : Msg -> String
 msgName msg =
     case msg of
@@ -216,6 +282,12 @@ msgName msg =
 
         RangeSelected _ ->
             "RangeSelected"
+
+        CalendarMsg _ ->
+            "CalendarMsg"
+
+        DateRangeChanged _ ->
+            "DateRangeChanged"
 
         DownloadClicked ->
             "DownloadClicked"
@@ -254,7 +326,14 @@ update msg model =
         ( updated, command ) =
             step msg model
     in
-    ( { updated | lastMsg = msgName msg }, command )
+    ( case paneName msg of
+        Just name ->
+            { updated | lastMsg = name }
+
+        Nothing ->
+            updated
+    , command
+    )
 
 
 step : Msg -> Model -> ( Model, Cmd Msg )
@@ -289,6 +368,21 @@ step msg model =
         RangeSelected range ->
             ( { model | dateRange = range }, Cmd.none )
 
+        CalendarMsg calendarMsg ->
+            let
+                ( calendar, command ) =
+                    Daisy.Render.updateCalendar analyticsCalendarConfig calendarMsg model.calendar
+            in
+            ( { model | calendar = calendar }, command )
+
+        DateRangeChanged value ->
+            ( { model
+                | calendar = Tree.setCalendarValue value model.calendar
+                , dateRangeCaption = rangeCaption value
+              }
+            , Cmd.none
+            )
+
         DownloadClicked ->
             ( model, Cmd.none )
 
@@ -318,6 +412,19 @@ step msg model =
 
         ModalCancelled ->
             ( { model | modalOpen = False }, Cmd.none )
+
+
+{-| The caption under the picker. A `Cally.Range` value is sorted already, so
+this only has to format it.
+-}
+rangeCaption : Tree.CalendarValue -> String
+rangeCaption value =
+    case value of
+        Tree.PickedRange (Just ( from, to )) ->
+            Date.toIsoString from ++ " to " ++ Date.toIsoString to
+
+        _ ->
+            noRangeCaption
 
 
 
@@ -363,8 +470,13 @@ pageFor model =
                 { theme = model.theme
                 , lastMsg = model.lastMsg
                 , dateRange = model.dateRange
+                , dateRangeCaption = model.dateRangeCaption
+                , calendar = model.calendar
+                , today = today
                 , onNavigate = NavigateTo
                 , onRangeSelect = RangeSelected
+                , onCalendarMsg = CalendarMsg
+                , onCalendarChange = DateRangeChanged
                 , onDownload = DownloadClicked
                 }
 

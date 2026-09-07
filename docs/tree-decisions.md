@@ -442,8 +442,12 @@ could never reveal the hint (`demo-findings` item 9).
 Unchanged, and still in `fixtures/rejected.md`: corner placements (two
 placement classes on one element — the spec's exclusivity rule forbids it),
 `btn-primary` anywhere but `Page.cta`, cards inside `stack`, a card as
-`dropdown-content`, `join-item` on a block, `calendar`, `dropdown`+`menu` on
-one element (the popover API), and a navbar inside `drawer-content`.
+`dropdown-content`, `join-item` on a block, ~~`calendar`~~, `dropdown`+`menu`
+on one element (the popover API), and a navbar inside `drawer-content`.
+
+`calendar` is struck through: it became expressible on 2026-09-07, see
+"Calendar via elm-cally" below. Its second docs example is still rejected, but
+for the *dropdown-content* reason above rather than for being a calendar.
 
 ### 10. Corpus and test effect
 
@@ -514,3 +518,191 @@ theme`, which opens the trigger, clicks the `nord` radio and asserts both
 `last-msg: ThemeChanged` and `data-theme="nord"` on the page root — the
 `ThemeSelect` -> `onSelect` -> `Page.theme` round trip that `ThemeAsDropdown`
 had no coverage for.
+
+## Calendar via elm-cally (2026-09-07)
+
+`calendar` was the one component `docs/placement.md` listed as **Excluded**,
+on the grounds that its `component` classes are theming hooks for third-party
+JS widgets. That was true of `react-day-picker` and `vc`, and it is still true
+of them. It was not true of `cally`: `alexbruf/elm-cally` 1.0.0 is a pure-Elm
+port of the Cally web component that renders the same element names and the
+same `part` attributes in the **light DOM** — no ports, no custom element
+registration, no shadow root. `Leaf.Calendar` therefore puts `cally` on a real
+picker rather than on foreign markup, and the tree gained no escape hatch.
+
+### 1. The tree
+
+```elm
+Leaf.Calendar (CalendarConfig msg) CalendarState
+
+type alias CalendarConfig msg =
+    { id : String
+    , today : Date              -- justinmimbs/date, now a direct dependency
+    , locale : CalendarLocale   -- EnGB | EnUS
+    , months : CalendarMonths   -- OneMonth | TwoMonths
+    , toMsg : CalendarMsg -> msg
+    , onChange : CalendarValue -> msg
+    }
+
+type CalendarState                       -- the picker's own state, opaque
+    = SelectDate CallyDate.Value CallyDate.Model
+    | SelectRange CallyRange.Value CallyRange.Model
+    | SelectMulti CallyMulti.Value CallyMulti.Model
+
+type CalendarValue                        -- what onChange reports
+    = PickedDate (Maybe Date)
+    | PickedRange (Maybe ( Date, Date ))
+    | PickedDates (List Date)
+
+type CalendarMsg                          -- the picker's own traffic
+    = CalendarDateMsg CallyDate.Msg
+    | CalendarRangeMsg CallyRange.Msg
+    | CalendarMultiMsg CallyMulti.Msg
+```
+
+Four shape decisions, and why each one is not the obvious alternative:
+
+- **One leaf, three pickers.** `CalendarSelection` is not a field on the config
+  — it *is* the state, because date/range/multi differ in what they remember as
+  well as in what they select. A single closed variant type means the pair
+  ("a range message applied to a multi picker") that would need a runtime error
+  is simply not constructible from one `Leaf.Calendar`.
+- **`onChange` is on the config, not on the state.** It has one type,
+  `CalendarValue -> msg`, so the config stays a plain closed record and the
+  state stays free of functions — which also keeps `CalendarState` comparable
+  and storable.
+- **`months : CalendarMonths`, not `Int`.** `months = 13` is not a calendar,
+  and an `Int` would make the renderer decide what to do with it. Same rule as
+  `GridColumns`.
+- **elm-cally's `Config` is never exposed.** `Daisy.Render` builds it from
+  `CalendarConfig`, exactly as it builds `terezka/elm-charts` attributes from
+  `Daisy.Chart`. That is what keeps the `previous` / `next` slots — daisyUI's
+  own chevrons — out of the author's hands.
+
+`defaultCalendarConfig` is the one `defaultXConfig` that is a **function**
+rather than a value: a picker has no meaning without an `id`, a `today` and
+somewhere to send its messages. It takes the same four fields elm-cally's own
+`defaultConfig` takes, and fills in `EnGB` / `OneMonth`.
+
+### 2. The update flow, and where it lives
+
+`Leaf.Calendar` is the second stateful leaf after `ThemeSelect`, and the first
+whose state the application must actually keep (which day holds the roving
+`tabindex`, which month is on screen). The four functions that go with it are
+in `Daisy.Render`, not `Daisy.Tree`:
+
+```elm
+Daisy.Render.initCalendarDate  : CalendarConfig msg -> Maybe Date -> CalendarState
+Daisy.Render.initCalendarRange : CalendarConfig msg -> Maybe ( Date, Date ) -> CalendarState
+Daisy.Render.initCalendarMulti : CalendarConfig msg -> List Date -> CalendarState
+Daisy.Render.updateCalendar    : CalendarConfig msg -> CalendarMsg -> CalendarState -> ( CalendarState, Cmd msg )
+Daisy.Tree.setCalendarValue    : CalendarValue -> CalendarState -> CalendarState
+```
+
+`init` and `update` need the *same* elm-cally `Config` the view uses — the id
+prefix drives `Browser.Dom.focus`, and `months` drives paging — and that record
+holds `Html msg` in its `previous` / `next` slots. Building it in `Daisy.Tree`
+would mean `Daisy.Tree` importing `Html`, which is exactly the layering the
+package is built to avoid. `setCalendarValue` is pure data and stays in
+`Daisy.Tree`.
+
+### 3. Rendering, and where the class goes
+
+daisyUI writes `.cally::part(container)`, `.cally ::part(day)` and so on.
+`::part()` only matches a shadow tree; against elm-cally's light DOM both forms
+mean the same descendant selector, `.cally [part~="x"]`. So the `cally` class
+goes on a `<div>` **around** `<calendar-date>` rather than on it — which is
+also where the docs example's `bg-base-100 border rounded-box` utilities sit,
+so the corpus comparison is unaffected. `Daisy.Render` puts exactly one class
+attribute on that wrapper and none anywhere inside; the picker's markup is all
+`part` attributes.
+
+The `previous` / `next` slots are filled with daisyUI's own chevron `<svg>`,
+carrying an image role and the label elm-cally would otherwise have written as
+text, so the two paging buttons keep an accessible name (axe's `button-name` is
+clean on all six projects).
+
+`TwoMonths` stacks its two grids rather than placing them side by side:
+daisyUI's `calendar.css` gives `part="months"` no layout of its own, and
+inventing one would mean a token that only the calendar uses. The demo
+therefore shows one month.
+
+### 4. Styling: two generated stylesheets
+
+`tools/gen-cally-css.js` (bun) writes both, and both are **committed** —
+small, deterministic outputs — with the generator authoritative. It runs in
+`tools/ci.sh` between `should-not-compile` and `demo-build`, so drift from
+`vendor/daisyui` or from the pinned elm-cally version shows up as a diff.
+`vendor/` is never written to.
+
+| File | What it is |
+|---|---|
+| `demo/cally-daisy.css` | daisyUI's `.cally { @layer daisyui.l1.l2.l3 { ... } }` block with every `::part(a b)` rewritten to `[part~="a"][part~="b"]`. Nesting, `:hover` suffixes, declaration order, values and the `@layer` are kept byte for byte; `/* ... */` comments are skipped, because daisyUI's own comment inside the block talks *about* `::part()`. |
+| `demo/cally-base.css` | elm-cally's `cally.css`, copied verbatim and wrapped in `@layer base`. The source path and package version are in the header comment. |
+
+The `@layer base` wrapper is the one non-mechanical thing the generator does,
+and it is load-bearing: elm-cally's stylesheet is unlayered upstream, and
+**unlayered rules beat every layered rule**. Without the wrapper elm-cally's
+`background: transparent` and `background: var(--color-accent)` would win over
+daisyUI's `--color-primary` "today" and `--color-base-content` "selected", and
+the picker would keep its own black-and-white look inside a themed page. With
+it, the built CSS orders the layers `properties, theme, base, components,
+utilities, daisyui.*`, so daisyUI wins — verified in
+`demo/dist/assets/*.css`, and visible in
+`docs/screenshots/report/analytics-{light,dark,nord}.png`.
+
+### 5. Tests
+
+- **CoverageTest.** `unreachableClasses` went from five entries to four:
+  `cally` is now emitted, `react-day-picker` and `vc` are not. Three
+  `Leaf.Calendar` fixtures (one per picker kind, two locales, both month
+  counts) were added to `tests/Helpers/Fixtures.elm`, on the fixed date
+  `2026-09-07` — a fixture that rendered "today" would change what it emits
+  every midnight, and `RenderPurityTest` compares two renders for equality.
+- **RenderPurityTest.** elm-cally emits exactly two class names of its own,
+  `vh` (visually hidden) and `num` (tabular numerals), and nothing else — the
+  rest of its markup is `part` attributes. They are **not** added to
+  `Render.tokens`: `tokens` is the list of utilities `Daisy.Render` itself may
+  choose to emit, each with a named constant in `Render.elm`, and these two are
+  the picker's, exactly like `elm-charts__*` inside `Block.Chart`. The existing
+  chart exemption was therefore generalised to `fromLibrary`, and a third test,
+  *"elm-cally contributes exactly the two classes it is exempted for"*, pins the
+  exemption to that literal pair so a third name could not slip in behind it.
+  The wrapper itself is still checked by the ordinary rule: it carries `cally`
+  and nothing else.
+- **ExclusivityTest.** `calendar` has no exclusive group at all, so there is
+  nothing to contradict; a fuzzer entry was added anyway because the harness is
+  one entry per leaf constructor, and it sweeps both closed fields across all
+  three picker kinds so the row stays honest if `calendar` ever grows a group.
+- **PartsTest.** Untouched — `Daisy.Schema.Calendar.parts` is empty.
+- **CorpusTest.** `calendar--00` (daisyUI's Cally example) is now a tree.
+  `calendar--01` stays rejected, with a corrected reason: the picker itself is
+  expressible, but that example puts it inside a `dropdown` popover, and a
+  dropdown's content is a closed `MenuSpec` — the same rule that already
+  rejects a card as `dropdown-content`. 587 fixtures, 62 rejected (was 63),
+  525 accepted.
+
+### 6. One demo fix the picker forced
+
+`Demo.Analytics` gained a "Date range" `Card` in the "Key metrics" band holding
+a `SelectRange` calendar and a caption that echoes the picked range; `Main`
+keeps the `CalendarState`, forwards `CalendarMsg` to
+`Daisy.Render.updateCalendar` and writes the value back with
+`Daisy.Tree.setCalendarValue`. `today` is the fixed date `2026-09-07`, not
+`Time.now`, so the 105 theme baselines stay byte-identical from one day to the
+next. The navbar `Select` stays, as SPEC requires.
+
+| Spec | Symptom | Fix, in the smallest place |
+|---|---|---|
+| interaction | `analytics: picking a range sets last-msg: DateRangeChanged` failed in four of six projects | elm-cally's `update` batches the `onChange` callback with the `Browser.Dom.focus` call the roving `tabindex` needs, and that focus task comes back as *another* `CalendarMsg`. It lands after `DateRangeChanged` about half the time, so the debug pane raced between the two. `demo/src/Main.elm` now stamps the pane from `paneName : Msg -> Maybe String`, which returns `Nothing` for `CalendarMsg` alone: the pane reports the last message the *application* acted on rather than the last one the runtime delivered. Nothing in `Daisy.Tree` or `Daisy.Render` changed, and no assertion was relaxed — the test still requires the exact string. |
+
+`e2e/lib/browser.ts` needed **no** behaviour change for the roving tabindex:
+`collectFocusables` already filters `tabIndex >= 0`, and elm-cally gives
+exactly one in-month day `tabindex="0"` and every other day `tabindex="-1"`.
+Measured on `/analytics`: 30 day buttons, 1 tab stop, plus the two paging
+buttons. The only edit is a comment recording that, so the next reader does not
+"fix" the filter. The `keyboard`, `a11y` (zero serious/critical), `contrast`,
+`overlap`, `overflow`, `responsive` and `layers` specs all pass unchanged; the
+`contrast` classifier already exempts `[part~=head]`, whose `opacity: 0.5` sits
+on the element rather than on the colour, so the collector measures the opaque
+pair and it passes on its own merits.

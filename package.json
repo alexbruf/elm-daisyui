@@ -8,6 +8,7 @@
     "gen-review-classes": "bun tools/gen-review-classes.js",
     "extract-corpus": "bun tools/extract-corpus.js",
     "gen-corpus-elm": "bun tools/gen-corpus-elm.js",
+    "gen-cally-css": "bun tools/gen-cally-css.js",
     "render-audit": "bun tools/render-class-audit.js",
     "css-coverage": "bun tools/css-coverage.js",
     "e2e": "cd e2e && bunx playwright test",

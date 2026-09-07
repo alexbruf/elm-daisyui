@@ -70,7 +70,9 @@ import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
 import Daisy.Tree as Tree exposing (..)
+import Date
 import Html exposing (Html)
+import Time
 
 
 {-| Every message a fixture can send. One constructor per handler shape the
@@ -82,6 +84,8 @@ type Msg
     | Checked Bool
     | Rated Int
     | Themed Theme
+    | CalendarChanged CalendarMsg
+    | Picked CalendarValue
 
 
 {-| The fixtures, in named chunks. Chunking keeps each rendered tree small
@@ -169,6 +173,7 @@ leaves =
     avatarLeaves
         ++ badgeLeaves
         ++ buttonLeaves
+        ++ calendarLeaves
         ++ checkboxLeaves
         ++ dividerLeaves
         ++ fileInputLeaves
@@ -218,6 +223,40 @@ plainLeaves =
     , Heading H1 "Page title"
     , Heading H2 "Section title"
     , Heading H3 "Block title"
+    ]
+
+
+{-| One `Leaf.Calendar` per picker kind, so `cally` is emitted and the three
+`CalendarState` branches of the renderer are all walked.
+
+The date is fixed rather than read from the clock: a fixture that renders
+"today" would change what it emits every midnight, and `RenderPurityTest`
+compares two renders for equality.
+
+-}
+calendarLeaves : List (Leaf Msg)
+calendarLeaves =
+    let
+        today : Date.Date
+        today =
+            Date.fromCalendarDate 2026 Time.Sep 7
+
+        config : Tree.CalendarConfig Msg
+        config =
+            defaultCalendarConfig
+                { id = "calendar-fixture"
+                , today = today
+                , toMsg = CalendarChanged
+                , onChange = Picked
+                }
+    in
+    [ Calendar config (Render.initCalendarDate config (Just today))
+    , Calendar { config | locale = EnUS, months = TwoMonths }
+        (Render.initCalendarRange
+            { config | locale = EnUS, months = TwoMonths }
+            (Just ( today, Date.add Date.Days 6 today ))
+        )
+    , Calendar config (Render.initCalendarMulti config [ today ])
     ]
 
 

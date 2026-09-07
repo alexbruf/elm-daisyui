@@ -68,12 +68,14 @@ import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
 import Daisy.Tree exposing (..)
+import Date
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
 import Helpers.Classes as Classes
 import Helpers.Fixtures as Fixtures exposing (Msg(..))
 import Html exposing (Html)
 import Test exposing (Test, describe, fuzz, test)
+import Time
 
 
 
@@ -274,6 +276,53 @@ selectConfigFuzzer =
         (Fuzz.maybe (Fuzz.constant "Date range"))
 
 
+{-| `calendar` has no exclusive group at all — one `component` class, no
+`color`/`size`/`style`, no parts — so there is nothing for this row to make
+contradictory. The fuzzer is here anyway because the harness enumerates one
+entry per leaf constructor, and it does sweep the two closed fields the config
+does have (locale, month count) across all three picker kinds, which is what
+keeps the assertion honest if `calendar` ever grows a group.
+-}
+calendarLeafFuzzer : Fuzzer (Leaf Msg)
+calendarLeafFuzzer =
+    let
+        today : Date.Date
+        today =
+            Date.fromCalendarDate 2026 Time.Sep 7
+
+        configWith : CalendarLocale -> CalendarMonths -> CalendarConfig Msg
+        configWith locale months =
+            let
+                base : CalendarConfig Msg
+                base =
+                    defaultCalendarConfig
+                        { id = "calendar-fuzz"
+                        , today = today
+                        , toMsg = CalendarChanged
+                        , onChange = Picked
+                        }
+            in
+            { base | locale = locale, months = months }
+    in
+    Fuzz.map3
+        (\locale months kind ->
+            let
+                config : CalendarConfig Msg
+                config =
+                    configWith locale months
+            in
+            Calendar config (kind config)
+        )
+        (Fuzz.oneOfValues [ EnGB, EnUS ])
+        (Fuzz.oneOfValues [ OneMonth, TwoMonths ])
+        (Fuzz.oneOfValues
+            [ \config -> Render.initCalendarDate config (Just today)
+            , \config -> Render.initCalendarRange config (Just ( today, Date.add Date.Days 3 today ))
+            , \config -> Render.initCalendarMulti config [ today ]
+            ]
+        )
+
+
 leafFuzzers : List ( String, Fuzzer (Leaf Msg) )
 leafFuzzers =
     [ ( "avatar"
@@ -289,6 +338,7 @@ leafFuzzers =
             (Fuzz.maybe indicatorFuzzer)
       )
     , ( "badge", Fuzz.map (\c -> Badge c "9") badgeConfigFuzzer )
+    , ( "calendar", calendarLeafFuzzer )
     , ( "button", Fuzz.map (\c -> Button c "Go") decoratedButtonFuzzer )
     , ( "checkbox"
       , Fuzz.map3

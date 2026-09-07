@@ -3,7 +3,8 @@
 # CLAUDE.md / SPEC.md "Constraints":
 #
 #   gen-schema diff -> elm make -> elm-review -> elm-test -> render-audit
-#   -> should-not-compile -> demo build -> css-coverage -> Playwright
+#   -> should-not-compile -> gen-cally-css -> demo build -> css-coverage
+#   -> Playwright
 #
 # render-audit is the static half of RenderPurityTest and so runs with it,
 # right after elm-test.
@@ -29,6 +30,7 @@ STEP_NAMES=(
   elm-test
   render-audit
   should-not-compile
+  gen-cally-css
   demo-build
   css-coverage
   playwright
@@ -59,6 +61,13 @@ step_render-audit() {
 
 step_should-not-compile() {
   bun tools/should-not-compile/run.js
+}
+
+step_gen-cally-css() {
+  # demo/cally-base.css + demo/cally-daisy.css, the two stylesheets
+  # `Leaf.Calendar` needs. Committed, but regenerated here so a drift from
+  # vendor/daisyui or from the elm-cally version shows up as a diff.
+  bun tools/gen-cally-css.js
 }
 
 step_demo-build() {

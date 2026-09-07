@@ -18,8 +18,7 @@ Regenerate `tests/Corpus/Rejected.elm` from this table with
 | id | reason |
 |---|---|
 | accordion--04 | inexpressible: a `collapse` carrying `join-item`; `JoinItem` is a closed list of button, input, select and text, so a block cannot be joined |
-| calendar--00 | inexpressible: the `cally` / `react-day-picker` / `vc` classes are theming hooks for third-party calendar widgets, which need foreign markup (calendar is Excluded in docs/placement.md) |
-| calendar--01 | inexpressible: the `cally` / `react-day-picker` / `vc` classes are theming hooks for third-party calendar widgets, which need foreign markup (calendar is Excluded in docs/placement.md) |
+| calendar--01 | inexpressible: the `cally` picker itself is expressible as `Leaf.Calendar`, but this example puts it inside a `dropdown` popover, and a dropdown's content is a closed `MenuSpec` — the same rule that rejects a card as `dropdown-content` |
 | card--15 | inexpressible: a `card` carrying `join-item`; `JoinItem` is a closed list of button, input, select and text, so a block cannot be joined |
 | drawer--01 | inexpressible: a `navbar` and a horizontal `menu` inside `drawer-content`; `Overlay.Drawer` holds sections in `drawer-side` only, and its toggle button is `btn drawer-button` with no further classes |
 | drawer--03 | inexpressible: the `is-drawer-open:` / `is-drawer-close:` selector prefixes; they are Tailwind variants, not classes an element can carry (see Render.unreachableClasses) |

@@ -1,10 +1,11 @@
-module Demo.Analytics exposing (Config, dateRanges, page)
+module Demo.Analytics exposing (Config, calendarConfig, dateRanges, page)
 
 {-| The chart-heavy demo (SPEC.md step 7, row "Analytics").
 
 Dashboard shell, one responsive `Stat` row of four tiles, a `Chart Bar` and a
 `Chart Donut` side by side and a full-width `Chart Area` — each chart in its
-own `Card` with a `card-title` — and a date-range `Select` in the navbar.
+own `Card` with a `card-title` — a `Leaf.Calendar` range picker in a "Date
+range" card, and a date-range `Select` in the navbar.
 
 Section titles are `Leaf.Heading` leaves inside `Prose`, plus the `card-title`
 of each chart card (daisyUI renders `card-title` as an `<h2>`), so the page has
@@ -13,7 +14,7 @@ one `H1` and a heading per band.
 Like every `Demo.*` module this imports no `Html`: the page is a `Daisy.Tree`
 value and `Daisy.Render` owns every class.
 
-@docs Config, dateRanges, page
+@docs Config, calendarConfig, dateRanges, page
 
 -}
 
@@ -25,6 +26,10 @@ import Daisy.Tree as Tree
     exposing
         ( Align(..)
         , Block(..)
+        , CalendarConfig
+        , CalendarMsg
+        , CalendarState
+        , CalendarValue
         , CardChild(..)
         , HeadingLevel(..)
         , Leaf(..)
@@ -39,6 +44,7 @@ import Daisy.Tree as Tree
         , StatItem
         , Theme
         )
+import Date exposing (Date)
 
 
 {-| What the analytics page needs from the router.
@@ -47,8 +53,13 @@ type alias Config msg =
     { theme : Theme
     , lastMsg : String
     , dateRange : String
+    , dateRangeCaption : String
+    , calendar : CalendarState
+    , today : Date
     , onNavigate : String -> msg
     , onRangeSelect : String -> msg
+    , onCalendarMsg : CalendarMsg -> msg
+    , onCalendarChange : CalendarValue -> msg
     , onDownload : msg
     }
 
@@ -66,7 +77,7 @@ page config =
         , sections =
             Sections4
                 headerSection
-                statsSection
+                (statsSection config)
                 breakdownSection
                 (trafficSection config)
         , cta = Tree.cta "Download CSV" config.onDownload
@@ -176,8 +187,8 @@ overflow-x-auto` — which is why this used to be four separate blocks in a
 `Grid Cols4`. The one-column `Grid` is what makes the block fill the band.
 
 -}
-statsSection : Section msg
-statsSection =
+statsSection : Config msg -> Section msg
+statsSection config =
     Grid { columns = Tree.Cols1 }
         [ Prose [ Heading H2 "Key metrics" ]
         , Stat { direction = Responsive }
@@ -186,7 +197,67 @@ statsSection =
             , statItem "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"
             , statItem "Assisted revenue" "$91,470" "31% of total revenue"
             ]
+        , dateRangeCard config
         ]
+
+
+{-| The `Leaf.Calendar` range picker, in a card of its own.
+
+It is the real thing, not a picture of one: `alexbruf/elm-cally` renders the
+markup and `part` attributes daisyUI's `cally` class styles, `Main` keeps the
+`CalendarState` and forwards `onCalendarMsg` to
+`Daisy.Render.updateCalendar`, and the caption below echoes whatever
+`onCalendarChange` last reported.
+
+One month, not two: daisyUI's `calendar.css` gives `part="months"` no layout
+of its own, so a second grid would stack under the first and make the card
+twice as tall for no extra information.
+
+-}
+dateRangeCard : Config msg -> Block msg
+dateRangeCard config =
+    Card borderedCard
+        { emptyCard
+            | title = Just "Date range"
+            , body =
+                [ CardLeaf
+                    (Calendar
+                        (calendarConfig
+                            { today = config.today
+                            , toMsg = config.onCalendarMsg
+                            , onChange = config.onCalendarChange
+                            }
+                        )
+                        config.calendar
+                    )
+                , CardLeaf (Text config.dateRangeCaption)
+                ]
+        }
+
+
+{-| The picker's config, shared with `Main`.
+
+`Main` needs the very same value to build the state with
+`Daisy.Render.initCalendarRange` and to advance it with
+`Daisy.Render.updateCalendar` — the DOM id prefix and the month count have to
+agree between the three or focus management and paging would disagree with
+what is on screen — so it is written once, here, and taken by whichever
+messages the caller has.
+
+-}
+calendarConfig :
+    { today : Date
+    , toMsg : CalendarMsg -> msg
+    , onChange : CalendarValue -> msg
+    }
+    -> CalendarConfig msg
+calendarConfig given =
+    Tree.defaultCalendarConfig
+        { id = "analytics-range"
+        , today = given.today
+        , toMsg = given.toMsg
+        , onChange = given.onChange
+        }
 
 
 statItem : String -> String -> String -> StatItem msg

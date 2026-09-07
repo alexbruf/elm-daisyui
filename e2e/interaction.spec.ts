@@ -53,6 +53,32 @@ test("admin: the theme dropdown changes the page theme", async ({
   await expect(root).toHaveAttribute("data-theme", "nord");
 });
 
+test("analytics: picking a range sets last-msg: DateRangeChanged", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/analytics", theme);
+  await expect(page.getByText(pane)).toHaveText("last-msg: none");
+
+  // `Leaf.Calendar` renders `alexbruf/elm-cally`, which puts a `part` token on
+  // every element instead of a class. A range needs two clicks: the first
+  // starts it (the picker's own `CalendarMsg`), the second sorts the pair and
+  // fires `onChange`.
+  const days = page.locator('.cally button[part~="day"]:not([disabled])');
+  await expect(days.first()).toBeVisible();
+  await days.nth(4).click();
+  await days.nth(11).click();
+
+  await expect(page.getByText(pane)).toHaveText("last-msg: DateRangeChanged");
+
+  // The caption under the picker is a `Leaf.Text` in the same `card-body`, so
+  // it shares its element with the card title and the calendar's own text.
+  const card = page.locator(".card", { has: page.locator(".cally") });
+  await expect(card).toContainText(
+    /\d{4}-\d{2}-\d{2} to \d{4}-\d{2}-\d{2}/,
+  );
+});
+
 test("settings: confirming the modal fires ModalConfirmed", async ({
   page,
   theme,

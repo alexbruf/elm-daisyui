@@ -9,7 +9,11 @@ Two claims:
     directly (`Expect.equal` on two renders of one handler-free tree) and
     through the printed markup, which also covers attributes and text.
 2.  Every class the renderer emits is either a daisyUI class from
-    `Daisy.Schema.allClasses` or a layout token from `Daisy.Render.tokens`.
+    `Daisy.Schema.allClasses` or a layout token from `Daisy.Render.tokens`,
+    the two delegated libraries (`terezka/elm-charts` inside `Block.Chart`,
+    `alexbruf/elm-cally` inside `Leaf.Calendar`) aside — see
+    `chartLibraryPrefix` and `calendarLibraryClasses`, each pinned by its own
+    test.
     `Helpers.Classes` enumerates the classes actually emitted across every
     fixture, so this is an exhaustive check rather than a spot check. The list
     of plausible-but-forbidden utilities below is a second, independent
@@ -43,11 +47,40 @@ library's internal styling hooks inside `Block.Chart`, not classes
 `Daisy.Render` chooses, and they are neither daisyUI classes nor Tailwind
 utilities. The budget rule therefore reads "everything the renderer chooses",
 and a separate test pins down that every class outside the budget carries this
-prefix, so nothing else can hide behind the exception.
+prefix or is one of the two `calendarLibraryClasses` below, so nothing else can
+hide behind the exception.
 -}
 chartLibraryPrefix : String
 chartLibraryPrefix =
     "elm-charts__"
+
+
+{-| `alexbruf/elm-cally` writes exactly two class names of its own inside
+`Leaf.Calendar`, and no others: `vh` on the visually-hidden live region and the
+`<th>`/day labels, and `num` on the tabular-numeral cells. Everything else it
+emits is a `part` attribute, which is not a class at all.
+
+They are **not** added to `Render.tokens`. `tokens` is the list of utilities
+`Daisy.Render` may _choose to emit_, and every entry there has a named constant
+in `Render.elm`; these two are chosen by the picker, exactly like the
+`elm-charts__` names above, and `demo/cally-base.css` is what styles them. The
+honest statement is "the renderer's own budget is closed, and two foreign
+libraries bring their own class names", which is what the two tests below say —
+the first exempts them, the second pins the exemption to this exact list so a
+third name could not appear unnoticed.
+
+-}
+calendarLibraryClasses : Set String
+calendarLibraryClasses =
+    Set.fromList [ "vh", "num" ]
+
+
+{-| A class the renderer did not choose: it came from one of the two libraries
+a leaf/block delegates to.
+-}
+fromLibrary : String -> Bool
+fromLibrary class =
+    String.startsWith chartLibraryPrefix class || Set.member class calendarLibraryClasses
 
 
 outsideBudget : Set String
@@ -151,16 +184,20 @@ suite =
             [ test "every emitted class is a schema class or a render token" <|
                 \_ ->
                     outsideBudget
-                        |> Set.filter (\class -> not (String.startsWith chartLibraryPrefix class))
+                        |> Set.filter (\class -> not (fromLibrary class))
                         |> Set.toList
                         |> List.map (\class -> class ++ " is neither in Schema.allClasses nor in Render.tokens")
                         |> Classes.expectNoProblems
-            , test "the only classes outside the budget come from elm-charts" <|
+            , test "the only classes outside the budget come from elm-charts or elm-cally" <|
                 \_ ->
                     outsideBudget
                         |> Set.toList
-                        |> List.filter (\class -> not (String.startsWith chartLibraryPrefix class))
+                        |> List.filter (\class -> not (fromLibrary class))
                         |> Expect.equalLists []
+            , test "elm-cally contributes exactly the two classes it is exempted for" <|
+                \_ ->
+                    Set.intersect emitted calendarLibraryClasses
+                        |> Expect.equal calendarLibraryClasses
             , test "at least one token is actually used" <|
                 \_ ->
                     Set.intersect emitted (Set.fromList Render.tokens)
