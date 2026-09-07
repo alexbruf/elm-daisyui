@@ -84,6 +84,7 @@ page config =
                 , sidebar = sidebar config
                 , sidebarFooter = Just sidebarUser
                 , navbar = navbar config
+                , edges = True
                 }
         , sections =
             Sections3
@@ -153,8 +154,17 @@ docsItem config =
         }
 
 
+{-| The sidebar menu: everything default except the active row, which is the
+tinted one daisyUI's own dashboard templates use rather than the solid
+`menu-active` slab. Same reasoning (and same measurement) as `Demo.Admin`.
+-}
 defaultMenu : Tree.MenuConfig
 defaultMenu =
+    { baseMenu | activeStyle = Tree.TintedActive }
+
+
+baseMenu : Tree.MenuConfig
+baseMenu =
     Tree.defaultMenuConfig
 
 
@@ -361,7 +371,7 @@ overflow-x-auto` — which is why this used to be four separate blocks in a
 -}
 statsSection : Config msg -> Section msg
 statsSection config =
-    Grid { columns = Tree.Cols1 }
+    gridSection Tree.Cols1
         [ Stat { direction = Responsive }
             [ statItem Icon.Users "Sessions" "486,204" "9.1% week over week"
             , statItem Icon.ArrowTrendingUp "Conversion" "3.24%" "0.31 points above plan"
@@ -470,9 +480,9 @@ would take one of the two cells.
 -}
 breakdownSection : Section msg
 breakdownSection =
-    Grid { columns = Tree.Cols2 }
-        [ chartCard "Sessions by channel" (CardChart DChart.Bar channelSeries)
-        , chartCard "Sessions by device" (CardChart DChart.Donut deviceSeries)
+    gridSection Tree.Cols2
+        [ chartCard "Sessions by channel" (CardChart channelChartConfig channelSeries Nothing)
+        , chartCard "Sessions by device" (CardChart DChart.Donut deviceSeries Nothing)
         ]
 
 
@@ -496,9 +506,26 @@ borderedCard =
     { defaultCard | style = Just SCard.Border }
 
 
+{-| Every panel on this page carries the 20px `card-body` gutter daisyUI's own
+dashboard templates set, which is `CardPadding.PaddingDashboard`.
+-}
 defaultCard : Tree.CardConfig
 defaultCard =
+    { baseCard | padding = Tree.PaddingDashboard }
+
+
+baseCard : Tree.CardConfig
+baseCard =
     Tree.defaultCardConfig
+
+
+{-| Sessions by channel: three series side by side, on a `base-200` track with
+rounded caps. Not stacked — the three channels are alternatives, not parts of
+one total, and a stack would invite the reader to add them up.
+-}
+channelChartConfig : DChart.ChartConfig
+channelChartConfig =
+    DChart.Bar { stacked = False, track = True, rounded = True }
 
 
 channelSeries : DChart.ChartData
@@ -508,14 +535,17 @@ channelSeries =
         [ { name = "Paid search"
           , color = DChart.Primary
           , points = [ 82, 91, 104, 118 ]
+          , dashed = False
           }
         , { name = "Organic"
           , color = DChart.Success
           , points = [ 64, 71, 76, 88 ]
+          , dashed = False
           }
         , { name = "Referral"
           , color = DChart.Accent
           , points = [ 28, 31, 30, 37 ]
+          , dashed = False
           }
         ]
     }
@@ -525,9 +555,9 @@ deviceSeries : DChart.ChartData
 deviceSeries =
     { xLabels = []
     , series =
-        [ { name = "Desktop", color = DChart.Primary, points = [ 54 ] }
-        , { name = "Mobile", color = DChart.Secondary, points = [ 38 ] }
-        , { name = "Tablet", color = DChart.Warning, points = [ 8 ] }
+        [ { name = "Desktop", color = DChart.Primary, points = [ 54 ], dashed = False }
+        , { name = "Mobile", color = DChart.Secondary, points = [ 38 ], dashed = False }
+        , { name = "Tablet", color = DChart.Warning, points = [ 8 ], dashed = False }
         ]
     }
 
@@ -540,7 +570,7 @@ trafficSection : Config msg -> Section msg
 trafficSection config =
     Stack { align = AlignStretch }
         [ chartCard ("Sessions and signups — " ++ config.dateRange)
-            (CardChart DChart.Area trafficSeries)
+            (CardChart DChart.Area trafficSeries Nothing)
         , debugPane config
         ]
 
@@ -552,10 +582,12 @@ trafficSeries =
         [ { name = "Sessions"
           , color = DChart.Info
           , points = [ 68, 74, 81, 79, 92, 61, 55 ]
+          , dashed = False
           }
         , { name = "Signups"
           , color = DChart.Success
           , points = [ 12, 14, 17, 15, 21, 9, 8 ]
+          , dashed = False
           }
         ]
     }
@@ -567,3 +599,15 @@ every demo: exactly `last-msg: <constructor name of the last Msg handled>`.
 debugPane : Config msg -> Block msg
 debugPane config =
     Prose [ Text ("last-msg: " ++ config.lastMsg) ]
+
+
+{-| A `Section.Grid` of equal columns.
+
+`Section.Grid` takes a `GridSection`, which is either `Columns` (equal tracks,
+plain blocks) or `Spans` (the twelve-column grid, one span per cell). This page
+only wants the first, so it says so once.
+
+-}
+gridSection : Tree.GridColumns -> List (Block msg) -> Section msg
+gridSection columns blocks =
+    Grid (Tree.Columns { columns = columns } blocks)

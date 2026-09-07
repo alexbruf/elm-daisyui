@@ -57,6 +57,8 @@ import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
 import Chart as C
 import Chart.Attributes as CA
+import Chart.Events as CE
+import Chart.Item as CI
 import Chart.Svg as CS
 import Daisy.Chart as Chart exposing (ChartConfig(..), ChartData, Series)
 import Daisy.Icon as Icon exposing (Icon)
@@ -134,6 +136,7 @@ import Date exposing (Date)
 import Html exposing (Html)
 import Html.Attributes as Attr
 import Html.Events as Ev
+import Html.Keyed as Keyed
 import Json.Decode as Decode
 import Svg
 import Svg.Attributes as SvgA
@@ -164,12 +167,27 @@ tokens =
     , tokenGridCols2Lg
     , tokenGridCols3Lg
     , tokenGridCols4Lg
+    , tokenGridCols12Lg
+    , tokenGridCols3Xl
+    , tokenColSpan1Lg
+    , tokenColSpan2Lg
+    , tokenColSpan3Lg
+    , tokenColSpan4Lg
+    , tokenColSpan5Lg
+    , tokenColSpan6Lg
+    , tokenColSpan7Lg
+    , tokenColSpan8Lg
+    , tokenColSpan9Lg
+    , tokenColSpan10Lg
+    , tokenColSpan11Lg
+    , tokenColSpan12Lg
     , tokenGapSm
     , tokenGap
     , tokenGapMd
     , tokenGapLg
     , tokenPaddingSm
     , tokenPadding
+    , tokenPaddingCard
     , tokenPaddingLg
     , tokenItemsStart
     , tokenItemsCenter
@@ -180,11 +198,16 @@ tokens =
     , tokenGrow
     , tokenShrink0
     , tokenMtAuto
+    , tokenSelfStart
     , tokenWFull
     , tokenWSidebar
     , tokenMinHScreen
     , tokenChartHeight
     , tokenOverflowXAuto
+    , tokenOverflowHidden
+    , tokenBorderBottom
+    , tokenBorderRight
+    , tokenBorderEdge
     , tokenFixed
     , tokenInset0
     , tokenZOverlay
@@ -229,6 +252,10 @@ tokens =
     , tokenSizeIcon
     , tokenSizeIconLg
     , tokenSizeAvatar
+    , tokenAnimBars
+    , tokenAnimLine
+    , tokenAnimTooltip
+    , tokenAnimBand
     ]
 
 
@@ -292,6 +319,98 @@ tokenGridCols4Lg =
     "lg:grid-cols-4"
 
 
+{-| The twelve tracks of a `GridSection.Spans` band, from `lg` up.
+
+Below `lg` a spanned grid is one column and every cell is full width, for the
+same reason `Cols2` steps at `lg`: at 768 a seven-twelfths cell is 440px of card
+body, which is narrower than the min-content width of the tables and forms these
+bands hold.
+
+-}
+tokenGridCols12Lg : String
+tokenGridCols12Lg =
+    "lg:grid-cols-12"
+
+
+{-| Three columns from `xl` up: `CellColumns.CellThree`, the shape daisyUI's own
+theme generator lays its component preview out in (`grid xl:grid-cols-3` of
+277px cards). `xl` and not `lg`, because a cell that is already only part of a
+twelve-column band is narrow: three of them inside seven tracks at 1280 would be
+170px each.
+-}
+tokenGridCols3Xl : String
+tokenGridCols3Xl =
+    "xl:grid-cols-3"
+
+
+{-| The twelve `Daisy.Tree.Span` widths, as `lg:col-span-N`.
+
+One constant per span rather than a built string: `render-class-audit` requires
+every class-like literal in this module to be a `tokens` entry, and a class
+assembled from a number at run time would be neither auditable here nor visible
+to Tailwind's source scan, which reads these literals out of this very file.
+
+-}
+tokenColSpan1Lg : String
+tokenColSpan1Lg =
+    "lg:col-span-1"
+
+
+tokenColSpan2Lg : String
+tokenColSpan2Lg =
+    "lg:col-span-2"
+
+
+tokenColSpan3Lg : String
+tokenColSpan3Lg =
+    "lg:col-span-3"
+
+
+tokenColSpan4Lg : String
+tokenColSpan4Lg =
+    "lg:col-span-4"
+
+
+tokenColSpan5Lg : String
+tokenColSpan5Lg =
+    "lg:col-span-5"
+
+
+tokenColSpan6Lg : String
+tokenColSpan6Lg =
+    "lg:col-span-6"
+
+
+tokenColSpan7Lg : String
+tokenColSpan7Lg =
+    "lg:col-span-7"
+
+
+tokenColSpan8Lg : String
+tokenColSpan8Lg =
+    "lg:col-span-8"
+
+
+tokenColSpan9Lg : String
+tokenColSpan9Lg =
+    "lg:col-span-9"
+
+
+tokenColSpan10Lg : String
+tokenColSpan10Lg =
+    "lg:col-span-10"
+
+
+tokenColSpan11Lg : String
+tokenColSpan11Lg =
+    "lg:col-span-11"
+
+
+tokenColSpan12Lg : String
+tokenColSpan12Lg =
+    "lg:col-span-12"
+
+
 tokenGapSm : String
 tokenGapSm =
     "gap-2"
@@ -323,6 +442,19 @@ tokenGapLg =
 tokenPaddingSm : String
 tokenPaddingSm =
     "p-2"
+
+
+{-| `CardPadding.PaddingDashboard`: 20px inside a `card-body`.
+
+daisyUI's own `--card-p` is 1.5rem, or 1rem at `card-sm`, and every one of its
+dashboard templates overrides it to 20px — the step in between, which neither
+card size offers. The utility wins over `--card-p` because it is a `padding`
+declaration on the same element, so no custom property has to be set.
+
+-}
+tokenPaddingCard : String
+tokenPaddingCard =
+    "p-5"
 
 
 tokenPadding : String
@@ -402,6 +534,21 @@ tokenMtAuto =
     "mt-auto"
 
 
+{-| Pins a `stat-figure` to the top of its tile.
+
+daisyUI centres the figure over the tile's whole height (`grid-row: span 2`
+plus the default `align-self: stretch`), so in a four-across metric row the
+glyph floats level with the number rather than with the label it belongs to.
+daisyUI's own dashboard templates put it on the label's line; this is that,
+and it is the renderer's decision because the tile's parts are the renderer's
+markup.
+
+-}
+tokenSelfStart : String
+tokenSelfStart =
+    "self-start"
+
+
 tokenWFull : String
 tokenWFull =
     "w-full"
@@ -431,6 +578,51 @@ tokenChartHeight =
 tokenOverflowXAuto : String
 tokenOverflowXAuto =
     "overflow-x-auto"
+
+
+{-| Clips a painted child to its parent's corner: the shaded header row of a
+chart's hover tooltip, which is square and would otherwise sit outside the
+card's `tokenRoundedLg`.
+-}
+tokenOverflowHidden : String
+tokenOverflowHidden =
+    "overflow-hidden"
+
+
+{-| The hairline under a dashboard navbar (`DashboardShell.edges`).
+
+`border` — all four sides — stays on `tests/RenderPurityTest.elm`'s `forbidden`
+list, and these two do not replace it: a one-sided rule on a piece of chrome the
+renderer owns is a different thing from a box drawn around an arbitrary element,
+which is what that entry exists to prevent. Each of the three has exactly one
+use site, in `shell`.
+
+-}
+tokenBorderBottom : String
+tokenBorderBottom =
+    "border-b"
+
+
+{-| The hairline down a dashboard sidebar's trailing edge.
+-}
+tokenBorderRight : String
+tokenBorderRight =
+    "border-r"
+
+
+{-| The colour of both edges: `--color-base-300`, the third surface.
+
+daisyUI's own dashboard templates draw the line in `base-200`, because their
+content ground is `base-100/30` — the line and the ground are then different
+colours. This package paints the content ground `bg-base-200` (`tokenBgGround`),
+so a `base-200` line would be invisible against it; `base-300` is the same
+relationship — one surface step away from what it sits on — against the ground
+this renderer actually paints.
+
+-}
+tokenBorderEdge : String
+tokenBorderEdge =
+    "border-base-300"
 
 
 tokenFixed : String
@@ -754,6 +946,39 @@ tokenSizeAvatar =
     "size-8"
 
 
+{-| The four motion classes, whose rules are in `Daisy.Css` and whose stylesheet
+the application imports (`tools/gen-daisy-css.js`).
+
+They are the only classes in `tokens` that are neither daisyUI's nor Tailwind's,
+which is why they carry a `daisy-` namespace: nothing else may define them, and
+a page that never imports the generated stylesheet simply has no animation
+rather than a mis-styled one.
+
+`tokenAnimBars` and `tokenAnimLine` go on the container of a chart drawing;
+`tokenAnimTooltip` on the hover card; `tokenAnimBand` on the highlight behind
+the hovered column.
+
+-}
+tokenAnimBars : String
+tokenAnimBars =
+    "daisy-anim-bars"
+
+
+tokenAnimLine : String
+tokenAnimLine =
+    "daisy-anim-line"
+
+
+tokenAnimTooltip : String
+tokenAnimTooltip =
+    "daisy-anim-tooltip"
+
+
+tokenAnimBand : String
+tokenAnimBand =
+    "daisy-anim-band"
+
+
 {-| The daisyUI classes that no `Daisy.Tree` value can reach.
 
 `CoverageTest` asserts that the classes emitted across all constructors equal
@@ -822,6 +1047,18 @@ opt toClass maybe =
             []
 
 
+{-| `Bool` as the string an ARIA state attribute takes. Not a class: `flag`
+above answers the class question, this one answers the attribute question.
+-}
+boolAttr : Bool -> String
+boolAttr on =
+    if on then
+        "true"
+
+    else
+        "false"
+
+
 flag : Bool -> String -> List String
 flag on cls =
     if on then
@@ -860,6 +1097,40 @@ onClickAttrs maybe =
             []
 
 
+{-| The element a _clickable_ piece of chrome has to be: `<button>` when it
+carries an `onClick`, `<a>` when it does not.
+
+This is not a style preference, it is a `Browser.application` defect waiting to
+happen. `Browser.application` installs one document-level `click` listener that
+walks up from the target to the nearest `<a>`, reads its **`href` property** and
+sends the result to `onUrlRequest`. For an anchor with no `href` attribute that
+property is the empty string, `Url.fromString ""` is `Nothing`, and the
+application therefore receives `UrlRequested (External "")` — which a router
+answers with `Browser.Navigation.load ""`, i.e. **a full page reload**. The
+listener also calls `preventDefault`, so from the outside a click on such a
+control looks like it did nothing: the message it sent really was handled, and
+then the page was thrown away and rebuilt from the URL.
+
+It bit exactly two places, both of them elements daisyUI documents as anchors: a
+`tabs-box` segmented control whose tabs carry an `onClick` and no destination
+(`Demo.Admin`'s `Day | Month | Year`), and a `MenuItem` with an `onClick` and no
+`href`. A `<button>` is the honest element for both — it is what "a control that
+does something here" is — and it is focusable and activatable by keyboard, which
+a bare `<a>` is not. An anchor that _has_ an `href` keeps being an anchor, so
+every navigation link in the tree is unchanged and `Browser.application`'s
+interception still does its job.
+
+-}
+clickableHtml : Maybe msg -> List (Html.Attribute msg) -> List (Html msg) -> Html msg
+clickableHtml onClick attributes children =
+    case onClick of
+        Just _ ->
+            Html.button (Attr.type_ "button" :: attributes) children
+
+        Nothing ->
+            Html.a attributes children
+
+
 optAttr : (a -> Html.Attribute msg) -> Maybe a -> List (Html.Attribute msg)
 optAttr toAttr maybe =
     case maybe of
@@ -868,6 +1139,35 @@ optAttr toAttr maybe =
 
         Nothing ->
             []
+
+
+{-| One CSS custom property, as a whole `style` attribute.
+
+**Not** `Html.Attributes.style`. `elm/virtual-dom` applies a style node with
+`element.style[key] = value`, and a `CSSStyleDeclaration` silently ignores an
+assignment to a `--*` name — custom properties need `setProperty`, which Elm
+never calls. `Attr.attribute "style"` goes through `setAttribute` instead, so
+the declaration reaches the CSS parser.
+
+This is the same defect `Daisy.Tree.customThemeStyle` was written for, found a
+second time: `radial-progress` and `countdown` are the two daisyUI components
+whose _value_ is a custom property, and both were setting it the way that does
+nothing — a `radial-progress` drew an empty ring at every value and a
+`countdown` never moved. `docs/tree-decisions.md`, "Custom themes and the
+generator page", section 3 has the compiled `elm/virtual-dom` source.
+
+-}
+customProperty : String -> String -> Html.Attribute msg
+customProperty name value =
+    Attr.attribute "style" (name ++ ":" ++ value)
+
+
+{-| daisyUI's `--value`, the custom property `radial-progress` and `countdown`
+both read. It is a property name, not a class, so it is not a `tokens` entry.
+-}
+valueProperty : String
+valueProperty =
+    "--value"
 
 
 {-| Fire `msg` when the browser asks to dismiss a `<dialog>`.
@@ -1357,6 +1657,21 @@ themeAttrs theme =
 
 shell : Shell msg -> Maybe (PageHeader msg) -> Cta msg -> Sections msg -> List (Html msg)
 shell theShell theHeader theCta theSections =
+    let
+        placement =
+            ctaPlacementFor theShell theHeader theCta
+
+        ctaAt : CtaPlacement -> List (Html msg)
+        ctaAt wanted =
+            if placement == wanted then
+                [ ctaHtml theCta ]
+
+            else
+                []
+
+        headerHtml =
+            maybeHtml (pageHeaderHtml (ctaAt InHeader)) theHeader
+    in
     case theShell of
         Plain ->
             [ Html.main_
@@ -1370,9 +1685,7 @@ shell theShell theHeader theCta theSections =
                     , tokenTextSm
                     ]
                 ]
-                (maybeHtml pageHeaderHtml theHeader
-                    ++ sectionList [ ctaHtml theCta ] theSections
-                )
+                (plainBody headerHtml (ctaAt InNavbar) theSections)
             ]
 
         Dashboard d ->
@@ -1396,23 +1709,122 @@ shell theShell theHeader theCta theSections =
                         , center = d.navbar.center
                         , end = d.navbar.end
                         }
+                        (edgeTokens d.edges tokenBorderBottom)
                         [ shellDrawerButton ]
-                        [ ctaHtml theCta ]
+                        (ctaAt InNavbar)
                     , Html.main_
                         [ classes [ tokenFlex, tokenFlexCol, tokenGapMd, tokenPaddingLg, tokenTextSm ] ]
-                        (maybeHtml pageHeaderHtml theHeader
-                            ++ sectionList [] theSections
-                        )
+                        (headerHtml ++ sectionList [] theSections)
                     ]
                 , Html.div
                     [ classes [ drawerSidePart ] ]
                     [ Html.label
                         [ Attr.for shellDrawerId, classes [ drawerOverlayPart ] ]
                         []
-                    , sidebarHtml d
+                    , sidebarHtml (ctaAt InSidebarFooter) d
                     ]
                 ]
             ]
+
+
+{-| Where `Page.cta` actually goes.
+
+`Cta.placement` asks; this answers, because two of the three placements need a
+piece of chrome that may not be there. `InHeader` needs a `Page.header` and
+`InSidebarFooter` needs a `Shell.Dashboard`; when either is missing the button
+falls back to `InNavbar` rather than disappearing, since a page always renders
+its one primary action. Neither condition is expressible in the type — a page
+may legitimately have no header — so it is a total function rather than a
+constructor.
+
+-}
+ctaPlacementFor : Shell msg -> Maybe (PageHeader msg) -> Cta msg -> CtaPlacement
+ctaPlacementFor theShell theHeader theCta =
+    case theCta.placement of
+        InHeader ->
+            case theHeader of
+                Just _ ->
+                    InHeader
+
+                Nothing ->
+                    InNavbar
+
+        InSidebarFooter ->
+            case theShell of
+                Dashboard _ ->
+                    InSidebarFooter
+
+                Plain ->
+                    InNavbar
+
+        InNavbar ->
+            InNavbar
+
+
+{-| A `Shell.Plain` page's content column: the sections, with the page header
+inserted after any `Section.Navbar` bands that open the page.
+
+`Plain` draws no chrome of its own, so a page that needs cross-page navigation
+spends a section on a `Navbar` — and a title bar _above_ that navbar reads as a
+title for the whole site rather than for this page. The header therefore sits
+below the leading navbar bands and above the first content band, which is where
+`Shell.Dashboard` puts it relative to its own navbar.
+
+-}
+plainBody : List (Html msg) -> List (Html msg) -> Sections msg -> List (Html msg)
+plainBody headerHtml theCta theSections =
+    let
+        list =
+            sectionsToList theSections
+
+        chrome =
+            leadingNavbars list
+
+        -- `InNavbar` means *in the navbar*. `Shell.Plain` draws none of its
+        -- own, so a page that wants one spends a section on `Section.Navbar` —
+        -- and when it has, that band is where the CTA belongs. Only a `Plain`
+        -- page with no navbar at all falls back to the end of the last
+        -- section, which is where this placement has always put it.
+        rendered =
+            if chrome > 0 then
+                List.indexedMap
+                    (\i section_ ->
+                        sectionWith
+                            (if i == 0 then
+                                theCta
+
+                             else
+                                []
+                            )
+                            section_
+                    )
+                    list
+
+            else
+                sectionList theCta theSections
+    in
+    List.take chrome rendered ++ headerHtml ++ List.drop chrome rendered
+
+
+leadingNavbars : List (Section msg) -> Int
+leadingNavbars list =
+    case list of
+        (Navbar _) :: rest ->
+            1 + leadingNavbars rest
+
+        _ ->
+            0
+
+
+{-| The `border-b` / `border-r` pair, when `DashboardShell.edges` asks for it.
+-}
+edgeTokens : Bool -> String -> List String
+edgeTokens on side =
+    if on then
+        [ side, tokenBorderEdge ]
+
+    else
+        []
 
 
 {-| The sidebar panel: an optional brand row, the menu, and an optional footer
@@ -1424,24 +1836,44 @@ brand row above the menu and a user chip below it, the three have to share one
 templates build it.
 
 -}
-sidebarHtml : DashboardShell msg -> Html msg
-sidebarHtml d =
+sidebarHtml : List (Html msg) -> DashboardShell msg -> Html msg
+sidebarHtml theCta d =
     Html.div
         [ classes
-            [ tokenFlex
-            , tokenFlexCol
-            , tokenWSidebar
-            , tokenMinHScreen
-            , tokenBgBase
-            , tokenTextSm
-            ]
+            ([ tokenFlex
+             , tokenFlexCol
+             , tokenWSidebar
+             , tokenMinHScreen
+             , tokenBgBase
+             , tokenTextSm
+             ]
+                ++ edgeTokens d.edges tokenBorderRight
+            )
         ]
         (maybeHtml brandHtml d.brand
             ++ [ menuHtml [ tokenWFull, tokenGrow ] d.sidebar ]
-            ++ maybeHtml
-                (\f -> Html.div [ classes [ tokenPaddingSm, tokenMtAuto ] ] [ leaf f ])
-                d.sidebarFooter
+            ++ sidebarTail (theCta ++ maybeHtml leaf d.sidebarFooter)
         )
+
+
+{-| The bottom of the sidebar column: `Page.cta` (when it is placed there) over
+`DashboardShell.sidebarFooter`, in one `mt-auto` group.
+
+One group rather than two, because `mt-auto` pins whichever element carries it
+and there may be nought, one or two of them — a wrapper is what makes "the
+bottom of the panel" one place instead of a rule about which child goes first.
+
+-}
+sidebarTail : List (Html msg) -> List (Html msg)
+sidebarTail children =
+    if List.isEmpty children then
+        []
+
+    else
+        [ Html.div
+            [ classes [ tokenFlex, tokenFlexCol, tokenGapSm, tokenPaddingSm, tokenMtAuto ] ]
+            children
+        ]
 
 
 brandHtml : Brand -> Html msg
@@ -1466,8 +1898,12 @@ column, so it lands in the same place whichever shell the page uses and it costs
 none of the five-section budget.
 
 -}
-pageHeaderHtml : PageHeader msg -> Html msg
-pageHeaderHtml h =
+pageHeaderHtml : List (Html msg) -> PageHeader msg -> Html msg
+pageHeaderHtml theCta h =
+    let
+        trailing =
+            List.map leaf h.actions ++ theCta
+    in
     Html.div
         [ classes
             [ tokenFlex
@@ -1480,7 +1916,7 @@ pageHeaderHtml h =
         (Html.h1
             [ classes [ tokenTextBase, tokenFontSemibold ] ]
             [ Html.text h.title ]
-            :: (if List.isEmpty h.actions then
+            :: (if List.isEmpty trailing then
                     -- With nothing beside it, the trail is a direct child of
                     -- the row. daisyUI gives `.breadcrumbs` `margin-inline-
                     -- start: -.25rem` and its `<ul>` a matching
@@ -1492,16 +1928,24 @@ pageHeaderHtml h =
                     breadcrumbsHtml h.breadcrumbs
 
                 else
+                    -- With something beside it the trail is *not* pinned with
+                    -- `shrink-0`. It was, for the clipping reason above — but
+                    -- that reason is the case where the trail is the group's
+                    -- only child, and this branch is the case where it is not.
+                    -- A group that cannot shrink and holds a `breadcrumbs`
+                    -- trail plus a `btn` is ~380px of min-content, which at 375
+                    -- gave the *document* a horizontal scrollbar
+                    -- (`e2e/overflow.spec.ts`). Wrapping is the honest answer:
+                    -- the two land on separate lines instead.
                     [ Html.div
                         [ classes
                             [ tokenFlex
                             , tokenFlexWrap
                             , tokenItemsCenter
                             , tokenGap
-                            , tokenShrink0
                             ]
                         ]
-                        (breadcrumbsHtml h.breadcrumbs ++ List.map leaf h.actions)
+                        (breadcrumbsHtml h.breadcrumbs ++ trailing)
                     ]
                )
         )
@@ -1558,25 +2002,30 @@ ctaHtml c =
         |> withAura c.aura
 
 
+sectionsToList : Sections msg -> List (Section msg)
+sectionsToList theSections =
+    case theSections of
+        Sections1 a ->
+            [ a ]
+
+        Sections2 a b ->
+            [ a, b ]
+
+        Sections3 a b c ->
+            [ a, b, c ]
+
+        Sections4 a b c d ->
+            [ a, b, c, d ]
+
+        Sections5 a b c d e ->
+            [ a, b, c, d, e ]
+
+
 sectionList : List (Html msg) -> Sections msg -> List (Html msg)
 sectionList extra theSections =
     let
         list =
-            case theSections of
-                Sections1 a ->
-                    [ a ]
-
-                Sections2 a b ->
-                    [ a, b ]
-
-                Sections3 a b c ->
-                    [ a, b, c ]
-
-                Sections4 a b c d ->
-                    [ a, b, c, d ]
-
-                Sections5 a b c d e ->
-                    [ a, b, c, d, e ]
+            sectionsToList theSections
 
         last =
             List.length list - 1
@@ -1620,7 +2069,7 @@ sectionWith extra theSection =
                 )
 
         Navbar parts ->
-            navbarHtml parts [] extra
+            navbarHtml parts [] [] extra
 
         Footer config blocks ->
             Html.footer
@@ -1633,10 +2082,15 @@ sectionWith extra theSection =
                 ]
                 (List.map (blockIn InFooter) blocks ++ extra)
 
-        Grid config blocks ->
+        Grid (Columns config blocks) ->
             Html.div
                 [ classes (tokenGrid :: gridColumnsTokens config.columns ++ [ tokenGap ]) ]
                 (List.map block blocks ++ extra)
+
+        Grid (Spans items) ->
+            Html.div
+                [ classes [ tokenGrid, tokenGridCols1, tokenGridCols12Lg, tokenGap ] ]
+                (List.map gridItemHtml items ++ extra)
 
         Stack config blocks ->
             Html.div
@@ -1662,10 +2116,10 @@ let a notification badge sit on top of the next control in the row
 `.indicator`).
 
 -}
-navbarHtml : NavbarParts msg -> List (Html msg) -> List (Html msg) -> Html msg
-navbarHtml parts before after =
+navbarHtml : NavbarParts msg -> List String -> List (Html msg) -> List (Html msg) -> Html msg
+navbarHtml parts extra before after =
     Html.div
-        [ classes [ SNavbar.component, tokenBgBase, tokenGapSm, tokenPadding ] ]
+        [ classes ([ SNavbar.component, tokenBgBase, tokenGapSm, tokenPadding ] ++ extra) ]
         -- `navbar-start` and `navbar-end` are each exactly 50% wide, so their
         -- contents overlap rather than shrink once they no longer fit; they
         -- wrap inside their own half instead.
@@ -1711,6 +2165,86 @@ gridColumnsTokens columns =
 
         Cols4 ->
             [ tokenGridCols1, tokenGridCols2Sm, tokenGridCols4Lg ]
+
+
+{-| One cell of a `GridSection.Spans` band: the block, in a wrapper that claims
+its tracks.
+
+The wrapper is the renderer's, not the block's: `col-span-*` is a property of
+the _cell_, and a block that carried it would be a block that only works inside
+one kind of grid. Below `lg` the wrapper claims nothing and the single column
+of `tokenGridCols1` decides the width.
+
+-}
+gridItemHtml : GridItem msg -> Html msg
+gridItemHtml item =
+    Html.div
+        [ classes (spanToken item.span :: cellColumnsTokens item.columns) ]
+        (List.map block item.blocks)
+
+
+{-| How a cell arranges its own blocks: one fixed-gap column, or a grid of two
+or three. The multi-column shapes step down the way `Section.Grid`'s counts do —
+one column on a phone, two from `sm` — because a cell of a twelve-column band is
+already narrow before it is divided again.
+
+`items-start`, unlike every other grid here: these cells are _cards of their
+own_, and a grid row stretches its children to the tallest of them, so a short
+panel beside a tall one would be padded out to match it. daisyUI's own preview
+grid lets each card be its own height.
+
+-}
+cellColumnsTokens : CellColumns -> List String
+cellColumnsTokens columns =
+    case columns of
+        CellOne ->
+            [ tokenFlex, tokenFlexCol, tokenGap ]
+
+        CellTwo ->
+            [ tokenGrid, tokenGridCols1, tokenGridCols2Sm, tokenGap, tokenItemsStart ]
+
+        CellThree ->
+            [ tokenGrid, tokenGridCols1, tokenGridCols2Sm, tokenGridCols3Xl, tokenGap, tokenItemsStart ]
+
+
+spanToken : Span -> String
+spanToken value =
+    case value of
+        Span1 ->
+            tokenColSpan1Lg
+
+        Span2 ->
+            tokenColSpan2Lg
+
+        Span3 ->
+            tokenColSpan3Lg
+
+        Span4 ->
+            tokenColSpan4Lg
+
+        Span5 ->
+            tokenColSpan5Lg
+
+        Span6 ->
+            tokenColSpan6Lg
+
+        Span7 ->
+            tokenColSpan7Lg
+
+        Span8 ->
+            tokenColSpan8Lg
+
+        Span9 ->
+            tokenColSpan9Lg
+
+        Span10 ->
+            tokenColSpan10Lg
+
+        Span11 ->
+            tokenColSpan11Lg
+
+        Span12 ->
+            tokenColSpan12Lg
 
 
 alignToken : Align -> String
@@ -1795,8 +2329,8 @@ blockIn context theBlock =
                     items
                 )
 
-        Chart config data ->
-            chartHtml config data
+        Chart config data interaction ->
+            chartHtml config data interaction
 
         Chat messages ->
             chatHtml messages
@@ -1821,12 +2355,7 @@ blockIn context theBlock =
             formHtml fieldsets
 
         ListBlock rows ->
-            Html.ul
-                [ classes [ SList.component ] ]
-                (List.map
-                    (\row -> Html.li [ classes [ listRowClass ] ] (List.map listCellHtml row.cells))
-                    rows
-                )
+            listHtml rows
 
         Menu config items ->
             menuHtml [] { config = config, items = items }
@@ -1996,7 +2525,7 @@ cardHtml config parts =
         ]
         (maybeHtml (\f -> Html.figure [] [ leaf f ]) parts.figure
             ++ [ Html.div
-                    [ classes [ cardBodyPart ] ]
+                    [ classes (cardBodyPart :: cardPaddingTokens config.padding) ]
                     (cardHeaderHtml parts
                         ++ List.map cardChildHtml parts.body
                         ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map leaf parts.actions) ]
@@ -2005,6 +2534,19 @@ cardHtml config parts =
         )
         |> withHover3d config.hover3d
         |> withAura config.aura
+
+
+{-| `CardPadding` as a class list. `PaddingDefault` adds nothing, so daisyUI's
+own `--card-p` decides; `PaddingDashboard` overrides it with the 20px utility.
+-}
+cardPaddingTokens : CardPadding -> List String
+cardPaddingTokens padding =
+    case padding of
+        PaddingDefault ->
+            []
+
+        PaddingDashboard ->
+            [ tokenPaddingCard ]
 
 
 {-| The card's header row: `titleIcon` and `card-title` on the left,
@@ -2069,14 +2611,17 @@ cardChildHtml child =
         CardAlert config leaves ->
             alertHtml config leaves
 
-        CardChart config data ->
-            chartHtml config data
+        CardChart config data interaction ->
+            chartHtml config data interaction
 
         CardChat messages ->
             chatHtml messages
 
         CardTable config rows ->
             tableHtml config rows
+
+        CardList rows ->
+            listHtml rows
 
         CardStat config items ->
             statsHtml InCard config items
@@ -2149,6 +2694,21 @@ statDirectionClasses direction =
 
         Responsive ->
             [ SStat.directionToClass SStat.Vertical, tokenStatsHorizontalLg ]
+
+
+{-| daisyUI's `list`, as a block and as a `card-body` child. `CardList` exists
+for the same reason `CardTable` does: "a list of rows in a panel" is the shape
+half of a dashboard's cards have, and a `card-body` is a column that cannot hold
+a `Block`.
+-}
+listHtml : List (ListRow msg) -> Html msg
+listHtml rows =
+    Html.ul
+        [ classes [ SList.component ] ]
+        (List.map
+            (\row -> Html.li [ classes [ listRowClass ] ] (List.map listCellHtml row.cells))
+            rows
+        )
 
 
 listCellHtml : ListCell msg -> Html msg
@@ -2311,14 +2871,41 @@ menuHtml extra spec =
                 ++ extra
             )
         ]
-        (List.map menuItemHtml spec.items)
+        (List.map (menuItemHtml spec.config.activeStyle) spec.items)
 
 
-menuItemHtml : MenuItem msg -> Html msg
-menuItemHtml (MenuItem item) =
+{-| The classes on an active row.
+
+`SolidActive` is daisyUI's `menu-active`, whose background is
+`--menu-active-bg: var(--color-neutral)`. `TintedActive` is the quieter row
+daisyUI's own dashboard templates use — one surface step up from the panel, at
+the label weight, in the page's ordinary text colour — and it emits **no**
+`menu-active`, because that class _is_ the solid slab: daisyUI ships no second
+active style, so the tinted one is two utilities the renderer picks (measured
+off those templates: `background-color` = the theme's base-200,
+`font-weight: 500`, `color` = base-content).
+
+-}
+menuActiveTokens : MenuActiveStyle -> List String
+menuActiveTokens style =
+    case style of
+        SolidActive ->
+            [ SMenu.modifierToClass SMenu.Active ]
+
+        TintedActive ->
+            [ tokenBgGround, tokenFontMedium ]
+
+
+menuItemHtml : MenuActiveStyle -> MenuItem msg -> Html msg
+menuItemHtml activeStyle (MenuItem item) =
     let
         stateClasses =
-            flag item.active (SMenu.modifierToClass SMenu.Active)
+            (if item.active then
+                menuActiveTokens activeStyle
+
+             else
+                []
+            )
                 ++ flag item.disabled (SMenu.modifierToClass SMenu.Disabled)
                 ++ flag item.focus (SMenu.modifierToClass SMenu.Focus)
 
@@ -2332,7 +2919,13 @@ menuItemHtml (MenuItem item) =
 
     else if List.isEmpty item.submenu then
         Html.li []
-            [ Html.a
+            [ (case item.href of
+                Just _ ->
+                    Html.a
+
+                Nothing ->
+                    clickableHtml item.onClick
+              )
                 (classes stateClasses
                     :: optAttr Attr.href item.href
                     ++ onClickAttrs item.onClick
@@ -2345,7 +2938,7 @@ menuItemHtml (MenuItem item) =
             [ Html.span (classes (menuDropdownTogglePart :: stateClasses) :: onClickAttrs item.onClick) body
             , Html.ul
                 [ classes [ menuDropdownPart ] ]
-                (List.map menuItemHtml item.submenu)
+                (List.map (menuItemHtml activeStyle) item.submenu)
             ]
 
 
@@ -2359,31 +2952,60 @@ dashboard templates do to it:
     `text-sm` / `text-2xl font-semibold` instead. The de-emphasised _colour_
     stays daisyUI's, because it is the one those two parts already paint.
   - `trend` shares the `stat-value` line, so the number and its delta badge are
-    one baseline rather than two rows.
+    one baseline rather than two rows — and the row **wraps**, because `.stats`
+    is `overflow-x: auto` in both flow directions: a tile whose number plus
+    delta is wider than its cell would otherwise become a scrollable region,
+    and a scrollable region is a tab stop of its own (`e2e/keyboard.spec.ts`).
+    A delta that does not fit goes under the number instead of off the side.
   - `stat-figure` is a painted tile — `bg-base-200` and a fixed 8px corner around
     the glyph — instead of a bare icon floating at the edge.
+  - the tile's own gutter is 20px (`tokenPaddingCard`), not daisyUI's
+    `1rem`/`1.5rem`. 24px of inline padding either side of a 269px metric cell
+    is 48px of the 221px a number, its delta and a figure have to share; every
+    dashboard template sets ~20px there for exactly that reason, and it is the
+    same figure a `card-body` uses (`CardPadding.PaddingDashboard`).
 
 -}
 statItemHtml : StatItem msg -> Html msg
 statItemHtml item =
     Html.div
-        [ classes [ statPart ] ]
+        [ classes [ statPart, tokenPaddingCard ] ]
         (maybeHtml
             (\f ->
                 Html.div
-                    [ classes [ statFigurePart, tokenBgGround, tokenRoundedLg, tokenPaddingSm ] ]
+                    [ classes
+                        [ statFigurePart
+                        , tokenSelfStart
+                        , tokenBgGround
+                        , tokenRoundedLg
+                        , tokenPaddingSm
+                        ]
+                    ]
                     [ leaf f ]
             )
             item.figure
+            ++ (if item.title == "" then
+                    -- A headline stat is a number, its delta and a caption
+                    -- under them, with nothing above: daisyUI's dashboard
+                    -- templates write it that way, and an empty `stat-title`
+                    -- would still take a line of its own. Same rule as an
+                    -- empty `breadcrumbs` trail and a `Tab` with no content —
+                    -- a part with nothing in it is not emitted.
+                    []
+
+                else
+                    [ Html.div
+                        [ classes [ statTitlePart, tokenTextSm, tokenFontMedium ] ]
+                        [ Html.text item.title ]
+                    ]
+               )
             ++ [ Html.div
-                    [ classes [ statTitlePart, tokenTextSm, tokenFontMedium ] ]
-                    [ Html.text item.title ]
-               , Html.div
                     [ classes
                         [ statValuePart
                         , tokenHeading2
                         , tokenFontSemibold
                         , tokenFlex
+                        , tokenFlexWrap
                         , tokenItemsCenter
                         , tokenGapSm
                         ]
@@ -2486,14 +3108,16 @@ in. A tab with no content therefore emits no panel at all.
 -}
 tabHtml : Tab msg -> List (Html msg)
 tabHtml tab =
-    Html.a
-        [ classes
+    clickableHtml tab.onClick
+        (classes
             ([ tabPart ]
                 ++ flag tab.active (STab.modifierToClass STab.Active)
                 ++ flag tab.disabled (STab.modifierToClass STab.Disabled)
             )
-        , Attr.attribute "role" "tab"
-        ]
+            :: Attr.attribute "role" "tab"
+            :: Attr.attribute "aria-selected" (boolAttr tab.active)
+            :: onClickAttrs tab.onClick
+        )
         [ Html.text tab.label ]
         :: (if List.isEmpty tab.content then
                 []
@@ -2574,7 +3198,7 @@ leafWith extra theLeaf =
             Html.span
                 [ classes (SCountdown.component :: extra) ]
                 [ Html.span
-                    [ Attr.style "--value" (String.fromInt (round value)) ]
+                    [ customProperty valueProperty (String.fromInt (round value)) ]
                     [ Html.text (String.fromInt (round value)) ]
                 ]
 
@@ -2706,11 +3330,20 @@ leafWith extra theLeaf =
                 |> withTooltip config.tooltip
 
         RadialProgress data ->
+            -- `role="progressbar"` takes no name from its content, so a
+            -- `radial-progress` with only a number in it is axe's
+            -- `aria-progressbar-name` (serious). `ariaLabel` is the name;
+            -- without one the visible label is used, which is at least the
+            -- value the dial is showing.
             Html.div
-                [ classes (SRadialProgress.component :: extra)
-                , Attr.style "--value" (String.fromFloat data.value)
-                , Attr.attribute "role" "progressbar"
-                ]
+                (classes (SRadialProgress.component :: extra)
+                    :: customProperty valueProperty (String.fromFloat data.value)
+                    :: Attr.attribute "role" "progressbar"
+                    :: Attr.attribute "aria-valuenow" (String.fromFloat data.value)
+                    :: ariaLabelAttrs
+                        (Just (Maybe.withDefault data.label data.ariaLabel))
+                        Nothing
+                )
                 [ Html.text data.label ]
 
         Radio config data ->
@@ -2991,7 +3624,7 @@ badgeHtml extra config label =
                 ++ extra
             )
         ]
-        [ Html.text label ]
+        (maybeHtml (iconHtml [] buttonIconConfig) config.icon ++ [ Html.text label ])
         |> withTooltip config.tooltip
 
 
@@ -3203,6 +3836,14 @@ megamenuItemHtml item =
         ]
 
 
+{-| What a rating's radios are called when `RatingConfig.ariaLabel` says
+nothing. Each radio is named `"<this> <n>"`, so the five are distinct.
+-}
+ratingDefaultLabel : String
+ratingDefaultLabel =
+    "Rating"
+
+
 ratingHtml : List String -> RatingConfig msg -> RatingData -> Html msg
 ratingHtml extra config data =
     let
@@ -3224,13 +3865,23 @@ ratingHtml extra config data =
             else
                 [ SMask.modifierToClass SMask.Half2 ]
 
+        -- Every radio of a rating needs its own accessible name. It is an
+        -- `<input>` with no label element and no text, so without one axe's
+        -- `label` rule is a *critical* violation on all five of them; and one
+        -- name shared across five radios would be five controls called the same
+        -- thing. daisyUI's own docs example writes `aria-label="1 star"` per
+        -- radio, which is what this is: the group's name (`RatingConfig.ariaLabel`,
+        -- or `ratingDefaultLabel` when it has none) and the value it selects.
+        nameOf i =
+            Just (Maybe.withDefault ratingDefaultLabel config.ariaLabel ++ " " ++ String.fromInt i)
+
         star i =
             Html.input
                 (classes ([ SMask.component, SMask.styleToClass shape ] ++ halfOf i)
                     :: Attr.type_ "radio"
                     :: Attr.name data.name
                     :: Attr.checked (i == data.value)
-                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                    :: (ariaLabelAttrs (nameOf i) config.tooltip
                             ++ onClickAttrs (Maybe.map (\f -> f i) config.onRate)
                        )
                 )
@@ -3244,7 +3895,9 @@ ratingHtml extra config data =
                     :: Attr.type_ "radio"
                     :: Attr.name data.name
                     :: Attr.checked (data.value == 0)
-                    :: onClickAttrs (Maybe.map (\f -> f 0) config.onRate)
+                    :: (ariaLabelAttrs (nameOf 0) config.tooltip
+                            ++ onClickAttrs (Maybe.map (\f -> f 0) config.onRate)
+                       )
                 )
                 []
     in
@@ -3393,32 +4046,76 @@ themeSelectHtml extra data =
         ThemeAsDropdown ->
             -- daisyUI's documented "Theme Controller using a dropdown": a `btn`
             -- trigger and a `dropdown-content` list of `theme-controller`
-            -- radios. This is the only presentation that stays one control
-            -- wide no matter how many themes it offers.
-            Html.div
-                [ classes (SDropdown.component :: extra) ]
-                [ -- Exactly daisyUI's documented trigger: a bare `btn` with
-                  -- the control's name in it. `tests/CorpusTest` compares this
-                  -- against the docs example class for class, so it cannot be
-                  -- restyled into the icon-only circle a dashboard navbar
-                  -- would prefer (`docs/tree-decisions.md`, Nexus design pass).
-                  Html.div
+            -- radios. `tests/CorpusTest` compares this trigger against the docs
+            -- example class for class, so it may carry `btn` and nothing else.
+            themeDropdownHtml extra
+                data
+                (Html.div
                     [ Attr.tabindex 0
                     , Attr.attribute "role" "button"
                     , classes [ SButton.component ]
                     ]
                     [ Html.text "Theme" ]
-                , Html.ul
-                    [ Attr.tabindex -1
-                    , classes [ dropdownContentPart, tokenBgBase, tokenPaddingSm ]
+                )
+                control
+
+        ThemeAsIconDropdown ->
+            -- The same dropdown with the trigger daisyUI's own dashboard
+            -- templates use: an icon-only ghost circle. It is a separate
+            -- constructor rather than a flag precisely because the corpus pins
+            -- the markup above; here the name comes from the glyph's
+            -- `aria-label`, since the button carries no text.
+            themeDropdownHtml extra
+                data
+                (Html.div
+                    [ Attr.tabindex 0
+                    , Attr.attribute "role" "button"
+                    , classes
+                        [ SButton.component
+                        , SButton.styleToClass SButton.Ghost
+                        , SButton.modifierToClass SButton.Circle
+                        , SButton.sizeToClass SButton.Sm
+                        ]
                     ]
-                    (List.map (\theme -> Html.li [] [ control theme ]) data.themes)
-                ]
+                    [ iconHtml [] themeTriggerIconConfig Icon.Swatch ]
+                )
+                control
 
         _ ->
             Html.div
                 [ classes ([ tokenFlex, tokenFlexWrap, tokenGapSm ] ++ extra) ]
                 (List.map control data.themes)
+
+
+{-| The shared half of the two dropdown presentations: the `dropdown` wrapper
+and the `dropdown-content` list of `theme-controller` radios. Only the trigger
+differs.
+-}
+themeDropdownHtml :
+    List String
+    -> ThemeSelectData msg
+    -> Html msg
+    -> (Theme -> Html msg)
+    -> Html msg
+themeDropdownHtml extra data trigger control =
+    Html.div
+        [ classes (SDropdown.component :: extra) ]
+        [ trigger
+        , Html.ul
+            [ Attr.tabindex -1
+            , classes [ dropdownContentPart, tokenBgBase, tokenPaddingSm ]
+            ]
+            (List.map (\theme -> Html.li [] [ control theme ]) data.themes)
+        ]
+
+
+{-| The glyph inside a `ThemeAsIconDropdown` trigger. It carries the control's
+accessible name, because a `role=button` element with no text has none —
+the same shape `shellDrawerButton` uses.
+-}
+themeTriggerIconConfig : IconConfig
+themeTriggerIconConfig =
+    { size = IconMd, label = Just "Theme" }
 
 
 themePresentationClasses : ThemePresentation -> List String
@@ -3440,11 +4137,22 @@ themePresentationClasses presentation =
             [ SSwap.component ]
 
         ThemeAsDropdown ->
-            [ SButton.component
-            , SButton.sizeToClass SButton.Sm
-            , SButton.modifierToClass SButton.Block
-            , SButton.styleToClass SButton.Ghost
-            ]
+            themeDropdownItemClasses
+
+        ThemeAsIconDropdown ->
+            themeDropdownItemClasses
+
+
+{-| One row of either dropdown's panel: daisyUI's documented full-width ghost
+`btn` around the hidden `theme-controller` radio.
+-}
+themeDropdownItemClasses : List String
+themeDropdownItemClasses =
+    [ SButton.component
+    , SButton.sizeToClass SButton.Sm
+    , SButton.modifierToClass SButton.Block
+    , SButton.styleToClass SButton.Ghost
+    ]
 
 
 themePresentationInputType : ThemePresentation -> String
@@ -3466,6 +4174,9 @@ themePresentationInputType presentation =
             "checkbox"
 
         ThemeAsDropdown ->
+            "radio"
+
+        ThemeAsIconDropdown ->
             "radio"
 
 
@@ -4056,30 +4767,129 @@ labelFor labels value =
     List.drop (round value) labels |> List.head |> Maybe.withDefault ""
 
 
-chartHtml : ChartConfig -> ChartData -> Html msg
-chartHtml config data =
+{-| A chart, its legend, and — when the block asked for one — its hover
+behaviour.
+
+The drawing sits inside an `Html.Keyed` node whose key is
+[`chartKey`](#chartKey), so switching the dataset behind a chart (a
+`Day | Month | Year` switch) **remounts** the SVG instead of diffing it. That is
+what replays the entry animation: the `daisy-anim-*` rules in `Daisy.Css` are
+CSS animations on elements elm-charts creates, and a CSS animation runs when its
+element is created, not when its attributes change.
+
+-}
+chartHtml : ChartConfig -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+chartHtml config data interaction =
     Html.div
         [ classes [ tokenFlex, tokenFlexCol, tokenGapSm, tokenWFull ] ]
-        [ Html.div
-            [ classes [ tokenChartHeight, tokenWFull, tokenPadding ] ]
-            [ case config of
-                Line ->
-                    seriesChart [ CA.monotone ] data
-
-                Area ->
-                    seriesChart [ CA.monotone, CA.opacity 0.25 ] data
-
-                Bar ->
-                    barChart False data
-
-                StackedBar ->
-                    barChart True data
-
-                Donut ->
-                    donutChart data
+        [ Keyed.node "div"
+            [ classes
+                ([ tokenChartHeight, tokenWFull, tokenPadding ]
+                    ++ chartAnimationTokens config
+                )
             ]
+            [ ( chartKey config data, chartFigure config data interaction ) ]
         , chartLegend data
         ]
+
+
+{-| The identity of a drawing, as a string: the chart kind, the bin labels and
+every point.
+
+Two datasets that differ anywhere produce different keys, so `Html.Keyed`
+replaces the node; two renders of the same data produce the same key, so a
+hover (which changes only `ChartInteraction.hovered`) diffs in place and does
+**not** restart the animation.
+
+-}
+chartKey : ChartConfig -> ChartData -> String
+chartKey config data =
+    String.join "/"
+        (chartKindKey config
+            :: data.xLabels
+            ++ List.concatMap
+                (\s -> s.name :: List.map String.fromFloat s.points)
+                data.series
+        )
+
+
+chartKindKey : ChartConfig -> String
+chartKindKey config =
+    case config of
+        Line style ->
+            "Line" ++ switchKey style.stepped
+
+        Bar style ->
+            "Bar" ++ switchKey style.stacked ++ switchKey style.track ++ switchKey style.rounded
+
+        Area ->
+            "Area"
+
+        Donut ->
+            "Donut"
+
+
+{-| One switch of a chart style, as a character of `chartKey`.
+
+`Y`/`N` rather than a digit, and that is not cosmetic:
+`tools/render-class-audit.js` rejects any free string literal in this module
+that _looks_ like a CSS class, and a bare digit does. An upper-case letter
+cannot be a Tailwind utility, so the key alphabet says on its face that it is
+not a class.
+
+-}
+switchKey : Bool -> String
+switchKey on =
+    if on then
+        "Y"
+
+    else
+        "N"
+
+
+{-| Which entry animation a chart kind gets. The class goes on the container the
+renderer owns; the rules in `Daisy.Css` descend from it onto the elements
+elm-charts draws, because the renderer cannot put a class on those.
+-}
+chartAnimationTokens : ChartConfig -> List String
+chartAnimationTokens config =
+    case config of
+        Bar _ ->
+            [ tokenAnimBars ]
+
+        Line _ ->
+            [ tokenAnimLine ]
+
+        Area ->
+            [ tokenAnimLine ]
+
+        Donut ->
+            []
+
+
+chartFigure : ChartConfig -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+chartFigure config data interaction =
+    case config of
+        Line style ->
+            seriesChart (interpolationFor style) data interaction
+
+        Area ->
+            seriesChart (CA.monotone :: CA.opacity 0.25 :: []) data interaction
+
+        Bar style ->
+            barChart style data interaction
+
+        Donut ->
+            donutChart data
+
+
+interpolationFor : Chart.LineStyle -> List (CA.Attribute CS.Interpolation)
+interpolationFor style =
+    if style.stepped then
+        [ CA.stepped ]
+
+    else
+        [ CA.monotone ]
 
 
 {-| The key under a chart: one `status` dot per series, in the series' own
@@ -4153,62 +4963,434 @@ statusColorFor color =
             SStatus.Neutral
 
 
-seriesChart : List (CA.Attribute CS.Interpolation) -> ChartData -> Html msg
-seriesChart interpolation data =
+
+-- CHART INTERACTION ---------------------------------------------------------
+
+
+{-| The `mousemove` / `click` / `mouseleave` handlers of an interactive chart.
+
+`click` fires the same message as `mousemove` because a touch produces no
+`mousemove`: on a phone the tooltip has to arrive on tap. `mouseleave` clears
+the hover; a tap elsewhere in the chart moves it, and a tap outside leaves the
+last column highlighted, which is what every touch chart does.
+
+`Chart.Item` never leaves this module: the handler resolves the nearest item to
+the **x index** of the datum behind it, which is what
+`Daisy.Chart.ChartInteraction` is written in.
+
+-}
+chartEvents : Maybe (Chart.ChartInteraction msg) -> List (CE.Attribute x Point msg)
+chartEvents interaction =
+    case interaction of
+        Nothing ->
+            []
+
+        Just handlers ->
+            [ CE.onMouseMove (handlers.onHover << hoveredIndex) (CE.getNearest CI.any)
+            , CE.onClick (handlers.onHover << hoveredIndex) (CE.getNearest CI.any)
+            , CE.onMouseLeave (handlers.onHover Nothing)
+            ]
+
+
+hoveredIndex : List (CI.One Point CI.Any) -> Maybe Int
+hoveredIndex items =
+    List.head items |> Maybe.map (CI.getData >> .x >> round)
+
+
+{-| The band behind the hovered column, and the tooltip card above it.
+
+Both are drawn from the _group_ elm-charts resolved for the hovered x, never
+from arithmetic of ours: `CI.getLimits` gives the bin's own extent, so the band
+lines up with the bars whatever spacing or margin the bar series uses.
+
+A line or area chart has no bin, so the group's limits are a single x; the band
+is widened to `bandHalfWidth` either side of it, which is the crosshair every
+dashboard draws there.
+
+-}
+chartHover : Bool -> ChartData -> Maybe (Chart.ChartInteraction msg) -> List (C.Element Point msg)
+chartHover binned data interaction =
+    case Maybe.andThen .hovered interaction of
+        Nothing ->
+            []
+
+        Just index ->
+            let
+                -- Only the items of the series the *caller* named, which is
+                -- what excludes the track: a tracked bar chart draws two
+                -- `C.bars` elements at every x, so binning everything would
+                -- resolve two groups per column and paint two bands and two
+                -- tooltips. The track carries no `C.named`, so filtering to
+                -- the data's own series names leaves exactly the real one.
+                grouping =
+                    CI.andThen
+                        (if binned then
+                            CI.bins
+
+                         else
+                            CI.sameX
+                        )
+                        (CI.named (List.map .name data.series))
+
+                overGroup toElements =
+                    C.eachCustom grouping
+                        (\_ group ->
+                            if round (CI.getOneData group).x == index then
+                                toElements group
+
+                            else
+                                []
+                        )
+            in
+            [ overGroup (hoverBand binned)
+            , overGroup (hoverTooltip data index)
+            ]
+
+
+hoverBand : Bool -> CI.Many Point CI.Any -> List (C.Element Point msg)
+hoverBand binned group =
+    let
+        limits =
+            CI.getLimits group
+
+        ( x1, x2 ) =
+            if binned then
+                ( limits.x1, limits.x2 )
+
+            else
+                ( limits.x1 - bandHalfWidth, limits.x2 + bandHalfWidth )
+    in
+    [ C.rect
+        [ CA.x1 x1
+        , CA.x2 x2
+        , CA.color Chart.bandColorToCss
+        , CA.border Chart.bandColorToCss
+        , CA.opacity 0.55
+        , CA.attrs [ svgClasses [ tokenAnimBand ] ]
+        ]
+    ]
+
+
+{-| Half the width of the crosshair band on a chart with no bins, in x units.
+One bin is 1.0 wide, so this is a little under half a bin either side.
+-}
+bandHalfWidth : Float
+bandHalfWidth =
+    0.4
+
+
+hoverTooltip : ChartData -> Int -> CI.Many Point CI.Any -> List (C.Element Point msg)
+hoverTooltip data index group =
+    [ C.tooltip group
+        [ CA.onTopOrBottom, CA.offset 10, CA.noArrow ]
+        -- elm-charts paints its own 5px/8px box with a background, a 1px
+        -- border and a 3px corner. The card below is the whole tooltip, so
+        -- that box is flattened to nothing rather than drawn behind it; these
+        -- are inline styles, not classes, because the values they override are
+        -- inline styles too and no class could win against them.
+        [ Attr.style "padding" "0"
+        , Attr.style "background" "transparent"
+        , Attr.style "border" "0"
+        , Attr.style "border-radius" "0"
+        ]
+        [ tooltipCard data index ]
+    ]
+
+
+{-| The hover card: the bin's label as a shaded header, then one row per series
+— the series' `status` dot, its name, and its value at this x.
+
+It is built from `tokens` rather than from `card`: a `.card` corner is
+`--radius-box`, which is 1rem or more in daisyUI's stock themes and would make a
+120px card look like a pill, and the same reasoning already keeps
+`tokenRoundedLg` in the table (`rounded-box` is on `RenderPurityTest`'s
+`forbidden` list for it).
+
+The content is `Html Never`, which is what `Chart.tooltip` takes: a tooltip has
+`pointer-events: none` and can therefore carry no handler at all — the type says
+so rather than a comment.
+
+-}
+tooltipCard : ChartData -> Int -> Html Never
+tooltipCard data index =
+    Html.div
+        [ classes
+            [ tokenAnimTooltip
+            , tokenFlex
+            , tokenFlexCol
+            , tokenBgBase
+            , tokenRoundedLg
+            , tokenOverflowHidden
+            , tokenShadowSm
+            , tokenTextXs
+            ]
+        ]
+        [ Html.div
+            [ classes [ tokenBgGround, tokenPaddingSm, tokenFontMedium ] ]
+            [ Html.text (labelFor data.xLabels (toFloat index)) ]
+        , Html.div
+            [ classes [ tokenFlex, tokenFlexCol, tokenGapSm, tokenPaddingSm ] ]
+            (List.map (tooltipRow index) data.series)
+        ]
+
+
+tooltipRow : Int -> Series -> Html Never
+tooltipRow index series =
+    Html.div
+        [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
+        [ Html.span
+            [ classes [ SStatus.component, SStatus.colorToClass (statusColorFor series.color) ] ]
+            []
+        , Html.span [ classes [ tokenGrow ] ] [ Html.text series.name ]
+        , Html.span
+            [ classes [ tokenFontMedium ] ]
+            [ Html.text (formatValue (pointAt index series)) ]
+        ]
+
+
+{-| A data value as text: an integer stays an integer, so `126` does not read
+`126.0` in a tooltip.
+-}
+formatValue : Float -> String
+formatValue value =
+    if value == toFloat (round value) then
+        String.fromInt (round value)
+
+    else
+        String.fromFloat value
+
+
+
+-- CHART KINDS ---------------------------------------------------------------
+
+
+seriesChart :
+    List (CA.Attribute CS.Interpolation)
+    -> ChartData
+    -> Maybe (Chart.ChartInteraction msg)
+    -> Html msg
+seriesChart interpolation data interaction =
     let
         points =
             toPoints data
     in
     C.chart
-        [ CA.height chartViewboxHeight, CA.width chartWidth, CA.margin chartMargin ]
-        [ C.yLabels [ CA.withGrid ]
-        , C.xLabels
-            [ CA.amount (List.length data.xLabels)
-            , CA.ints
-            , CA.format (labelFor data.xLabels)
-            ]
-        , C.series .x
-            (List.indexedMap
-                (\i s ->
-                    C.named s.name
-                        (C.interpolated (valueAt i)
-                            (CA.color (Chart.semanticColorToCss s.color) :: interpolation)
-                            []
+        (CA.height chartViewboxHeight
+            :: CA.width chartWidth
+            :: CA.margin chartMargin
+            :: chartEvents interaction
+        )
+        (chartHover False data interaction
+            ++ [ C.yLabels [ CA.withGrid ]
+               , C.xLabels
+                    [ CA.amount (List.length data.xLabels)
+                    , CA.ints
+                    , CA.format (labelFor data.xLabels)
+                    ]
+               , C.series .x
+                    (List.indexedMap
+                        (\i s ->
+                            C.named s.name
+                                (C.interpolated (valueAt i)
+                                    (CA.color (Chart.semanticColorToCss s.color)
+                                        :: dashedAttrs s
+                                        ++ interpolation
+                                    )
+                                    []
+                                )
                         )
-                )
-                data.series
-            )
-            points
-        ]
+                        data.series
+                    )
+                    points
+               ]
+        )
 
 
-barChart : Bool -> ChartData -> Html msg
-barChart stacked data =
+{-| A projection's line: `Series.dashed`. The pattern is in viewBox units, and
+the viewBox is 800 wide (see `chartWidth`), so it is scaled with everything else
+in the drawing.
+-}
+dashedAttrs : Series -> List (CA.Attribute CS.Interpolation)
+dashedAttrs series =
+    if series.dashed then
+        [ CA.dashed [ 8, 6 ] ]
+
+    else
+        []
+
+
+barChart : Chart.BarStyle -> ChartData -> Maybe (Chart.ChartInteraction msg) -> Html msg
+barChart style data interaction =
     let
         points =
             toPoints data
+
+        barAttrs =
+            if style.rounded then
+                [ CA.roundTop barCornerRadius, CA.roundBottom barCornerRadius ]
+
+            else
+                []
 
         properties =
             List.indexedMap
                 (\i s ->
                     C.named s.name
-                        (C.bar (valueAt i) [ CA.color (Chart.semanticColorToCss s.color) ])
+                        (C.bar (valueAt i)
+                            (CA.color (Chart.semanticColorToCss s.color) :: barAttrs)
+                        )
                 )
                 data.series
+
+        top =
+            trackTop style.stacked points
     in
     C.chart
-        [ CA.height chartViewboxHeight, CA.width chartWidth, CA.margin chartMargin ]
-        [ C.yLabels [ CA.withGrid ]
-        , C.binLabels .label [ CA.moveDown 18 ]
-        , C.bars []
-            (if stacked then
-                [ C.stacked properties ]
+        (CA.height chartViewboxHeight
+            :: CA.width chartWidth
+            :: CA.margin (barMargin style)
+            :: barDomain style top
+            ++ chartEvents interaction
+        )
+        (chartHover True data interaction
+            ++ trackBars style top barAttrs points
+            ++ barAxis style
+            ++ [ C.binLabels .label [ CA.moveDown 18 ]
+               , C.bars barLayout
+                    (if style.stacked then
+                        -- `C.stacked` puts the *first* property at the top of
+                        -- the column. A reader takes the first series in the
+                        -- data to be the base of the stack — it is the one the
+                        -- legend names first — so the list is reversed here and
+                        -- the tree's order is the one that shows.
+                        [ C.stacked (List.reverse properties) ]
 
-             else
-                properties
-            )
+                     else
+                        properties
+                    )
+                    points
+               ]
+        )
+
+
+{-| The unfilled part of every column, as its own one-bar `C.bars` element
+drawn _before_ the real one.
+
+It is a separate element rather than an extra property of the real one because
+a property in the same call would take a slot of its own in the bin: a
+two-series grouped chart would come out three bars wide. Its own element is one
+bar per bin, which is the whole bin's width, so the real bars — grouped or
+stacked — sit inside it exactly the way daisyUI's own dashboard templates draw
+them.
+
+-}
+trackBars :
+    Chart.BarStyle
+    -> Float
+    -> List (CA.Attribute CS.Bar)
+    -> List Point
+    -> List (C.Element Point msg)
+trackBars style top barAttrs points =
+    if style.track then
+        [ C.bars barLayout
+            [ C.bar (always top) (CA.color Chart.trackColorToCss :: barAttrs) ]
             points
         ]
+
+    else
+        []
+
+
+{-| How tall a track is: the largest column in the chart, which is also the top
+of the y domain (`barDomain`), so a full track fills the plot exactly.
+-}
+trackTop : Bool -> List Point -> Float
+trackTop stacked points =
+    let
+        columnHeight point =
+            if stacked then
+                List.sum point.values
+
+            else
+                List.maximum point.values |> Maybe.withDefault 0
+    in
+    List.map columnHeight points |> List.maximum |> Maybe.withDefault 0
+
+
+{-| A tracked bar chart pins its y domain to `0 .. trackTop`.
+
+Without it elm-charts pads the domain out to the next round tick, the track
+stops short of the top of the plot and the eye reads the gap as headroom the
+data does not have. An untracked chart keeps the library's own domain, because
+there its axis labels are what the reader scales by.
+
+-}
+barDomain : Chart.BarStyle -> Float -> List (CA.Attribute { x | domain : List (CA.Attribute CS.Axis) })
+barDomain style top =
+    if style.track && top > 0 then
+        [ CA.domain [ CA.lowest 0 CA.exactly, CA.highest top CA.exactly ] ]
+
+    else
+        []
+
+
+{-| A tracked bar chart draws no y axis.
+
+The track _is_ the scale — every column is read as a fraction of it — and a grid
+behind a painted track reads as a second, contradicting one. An untracked chart
+keeps the labelled grid it has always had.
+
+-}
+barAxis : Chart.BarStyle -> List (C.Element Point msg)
+barAxis style =
+    if style.track then
+        []
+
+    else
+        [ C.yLabels [ CA.withGrid ] ]
+
+
+{-| How much of each bin is air.
+
+elm-charts fills the whole bin by default, so adjacent columns touch. daisyUI's
+own dashboard charts leave about a quarter of the bin empty either side, which
+is what turns a filled area into a row of columns. The track element and the
+real one share it, so the two line up exactly.
+
+-}
+barLayout : List (CA.Attribute { x | margin : Float })
+barLayout =
+    [ CA.margin 0.26 ]
+
+
+{-| A tracked bar chart's margin.
+
+`chartMargin` reserves 42 user units on the left for y-axis labels. A tracked
+chart draws none (`barAxis`), so that gutter is 42 units of nothing — about 30
+device pixels at the width a dashboard card gives the drawing, which is half a
+bin. Without it the columns fill the panel the way daisyUI's own dashboard
+charts do; with it they sit in the middle of it with a margin either side.
+
+The bottom stays: `C.binLabels` is drawn there either way.
+
+-}
+barMargin : Chart.BarStyle -> { top : Float, bottom : Float, left : Float, right : Float }
+barMargin style =
+    if style.track then
+        { chartMargin | left = 6, right = 6 }
+
+    else
+        chartMargin
+
+
+{-| The corner of a rounded bar, as a fraction of the bar's width. elm-charts
+documents this as getting strange past 0.5; 0.45 is the near-pill cap daisyUI's
+own dashboard bars have, without reaching the value where the library's own
+path maths starts to fold.
+-}
+barCornerRadius : Float
+barCornerRadius =
+    0.45
 
 
 {-| elm-charts' default margin is zero on every side, which puts the axis

@@ -9,6 +9,7 @@
     "extract-corpus": "bun tools/extract-corpus.js",
     "gen-corpus-elm": "bun tools/gen-corpus-elm.js",
     "gen-cally-css": "bun tools/gen-cally-css.js",
+    "gen-daisy-css": "bun tools/gen-daisy-css.js",
     "render-audit": "bun tools/render-class-audit.js",
     "css-coverage": "bun tools/css-coverage.js",
     "docs-site": "bun tools/build-docs-site.js",

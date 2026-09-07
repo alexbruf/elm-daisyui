@@ -30,6 +30,15 @@ const PROJECT = "desktop-light";
 
 const pane = /^last-msg: (\w+)$/;
 
+/**
+ * The exported CSS, which is the **last** `mockup-code` on the page: the
+ * components demo carries one of its own (daisyUI's preview shows a terminal),
+ * and the export band is the page's last section.
+ */
+function exportBlock(page: import("@playwright/test").Page) {
+  return page.locator(".mockup-code").last();
+}
+
 /** daisyUI's `acme` — there is no such thing, which is the point. */
 const CUSTOM = "acme";
 
@@ -118,10 +127,12 @@ test("changing the primary colour repaints the root, the CTA and the export", as
   );
   expect(before).toBe("oklch(62% 0.265 303.9)");
 
-  // The colour rows are `Field`s, so each native picker is named by the CSS
-  // variable it edits. A colour input cannot be typed into, and `fill()`
-  // refuses it, so the value is set the way the picker would and the `input`
-  // event is dispatched — which is the event `Daisy.Render` listens for.
+  // The colour chips are a wrapping grid inside `card-actions` (a `card-body`
+  // is a column, so a `Field` per colour would be a twenty-row form), and each
+  // native picker is named by the CSS variable it edits — `ariaLabel`, with the
+  // same string as its tooltip. A colour input cannot be typed into, and
+  // `fill()` refuses it, so the value is set the way the picker would and the
+  // `input` event is dispatched — which is the event `Daisy.Render` listens for.
   const primaryInput = page.getByLabel("primary", { exact: true });
   await expect(primaryInput).toHaveAttribute("type", "color");
   await primaryInput.evaluate((el: HTMLInputElement) => {
@@ -131,24 +142,27 @@ test("changing the primary colour repaints the root, the CTA and the export", as
 
   await expect(page.getByText(pane)).toHaveText("last-msg: ThemeEdited");
 
-  // sRGB red is oklch(62.7955% 0.2577 29.23) — Ottosson's worked example, and
-  // what `Daisy.Color.hexToOklch` must produce for the theme to hold it.
+  // sRGB red is oklch(62.79554% 0.25768 29.234) — Ottosson's worked example, and
+  // what `Daisy.Color.hexToOklch` must produce for the theme to hold it. Five
+  // decimals of lightness and chroma and three of hue, because four and two are
+  // not enough to make `hex -> OKLCH -> hex` the identity: at high chroma a
+  // hundredth of a degree is more than half an 8-bit channel step.
   await expect
     .poll(() =>
       root.evaluate((el) =>
         getComputedStyle(el).getPropertyValue("--color-primary").trim(),
       ),
     )
-    .toBe("oklch(62.7955% 0.2577 29.23)");
+    .toBe("oklch(62.79554% 0.25768 29.234)");
 
   // The CTA follows, which is the `var(--color-primary)` half of the loop.
   await expect
     .poll(() => cta.evaluate((el) => getComputedStyle(el).backgroundColor))
-    .toMatch(/^oklch\(0\.627955 0\.2577 29\.23/);
+    .toMatch(/^oklch\(0\.627955 0\.25768 29\.234/);
 
   // And so does the exported CSS.
-  await expect(page.locator(".mockup-code")).toContainText(
-    "--color-primary: oklch(62.7955% 0.2577 29.23);",
+  await expect(exportBlock(page)).toContainText(
+    "--color-primary: oklch(62.79554% 0.25768 29.234);",
   );
 });
 
@@ -156,7 +170,14 @@ test("the shape controls reach daisyUI's own measurements", async ({ page }) => 
   await open(page, "/theme", CUSTOM);
   const root = page.locator("[data-theme]").first();
 
-  await page.getByLabel("Boxes").selectOption("2rem");
+  // The six length controls are `join`s of `btn-xs` buttons with the current
+  // step `btn-active`, not `<select>`s — the shape daisyUI's own generator
+  // uses, and the one that shows how many steps there are and which is current
+  // without being opened. Each button's visible text is the value without its
+  // unit (`0.25`), because six five-step rows have to fit a 355px rail; its
+  // accessible name is the whole length prefixed by the group, which is what
+  // keeps `2rem` in one control distinguishable from `2rem` in the next.
+  await page.getByRole("button", { name: "Boxes 2rem" }).click();
   await expect
     .poll(() =>
       root.evaluate((el) =>
@@ -164,8 +185,20 @@ test("the shape controls reach daisyUI's own measurements", async ({ page }) => 
       ),
     )
     .toBe("2rem");
+  // The pressed step is the marked one, and it is the only one in its group.
+  // `btn-neutral`, not `btn-active`: see `Demo.ThemeGenerator.lengthChoice` —
+  // `.btn-active`'s background is a `color-mix()` the composition chose, which
+  // is 4.28:1 in `valentine`, while `--color-neutral` / `--color-neutral-content`
+  // is a pair daisyUI declares in every theme.
+  await expect(page.getByRole("button", { name: "Boxes 2rem" })).toHaveClass(
+    /btn-neutral/,
+  );
+  const markedBoxSteps = await page
+    .getByRole("button", { name: /^Boxes / })
+    .evaluateAll((els) => els.filter((el) => el.classList.contains("btn-neutral")).length);
+  expect(markedBoxSteps, "one step of `Boxes` is marked").toBe(1);
 
-  await page.getByLabel("Border width").selectOption("2px");
+  await page.getByRole("button", { name: "Border width 2px" }).click();
   await expect
     .poll(() =>
       root.evaluate((el) =>
@@ -190,8 +223,8 @@ test("the shape controls reach daisyUI's own measurements", async ({ page }) => 
     )
     .toBe("1,1");
 
-  await expect(page.locator(".mockup-code")).toContainText("--depth: 1;");
-  await expect(page.locator(".mockup-code")).toContainText("--radius-box: 2rem;");
+  await expect(exportBlock(page)).toContainText("--depth: 1;");
+  await expect(exportBlock(page)).toContainText("--radius-box: 2rem;");
 });
 
 test("the generator link's hash decodes to daisyUI's own theme JSON", async ({
@@ -322,7 +355,7 @@ test("Copy CSS fires its msg and the export block is the exported theme", async 
   await page.getByRole("button", { name: "Copy CSS" }).click();
   await expect(page.getByText(pane)).toHaveText("last-msg: ThemeExported");
 
-  const css = await page.locator(".mockup-code").innerText();
+  const css = await exportBlock(page).innerText();
   expect(css).toContain('@plugin "daisyui/theme" {');
   expect(css).toContain('name: "acme";');
   expect(css).toContain("--color-primary: oklch(62% 0.265 303.9);");
@@ -332,7 +365,7 @@ test("Copy CSS fires its msg and the export block is the exported theme", async 
   expect(css.split("\n").filter((line) => line.trim() !== "")).toHaveLength(34);
 });
 
-test("Start from copies a built-in's values, and Randomize replaces them", async ({
+test("the theme list loads a built-in, and Randomize replaces it", async ({
   page,
 }) => {
   await open(page, "/theme", CUSTOM);
@@ -342,36 +375,44 @@ test("Start from copies a built-in's values, and Randomize replaces them", async
       getComputedStyle(el).getPropertyValue("--color-primary").trim(),
     );
 
-  // The control shows `acme`, because `acme`'s declarations are not any
-  // built-in's. It is derived from the theme, not remembered — see
-  // `Demo.ThemeGenerator.startingPoint`.
-  await expect(page.getByLabel("Start from")).toHaveValue("acme");
+  // daisyUI's generator has no "start from" select: its left rail lists every
+  // theme and clicking one loads it. That rail is a `Block.Menu`, so the rows
+  // are buttons (a `MenuItem` with an `onClick` and no `href` is a `<button>`,
+  // see `Daisy.Render.clickableHtml`), and the loaded one is marked.
+  const rail = page.locator(".menu").first();
+  const marked = () =>
+    rail.locator("li > .bg-base-200").first().innerText();
 
-  await page.getByLabel("Start from").selectOption("nord");
+  // `acme` is marked, because `acme`'s declarations are not any built-in's.
+  // It is derived from the theme, not remembered — see
+  // `Demo.ThemeGenerator.startingPoint`.
+  expect((await marked()).trim()).toBe("acme");
+
+  await rail.getByRole("button", { name: "nord", exact: true }).click();
   await expect(page.getByText(pane)).toHaveText("last-msg: ThemeEdited");
   // daisyUI's own nord.css, through the generated `Daisy.Themes.nord`.
   await expect.poll(primary).toBe("oklch(59.435% 0.077 254.027)");
-  // And now the control says so, because the theme still *is* nord's values.
-  await expect(page.getByLabel("Start from")).toHaveValue("nord");
+  // And now the rail says so, because the theme still *is* nord's values.
+  await expect.poll(async () => (await marked()).trim()).toBe("nord");
 
   // Randomize is a deterministic LCG over a counter the router keeps, so the
   // sequence is reproducible and the screenshot baselines stay byte-stable —
   // but each click really does move.
   const seen = new Set<string>();
   for (let i = 0; i < 3; i++) {
-    await page.getByRole("button", { name: "Randomize" }).click();
+    await page.getByRole("button", { name: "Random" }).click();
     await expect(page.getByText(pane)).toHaveText("last-msg: ThemeEdited");
     seen.add(await primary());
   }
   expect(seen.size, "three clicks give three different palettes").toBe(3);
   // A randomised theme is nobody's built-in any more.
-  await expect(page.getByLabel("Start from")).toHaveValue("acme");
+  await expect.poll(async () => (await marked()).trim()).toBe("acme");
 });
 
 test("an edited theme survives navigation to another demo", async ({ page }) => {
   await open(page, "/theme", CUSTOM);
 
-  await page.getByLabel("Boxes").selectOption("2rem");
+  await page.getByRole("button", { name: "Boxes 2rem" }).click();
   await expect(page.getByText(pane)).toHaveText("last-msg: ThemeEdited");
 
   await page.getByRole("link", { name: "Overview" }).click();

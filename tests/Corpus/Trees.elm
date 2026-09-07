@@ -1185,8 +1185,8 @@ tabEntries : List ( String, Node )
 tabEntries =
     let
         tabList =
-            [ { label = "Tab 1", active = False, disabled = False, content = [ Text "Tab content 1" ] }
-            , { label = "Tab 2", active = True, disabled = False, content = [ Text "Tab content 2" ] }
+            [ { label = "Tab 1", active = False, disabled = False, content = [ Text "Tab content 1" ], onClick = Nothing }
+            , { label = "Tab 2", active = True, disabled = False, content = [ Text "Tab content 2" ], onClick = Nothing }
             ]
 
         tabs style =
@@ -1859,7 +1859,7 @@ leafEntries =
             leaf (Progress { defaultProgressConfig | color = color } { value = Just 40, max = 100 })
 
         radial =
-            leaf (RadialProgress { value = 70, label = "70%" })
+            leaf (RadialProgress { value = 70, label = "70%", ariaLabel = Nothing })
 
         range config =
             leaf (Range config { min = 0, max = 100, value = 40 })

@@ -173,7 +173,7 @@ staticPage =
         , sections =
             Sections2
                 (Stack defaultStackConfig [ Card defaultCardConfig { emptyCardParts | title = Just "Title" } ])
-                (Grid defaultGridConfig [ Stat defaultStatConfig [ emptyStatItem "Downloads" "31K" ] ])
+                (Grid (Columns defaultGridConfig [ Stat defaultStatConfig [ emptyStatItem "Downloads" "31K" ] ]))
         , cta = staticCta
         , overlays = [ Modal defaultModalConfig [ Prose [ Text "sure?" ] ] ]
         , theme = Dark

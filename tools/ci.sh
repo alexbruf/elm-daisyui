@@ -38,6 +38,7 @@ STEP_NAMES=(
   render-audit
   should-not-compile
   gen-cally-css
+  gen-daisy-css
   demo-build
   css-coverage
   playwright
@@ -91,6 +92,20 @@ step_render-audit() {
 
 step_should-not-compile() {
   bun tools/should-not-compile/run.js
+}
+
+step_gen-daisy-css() {
+  # demo/daisy-motion.css, the rules behind the four `daisy-anim-*` classes
+  # `Daisy.Render` emits. Committed, but regenerated here so a hand-edit or a
+  # drift from `Daisy.Css.stylesheet` shows up as a diff. Same contract as
+  # gen-themes above.
+  bun tools/gen-daisy-css.js
+  if ! git diff --quiet -- demo/daisy-motion.css; then
+    echo "error: demo/daisy-motion.css is out of date with src/Daisy/Css.elm." >&2
+    echo "       Run 'bun tools/gen-daisy-css.js' and commit the result." >&2
+    git --no-pager diff --stat -- demo/daisy-motion.css >&2
+    exit 1
+  fi
 }
 
 step_gen-cally-css() {

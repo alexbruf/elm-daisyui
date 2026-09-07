@@ -56,6 +56,14 @@ is the theme *editor*, so the query picks the palette the editor opens on and
 the page always renders `acme`. `lib/daisy.ts`'s `rootThemeOf` is that rule,
 in one place; `themes.spec.ts` reads it rather than assuming.
 
+It is also the one demo on `Shell.Plain` besides Settings: it reproduces
+<https://daisyui.com/theme-generator/>, whose page is a navbar over three
+columns and has no application sidebar. Two consequences for anything written
+against it — its theme list is a `Block.Menu` of buttons rather than a
+`<select>` (`page.locator(".menu").getByRole("button", { name: "nord" })`), and
+there are **two** `.mockup-code` blocks on it, the preview's terminal and the
+exported CSS, so the export is `page.locator(".mockup-code").last()`.
+
 This config expresses that as 6 Playwright **projects**, named
 `<viewport>-<theme>`:
 
@@ -84,12 +92,15 @@ URL at boot (e.g. passing it in as an Elm flag) and applying daisyUI's
 itself, only the harness/convention.
 
 `?theme=` remains the only way the specs set a theme. What changed on the
-demo side is the *switcher*: the Admin navbar now renders
-`ThemePresentation.ThemeAsDropdown` over all 35 `Daisy.Tree.allThemes`
-values instead of four sibling `btn`s. It is one `role="button"` trigger
-labelled "Theme" plus a `dropdown-content` `<ul>` of `theme-controller`
+demo side is the *switcher*: all three dashboards now render
+`ThemePresentation.ThemeAsIconDropdown` over all 35 `Daisy.Tree.allThemes`
+values instead of four sibling `btn`s. It is one `role="button"` trigger —
+a `btn btn-ghost btn-circle` around a palette glyph, named "Theme" by that
+glyph's `aria-label` — plus a `dropdown-content` `<ul>` of `theme-controller`
 radios that daisyUI keeps at `display:none` until the wrapper is
-`:focus-within`. Two consequences for anything written against it:
+`:focus-within`. Looking it up by role and name is unchanged
+(`getByRole("button", { name: "Theme" })`); only the markup behind the name is.
+Two consequences for anything written against it:
 
 - to reach a radio, activate the trigger first
   (`page.getByRole("button", { name: "Theme" }).click()`), then
@@ -100,6 +111,31 @@ radios that daisyUI keeps at `display:none` until the wrapper is
   to the trigger is what opens it. Without that the expected tab order would
   be short by one stop and `keyboard.spec.ts` would be asserting less, not
   more.
+
+## Motion, and the one spec that opts out
+
+`Daisy.Css.stylesheet` — written to `demo/daisy-motion.css` by
+`bun tools/gen-daisy-css.js` and imported by `demo/app.css` — holds the rules
+behind the four `daisy-anim-*` classes `Daisy.Render` puts on a chart
+container, its hover tooltip and its highlight band. **Every rule in it is
+inside `@media (prefers-reduced-motion: no-preference)`**, and the generator
+refuses to write a stylesheet that is not.
+
+That is what lets the rest of this suite stay pixel-stable: `open()` emulates
+`reducedMotion: "reduce"`, so the 144 theme baselines photograph a page with no
+animation in it at all — the media query is doing the work, not the injected
+"kill everything" stylesheet.
+
+`animation.spec.ts` is therefore the **only** spec that does not go through
+`open()`. It has to set `prefers-reduced-motion` itself, and it must not have
+that stylesheet injected, so it navigates directly and waits for the
+`last-msg:` pane the way `open()` does. Three tests: with motion allowed the
+bar group carries a running-or-finished `daisy-bar-grow` animation
+(`animation-fill-mode: both`, so the assertion is not a race with the 0.55s
+run); with reduced motion `document.getAnimations()` is empty page-wide; and
+clicking `Month` on the `Day | Month | Year` strip replays it, which is the
+assertion that would catch `Daisy.Render`'s `Html.Keyed` key being dropped —
+a chart diffed in place would keep the finished animation instead.
 
 ## Determinism
 
@@ -231,6 +267,7 @@ other 36-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 | `keyboard.spec.ts` | keyboard | full matrix |
 | `interaction.spec.ts` | interaction | full matrix |
 | `theme-generator.spec.ts` | — (the custom-theme feature) | `desktop-light`, the `/theme` route |
+| `animation.spec.ts` | — (the motion stylesheet) | `desktop-light`, `/` |
 
 `a11y.spec.ts` asserts zero serious/critical axe violations, which is the
 SPEC row, and additionally **prints** the moderate/minor tally for every scan
@@ -303,19 +340,34 @@ The generator-link test inflates the `#theme=` hash in the page with
 hashes all start `eJx`) and compares the result with daisyUI's exact theme JSON,
 key order included.
 
-## `compare.mjs`
+## `compare.mjs` and `docshots.mjs`
 
-Not a test. It composites `docs/screenshots/nexus-vs-admin.png`: the daisyUI
-Nexus e-commerce dashboard on the left, `Demo.Admin` on the right, both at
-1440x900, so the recreation can be judged side by side. It renders a small local
-page in the same Chrome the suite uses and photographs it, so there is no image
-library to install.
+Neither is a test.
+
+`docshots.mjs` regenerates everything under `docs/screenshots/`: the four demos
+full-page at 1440 in `light`, the light/dark/nord `report/` set for the three
+SPEC demos, the open settings modal, and the two 1440x900 fold captures the
+comparison sheets use. It goes through the same determinism steps `open()` does
+(reduced motion, no transitions, fonts settled, `deviceScaleFactor: 1`).
+
+```
+cd demo && bun run build && bun run preview --port 4399 --strictPort &
+cd e2e && node docshots.mjs http://localhost:4399
+```
+
+`compare.mjs` composites one side-by-side sheet: a daisyUI reference page on the
+left, the matching demo on the right, both at 1440x900, so a recreation can be
+judged side by side. It renders a small local page in the same Chrome the suite
+uses and photographs it, so there is no image library to install.
 
 ```
 cd e2e
-bunx tsx compare.mjs <reference.png> <ours.png> ../docs/screenshots/nexus-vs-admin.png
+node compare.mjs <reference.png> <ours.png> <out.png> "<left caption>" "<right caption>"
 ```
 
-The right-hand image is `snapshots/<tag>/admin-light.png` cropped to the fold,
-or any 1440x900 capture of `/?theme=light`. The reference is a 1440x900
-screenshot of <https://nexus.daisyui.com/dashboards/ecommerce>.
+Two are committed:
+
+| Sheet | Reference | Ours |
+|---|---|---|
+| `docs/screenshots/nexus-vs-admin.png` | <https://nexus.daisyui.com/dashboards/ecommerce> | `/?theme=light` |
+| `docs/screenshots/generator-vs-theme.png` | <https://daisyui.com/theme-generator/> | `/theme?theme=light` |

@@ -1093,41 +1093,32 @@ reads as passing. `tokenTextMuted` is the honest form of the same thing.
   100%; overflow-x: auto`, a parent sized to that outer width clips the last
   4px of the last crumb. A parent that is the whole row cannot.
 
-### 4. What is deliberately *not* like Nexus
+### 4. Nexus residuals
 
-- **The sidebar is short.** Nexus lists about twenty entries under
-  *Dashboards* / *Apps* / *Extras*; the demo has four real destinations (three
-  routes plus the generated docs site), grouped under two `menu-title` rows,
-  with a soft `New` badge on one. The rest of Nexus's list would be dead links,
-  and a dead link in a demo is worse than a short list.
-- **The active sidebar item is daisyUI's, not Nexus's.** `.menu` sets
-  `--menu-active-bg: var(--color-neutral)`, so the active row is solid neutral
-  rather than Nexus's tinted `bg-base-200`. Changing it needs a class daisyUI
-  does not offer.
-- **The theme switcher is a full-size `btn` reading "Theme".** Nexus's is an
-  icon-only ghost circle. `Leaf.ThemeSelect ThemeAsDropdown` renders exactly
-  daisyUI's documented "Theme Controller using a dropdown" markup, and
-  `tests/CorpusTest` compares that trigger against the docs example class for
-  class — it may carry `btn` and nothing else. The corpus wins.
-- **`Page.cta` is in the navbar.** The tree makes exactly one primary button
-  mandatory and the shell places it; Nexus's navbar has none. The demo makes it
-  `btn-sm` so it is at least the same height as the controls beside it.
-- **Column splits are 50/50.** Nexus's chart row is 7:5 and its bottom row is
-  3:2. `Section.Grid` offers `Cols1..Cols4`, equal tracks only, so both rows
-  are halves. The visible cost is that the orders table has 512px rather than
-  Nexus's 672 — which is why its dates read `25 Jun` rather than `25 Jun 2024`.
-- **Cards are 24px-padded, not 20px.** `card-body` is `--card-p: 1.5rem` by
-  default and `1rem` at `card-sm`; Nexus sets 20px with its own CSS. Neither
-  daisyUI size is 20px, and overriding `--card-p` with a padding utility would
-  put a second padding decision in the token table for a 4px gain.
-- **No border on the navbar or the sidebar.** Nexus draws a 1px
-  `border-base-300` under the navbar and down the sidebar's right edge.
-  `border` is on the `forbidden` list, and the `bg-base-100` panels already
-  meet a `bg-base-200` ground, so the edge is tonal instead of drawn.
-- **`Demo.Settings` shows its title above its `Navbar` section.** SPEC.md pins
-  that demo to `Shell.Plain`, which draws no navbar, so its cross-demo
-  navigation is a `Section.Navbar` — and the page header is chrome, so it
-  renders above every section including that one.
+Every item below was a deliberate gap at the end of this pass. All of them were
+closed in the **charts and fidelity** pass that follows; the "Closed by" column
+says how, and the two that were *not* closed say why.
+
+| Residual (2026-09-07, Nexus pass) | Closed by |
+| --- | --- |
+| The active sidebar item is daisyUI's solid `menu-active`, not Nexus's tinted row. | `MenuConfig.activeStyle = SolidActive \| TintedActive`. Tinted emits `bg-base-200 font-medium` and no `menu-active`; measured off Nexus at 1440 (`background-color` = base-200, `font-weight: 500`, `color` = base-content). `SolidActive` stays the default and is still the only way to reach `menu-active`. |
+| The theme switcher is a full-size `btn` reading "Theme"; Nexus's is an icon-only ghost circle. | `ThemePresentation.ThemeAsIconDropdown`, a second constructor rather than a flag — `tests/CorpusTest` pins `ThemeAsDropdown`'s trigger class for class, and a flag would have made that fixture depend on the flag. All three dashboards use it. |
+| `Page.cta` is in the navbar; Nexus's navbar has none. | `Cta.placement : CtaPlacement = InNavbar \| InHeader \| InSidebarFooter`. Admin, Analytics, Settings and the generator all put theirs `InHeader`, beside the breadcrumbs, which is where Nexus puts a page's action. Still exactly one primary button, still placed by the shell. |
+| Column splits are 50/50; Nexus's are 7:5 and 3:2. | `GridSection.Spans` — the twelve-column grid, one `Span3..Span12` per cell. Admin's chart row is 7:5, exactly Nexus's (`repeat(12, 72.66px)`, `gap: 24px`, 7 + 5). |
+| Cards are 24px-padded, not Nexus's 20px. | `CardConfig.padding = PaddingDefault \| PaddingDashboard`. `PaddingDashboard` is `p-5`; measured `padding: 20px` on Nexus's `.card-body`. |
+| No border on the navbar or the sidebar. | `DashboardShell.edges : Bool`, on by default. `border-b` / `border-r` + `border-base-300`, three named tokens with one use site each. `border` — all four sides on an arbitrary element — **stays** on `RenderPurityTest`'s `forbidden` list; a one-sided rule on chrome the renderer owns is a different thing. |
+| `stat-figure` floats level with the number, not with its label. | `tokenSelfStart` on the figure tile. daisyUI centres it over the tile's whole height; Nexus's sits on the label's line. |
+| `Demo.Settings` shows its title above its `Navbar` section. | The `Plain` shell now inserts `Page.header` **after** any leading `Section.Navbar` bands. A title above a site navbar reads as a title for the site. |
+| The bottom row is 3:2 in Nexus. | **Not closed exactly.** Twelve tracks cannot express 3:2 (it is 7.2 : 4.8), so Admin's bottom band is 7:5 — 654px and 458px against Nexus's 682 and 430 at 1440, a 28px difference in a 1136px column. The alternative was a second `GridColumns` value for five equal tracks, which would exist for one band on one page. |
+| The sidebar is short (five entries against Nexus's twenty). | **Not closed, and still deliberate.** The rest of Nexus's list would be dead links, and a dead link in a demo is worse than a short list. |
+
+### 4a. The position at the end of that pass
+
+The bullets that used to stand here are the "Residual" column of the table
+above, now with their answers beside them; only the last two are still open,
+and both say why. Kept as a table rather than deleted because "what a
+recreation deliberately did not do" is the part of a design pass that is
+otherwise lost.
 
 ### 5. What the e2e suite gained (and what it waived)
 
@@ -1318,7 +1309,15 @@ Two things worth recording:
   outside it. `oklchToHex` clamps each linear channel rather than failing, which
   is what a browser does with the same colour, and `tests/ColorTest.elm` says so.
 - **The round trip is exact in one direction only.** `hex -> OKLCH -> hex` is
-  the identity for all 16.7 million sRGB colours (fuzzed). The other direction
+  the identity for all 16.7 million sRGB colours (fuzzed). *(It was not, quite,
+  until the charts-and-fidelity pass: `hexToOklch` kept four decimals of
+  lightness and chroma and two of hue — daisyUI's own printed precision — and at
+  high chroma a hundredth of a degree of hue is more than half of one 8-bit
+  channel step, so about six colours in ten thousand came back one LSB out
+  (`#03defb` -> `#02defb`). The fuzzer found it as an occasional failure rather
+  than never. It keeps five and three now, verified over 300k colours plus every
+  grey and every 0/1/127/128/254/255 corner; the fix is precision, not a
+  tolerance.)* The other direction
   loses a byte per channel, and at low chroma a byte is a large *angle*: at
   `c = 0.03` it is up to 3.5 degrees of hue. The fuzzer's box (`L` 45..75,
   `C` 0.03..0.05) was swept at a quarter-degree against an independent
@@ -1430,3 +1429,591 @@ because the generator page's job is to show a theme's pairs including the bad
 ones: `acme`'s own `--color-secondary` / `--color-secondary-content`, which
 daisyUI's generator derived, is 1.9:1. A `-content` colour over the wrong
 surface, or a `color-mix` background, still does not match and still fails.
+
+
+## Charts and fidelity (2026-09-07)
+
+The verdict on the previous pass was that the recreations have to be "basically
+perfect". This pass closes the residuals table above, gives `Block.Chart` the
+three things a dashboard chart actually needs — a track, a hover tooltip and an
+entry animation — and rebuilds `/theme` as daisyUI's own generator is built.
+
+### 1. `Daisy.Chart`, reshaped
+
+| Was | Is | Why |
+| --- | --- | --- |
+| `Line`, `Bar`, `StackedBar`, `Area`, `Donut` | `Line LineStyle`, `Bar BarStyle`, `Area`, `Donut` | `BarStyle` is `{ stacked, track, rounded }` and `LineStyle` is `{ stepped }`. Three independent switches are eight constructors written out; as a record they are one value, and a fourth switch later does not multiply the list. `allChartConfigs` is still the exhaustive enumeration (2 + 8 + 2 = 12), built from `allLineStyles`/`allBarStyles`, so the coverage test and the fuzzers still reach every branch. |
+| `Series = { name, color, points }` | `+ dashed : Bool`, and a `series` constructor for the solid case | A projection is drawn dashed, and it is one *series* of a chart rather than a property of the chart. `Chart.series "Revenue" Primary [ … ]` keeps the common case a three-argument call. |
+| — | `ChartInteraction msg = { hovered : Maybe Int, onHover : Maybe Int -> msg }` | The hover state is an **x index**, not a `Chart.Item`: the application stores an `Int`, and elm-charts' item plumbing stays inside `Daisy.Render` exactly as `Chart.Attributes` does. `Block.Chart` and `CardChild.CardChart` take it as a `Maybe`, so a decorative chart is unchanged. |
+| — | `trackColorToCss`, `bandColorToCss` | The track is `--color-base-200` and the hovered band `--color-base-300`, as module constants rather than two more `SemanticColor` values. That is the whole decision: `e2e/themes.spec.ts` checks *every* `var(--color-*)` on the painted SVG, so these are verified like any semantic colour — but a **series** painted `base-200` would be invisible against the `base-100` panel it is drawn on, and `contrast.spec.ts` reads base-over-base as daisyUI's own pair, so it would pass while showing nothing. Keeping them out of `SemanticColor` is what makes "a line the colour of the paper" inexpressible. |
+
+Nexus's own chart is `Bar { stacked = True, track = True, rounded = True }`, and
+`Demo.Admin` says exactly that.
+
+### 2. How the renderer draws it
+
+- **The track is its own `C.bars` element**, drawn before the real one, with a
+  single unnamed bar per bin whose height is `trackTop` (the largest column).
+  Not an extra property of the real element: a property takes a slot in the
+  bin, so a two-series grouped chart would come out three bars wide. Its own
+  element is one bar across the whole bin, which is what the grouped or stacked
+  real bars then sit inside. Both share `barLayout` (`CA.margin 0.26`), so they
+  line up exactly.
+- **A tracked chart pins its y domain to `0 .. trackTop` and draws no y axis.**
+  Without the domain, elm-charts pads out to the next round tick and the track
+  stops short of the top of the plot, which reads as headroom the data does not
+  have. Without dropping the axis there are two scales — a painted track and a
+  labelled grid — saying different things. An untracked chart keeps both.
+- **`C.stacked` is given the series reversed.** It puts the *first* property at
+  the top of the column; a reader takes the first series in the data to be the
+  base of the stack, because it is the one the legend names first. The
+  reversal is in the renderer, so the tree's order is the one that shows.
+- **Hover is resolved to an index and back to a group.** `CE.onMouseMove` with
+  `CE.getNearest CI.any` maps the nearest item's datum to `round .x`;
+  `CE.onClick` fires the same message, because a touch produces no `mousemove`
+  and the tooltip has to arrive on tap; `CE.onMouseLeave` clears it.
+- **The band and the tooltip come from the group elm-charts resolved**, never
+  from arithmetic — `C.eachCustom` over `CI.bins` (bars) or `CI.sameX` (lines),
+  and `CI.getLimits` for the extent, so the band lines up with the bars
+  whatever spacing the series uses. A line chart has no bin, so its band is
+  `bandHalfWidth` either side of the x: the crosshair every dashboard draws.
+  The grouping is filtered with `CI.named` to the caller's own series, which is
+  what excludes the track — **a tracked chart draws two `C.bars` elements at
+  every x, and without the filter it painted two bands and two tooltips.**
+- **The tooltip card is `tokens`, not `card`.** `Chart.tooltip`'s own 5px/8px
+  box is flattened with four inline styles (it is inline styles being
+  overridden, so no class could win), and the content is a `bg-base-100
+  rounded-lg shadow-sm overflow-hidden` column: the bin label on a `bg-base-200`
+  header row, then one row per series with its `status status-<color>` dot, its
+  name and its value. `card` was not used for the same reason `tokenRoundedLg`
+  exists — a `.card` corner is `--radius-box`, 1rem or more in daisyUI's stock
+  themes, which would make a 120px card a pill. The content's type is
+  `Html Never`: a tooltip is `pointer-events: none` and can carry no handler at
+  all, and the type says so rather than a comment.
+
+### 3. `Daisy.Css`, and why the package ships a stylesheet at all
+
+Four class names in this package are neither daisyUI's nor Tailwind's:
+`daisy-anim-bars`, `daisy-anim-line`, `daisy-anim-tooltip`, `daisy-anim-band`.
+Nothing else could be. daisyUI animates its own components and nothing else, and
+there is no Tailwind utility for "grow this bar out of its baseline".
+
+`Daisy.Css.stylesheet` is those rules **as an Elm value**, for the reason
+`alexbruf/elm-cally` ships `Cally.Css.stylesheet`: the Elm registry publishes
+`src/`, `elm.json`, `README.md` and `LICENSE` and nothing else, so a `.css` file
+at a package's root never reaches an application that installs it.
+`tools/gen-daisy-css.js` decodes the literal into `demo/daisy-motion.css`, which
+`demo/app.css` imports and `tools/ci.sh` regenerates and diffs — the same
+contract `gen-themes` and `gen-cally-css` already have.
+
+Three things about it are deliberate:
+
+- **Every rule is inside `@media (prefers-reduced-motion: no-preference)`**, not
+  turned off afterwards. The reduced-motion state is then the plain,
+  undecorated page — which is also what the e2e suite photographs, because
+  `lib/daisy.ts`'s `open()` emulates `reducedMotion: "reduce"`. The generator
+  refuses to write a stylesheet that is not guarded.
+- **Two selectors reach into `terezka/elm-charts`** (`.elm-charts__bar-series`,
+  `.elm-charts__interpolation-section`). The renderer marks the *container* it
+  owns and the rule descends, because it cannot put a class on elements
+  produced inside `C.bars` / `C.series`. That is `RenderPurityTest`'s
+  `chartLibraryPrefix` exemption read from the other side.
+- **The line's dash pattern lives in the keyframes, and the animation has no
+  fill mode.** `Series.dashed` is a `stroke-dasharray` *presentation attribute*
+  on the same path, and any CSS declaration beats a presentation attribute — so
+  a static `stroke-dasharray: 2400` in that rule made the dashed projection
+  line solid, permanently, because the animation filled `both`. Confining the
+  pattern to the keyframes gives the path back to its own attribute the moment
+  the draw-in ends.
+
+**The chart group is keyed by its dataset** (`Html.Keyed`, key =
+`chartKey config data`). A CSS animation runs when its element is *created*, so
+diffing a chart in place would never replay it; remounting it does. Hovering
+changes only `ChartInteraction.hovered`, which leaves the key alone, so the
+tooltip does not restart the animation. `e2e/animation.spec.ts` asserts all
+three states: animated with motion allowed, not animated at all under
+`prefers-reduced-motion: reduce`, and replayed when the `Day | Month | Year`
+strip changes the dataset.
+
+### 4. What the tree gained, beyond charts
+
+| Addition | Shape | Why it could not be composed |
+| --- | --- | --- |
+| `Section.Grid (GridSection msg)` | `Columns GridConfig (List (Block msg))` \| `Spans (List (GridItem msg))` | The twelve-column grid needs a span per cell and the equal grid has nothing to say about one. Putting the choice in the *payload* type rather than in a `Cols12` member of `GridColumns` makes both mistakes a `TYPE MISMATCH` — a spanned cell in an equal grid and a bare block in the twelve — and keeps `Section` at the five constructors the SPEC fixes. Two `should-not-compile` fixtures pin exactly that. |
+| `GridItem = { span : Span, blocks : List (Block msg) }` | `span` / `spanColumn` | A twelve-column band is where a page puts *columns*, and a column is normally more than one panel: an editor rail beside two columns of preview cards. The cell is laid out as one fixed-gap vertical column by the renderer, so a cell of one block is byte-identical to what a single-block cell would have been. |
+| `Span = Span3 .. Span12` | ten values | Twelve tracks across a 1136px column are 73px each, so one or two of them is a cell narrower than the padding-plus-content of any block in the tree. Three is 244px, a metric tile. |
+| `Tab.onClick : Maybe msg` | one field | daisyUI's tab CSS shows the panel after the active tab with no JavaScript, which is all a *tab set* needs; a **segmented control** changes something outside the strip and has to say so. |
+| `CardConfig.padding : CardPadding` | `PaddingDefault \| PaddingDashboard` | 20px is between daisyUI's two card sizes (24px and 16px) and is what every one of its dashboard templates sets. A closed pair rather than a length, because a length is a spacing decision and spacing is `tokens`' job. |
+| `MenuConfig.activeStyle : MenuActiveStyle` | `SolidActive \| TintedActive` | See the residuals table. `TintedActive` emits **no** `menu-active`: daisyUI's active background is a custom property with one value, so there is no second style to reach for. |
+| `Cta.placement : CtaPlacement` | `InNavbar \| InHeader \| InSidebarFooter` | The shell still owns the markup and there is still exactly one primary button; only which piece of chrome it lands in is now the page's to say. `InHeader` needs a header and `InSidebarFooter` needs a dashboard sidebar; neither is expressible in the type, so `ctaPlacementFor` falls back to `InNavbar` rather than dropping the button. |
+| `DashboardShell.edges : Bool` | one flag, on by default | A shell whose content ground is `base-100` has nothing for the line to separate and reads as a box; the ground this package paints is `base-200`, which is the case that wants it. |
+| `ThemePresentation.ThemeAsIconDropdown` | one constructor | A flag on `ThemeAsDropdown` would have made `tests/CorpusTest`'s class-for-class fixture depend on the flag. |
+
+### 5. Two defects found at the root, and fixed for every user
+
+Both are the *same* elm/virtual-dom trap the custom-theme pass documented,
+found in two more places.
+
+- **`Attr.style "--value" …` is a no-op**, so `Leaf.RadialProgress` and
+  `Leaf.Countdown` never worked: a radial progress drew an empty ring at every
+  value. `elm/virtual-dom` applies a style node with `element.style[key] =
+  value`, and a `CSSStyleDeclaration` silently ignores an assignment to a `--*`
+  name. `Daisy.Render.customProperty` writes one whole `style` **attribute**
+  instead, which goes through `setAttribute` and reaches the CSS parser. It was
+  invisible until the generator page put a `radial-progress` on screen.
+- **An `<a>` with an `onClick` and no `href` reloads the page under
+  `Browser.application`.** Its document-level click listener walks up to the
+  nearest `<a>`, reads the `href` *property* (the empty string), gets
+  `Url.fromString "" == Nothing`, and sends `UrlRequested (External "")` — which
+  a router answers with `Browser.Navigation.load ""`. It also calls
+  `preventDefault`, so the control looks inert: the message it sent really was
+  handled, and then the page was thrown away and rebuilt from the URL. It bit
+  `Tab` (the `Day | Month | Year` strip) and `MenuItem` with an `onClick` and no
+  `href`. `Daisy.Render.clickableHtml` renders both as a `<button
+  type="button">` when they carry an `onClick`, which is also the focusable,
+  keyboard-activatable element they should always have been; an anchor that has
+  an `href` stays an anchor, so every navigation link is unchanged.
+
+### 6. `Daisy.Render.tokens`: 76 -> 100
+
+| Tokens | Job |
+| --- | --- |
+| `lg:grid-cols-12` + `lg:col-span-1` .. `lg:col-span-12` (13) | The twelve-column band and its twelve cell widths. Below `lg` the band is one column and the cells claim nothing, for the same reason `Cols2` steps at `lg`. One constant per span rather than a built string: `render-class-audit` requires every class-like literal to be a `tokens` entry, and a class assembled at run time would be invisible to Tailwind's source scan, which reads these literals out of `Render.elm` itself. |
+| `p-5` | `CardPadding.PaddingDashboard`. |
+| `self-start` | The `stat-figure` tile, on the label's line. |
+| `border-b`, `border-r`, `border-base-300` | `DashboardShell.edges`. One use site each, in `shell`. |
+| `overflow-hidden` | Clips the tooltip's painted header row to the card's corner. |
+| `xl:grid-cols-3` | `CellColumns.CellThree`, the grid daisyUI's own theme generator lays its component preview out in. `xl` and not `lg`: a cell that is already only part of a twelve-column band is narrow, and three of them inside seven tracks at 1280 would be 170px each. |
+| `daisy-anim-bars`, `daisy-anim-line`, `daisy-anim-tooltip`, `daisy-anim-band` | The four motion classes, whose rules are `Daisy.Css`'s. The only entries in the table that are neither daisyUI's nor Tailwind's, which is why they carry a namespace neither uses. |
+
+`tests/RenderPurityTest.elm`'s `forbidden` list is **unchanged**: nothing left
+it. `border` in particular stays — a box drawn around an arbitrary element is
+what that entry exists to prevent, and `border-b` / `border-r` on a piece of
+chrome the renderer owns is a different thing, with one use site each.
+
+### 7. The theme generator, rebuilt as daisyUI builds it
+
+`/theme` is a reproduction of <https://daisyui.com/theme-generator/> rather than
+a dashboard page about the same subject. Measured on that page at 1440: a theme
+list of ~190px, an editor of ~250px, and a preview of 879px laid out
+`grid gap-6 xl:grid-cols-3` of 277px `card ... card-sm` panels — under the
+site's own navbar, on the page ground, with no application sidebar anywhere.
+
+| Theirs | Ours |
+| --- | --- |
+| The daisyUI site navbar | `Shell.Plain` + a `Section.Navbar` band (brand `Acme`, links back to the three other demos). **Not** `Shell.Dashboard`: a 256px application sidebar to the left of a page whose left-hand column *is* a list is two rails side by side, which is the single thing that made this page read as a different one. |
+| Theme list, ~190px | `Span2` (212px): a bare `Block.Menu` on the page ground, `My themes` then `daisyUI themes` as `menu-title` rows, every theme a row with a glyph, the loaded one `TintedActive`. Clicking a row **is** the "start from" control — the `<select>` is gone. |
+| Editor, ~250px | `Span3` (330px): `Name`, `Random` + `CSS` as a `join`, the link back into their generator, five colour cards, `Radius`, `Sizes and effects`, `Palette`. |
+| Components Demo, 879px in three columns | `Span7` (802px) as a `CellColumns.CellThree` cell — three 256px columns, `items-start` so each card keeps its own height. |
+
+**The colour chips are their chip design.** Their `Change Colors` grid is four
+squares to a row — a colour, its `A` chip, the next colour, its `A` — with the
+two names underneath. Ours is four `type="color"` pickers in one `Leaf.Join`
+with the group's name under them: a `join`'s flex children shrink their `.input`
+`width: 100%` base sizes to a quarter each, which is the only way four inputs
+share a row in a `card-body` (a `card-body` is a column, and `card-actions`
+wraps but does not constrain). The one thing that could not be reproduced is the
+bold `A` *inside* the second square: an `<input type=color>` paints a flat
+swatch and cannot carry a glyph, so the `-content` square shows the content
+colour itself.
+
+**The block-by-block preview mapping** is in section 10.
+
+`ThemeEdit` gained `SetName`: the name field is a real text input, and
+`Daisy.Tree.themeName` refuses an invalid or reserved name by returning
+`Nothing`, so `apply` simply leaves the theme alone — which is why it needs no
+error state.
+
+### 8. What the e2e suite gained, and the two root causes it found
+
+`e2e/lib/daisy.ts` now lists four demos and thirty-six themes, so
+`themes.spec.ts` is 4 x 36 = **144 baselines** (was 105) and the contrast and
+chart-colour sweeps cover the custom-theme path as well.
+`e2e/theme-generator.spec.ts` is new: eight tests covering the inline
+properties, a built-in opened as an editable theme, a colour edit repainting the
+root and the CTA and the export, the shape controls, the generator hash, the
+palette chips and the edit surviving navigation.
+
+Two defects the matrix found on the new route were fixed at the root:
+
+- `scrollable-region-focusable` (serious) on the two-tile `stats` at 375 — the
+  same one `Demo.Admin` hit, same fix: `StatDirection.Responsive`.
+- `scrollable-region-focusable` (serious) on `.mockup-code`. daisyUI's
+  `.mockup-code` is `overflow-x: auto` around a `<pre>` of `width: max-content`,
+  so any line longer than the container makes it a scrollable region — and the
+  block holds only text, so there is nothing inside it to receive focus. Fixed
+  in **`Daisy.Render`**, for every user of the package, not in the demo:
+  `MockupCode` now emits `tabindex="0"` with `role="group"` and a name. The
+  stretch that exposed it was a second root-cause fix — the export band is
+  `Stack { align = AlignStretch }`, because a `mockup-code` sized to its content
+  is ~500px wide and gave the *document* a horizontal scrollbar at 375.
+
+Two composition choices were changed rather than waived: the preview's alerts
+are solid `alert-<color>` and not `alert-soft` (soft is a `color-mix` pair the
+composition derives; solid is daisyUI's own `--color-X` / `--color-X-content`),
+and the export link is a plain `link` and not `link-primary` (`--color-primary`
+as a *foreground* over `--color-base-100` falls under 4.5:1 in several themes,
+and this page draws itself under deliberately bad ones).
+
+One waiver was added, and it is the *existing* position made consistent rather
+than a new exemption. `e2e/a11y.spec.ts` already waived `color-contrast` on
+daisyUI's three de-emphasised pairs by class list; it now also waives it on
+daisyUI's **emphasised** pair — `--color-X` under exactly its own
+`--color-X-content` — decided in the browser on painted sRGB bytes, which is the
+same mechanical rule `e2e/contrast.spec.ts` has applied from the start and which
+SPEC.md's "what is deliberately not tested" puts outside Tier C. It matters here
+because the generator page's job is to show a theme's pairs including the bad
+ones: `acme`'s own `--color-secondary` / `--color-secondary-content`, which
+daisyUI's generator derived, is 1.9:1. A `-content` colour over the wrong
+surface, or a `color-mix` background, still does not match and still fails.
+
+
+## Charts and fidelity (2026-09-07)
+
+The verdict on the previous pass was that the recreations have to be "basically
+perfect". This pass closes the residuals table above, gives `Block.Chart` the
+three things a dashboard chart actually needs — a track, a hover tooltip and an
+entry animation — and rebuilds `/theme` as daisyUI's own generator is built.
+
+### 1. `Daisy.Chart`, reshaped
+
+| Was | Is | Why |
+| --- | --- | --- |
+| `Line`, `Bar`, `StackedBar`, `Area`, `Donut` | `Line LineStyle`, `Bar BarStyle`, `Area`, `Donut` | `BarStyle` is `{ stacked, track, rounded }` and `LineStyle` is `{ stepped }`. Three independent switches are eight constructors written out; as a record they are one value, and a fourth switch later does not multiply the list. `allChartConfigs` is still the exhaustive enumeration (2 + 8 + 2 = 12), built from `allLineStyles`/`allBarStyles`, so the coverage test and the fuzzers still reach every branch. |
+| `Series = { name, color, points }` | `+ dashed : Bool`, and a `series` constructor for the solid case | A projection is drawn dashed, and it is one *series* of a chart rather than a property of the chart. `Chart.series "Revenue" Primary [ … ]` keeps the common case a three-argument call. |
+| — | `ChartInteraction msg = { hovered : Maybe Int, onHover : Maybe Int -> msg }` | The hover state is an **x index**, not a `Chart.Item`: the application stores an `Int`, and elm-charts' item plumbing stays inside `Daisy.Render` exactly as `Chart.Attributes` does. `Block.Chart` and `CardChild.CardChart` take it as a `Maybe`, so a decorative chart is unchanged. |
+| — | `trackColorToCss`, `bandColorToCss` | The track is `--color-base-200` and the hovered band `--color-base-300`, as module constants rather than two more `SemanticColor` values. That is the whole decision: `e2e/themes.spec.ts` checks *every* `var(--color-*)` on the painted SVG, so these are verified like any semantic colour — but a **series** painted `base-200` would be invisible against the `base-100` panel it is drawn on, and `contrast.spec.ts` reads base-over-base as daisyUI's own pair, so it would pass while showing nothing. Keeping them out of `SemanticColor` is what makes "a line the colour of the paper" inexpressible. |
+
+Nexus's own chart is `Bar { stacked = True, track = True, rounded = True }`, and
+`Demo.Admin` says exactly that.
+
+### 2. How the renderer draws it
+
+- **The track is its own `C.bars` element**, drawn before the real one, with a
+  single unnamed bar per bin whose height is `trackTop` (the largest column).
+  Not an extra property of the real element: a property takes a slot in the
+  bin, so a two-series grouped chart would come out three bars wide. Its own
+  element is one bar across the whole bin, which is what the grouped or stacked
+  real bars then sit inside. Both share `barLayout` (`CA.margin 0.26`), so they
+  line up exactly.
+- **A tracked chart pins its y domain to `0 .. trackTop` and draws no y axis.**
+  Without the domain, elm-charts pads out to the next round tick and the track
+  stops short of the top of the plot, which reads as headroom the data does not
+  have. Without dropping the axis there are two scales — a painted track and a
+  labelled grid — saying different things. An untracked chart keeps both.
+- **`C.stacked` is given the series reversed.** It puts the *first* property at
+  the top of the column; a reader takes the first series in the data to be the
+  base of the stack, because it is the one the legend names first. The
+  reversal is in the renderer, so the tree's order is the one that shows.
+- **Hover is resolved to an index and back to a group.** `CE.onMouseMove` with
+  `CE.getNearest CI.any` maps the nearest item's datum to `round .x`;
+  `CE.onClick` fires the same message, because a touch produces no `mousemove`
+  and the tooltip has to arrive on tap; `CE.onMouseLeave` clears it.
+- **The band and the tooltip come from the group elm-charts resolved**, never
+  from arithmetic — `C.eachCustom` over `CI.bins` (bars) or `CI.sameX` (lines),
+  and `CI.getLimits` for the extent, so the band lines up with the bars
+  whatever spacing the series uses. A line chart has no bin, so its band is
+  `bandHalfWidth` either side of the x: the crosshair every dashboard draws.
+  The grouping is filtered with `CI.named` to the caller's own series, which is
+  what excludes the track — **a tracked chart draws two `C.bars` elements at
+  every x, and without the filter it painted two bands and two tooltips.**
+- **The tooltip card is `tokens`, not `card`.** `Chart.tooltip`'s own 5px/8px
+  box is flattened with four inline styles (it is inline styles being
+  overridden, so no class could win), and the content is a `bg-base-100
+  rounded-lg shadow-sm overflow-hidden` column: the bin label on a `bg-base-200`
+  header row, then one row per series with its `status status-<color>` dot, its
+  name and its value. `card` was not used for the same reason `tokenRoundedLg`
+  exists — a `.card` corner is `--radius-box`, 1rem or more in daisyUI's stock
+  themes, which would make a 120px card a pill. The content's type is
+  `Html Never`: a tooltip is `pointer-events: none` and can carry no handler at
+  all, and the type says so rather than a comment.
+
+### 3. `Daisy.Css`, and why the package ships a stylesheet at all
+
+Four class names in this package are neither daisyUI's nor Tailwind's:
+`daisy-anim-bars`, `daisy-anim-line`, `daisy-anim-tooltip`, `daisy-anim-band`.
+Nothing else could be. daisyUI animates its own components and nothing else, and
+there is no Tailwind utility for "grow this bar out of its baseline".
+
+`Daisy.Css.stylesheet` is those rules **as an Elm value**, for the reason
+`alexbruf/elm-cally` ships `Cally.Css.stylesheet`: the Elm registry publishes
+`src/`, `elm.json`, `README.md` and `LICENSE` and nothing else, so a `.css` file
+at a package's root never reaches an application that installs it.
+`tools/gen-daisy-css.js` decodes the literal into `demo/daisy-motion.css`, which
+`demo/app.css` imports and `tools/ci.sh` regenerates and diffs — the same
+contract `gen-themes` and `gen-cally-css` already have.
+
+Three things about it are deliberate:
+
+- **Every rule is inside `@media (prefers-reduced-motion: no-preference)`**, not
+  turned off afterwards. The reduced-motion state is then the plain,
+  undecorated page — which is also what the e2e suite photographs, because
+  `lib/daisy.ts`'s `open()` emulates `reducedMotion: "reduce"`. The generator
+  refuses to write a stylesheet that is not guarded.
+- **Two selectors reach into `terezka/elm-charts`** (`.elm-charts__bar-series`,
+  `.elm-charts__interpolation-section`). The renderer marks the *container* it
+  owns and the rule descends, because it cannot put a class on elements
+  produced inside `C.bars` / `C.series`. That is `RenderPurityTest`'s
+  `chartLibraryPrefix` exemption read from the other side.
+- **The line's dash pattern lives in the keyframes, and the animation has no
+  fill mode.** `Series.dashed` is a `stroke-dasharray` *presentation attribute*
+  on the same path, and any CSS declaration beats a presentation attribute — so
+  a static `stroke-dasharray: 2400` in that rule made the dashed projection
+  line solid, permanently, because the animation filled `both`. Confining the
+  pattern to the keyframes gives the path back to its own attribute the moment
+  the draw-in ends.
+
+**The chart group is keyed by its dataset** (`Html.Keyed`, key =
+`chartKey config data`). A CSS animation runs when its element is *created*, so
+diffing a chart in place would never replay it; remounting it does. Hovering
+changes only `ChartInteraction.hovered`, which leaves the key alone, so the
+tooltip does not restart the animation. `e2e/animation.spec.ts` asserts all
+three states: animated with motion allowed, not animated at all under
+`prefers-reduced-motion: reduce`, and replayed when the `Day | Month | Year`
+strip changes the dataset.
+
+### 4. What the tree gained, beyond charts
+
+| Addition | Shape | Why it could not be composed |
+| --- | --- | --- |
+| `Section.Grid (GridSection msg)` | `Columns GridConfig (List (Block msg))` \| `Spans (List (GridItem msg))` | The twelve-column grid needs a span per cell and the equal grid has nothing to say about one. Putting the choice in the *payload* type rather than in a `Cols12` member of `GridColumns` makes both mistakes a `TYPE MISMATCH` — a spanned cell in an equal grid and a bare block in the twelve — and keeps `Section` at the five constructors the SPEC fixes. Two `should-not-compile` fixtures pin exactly that. |
+| `GridItem = { span : Span, blocks : List (Block msg) }` | `span` / `spanColumn` | A twelve-column band is where a page puts *columns*, and a column is normally more than one panel: an editor rail beside two columns of preview cards. The cell is laid out as one fixed-gap vertical column by the renderer, so a cell of one block is byte-identical to what a single-block cell would have been. |
+| `Span = Span3 .. Span12` | ten values | Twelve tracks across a 1136px column are 73px each, so one or two of them is a cell narrower than the padding-plus-content of any block in the tree. Three is 244px, a metric tile. |
+| `Tab.onClick : Maybe msg` | one field | daisyUI's tab CSS shows the panel after the active tab with no JavaScript, which is all a *tab set* needs; a **segmented control** changes something outside the strip and has to say so. |
+| `CardConfig.padding : CardPadding` | `PaddingDefault \| PaddingDashboard` | 20px is between daisyUI's two card sizes (24px and 16px) and is what every one of its dashboard templates sets. A closed pair rather than a length, because a length is a spacing decision and spacing is `tokens`' job. |
+| `MenuConfig.activeStyle : MenuActiveStyle` | `SolidActive \| TintedActive` | See the residuals table. `TintedActive` emits **no** `menu-active`: daisyUI's active background is a custom property with one value, so there is no second style to reach for. |
+| `Cta.placement : CtaPlacement` | `InNavbar \| InHeader \| InSidebarFooter` | The shell still owns the markup and there is still exactly one primary button; only which piece of chrome it lands in is now the page's to say. `InHeader` needs a header and `InSidebarFooter` needs a dashboard sidebar; neither is expressible in the type, so `ctaPlacementFor` falls back to `InNavbar` rather than dropping the button. |
+| `DashboardShell.edges : Bool` | one flag, on by default | A shell whose content ground is `base-100` has nothing for the line to separate and reads as a box; the ground this package paints is `base-200`, which is the case that wants it. |
+| `ThemePresentation.ThemeAsIconDropdown` | one constructor | A flag on `ThemeAsDropdown` would have made `tests/CorpusTest`'s class-for-class fixture depend on the flag. |
+
+### 5. Two defects found at the root, and fixed for every user
+
+Both are the *same* elm/virtual-dom trap the custom-theme pass documented,
+found in two more places.
+
+- **`Attr.style "--value" …` is a no-op**, so `Leaf.RadialProgress` and
+  `Leaf.Countdown` never worked: a radial progress drew an empty ring at every
+  value. `elm/virtual-dom` applies a style node with `element.style[key] =
+  value`, and a `CSSStyleDeclaration` silently ignores an assignment to a `--*`
+  name. `Daisy.Render.customProperty` writes one whole `style` **attribute**
+  instead, which goes through `setAttribute` and reaches the CSS parser. It was
+  invisible until the generator page put a `radial-progress` on screen.
+- **An `<a>` with an `onClick` and no `href` reloads the page under
+  `Browser.application`.** Its document-level click listener walks up to the
+  nearest `<a>`, reads the `href` *property* (the empty string), gets
+  `Url.fromString "" == Nothing`, and sends `UrlRequested (External "")` — which
+  a router answers with `Browser.Navigation.load ""`. It also calls
+  `preventDefault`, so the control looks inert: the message it sent really was
+  handled, and then the page was thrown away and rebuilt from the URL. It bit
+  `Tab` (the `Day | Month | Year` strip) and `MenuItem` with an `onClick` and no
+  `href`. `Daisy.Render.clickableHtml` renders both as a `<button
+  type="button">` when they carry an `onClick`, which is also the focusable,
+  keyboard-activatable element they should always have been; an anchor that has
+  an `href` stays an anchor, so every navigation link is unchanged.
+
+### 6. `Daisy.Render.tokens`: 76 -> 97
+
+| Tokens | Job |
+| --- | --- |
+| `lg:grid-cols-12` + `lg:col-span-3` .. `lg:col-span-12` (11) | The twelve-column band and its ten cell widths. Below `lg` the band is one column and the cells claim nothing, for the same reason `Cols2` steps at `lg`. One constant per span rather than a built string: `render-class-audit` requires every class-like literal to be a `tokens` entry, and a class assembled at run time would be invisible to Tailwind's source scan, which reads these literals out of `Render.elm` itself. |
+| `p-5` | `CardPadding.PaddingDashboard`. |
+| `self-start` | The `stat-figure` tile, on the label's line. |
+| `border-b`, `border-r`, `border-base-300` | `DashboardShell.edges`. One use site each, in `shell`. |
+| `overflow-hidden` | Clips the tooltip's painted header row to the card's corner. |
+| `daisy-anim-bars`, `daisy-anim-line`, `daisy-anim-tooltip`, `daisy-anim-band` | The four motion classes, whose rules are `Daisy.Css`'s. The only entries in the table that are neither daisyUI's nor Tailwind's, which is why they carry a namespace neither uses. |
+
+`tests/RenderPurityTest.elm`'s `forbidden` list is **unchanged**: nothing left
+it. `border` in particular stays — a box drawn around an arbitrary element is
+what that entry exists to prevent, and `border-b` / `border-r` on a piece of
+chrome the renderer owns is a different thing, with one use site each.
+
+### 7. The theme generator, rebuilt as daisyUI builds it
+
+daisyUI's own generator at 1440 is a ~250px editor rail beside an ~880px
+preview laid out as `grid gap-6 xl:grid-cols-3` of
+`card bg-base-100 card-border border-base-300 card-sm` panels. `/theme` is now
+the same shape, expressed as one `GridSection.Spans` band of three cells:
+
+- **The rail** (`Span4`): a `Theme` card (name, "Start from", the light/dark
+  switch, `Randomize`, the link back into daisyUI's generator), three colour
+  cards, the shape card, and the palette.
+- **Two preview columns** (`Span4` each): the panels daisyUI's preview shows —
+  buttons, badges, tabs, a sign-up form with every control a theme reshapes, a
+  product card with a rating, a chart, alerts, a radial-progress score, an
+  orders table, a revenue stat, a chat, progress bars, steps, a timeline and a
+  pricing card. Two of those are not cards — a `steps` and a `timeline` — which
+  is what a `Spans` cell holding a *list* of blocks is for, and which daisyUI's
+  own preview does too.
+
+Three decisions inside it:
+
+- **The colour editor is a grid of chips, not a form.** Twenty `Field` rows is
+  the long single column this page used to be. The chips are grouped into
+  `Surface` / `Brand` / `State` cards, which is how daisyUI's own generator
+  groups them, four to a row. Each chip is a native
+  `type="color"` picker named by its `--color-*` variable through `ariaLabel`
+  (a `tooltip` beside it was tried and refused by two Tier C rows — section 9),
+  and four of them are one `Leaf.Join`: daisyUI's `.input` is `width: 100%`, so
+  four loose in a `card-body` column are four full-width rows, while a `join`'s
+  flex children shrink their 100% base sizes to a quarter each. That is the
+  four-across grid daisyUI's own generator shows, and it is also why
+  `card-actions` was not the answer in the end — it wraps, but it does not
+  constrain.
+- **The six lengths are `join`s of `btn-xs` buttons, not `<select>`s.** A select
+  hides both how many steps there are and which one is current. Their visible
+  text is the value without its unit (`0.25`), because six five-step rows have
+  to fit the rail; the unit moves to the group's heading and the button's
+  accessible name keeps the whole length prefixed by the group (`Boxes 2rem`),
+  which is what keeps `2rem` in one control distinguishable from `2rem` in the
+  next — and the visible text is still contained in the accessible name, so
+  they never disagree. The heading above each row is a `Leaf.Text`, not a
+  `Field` label: a `Field` wraps its control in the `<label>`, and a `<label>`
+  around six buttons makes clicking the heading press the first of them.
+- **The rail is four tracks, not three.** Three (260px) would have matched
+  daisyUI's rail width exactly, and the preview would then have had three
+  columns like theirs — but a 260px rail cannot hold a five-step segmented
+  control without overflowing it, and a control that scrolls sideways is worse
+  than one column fewer. `e2e/overflow.spec.ts` measures exactly that.
+
+`ThemeEdit` gained `SetName`: the name field is a real text input, and
+`Daisy.Tree.themeName` refuses an invalid or reserved name by returning
+`Nothing`, so `apply` simply leaves the theme alone — which is why it needs no
+error state.
+
+### 8. What the e2e suite gained
+
+- **`e2e/animation.spec.ts`** (new, 3 tests, `desktop-light`). The only spec
+  that does not go through `open()`, because it is the one place that has to
+  control `prefers-reduced-motion` itself and must not have `open()`'s
+  kill-every-animation stylesheet injected. It asserts the animation exists and
+  is `daisy-bar-grow`, that reduced motion leaves `document.getAnimations()`
+  empty, and that switching the dataset replays it — which is the assertion
+  that would catch the `Html.Keyed` key being dropped.
+- **`e2e/interaction.spec.ts`** gained two tests: hovering 2023 opens exactly
+  **one** tooltip carrying the year and both series names and exactly one band
+  (the "one" is the assertion that would catch the track's bin being counted),
+  and the pane still reads the message before it, because `ChartHovered` is a
+  `paneName` exception for the same reason `CalendarMsg` is — it fires on every
+  `mousemove`. The other test clicks `Month` and asserts the dataset changed.
+- **`e2e/theme-generator.spec.ts`**'s shape test now clicks segmented buttons
+  instead of choosing from selects, and additionally asserts that exactly one
+  step of a group is marked.
+
+### 9. What the suite refused, and what it found
+
+The recomposed pages were run against the existing Tier C rows before anything
+was called finished. Seven things came back; **two were renderer defects fixed
+for every user, five were compositions changed rather than waived, and no row
+was relaxed.**
+
+Renderer defects:
+
+| Row | Finding | Fixed by |
+| --- | --- | --- |
+| `a11y` (critical x5) | `Leaf.Rating`'s five radios had no accessible name. `RatingConfig.ariaLabel` named all five the same thing when it was set at all, and the "clear" radio had no name under any circumstances. | Each radio is named `"<group> <n>"` — the group being `ariaLabel` or `ratingDefaultLabel` — which is what daisyUI's own docs example writes (`aria-label="1 star"`). Five distinct names, always present. |
+| `a11y` (serious) | `Leaf.RadialProgress` is `role="progressbar"`, and a `progressbar` takes **no** name from its content, so a dial with a number in it is an unnamed control. | `RadialProgressData.ariaLabel : Maybe String`, falling back to the visible `label`, plus `aria-valuenow`. It has no config record to put it on — its size and thickness are CSS variables — so the field is on the data. |
+
+Compositions changed:
+
+| Row | Finding | Changed to |
+| --- | --- | --- |
+| `overflow` (`admin`, 375) | The page header's trailing group is `shrink-0`, which was right when it held only a `breadcrumbs` trail; with `Cta.placement = InHeader` it also holds a `btn`, and ~380px of min-content that cannot shrink gave the *document* a 413px scroll width at 375. | The group wraps instead. The clipping the `shrink-0` was added for is the case where the trail is the group's *only* child — and in that case the renderer already puts it directly in the row. |
+| `overlap` + `overflow` (`theme`) | A `Tooltip` on each colour chip. daisyUI's `.tooltip` wrapper is an `inline-block` that shrinks to fit and the `.input` inside it is `width: 100%`, so every 32px chip sat in a 24px wrapper and overlapped its neighbour by 8px; the absolutely positioned bubble put 55px of scroll content in a 32px box. | The chips are named by `ariaLabel` alone, which is what `getByLabel` and a screen reader read anyway — and four of them are one `Leaf.Join`, which is the shrink-to-fit row the tooltip was accidentally providing. |
+| `overflow` (`theme`) | A `chat-end` bubble. daisyUI draws the tail with an absolutely positioned `::before` **12px past the bubble's right edge**, which is 12px of scrollable overflow; on a `chat-start` bubble the same tail is on the left, where a negative offset contributes nothing to `scrollWidth`. | Both preview messages are `chat-start`. |
+| `contrast` (`valentine`) | The segmented control marked its current step with `btn-active`, whose background is a `color-mix()` the *composition* chose — 4.28:1 against the default `btn`'s foreground in that theme. | `btn-neutral`: `--color-neutral` over `--color-neutral-content`, a pair daisyUI declares in every theme. |
+| `keyboard` (`theme`) | A two-tile `stats` at `Responsive` in a four-track column is 355px wide at `lg`, where `lg:stats-horizontal` applies — so `.stats` (`grid-flow-col overflow-x-auto`) became a scrollable region and therefore a tab stop of its own. | `Fixed Vertical`, which is what two tiles in a 355px column want regardless. |
+
+And one screenshot flake, which is worth recording because it is not a bug in
+anything: `Leaf.Loading` in the preview made all thirty-six `/theme` baselines
+differ from run to run. `open()` kills CSS animation, but daisyUI's
+`loading-spinner` is a `mask-image` whose data-URI SVG animates itself with
+**SMIL**, which no CSS declaration stops. The spinner is out of the preview;
+`loading` stays covered by the class-coverage fixtures, which render markup
+rather than photograph it.
+
+
+### 10. The generator preview, block by block
+
+daisyUI's preview grid has nineteen blocks in three columns. Ours has the same
+nineteen, in their order, flowing row-major through a `CellThree` cell.
+
+| # | daisyUI's block | Ours |
+| --- | --- | --- |
+| 1 | `Preview` card: header + `more` link, two removable tag badges, four checkbox rows with count badges | `Card` with `headerActions = [Link "more"]`, a `CardList` of four `list-row`s (`Checkbox`, growing label, `Badge`), the tags in `card-actions` — theirs are under the header, ours at the foot, because `card-actions` is the only wrapping row a `card-body` has |
+| 2 | Week strip, event search, all-day toggle, one highlighted event | `Join` of seven `btn-xs` day buttons (the current one `btn-neutral`), a `CardForm` of the search field and the toggle, a one-row `CardList` for the event with its `1h` badge. Theirs stacks the weekday letter under the number in each cell; a `btn` is one line, so ours shows the number only |
+| 3 | Tabs + `Tab content 2` | `CardParts.headerTabs` (`tabs-box tabs-xs`) + a `CardLeaf` |
+| 4 | Price range: title, big number, slider | `Card` + `Leaf.Heading H1` + `Leaf.Range` |
+| 5 | Product: picture, name, `SALE`, rating, review count, price | `CardParts.figure` + `headerActions` badge + `Leaf.Rating` + `Heading H3` + `card-actions` |
+| 6 | Search + `Find` | `Join [JoinInput, JoinButton]` |
+| 7 | `Create new account` | `CardForm` of every control a theme reshapes — input, password, select, textarea, file input, two toggles, a radio, a checkbox — plus `Register` and `Or login` |
+| 8 | Sales volume: bar chart, sentence, `Charts`/`Details` | `CardChart (Bar { rounded = True })` + `CardLeaf` + `card-actions` |
+| 9 | `Page Score`: radial dial beside a `stat` | The dial is a `CardLeaf` **above** the `stat`, not its `stat-figure`: a 5rem dial plus its tile is a 96px grid column, and `.stat-title`/`-value`/`-desc` are all `white-space: nowrap`, so 96px of figure beside 170px of text turns a 218px `.stats` into a scrollable region — and a scrollable region is a tab stop of its own |
+| 10 | Recent orders | `CardList` of five rows, each a glyph, a growing name and a soft status badge |
+| 11 | September Revenue | `CardStat` with a delta badge |
+| 12 | `Write a new post` | `Join` of `B`/`I`/`U`, a `Textarea`, a character count, `Draft`/`Publish` |
+| 13 | Chat bubbles | `CardChat` |
+| 14 | `Admin panel` menu with counts | `CardList` of glyph + label + count. Theirs is a `menu`; a `card-body` cannot hold a `Block`, and `CardChild` has no `CardMenu` — a `list` row is the same three-part row |
+| 15 | Media player | Title, subtitle, a `Join` of transport buttons, a `Progress`, the elapsed/total time, four square buttons in `card-actions` |
+| 16 | Terminal | `Block.MockupCode`, unpanelled — theirs is too, which is what a `Spans` cell holding a *list* of blocks reproduces |
+| 17 | Four alerts | `CardAlert` ×4, **solid** rather than their outline/dash/soft mix (a soft alert is a `color-mix()` pair the composition derives, which axe reports as a contrast failure on a light ground) |
+| 18 | Timeline of seven items | `Block.Timeline`, unpanelled, the second non-card block |
+| 19 | Pricing: `Monthly \| Yearly` + `SALE`, plan, price, four features, `Buy Now` | `headerTabs` + `headerActions` badge + `Heading H2` + a `CardList` of check/cross rows + `card-actions` |
+
+**Two of their blocks are not there.** The `dock` (phone / chat / settings) is
+`Page.dock` in this tree — viewport-fixed chrome, not something a card can hold
+— so putting one in a preview card would mean inventing a second, non-fixed
+dock. And their `Preview` card's tag chips sit under its header; ours are in
+`card-actions` at the foot of the same card, for the reason in the table.
+
+**One arrangement difference.** Their three columns are three independent
+`flex flex-col` stacks, so the cards pack per column (a masonry). Ours is one
+grid, so the cards flow row-major and a short card leaves space under it. The
+set, the order and the sizes are theirs; the packing is not, and closing that
+would need either CSS multi-column (whose children need a `mb-*` utility —
+`mb-4` is on `RenderPurityTest`'s `forbidden` list, and rightly) or three cells
+of the band, which twelve tracks cannot divide into `2 + 3 + 3 * n`.
+
+### 11. Two Admin measurements, and three more renderer changes
+
+- **A tracked bar chart draws no left gutter.** `chartMargin` reserves 42 user
+  units for y-axis labels; a tracked chart draws none, so those units were about
+  30 device pixels of nothing at each side — half a bin. `barMargin` drops them,
+  and the columns now fill the panel the way Nexus's do (measured there: bar
+  27px on a 60.6px pitch; ours 30px on 57.6px). `barCornerRadius` went 0.35 ->
+  0.45, which is the near-pill cap Nexus draws.
+- **A headline stat has no `stat-title`.** Nexus reads `$184.78K +3.24%` with
+  `Total income in this year` **under** it; a metric tile reads label-first.
+  `Daisy.Render` emits no `stat-title` for an empty one — the same rule as an
+  empty `breadcrumbs` trail and a `Tab` with no content — so `Demo.Admin`'s
+  `totalIncome` says the whole label in the caption and the number is the first
+  thing in the tile.
+- **`BadgeConfig.icon`.** Nexus's delta pill is an arrow then the percentage.
+  A badge could not carry a glyph; it can now, drawn at `size-4` and
+  `aria-hidden`, exactly like a `ButtonConfig.icon`. `Demo.Admin`'s delta is
+  `badge-xs`, not `badge-sm`, because the glyph costs 20px of a row that has to
+  hold a 24px number and a figure tile as well.
+- **A `stat` tile's gutter is 20px, not daisyUI's `1rem`/`1.5rem`.** 24px of
+  inline padding either side of a 269px metric cell is 48px of the 221px a
+  number, its delta and a figure have to share — which is why the delta wrapped
+  under the number the moment it gained an arrow. Every dashboard template sets
+  ~20px there, and it is the same figure `CardPadding.PaddingDashboard` uses.
+  With it, all four Admin tiles read `$587.54 ↑ 10.8%` on one line, as Nexus's
+  do.
+- **The `stat-value` row wraps.** `.stats` is `overflow-x: auto` in *both* flow
+  directions, so a tile whose number plus delta is wider than its cell became a
+  scrollable region — which `e2e/keyboard.spec.ts` sees as a tab stop of its
+  own. Adding the arrow to the delta badge was enough to trigger it in a 269px
+  metric cell. A delta that does not fit now goes under the number.
+- **`Cta.placement = InNavbar` means the navbar.** Under `Shell.Plain` it used
+  to mean "the end of the last section", which is not a navbar at all. A `Plain`
+  page that spends a section on `Section.Navbar` now gets its CTA there, and
+  only a page with no navbar falls back to the old placement.
+
+### 12. What the tree gained for the generator
+
+| Addition | Why |
+| --- | --- |
+| `Span1`, `Span2` | A rail is one or two of twelve. daisyUI's own generator puts its theme list in 190px and its editor in 250px, which is exactly `Span2` and `Span3` of a 1392px content column. The old floor of three was written for *panels*; a rail is not one. |
+| `GridItem.columns : CellColumns` (`CellOne \| CellTwo \| CellThree`), `spanGrid` | Their preview is a grid **inside** the region beside the editor. This is that, as a property of the cell rather than a nesting level: the children are still blocks, and a block still never contains a block. `CellOne` is what every cell was, so nothing existing changed. |
+| `CardChild.CardList` | Half of their preview cards are a list of rows in a panel, and a `card-body` is a column that cannot hold a `Block`. Same reason `CardTable`, `CardChat` and `CardStat` exist. |
+| `BadgeConfig.icon` | See section 11. |

@@ -28,7 +28,12 @@ Conventions the Tier C specs rely on:
     the tree like everything else, because `demo/src` may not import
     `Html.Attributes`.
 
-    One constructor is deliberately invisible to it: `CalendarMsg`, the
+    Three constructors are deliberately invisible to it. `ChartHovered` is
+    one: `Block.Chart`'s `ChartInteraction` fires it on every `mousemove`
+    across a chart, so a pane that stamped it would read `ChartHovered` from
+    the first time a pointer crossed the revenue bars until the end of the
+    session, and every other `last-msg:` assertion on `/` would depend on
+    where the mouse had been. It is treated exactly like `CalendarMsg`, the
     picker's own internal traffic. `Daisy.Render.updateCalendar` batches the
     `onChange` callback with the `Browser.Dom.focus` call the roving
     `tabindex` needs, and that focus task comes back as another `CalendarMsg`
@@ -211,6 +216,8 @@ type alias Model =
     , anonymize : Bool
     , generatorUrl : String
     , themeSeed : Int
+    , chartRange : Demo.Admin.ChartRange
+    , hoveredBar : Maybe Int
     }
 
 
@@ -235,6 +242,8 @@ init flags url key =
       , anonymize = False
       , generatorUrl = generatorFallback
       , themeSeed = 0
+      , chartRange = Demo.Admin.Year
+      , hoveredBar = Nothing
       }
     , Ports.encodeTheme (ThemeGenerator.exportJson (Demo.Themes.rename (themeFromUrl url)))
     )
@@ -318,15 +327,20 @@ type Msg
     | ThemeEdited ThemeGenerator.ThemeEdit
     | ThemeExported
     | ThemeLinkReady String
+    | ChartRangeChanged Demo.Admin.ChartRange
+    | ChartHovered (Maybe Int)
 
 
 {-| The constructor name of a `Msg`, for the debug pane, or `Nothing` for a
 message the pane deliberately ignores. Payloads are left off so the pane's
 text is exactly one stable token per constructor.
 
-`CalendarMsg` and `ThemeLinkReady` are the two `Nothing`s: see the module
-comment. Both arrive _after_ the message that caused them and neither is a
-message the application acted on.
+`CalendarMsg`, `ThemeLinkReady` and `ChartHovered` are the three `Nothing`s:
+see the module comment. None of the three is a message the application acted
+on — the first two arrive _after_ the message that caused them, and the third
+arrives on every `mousemove` over a chart, so stamping it would make the pane
+say `ChartHovered` for the rest of the session the moment a pointer crossed a
+bar.
 
 -}
 paneName : Msg -> Maybe String
@@ -336,6 +350,9 @@ paneName msg =
             Nothing
 
         ThemeLinkReady _ ->
+            Nothing
+
+        ChartHovered _ ->
             Nothing
 
         _ ->
@@ -422,6 +439,12 @@ msgName msg =
 
         ThemeLinkReady _ ->
             "ThemeLinkReady"
+
+        ChartRangeChanged _ ->
+            "ChartRangeChanged"
+
+        ChartHovered _ ->
+            "ChartHovered"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -549,6 +572,16 @@ step msg model =
         ThemeLinkReady url ->
             ( { model | generatorUrl = url }, Cmd.none )
 
+        ChartRangeChanged range ->
+            -- A new dataset also drops the hover: the index the pointer was
+            -- over belongs to the old bins, and `Daisy.Render` remounts the
+            -- drawing (its `Html.Keyed` key is the dataset), so a stale index
+            -- would highlight a column that is no longer under the pointer.
+            ( { model | chartRange = range, hoveredBar = Nothing }, Cmd.none )
+
+        ChartHovered index ->
+            ( { model | hoveredBar = index }, Cmd.none )
+
 
 {-| The caption under the picker. A `Cally.Range` value is sorted already, so
 this only has to format it.
@@ -624,12 +657,16 @@ pageFor model =
                 , lastMsg = model.lastMsg
                 , toastVisible = model.toastVisible
                 , search = model.search
+                , chartRange = model.chartRange
+                , hoveredBar = model.hoveredBar
                 , onNavigate = NavigateTo
                 , onTheme = ThemeChanged
                 , onSearch = SearchChanged
                 , onNotifications = NotificationsOpened
                 , onExport = ExportClicked
                 , onRowAction = OrderViewed
+                , onChartRange = ChartRangeChanged
+                , onChartHover = ChartHovered
                 }
 
         AnalyticsRoute ->

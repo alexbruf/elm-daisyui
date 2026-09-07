@@ -1,5 +1,6 @@
 module Daisy.Tree exposing
     ( Page(..), Sections(..), Shell(..), DashboardShell, dashboardShell, Brand, Cta, cta
+    , CtaPlacement(..), allCtaPlacements
     , PageHeader, pageHeader
     , Theme(..), allThemes, themeToString
     , CustomTheme, ColorScheme(..), allColorSchemes, colorSchemeToString
@@ -13,19 +14,20 @@ module Daisy.Tree exposing
     , HeroConfig, defaultHeroConfig
     , NavbarParts, emptyNavbarParts
     , FooterConfig, defaultFooterConfig
-    , GridConfig, defaultGridConfig, GridColumns(..)
+    , GridSection(..), GridConfig, defaultGridConfig, GridColumns(..)
+    , GridItem, Span(..), allSpans, CellColumns(..), allCellColumns, span, spanColumn, spanGrid
     , StackConfig, defaultStackConfig, Align(..)
     , Block(..)
     , AccordionConfig, defaultAccordionConfig, AccordionItem
     , AlertConfig, defaultAlertConfig
-    , CardConfig, defaultCardConfig, CardParts, emptyCardParts, CardChild(..)
+    , CardConfig, defaultCardConfig, CardPadding(..), allCardPaddings, CardParts, emptyCardParts, CardChild(..)
     , CarouselConfig, defaultCarouselConfig, CarouselItem, CarouselSnap(..)
     , ChatMessage
     , CollapseConfig, defaultCollapseConfig, CollapseParts
     , DiffParts
     , Fieldset, Field, LabelPlacement(..), field
     , ListRow, ListCell, listCell
-    , MenuConfig, defaultMenuConfig, MenuItem(..), MenuBadge, MenuSpec, menuItem
+    , MenuConfig, defaultMenuConfig, MenuActiveStyle(..), allMenuActiveStyles, MenuItem(..), MenuBadge, MenuSpec, menuItem
     , MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
     , NavConfig, defaultNavConfig
     , PaginationConfig, defaultPaginationConfig, PaginationData
@@ -113,6 +115,7 @@ that can emit a class.
 # Page
 
 @docs Page, Sections, Shell, DashboardShell, dashboardShell, Brand, Cta, cta
+@docs CtaPlacement, allCtaPlacements
 @docs PageHeader, pageHeader
 
 
@@ -142,7 +145,8 @@ format has.
 @docs HeroConfig, defaultHeroConfig
 @docs NavbarParts, emptyNavbarParts
 @docs FooterConfig, defaultFooterConfig
-@docs GridConfig, defaultGridConfig, GridColumns
+@docs GridSection, GridConfig, defaultGridConfig, GridColumns
+@docs GridItem, Span, allSpans, CellColumns, allCellColumns, span, spanColumn, spanGrid
 @docs StackConfig, defaultStackConfig, Align
 
 
@@ -151,14 +155,14 @@ format has.
 @docs Block
 @docs AccordionConfig, defaultAccordionConfig, AccordionItem
 @docs AlertConfig, defaultAlertConfig
-@docs CardConfig, defaultCardConfig, CardParts, emptyCardParts, CardChild
+@docs CardConfig, defaultCardConfig, CardPadding, allCardPaddings, CardParts, emptyCardParts, CardChild
 @docs CarouselConfig, defaultCarouselConfig, CarouselItem, CarouselSnap
 @docs ChatMessage
 @docs CollapseConfig, defaultCollapseConfig, CollapseParts
 @docs DiffParts
 @docs Fieldset, Field, LabelPlacement, field
 @docs ListRow, ListCell, listCell
-@docs MenuConfig, defaultMenuConfig, MenuItem, MenuBadge, MenuSpec, menuItem
+@docs MenuConfig, defaultMenuConfig, MenuActiveStyle, allMenuActiveStyles, MenuItem, MenuBadge, MenuSpec, menuItem
 @docs MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
 @docs NavConfig, defaultNavConfig
 @docs PaginationConfig, defaultPaginationConfig, PaginationData
@@ -236,7 +240,7 @@ always owns the wrapper element and the anchor can never go missing.
 import Cally.Date as CallyDate
 import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
-import Daisy.Chart exposing (ChartConfig, ChartData)
+import Daisy.Chart exposing (ChartConfig, ChartData, ChartInteraction)
 import Daisy.Color as Color
 import Daisy.Icon exposing (Icon)
 import Daisy.Schema.Accordion as SAccordion
@@ -376,12 +380,21 @@ way every daisyUI dashboard template opens its sidebar. `sidebarFooter` is the
 leaf pinned to the bottom of the same panel, which is where those templates put
 the signed-in user ([`Leaf.UserChip`](#Leaf)).
 
+`edges` draws the hairline daisyUI's own dashboard templates put under the
+navbar and down the sidebar's right edge (1px, `--color-base-300`). It is a
+switch rather than always-on because a shell whose content ground is
+`base-100` — no tonal step between panel and page — has nothing for the line to
+separate, and a line drawn there reads as a box. `dashboardShell` turns it on,
+because the ground this package paints (`bg-base-200`) is the case that wants
+it.
+
 -}
 type alias DashboardShell msg =
     { brand : Maybe Brand
     , sidebar : MenuSpec msg
     , sidebarFooter : Maybe (Leaf msg)
     , navbar : NavbarParts msg
+    , edges : Bool
     }
 
 
@@ -396,6 +409,7 @@ dashboardShell sidebar =
     , sidebar = sidebar
     , sidebarFooter = Nothing
     , navbar = emptyNavbarParts
+    , edges = True
     }
 
 
@@ -410,11 +424,17 @@ type alias Brand =
 
 {-| The page's single primary call to action. Rendered as `btn btn-primary`,
 with `icon` as an optional leading [`Daisy.Icon.Icon`](Daisy-Icon#Icon).
+
+`placement` says which piece of chrome it lands in; the shell still owns the
+markup, so there is still exactly one primary button and still no way to put it
+inside a section.
+
 -}
 type alias Cta msg =
     { label : String
     , onClick : msg
     , icon : Maybe Icon
+    , placement : CtaPlacement
     , size : Maybe SButton.Size
     , style : Maybe SButton.Style
     , modifiers : List SButton.Modifier
@@ -435,6 +455,7 @@ cta label onClick =
     { label = label
     , onClick = onClick
     , icon = Nothing
+    , placement = InNavbar
     , size = Nothing
     , style = Nothing
     , modifiers = []
@@ -443,6 +464,36 @@ cta label onClick =
     , aura = Nothing
     , indicator = Nothing
     }
+
+
+{-| Where the shell draws [`Page.cta`](#Cta).
+
+  - `InNavbar` is the end of `navbar-end` under `Shell.Dashboard` and the end
+    of the last section under `Shell.Plain` — the placement this package has
+    always had.
+  - `InHeader` puts it in [`Page.header`](#PageHeader)'s right-hand group,
+    after the breadcrumbs. daisyUI's own dashboard templates keep their navbar
+    to search, notifications and the signed-in user, and put the page's action
+    on the title row; this is that arrangement.
+  - `InSidebarFooter` puts it above `DashboardShell.sidebarFooter`, which is
+    where a tool with one standing action (“New project”) puts it.
+
+`InHeader` needs a header to land in and `InSidebarFooter` needs a dashboard
+sidebar. Neither is a type-level guarantee, so both fall back to `InNavbar`
+rather than dropping the button: a page always renders its one CTA.
+
+-}
+type CtaPlacement
+    = InNavbar
+    | InHeader
+    | InSidebarFooter
+
+
+{-| Every [`CtaPlacement`](#CtaPlacement) value.
+-}
+allCtaPlacements : List CtaPlacement
+allCtaPlacements =
+    [ InNavbar, InHeader, InSidebarFooter ]
 
 
 
@@ -1140,7 +1191,7 @@ type Section msg
     = Hero HeroConfig (List (Block msg))
     | Navbar (NavbarParts msg)
     | Footer FooterConfig (List (Block msg))
-    | Grid GridConfig (List (Block msg))
+    | Grid (GridSection msg)
     | Stack StackConfig (List (Block msg))
 
 
@@ -1189,7 +1240,31 @@ defaultFooterConfig =
     { direction = Nothing, placement = Nothing }
 
 
-{-| How many columns a `Grid` section has. Spacing is fixed by
+{-| What a `Grid` section holds.
+
+Two shapes, and the split is the point. `Columns` is a grid of equal tracks and
+its children are plain blocks — there is nothing to say about a cell, because
+every cell is the same width. `Spans` is the twelve-column grid, and _every_
+child of it must say how many of the twelve it takes.
+
+Putting the choice in the payload type rather than in a `Cols12` member of
+[`GridColumns`](#GridColumns) is what makes the two mistakes unrepresentable
+instead of merely wrong: a [`GridItem`](#GridItem) inside a `Columns` grid and
+a bare `Block` inside a `Spans` grid are both a `TYPE MISMATCH`
+(`tools/should-not-compile/Reject/SpanOutsideTwelveGrid.elm`). `Section` also
+stays at the five constructors the SPEC fixes it at.
+
+    Grid (Columns { columns = Cols4 } [ tile, tile, tile, tile ])
+
+    Grid (Spans [ span Span7 chartCard, span Span5 sideCard ])
+
+-}
+type GridSection msg
+    = Columns GridConfig (List (Block msg))
+    | Spans (List (GridItem msg))
+
+
+{-| How many equal columns a `Columns` grid has. Spacing is fixed by
 `Daisy.Render.tokens`; only the column count is authorable.
 -}
 type GridColumns
@@ -1199,7 +1274,7 @@ type GridColumns
     | Cols4
 
 
-{-| Configuration of a `Grid` section.
+{-| Configuration of a `Columns` grid.
 -}
 type alias GridConfig =
     { columns : GridColumns }
@@ -1210,6 +1285,115 @@ type alias GridConfig =
 defaultGridConfig : GridConfig
 defaultGridConfig =
     { columns = Cols4 }
+
+
+{-| One cell of a `Spans` grid: the number of the twelve tracks it takes, and
+the blocks stacked inside it.
+
+`blocks` is a list rather than one block because a twelve-column band is where a
+page puts _columns_, and a column is normally more than one panel — an editor
+rail beside two columns of preview cards, a form beside a stack of summaries.
+`Daisy.Render` lays the cell out as one fixed-gap vertical column, so a cell of
+one block is byte-identical to a cell that held only that block; there is still
+no layout decision for the caller to make.
+
+-}
+type alias GridItem msg =
+    { span : Span
+    , columns : CellColumns
+    , blocks : List (Block msg)
+    }
+
+
+{-| How a `Spans` cell lays its own blocks out.
+
+`CellOne` is the column every cell was before this: one fixed-gap stack. The
+other two are the shape a _preview_ has — daisyUI's own theme generator lays its
+component demo out as `grid xl:grid-cols-3` of small cards inside the region
+beside its editor, and that is a grid **inside a cell**, not a nesting level of
+the tree: the children are still blocks, and a block still never contains a
+block.
+
+Both step down to one column on a phone and two at `sm`, for the same reason
+`Section.Grid`'s counts are breakpoints rather than constants.
+
+-}
+type CellColumns
+    = CellOne
+    | CellTwo
+    | CellThree
+
+
+{-| Every [`CellColumns`](#CellColumns) value.
+-}
+allCellColumns : List CellColumns
+allCellColumns =
+    [ CellOne, CellTwo, CellThree ]
+
+
+{-| A [`GridItem`](#GridItem) holding one block.
+
+    span Span7 (Card defaultCardConfig parts)
+
+-}
+span : Span -> Block msg -> GridItem msg
+span width block =
+    { span = width, columns = CellOne, blocks = [ block ] }
+
+
+{-| A [`GridItem`](#GridItem) holding a column of blocks.
+
+    spanColumn Span3 [ toolbarCard, coloursCard, shapeCard ]
+
+-}
+spanColumn : Span -> List (Block msg) -> GridItem msg
+spanColumn width blocks =
+    { span = width, columns = CellOne, blocks = blocks }
+
+
+{-| A [`GridItem`](#GridItem) whose blocks are laid out as a grid of their own.
+
+    spanGrid Span7 CellThree previewCards
+
+-}
+spanGrid : Span -> CellColumns -> List (Block msg) -> GridItem msg
+spanGrid width columns blocks =
+    { span = width, columns = columns, blocks = blocks }
+
+
+{-| How many of twelve tracks a [`GridItem`](#GridItem) takes.
+
+All twelve, including the two narrow ones. A single track is ~94px in a 1392px
+content column, which is too little for a panel — but it is exactly right for
+the _rail_ kinds of cell a twelve-column page has: daisyUI's own theme
+generator puts its theme list in 190px and its editor in 250px, which is two
+tracks and three.
+
+The splits daisyUI's own templates use are all expressible: 7:5 for a chart
+beside a panel, 8:4 for content beside a rail, 6:6 for halves, 2:3:7 for the
+generator's list, editor and preview.
+
+-}
+type Span
+    = Span1
+    | Span2
+    | Span3
+    | Span4
+    | Span5
+    | Span6
+    | Span7
+    | Span8
+    | Span9
+    | Span10
+    | Span11
+    | Span12
+
+
+{-| Every [`Span`](#Span) value.
+-}
+allSpans : List Span
+allSpans =
+    [ Span1, Span2, Span3, Span4, Span5, Span6, Span7, Span8, Span9, Span10, Span11, Span12 ]
 
 
 {-| Cross-axis alignment of a `Stack` section.
@@ -1259,7 +1443,7 @@ type Block msg
     | Breadcrumbs (List (Leaf msg))
     | Card CardConfig (CardParts msg)
     | Carousel CarouselConfig (List (CarouselItem msg))
-    | Chart ChartConfig ChartData
+    | Chart ChartConfig ChartData (Maybe (ChartInteraction msg))
     | Chat (List (ChatMessage msg))
     | Collapse CollapseConfig (CollapseParts msg)
     | Diff (DiffParts msg)
@@ -1327,10 +1511,35 @@ decoration properties.
 type alias CardConfig =
     { style : Maybe SCard.Style
     , size : Maybe SCard.Size
+    , padding : CardPadding
     , modifiers : List SCard.Modifier
     , aura : Maybe AuraConfig
     , hover3d : Bool
     }
+
+
+{-| The inside gutter of a `card-body`.
+
+`PaddingDefault` leaves daisyUI's own `--card-p` alone: 1.5rem, or 1rem at
+`card-sm`. `PaddingDashboard` is the 20px every daisyUI dashboard template sets
+instead — halfway between those two steps, which is the figure a grid of panels
+wants and which neither `card` size offers.
+
+It is a closed pair rather than a length because a length is a spacing decision
+and spacing is `Daisy.Render.tokens`' job; this names the two the library will
+make.
+
+-}
+type CardPadding
+    = PaddingDefault
+    | PaddingDashboard
+
+
+{-| Both [`CardPadding`](#CardPadding) values.
+-}
+allCardPaddings : List CardPadding
+allCardPaddings =
+    [ PaddingDefault, PaddingDashboard ]
 
 
 {-| A plain card.
@@ -1339,6 +1548,7 @@ defaultCardConfig : CardConfig
 defaultCardConfig =
     { style = Nothing
     , size = Nothing
+    , padding = PaddingDefault
     , modifiers = []
     , aura = Nothing
     , hover3d = False
@@ -1383,9 +1593,10 @@ the same helper, so a chart in a card and a bare chart are the same markup.
 type CardChild msg
     = CardLeaf (Leaf msg)
     | CardAlert AlertConfig (List (Leaf msg))
-    | CardChart ChartConfig ChartData
+    | CardChart ChartConfig ChartData (Maybe (ChartInteraction msg))
     | CardChat (List (ChatMessage msg))
     | CardTable TableConfig (List (Row msg))
+    | CardList (List (ListRow msg))
     | CardStat StatConfig (List (StatItem msg))
     | CardForm (List (Fieldset msg))
 
@@ -1565,15 +1776,50 @@ not entries here.
 type alias MenuConfig =
     { size : Maybe SMenu.Size
     , direction : Maybe SMenu.Direction
+    , activeStyle : MenuActiveStyle
     , modifiers : List SMenu.Modifier
     }
 
 
-{-| A vertical menu at the default size.
+{-| A vertical menu at the default size, with daisyUI's own active row.
 -}
 defaultMenuConfig : MenuConfig
 defaultMenuConfig =
-    { size = Nothing, direction = Nothing, modifiers = [] }
+    { size = Nothing
+    , direction = Nothing
+    , activeStyle = SolidActive
+    , modifiers = []
+    }
+
+
+{-| How the active row of a menu is painted.
+
+`SolidActive` is daisyUI's `menu-active`: `.menu` sets
+`--menu-active-bg: var(--color-neutral)`, so the row is a solid slab of the
+neutral colour with `--color-neutral-content` on it.
+
+`TintedActive` is what daisyUI's own dashboard templates use instead — the row
+is one surface step up from the panel (`bg-base-200`) at `font-medium`, in the
+page's ordinary text colour. It is a quieter mark, which is what a sidebar of
+twenty entries needs; a slab of neutral in a `bg-base-100` sidebar reads as a
+button.
+
+It emits **no** `menu-active`, because daisyUI offers no class for this: the
+active background is a custom property with one value. `SolidActive` therefore
+stays the default and is the only way to reach `menu-active` — it is not
+deprecated by the tinted style, it is the other half of a pair.
+
+-}
+type MenuActiveStyle
+    = SolidActive
+    | TintedActive
+
+
+{-| Both [`MenuActiveStyle`](#MenuActiveStyle) values.
+-}
+allMenuActiveStyles : List MenuActiveStyle
+allMenuActiveStyles =
+    [ SolidActive, TintedActive ]
 
 
 {-| One menu entry. `title = True` renders it as the `menu-title` part; a
@@ -1901,12 +2147,18 @@ A tab with an empty `content` owns no panel: `Daisy.Render` then emits the
 as a segmented control (`Day | Month | Year`), where the tabs pick a shape for
 something already on the page rather than swapping panels.
 
+`onClick` is what such a control needs and a panel-swapping tab set does not:
+daisyUI's own tab CSS shows the panel that follows the active tab with no
+JavaScript at all, but a segmented control changes something _outside_ the strip
+and has to say so. It is a `Maybe`, so a plain tab set stays exactly what it was.
+
 -}
 type alias Tab msg =
     { label : String
     , active : Bool
     , disabled : Bool
     , content : List (Leaf msg)
+    , onClick : Maybe msg
     }
 
 
@@ -2075,21 +2327,28 @@ type alias AvatarItem msg =
     }
 
 
-{-| Groups of the daisyUI `badge` component.
+{-| Groups of the daisyUI `badge` component, plus an optional leading glyph.
+
+`icon` is drawn before the label at `size-4`, which is the delta pill every
+dashboard puts beside a number (`\u{2191} 10.8%`). It is decorative — the label
+beside it is what the badge says — so the `<svg>` is `aria-hidden`, exactly as
+a `ButtonConfig.icon` is.
+
 -}
 type alias BadgeConfig =
-    { color : Maybe SBadge.Color
+    { icon : Maybe Icon
+    , color : Maybe SBadge.Color
     , style : Maybe SBadge.Style
     , size : Maybe SBadge.Size
     , tooltip : Maybe Tooltip
     }
 
 
-{-| A badge with no colour, style or size class.
+{-| A badge with no glyph, colour, style or size class.
 -}
 defaultBadgeConfig : BadgeConfig
 defaultBadgeConfig =
-    { color = Nothing, style = Nothing, size = Nothing, tooltip = Nothing }
+    { icon = Nothing, color = Nothing, style = Nothing, size = Nothing, tooltip = Nothing }
 
 
 {-| The colour of a `Button` leaf.
@@ -2730,11 +2989,20 @@ type alias ProgressData =
 
 
 {-| The value and centre label of a `radial-progress`. Its size and thickness
-are CSS variables, not classes, so there is no config.
+are CSS variables, not classes, so there is no config — which is why the
+accessible name is a field here rather than on one.
+
+`ariaLabel` is that name. `Daisy.Render` gives the element
+`role="progressbar"`, and a `progressbar` takes **no** name from its content,
+so a dial with only a number in it is an unnamed control (axe's
+`aria-progressbar-name`, serious). `Nothing` falls back to `label`, which is at
+least the value the dial shows; a real page says what is being measured.
+
 -}
 type alias RadialProgressData =
     { value : Float
     , label : String
+    , ariaLabel : Maybe String
     }
 
 
@@ -3067,10 +3335,20 @@ defaultTextareaConfig =
 checkbox, radio group, select, swap, dropdown) are presentations of one
 control, not separate components.
 
-`ThemeAsDropdown` is the only compact one: every other presentation renders one
-sibling control per theme, which is 35 controls wide with `allThemes`.
-It renders daisyUI's documented "Using a dropdown" markup — a `btn` trigger and
-a `dropdown-content` list of `theme-controller` radios.
+`ThemeAsDropdown` and `ThemeAsIconDropdown` are the compact ones: every other
+presentation renders one sibling control per theme, which is 35 controls wide
+with `allThemes`.
+
+`ThemeAsDropdown` renders daisyUI's documented "Using a dropdown" markup — a
+bare `btn` trigger reading "Theme" and a `dropdown-content` list of
+`theme-controller` radios — and `tests/CorpusTest` compares that trigger with
+the docs example class for class, so it cannot be restyled.
+
+`ThemeAsIconDropdown` is the same dropdown with the trigger daisyUI's own
+dashboard templates use: `btn btn-ghost btn-circle` around a palette glyph, named
+by `aria-label` because it carries no text. It is a second constructor rather
+than a field on the first for exactly that reason — the corpus fixture pins one
+of the two markups, and a flag would have made that fixture depend on the flag.
 
 -}
 type ThemePresentation
@@ -3080,6 +3358,7 @@ type ThemePresentation
     | ThemeAsCheckbox
     | ThemeAsSwap
     | ThemeAsDropdown
+    | ThemeAsIconDropdown
 
 
 {-| A theme switcher. `theme-controller` declares no class groups, so this is

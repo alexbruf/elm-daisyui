@@ -99,6 +99,7 @@ type Icon
     | User
     | Moon
     | Sun
+    | Swatch
 
 
 {-| Every [`Icon`](#Icon), in declaration order. Fixtures and coverage tests
@@ -131,6 +132,7 @@ allIcons =
     , User
     , Moon
     , Sun
+    , Swatch
     ]
 
 
@@ -221,3 +223,6 @@ name icon =
 
         Sun ->
             "sun"
+
+        Swatch ->
+            "swatch"

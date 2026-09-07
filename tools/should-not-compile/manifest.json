@@ -61,5 +61,11 @@
   ],
   "Reject/ThemeNameFromString.elm": [
     "TYPE MISMATCH"
+  ],
+  "Reject/SpanOutsideTwelveGrid.elm": [
+    "TYPE MISMATCH"
+  ],
+  "Reject/UnspannedCellInTwelveGrid.elm": [
+    "TYPE MISMATCH"
   ]
 }

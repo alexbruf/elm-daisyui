@@ -184,7 +184,7 @@ two cells, and the card already carries the rank.
 -}
 formsSection : Config msg -> Section msg
 formsSection config =
-    Grid { columns = Tree.Cols2 }
+    gridSection Tree.Cols2
         [ formCard "General"
             [ workspaceFieldset config
             , notificationFieldset config
@@ -214,8 +214,16 @@ borderedCard =
     { defaultCard | style = Just SCard.Border }
 
 
+{-| Every panel on this page carries the 20px `card-body` gutter daisyUI's own
+dashboard templates set, which is `CardPadding.PaddingDashboard`.
+-}
 defaultCard : Tree.CardConfig
 defaultCard =
+    { baseCard | padding = Tree.PaddingDashboard }
+
+
+baseCard : Tree.CardConfig
+baseCard =
     Tree.defaultCardConfig
 
 
@@ -441,3 +449,15 @@ defaultToggle =
 defaultButton : Tree.ButtonConfig msg
 defaultButton =
     Tree.defaultButtonConfig
+
+
+{-| A `Section.Grid` of equal columns.
+
+`Section.Grid` takes a `GridSection`, which is either `Columns` (equal tracks,
+plain blocks) or `Spans` (the twelve-column grid, one span per cell). This page
+only wants the first, so it says so once.
+
+-}
+gridSection : Tree.GridColumns -> List (Block msg) -> Section msg
+gridSection columns blocks =
+    Grid (Tree.Columns { columns = columns } blocks)

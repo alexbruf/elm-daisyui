@@ -87,6 +87,7 @@ type Msg
     | Themed Theme
     | CalendarChanged CalendarMsg
     | Picked CalendarValue
+    | Hovered (Maybe Int)
 
 
 {-| The fixtures, in named chunks. Chunking keeps each rendered tree small
@@ -207,7 +208,7 @@ plainLeaves : List (Leaf Msg)
 plainLeaves =
     [ Countdown 12
     , HoverGallery [ "a.png", "b.png" ]
-    , RadialProgress { value = 70, label = "70%" }
+    , RadialProgress { value = 70, label = "70%", ariaLabel = Just "Disk used" }
     , Text "plain text"
     , TextRotate [ "one", "two" ]
     , Filter
@@ -285,7 +286,9 @@ badgeConfigs =
 badgeLeaves : List (Leaf Msg)
 badgeLeaves =
     List.map (\c -> Badge c "9") badgeConfigs
-        ++ [ Badge { defaultBadgeConfig | tooltip = Just (tooltip "tip") } "9" ]
+        ++ [ Badge { defaultBadgeConfig | tooltip = Just (tooltip "tip") } "9"
+           , Badge { defaultBadgeConfig | icon = Just DIcon.ArrowTrendingUp } "9"
+           ]
 
 
 buttonConfigs : List (ButtonConfig Msg)
@@ -590,7 +593,14 @@ themeLeaves =
                 , onSelect = Just Themed
                 }
         )
-        [ ThemeAsSelect, ThemeAsRadios, ThemeAsToggle, ThemeAsCheckbox, ThemeAsSwap, ThemeAsDropdown ]
+        [ ThemeAsSelect
+        , ThemeAsRadios
+        , ThemeAsToggle
+        , ThemeAsCheckbox
+        , ThemeAsSwap
+        , ThemeAsDropdown
+        , ThemeAsIconDropdown
+        ]
 
 
 toggleLeaves : List (Leaf Msg)
@@ -690,6 +700,7 @@ cardBlocks : List (Block Msg)
 cardBlocks =
     List.map (\v -> Card { defaultCardConfig | style = Just v } cardParts) SCard.allStyles
         ++ List.map (\v -> Card { defaultCardConfig | size = Just v } cardParts) SCard.allSizes
+        ++ List.map (\v -> Card { defaultCardConfig | padding = v } cardParts) allCardPaddings
         ++ [ Card { defaultCardConfig | modifiers = SCard.allModifiers } cardParts
            , Card { defaultCardConfig | hover3d = True } cardParts
            , Card defaultCardConfig cardBlockChildren
@@ -713,7 +724,7 @@ cardParts =
 -}
 segmentTab : String -> Bool -> Tab Msg
 segmentTab label active =
-    { label = label, active = active, disabled = False, content = [] }
+    { label = label, active = active, disabled = False, content = [], onClick = Just Clicked }
 
 
 {-| A card whose body holds one of each block-shaped `CardChild`.
@@ -724,7 +735,7 @@ cardBlockChildren =
         | body =
             [ CardLeaf (Text "body")
             , CardAlert defaultAlertConfig [ Text "Saved" ]
-            , CardChart Chart.Line chartData
+            , CardChart (Chart.Line Chart.defaultLineStyle) chartData Nothing
             , CardChat
                 [ { placement = firstChatPlacement
                   , color = Nothing
@@ -735,6 +746,7 @@ cardBlockChildren =
                   }
                 ]
             , CardTable defaultTableConfig tableRows
+            , CardList listRows
             , CardStat defaultStatConfig statItems
             , CardForm formFieldsets
             ]
@@ -757,15 +769,36 @@ carouselItems =
 
 chartBlocks : List (Block Msg)
 chartBlocks =
-    List.map (\config -> Chart config chartData) Chart.allChartConfigs
+    List.map (\config -> Chart config chartData Nothing) Chart.allChartConfigs
+        ++ -- Both interaction states of both interactive shapes: a bar chart
+           -- (whose hover band comes from the bin elm-charts resolved) and a
+           -- line chart (whose band is the crosshair around a single x).
+           List.concatMap
+            (\config ->
+                [ Chart config chartData (Just (chartInteraction Nothing))
+                , Chart config chartData (Just (chartInteraction (Just 1)))
+                ]
+            )
+            [ Chart.Bar { stacked = True, track = True, rounded = True }
+            , Chart.Line { stepped = True }
+            ]
+
+
+chartInteraction : Maybe Int -> Chart.ChartInteraction Msg
+chartInteraction hovered =
+    { hovered = hovered, onHover = Hovered }
 
 
 chartData : Chart.ChartData
 chartData =
     { series =
-        List.map
-            (\color -> { name = "s", color = color, points = [ 1, 2, 3 ] })
-            Chart.allSemanticColors
+        List.map (\color -> Chart.series "s" color [ 1, 2, 3 ]) Chart.allSemanticColors
+            ++ [ { name = "Prediction"
+                 , color = Chart.Neutral
+                 , points = [ 3, 2, 1 ]
+                 , dashed = True
+                 }
+               ]
     , xLabels = [ "Jan", "Feb", "Mar" ]
     }
 
@@ -813,14 +846,20 @@ collapseBlocks =
 
 listBlocks : List (Block Msg)
 listBlocks =
-    [ ListBlock
-        [ { cells =
-                [ listCell (Text "row")
-                , { content = Text "grows", grow = True, wrap = False }
-                , { content = Text "wraps", grow = False, wrap = True }
-                ]
-          }
-        ]
+    [ ListBlock listRows ]
+
+
+{-| One `list-row` with a plain cell, a growing one and a wrapping one. Shared
+by `Block.ListBlock` and `CardChild.CardList`, which render the same markup.
+-}
+listRows : List (ListRow Msg)
+listRows =
+    [ { cells =
+            [ listCell (Text "row")
+            , { content = Text "grows", grow = True, wrap = False }
+            , { content = Text "wraps", grow = False, wrap = True }
+            ]
+      }
     ]
 
 
@@ -829,6 +868,9 @@ menuBlocks =
     List.map (\v -> Menu { defaultMenuConfig | size = Just v } menuItems) SMenu.allSizes
         ++ List.map (\v -> Menu { defaultMenuConfig | direction = Just v } menuItems) SMenu.allDirections
         ++ [ Menu { defaultMenuConfig | modifiers = SMenu.allModifiers } menuItems ]
+        ++ List.map
+            (\v -> Menu { defaultMenuConfig | activeStyle = v } menuItems)
+            allMenuActiveStyles
 
 
 menuItems : List (MenuItem Msg)
@@ -962,8 +1004,8 @@ tabsBlocks =
 
 tabs : List (Tab Msg)
 tabs =
-    [ { label = "Tab 1", active = True, disabled = False, content = [ Text "one" ] }
-    , { label = "Tab 2", active = False, disabled = True, content = [ Text "two" ] }
+    [ { label = "Tab 1", active = True, disabled = False, content = [ Text "one" ], onClick = Nothing }
+    , { label = "Tab 2", active = False, disabled = True, content = [ Text "two" ], onClick = Just Clicked }
     ]
 
 
@@ -995,10 +1037,21 @@ sections =
     [ Hero { overlay = True } [ Prose [ Text "hero" ] ]
     , Hero defaultHeroConfig [ Prose [ Text "hero" ] ]
     , Navbar { start = [ Text "Start" ], center = [ Text "Center" ], end = [ Button defaultButtonConfig "End" ] }
-    , Grid { columns = Cols1 } [ Prose [ Text "a" ] ]
-    , Grid { columns = Cols2 } [ Prose [ Text "a" ] ]
-    , Grid { columns = Cols3 } [ Prose [ Text "a" ] ]
-    , Grid { columns = Cols4 } [ Prose [ Text "a" ] ]
+    , Grid (Columns { columns = Cols1 } [ Prose [ Text "a" ] ])
+    , Grid (Columns { columns = Cols2 } [ Prose [ Text "a" ] ])
+    , Grid (Columns { columns = Cols3 } [ Prose [ Text "a" ] ])
+    , Grid (Columns { columns = Cols4 } [ Prose [ Text "a" ] ])
+    , Grid (Spans (List.map (\width -> span width (Prose [ Text "a" ])) allSpans))
+    , -- Every `CellColumns` shape, and a cell holding more than one block.
+      Grid
+        (Spans
+            (List.map
+                (\columns ->
+                    spanGrid Span4 columns [ Prose [ Text "a" ], Prose [ Text "b" ] ]
+                )
+                allCellColumns
+            )
+        )
     , Stack { align = AlignStart } [ Prose [ Text "a" ] ]
     , Stack { align = AlignCenter } [ Prose [ Text "a" ] ]
     , Stack { align = AlignEnd } [ Prose [ Text "a" ] ]
@@ -1060,6 +1113,7 @@ dashboardWithChrome =
     , sidebar = sidebarMenu
     , sidebarFooter = Just sidebarChip
     , navbar = { start = [ Text "start" ], center = [], end = [ Text "end" ] }
+    , edges = True
     }
 
 
@@ -1141,6 +1195,57 @@ pages =
         }
     ]
         ++ List.map dockPage SDock.allSizes
+        ++ List.map ctaPlacementPage allCtaPlacements
+        ++ [ -- A `Plain` page that opens with a `Navbar` section, so the shell
+             -- has to put the page header *below* it (`Demo.Settings`' shape).
+             Page
+                { header = Just fullPageHeader
+                , shell = Plain
+                , sections = Sections2 (Navbar navbarSectionParts) plainSection
+                , cta = cta "Save" Clicked
+                , overlays = []
+                , theme = Nord
+                , dock = Nothing
+                , fab = Nothing
+                }
+           , -- Both edge states of the dashboard shell.
+             Page
+                { header = Nothing
+                , shell = Dashboard { dashboardWithChrome | edges = False }
+                , sections = Sections1 plainSection
+                , cta = cta "Save" Clicked
+                , overlays = []
+                , theme = Dim
+                , dock = Nothing
+                , fab = Nothing
+                }
+           ]
+
+
+navbarSectionParts : NavbarParts Msg
+navbarSectionParts =
+    { start = [ Text "Start" ], center = [], end = [ Link defaultLinkConfig "Settings" ] }
+
+
+{-| One page per `CtaPlacement`, in a shell that can honour it: the dashboard
+has a navbar, a header and a sidebar, so all three land where they say.
+-}
+ctaPlacementPage : CtaPlacement -> Page Msg
+ctaPlacementPage placement =
+    let
+        base =
+            cta "Save" Clicked
+    in
+    Page
+        { header = Just fullPageHeader
+        , shell = Dashboard dashboardWithChrome
+        , sections = Sections1 plainSection
+        , cta = { base | placement = placement }
+        , overlays = []
+        , theme = Light
+        , dock = Nothing
+        , fab = Nothing
+        }
 
 
 dockPage : SDock.Size -> Page Msg

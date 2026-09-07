@@ -1,12 +1,16 @@
-// Builds docs/screenshots/nexus-vs-admin.png: the daisyUI Nexus e-commerce
-// dashboard on the left, Demo.Admin on the right, both at 1440x900.
+// Builds a side-by-side comparison sheet: a daisyUI reference page on the left,
+// the matching demo on the right, both at 1440x900.
+//
+// Two are committed:
+//   docs/screenshots/nexus-vs-admin.png       Nexus /dashboards/ecommerce vs `/`
+//   docs/screenshots/generator-vs-theme.png   daisyUI's theme generator vs `/theme`
 //
 // Composited by rendering a tiny local page in the same Chrome the e2e suite
 // uses and photographing it, so no image library is needed.
 import { chromium } from "playwright";
 import fs from "node:fs";
 
-const [left, right, out] = process.argv.slice(2);
+const [left, right, out, leftCaption, rightCaption] = process.argv.slice(2);
 const b64 = (p) => `data:image/png;base64,${fs.readFileSync(p).toString("base64")}`;
 
 const html = `<!doctype html><meta charset="utf-8"><style>
@@ -21,11 +25,11 @@ const html = `<!doctype html><meta charset="utf-8"><style>
 </style>
 <div class="wrap">
   <figure>
-    <figcaption><b>Reference</b> &nbsp;<span>daisyUI Nexus — /dashboards/ecommerce, 1440&times;900, light</span></figcaption>
+    <figcaption><b>Reference</b> &nbsp;<span>${leftCaption || "daisyUI Nexus — /dashboards/ecommerce, 1440&times;900, light"}</span></figcaption>
     <img src="${b64(left)}">
   </figure>
   <figure>
-    <figcaption><b>elm-daisyui</b> &nbsp;<span>Demo.Admin — built from Daisy.Tree only, 1440&times;900, light</span></figcaption>
+    <figcaption><b>elm-daisyui</b> &nbsp;<span>${rightCaption || "Demo.Admin — built from Daisy.Tree only, 1440&times;900, light"}</span></figcaption>
     <img src="${b64(right)}">
   </figure>
 </div>`;

@@ -27,7 +27,7 @@
 //
 // "Free" means: what is left of a line after removing `Html.text "..."`,
 // `Attr.<fn> "..."`, `Attr.attribute "..." "..."`, `Attr.style "..." "..."`,
-// `SvgA.<fn> "..."`, `Html.node "..."` / `Svg.node "..."` (a tag name),
+// `SvgA.<fn> "..."`, `Html.node "..."` / `Svg.node "..."` / `Keyed.node "..."` (a tag name),
 // `Decode.<fn> "..."` (a JSON field name) and `String.join " "` arguments, i.e.
 // literals that are not being handed to the DOM as an attribute value or as
 // text. A declaration whose
@@ -118,7 +118,7 @@ function stripAttributeContexts(line) {
     .replace(/Attr\.attribute\s+"(?:[^"\\]|\\.)*"\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/Attr\.style\s+"(?:[^"\\]|\\.)*"\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/(?:Attr|SvgA|Ev|Decode)\.[A-Za-z0-9_]+\s+"(?:[^"\\]|\\.)*"/g, "")
-    .replace(/(?:Html|Svg)\.node\s+"(?:[^"\\]|\\.)*"/g, "")
+    .replace(/(?:Html|Svg|Keyed)\.node\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/Html\.text\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/String\.join\s+"(?:[^"\\]|\\.)*"/g, "");
 }

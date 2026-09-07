@@ -218,21 +218,62 @@ revenueCard =
         { emptyCardParts
             | title = Just "Net revenue vs. operating cost"
             , body =
-                [ CardChart Chart.Line
+                [ CardChart (Chart.Line Chart.defaultLineStyle)
                     { xLabels = [ "Jan", "Feb", "Mar" ]
                     , series =
-                        [ { name = "Revenue", color = Chart.Primary, points = [ 182, 201, 226 ] }
-                        , { name = "Cost", color = Chart.Neutral, points = [ 120, 128, 131 ] }
+                        [ Chart.series "Revenue" Chart.Primary [ 182, 201, 226 ]
+                        , Chart.series "Cost" Chart.Neutral [ 120, 128, 131 ]
                         ]
                     }
+                    Nothing
                 ]
         }
 ```
 
-`ChartConfig` is `Line | Bar | StackedBar | Donut | Area`. Series colours are the daisyUI semantic
-palette (`Primary … Neutral`) and are emitted as `var(--color-primary)` and friends, so charts
-re-colour with the theme without the renderer knowing any concrete colour. Chart height is fixed
-per block size token; there is no per-call override.
+`ChartConfig` is `Line LineStyle | Bar BarStyle | Area | Donut`, where `LineStyle` is
+`{ stepped : Bool }` and `BarStyle` is `{ stacked, track, rounded : Bool }` — three independent
+switches, so a record rather than eight constructors. `allChartConfigs` is still the exhaustive
+list of all twelve values. A `Series` also carries `dashed : Bool`, which is the convention for a
+projection; `Chart.series` builds the solid case.
+
+Series colours are the daisyUI semantic palette (`Primary … Neutral`), emitted as
+`var(--color-primary)` and friends, so charts re-colour with the theme without the renderer knowing
+any concrete colour. The **track** behind a bar and the **band** behind a hovered column are
+`var(--color-base-200)` and `var(--color-base-300)`; they are module constants
+(`Chart.trackColorToCss`, `Chart.bandColorToCss`) rather than `SemanticColor` values, so a *series*
+can never be painted the colour of the panel it is drawn on. Chart height is fixed per block size
+token; there is no per-call override.
+
+### Hovering
+
+The third argument of `Block.Chart` / `CardChild.CardChart` is an optional interaction:
+
+```elm
+type alias ChartInteraction msg =
+    { hovered : Maybe Int          -- index into ChartData.xLabels
+    , onHover : Maybe Int -> msg
+    }
+```
+
+The state is an **x index**, not an elm-charts item, so the application stores an `Int`. Given one,
+the renderer highlights the hovered column and draws a tooltip card listing every series' colour
+dot, name and value at that x. It fires on pointer move, on click (a touch produces no
+`mousemove`) and with `Nothing` on leave.
+
+A hover message arrives on every mouse move, so treat it the way this repository's demo router
+does — apply it to the model, and leave it out of anything that records "the last thing the user
+did".
+
+### Motion
+
+Charts animate in: bars grow out of the baseline, lines draw themselves. The rules live in
+`Daisy.Css.stylesheet` — an Elm value, because the Elm registry publishes `src/` and nothing else,
+so a `.css` file in a package never reaches you. Write it to a real stylesheet and import it (see
+[CSS setup](#css-setup)); without it a chart simply has no animation rather than a broken one.
+
+Everything in it is inside `@media (prefers-reduced-motion: no-preference)`, so a reader who has
+asked for less motion gets the undecorated page. The drawing is keyed by its data, so replacing a
+dataset replays the animation and hovering does not.
 
 ## Calendar
 
@@ -392,6 +433,17 @@ If you use `Leaf.Calendar`, add the two calendar stylesheets after the plugin li
 @import "./cally-daisy.css";
 ```
 
+If you want the chart animations, write `Daisy.Css.stylesheet` to a file and import that too. This
+repository generates `demo/daisy-motion.css` from it with `bun tools/gen-daisy-css.js`
+(`tools/ci.sh` regenerates and diffs it, so a hand-edit is a red pipeline); any equivalent step
+does. The four class names it defines are `daisy-`-prefixed so nothing daisyUI or Tailwind ships
+can collide with them, and they are listed in `Daisy.Render.tokens` like every other class the
+renderer emits.
+
+```css
+@import "./daisy-motion.css";
+```
+
 ## Demos
 
 Four demo applications, each a single `Page` value, built only through the tree. They share one
@@ -406,9 +458,13 @@ the right, both at 1440x900:
 ![Nexus and Demo.Admin side by side](docs/screenshots/nexus-vs-admin.png)
 
 Everything on the right comes out of `Daisy.Tree`: no `Html.Attributes.class`, no raw markup, every
-class either a `Daisy.Schema.*` value or one of `Daisy.Render`'s 76 layout tokens.
-`docs/tree-decisions.md` ("Nexus design pass") lists what was added to the tree to get there and
-what is still deliberately different.
+class either a `Daisy.Schema.*` value or one of `Daisy.Render`'s 100 layout tokens — including the
+7:5 twelve-column splits, the stacked bars on their `base-200` track with rounded caps and a hover
+tooltip, the stepped acquisition line with its dashed projection, the tinted active sidebar row and
+the 1px `base-300` edges under the navbar and down the sidebar. `docs/tree-decisions.md` ("Nexus
+design pass" and "Charts and fidelity") lists what was added to the tree to get there, and the
+residuals table there says how each remaining difference was closed — or, for the two that were
+not, why.
 
 **[The dashboard shell](demo/src/Demo/Admin.elm)** — `Shell.Dashboard` is a daisyUI `drawer` open
 from `lg:` up. It carries the whole sidebar panel (brand row, menu, footer chip) plus the navbar:
@@ -420,6 +476,7 @@ dashboard config =
     , sidebar = sidebar config
     , sidebarFooter = Just (UserChip { defaultUserChipConfig | boxed = True } denish)
     , navbar = navbar config
+    , edges = True
     }
 ```
 
@@ -467,20 +524,42 @@ metric icon title value trend desc =
 
 **A card with a header row** — glyph and title on the left, a `tabs tabs-box tabs-xs` segmented
 control and any leaves on the right. A `Tab` with empty `content` owns no panel, which is what
-makes `tabs-box` usable as a control:
+makes `tabs-box` usable as a control; its `onClick` is what makes it change something outside the
+strip:
 
 ```elm
-Card Tree.defaultCardConfig
+Card { Tree.defaultCardConfig | padding = Tree.PaddingDashboard }
     { emptyCardParts
         | title = Just "Revenue Statistics"
-        , headerTabs = Just { config = segmentedConfig, tabs = periodTabs }
+        , headerTabs = Just { config = segmentedConfig, tabs = periodTabs config }
         , body =
             [ CardStat Tree.defaultStatConfig
-                [ headline "Total income" "$184.78K" (up "3.24%") "in this year" ]
-            , CardChart DChart.Bar revenueSeries
+                [ headline "Total income" (revenueTotal config.chartRange) (up "3.24%") caption ]
+            , CardChart
+                (DChart.Bar { stacked = True, track = True, rounded = True })
+                (revenueSeries config.chartRange)
+                (Just { hovered = config.hoveredBar, onHover = config.onChartHover })
             ]
     }
 ```
+
+**A twelve-column band** — the chart row is Nexus's own 7:5 split. `Section.Grid` takes a closed
+`GridSection`: `Columns` for equal tracks, `Spans` for the twelve, where every cell states its
+width. A span in an equal grid is a type error, not a convention:
+
+```elm
+Grid
+    (Tree.Spans
+        [ Tree.span Tree.Span7 (revenueCard config)
+        , Tree.span Tree.Span5 (acquisitionCard config)
+        ]
+    )
+```
+
+A cell holds a *list* of blocks (`spanColumn`) — a column of panels — and may lay them out as a grid
+of its own (`spanGrid Span7 CellThree cards`), which is what a page with a rail beside a masonry of
+preview cards needs. It is a property of the cell, not a nesting level: the children are still
+blocks, and a block still never contains a block.
 
 **The orders table** — a `Checkbox` column, a squircle thumbnail beside the product name, soft
 status badges and two icon-only row actions. A `TableCell` is `{ leading : Maybe (Leaf msg),
@@ -559,9 +638,16 @@ and `Area` charts (each with a `status`-dot legend the renderer draws under it),
 row and a two-month `Leaf.Calendar` range picker in a card whose header holds the date-range
 `Select`.
 
-**[Theme generator](demo/src/Demo/ThemeGenerator.elm)** (`/theme`) is a recreation of
-[daisyUI's own](https://daisyui.com/theme-generator/): a colour picker per `--color-*` variable, the
-radius/size/border/effect controls, a live preview and the exported CSS.
+**[Theme generator](demo/src/Demo/ThemeGenerator.elm)** (`/theme`) is a reproduction of
+[daisyUI's own](https://daisyui.com/theme-generator/) rather than a page about the same subject:
+`Shell.Plain` with the site navbar as a `Section.Navbar` band, then one twelve-column
+`GridSection.Spans` band of a **theme list** (`Span2` — click a name to load it), the **editor**
+(`Span3` — name, `Random`/`CSS`, the colour chips four to a row, radius/size/border as segmented
+`join`s, the effect toggles, the palette) and the **Components Demo** (`Span7`, itself a
+three-column cell) with daisyUI's own nineteen preview blocks in their order.
+`docs/tree-decisions.md` maps them block for block and lists the two that could not be reproduced.
+
+![daisyUI's theme generator and the /theme demo side by side](docs/screenshots/generator-vs-theme.png)
 
 ![The theme generator demo](docs/screenshots/demo-theme.png)
 
@@ -571,17 +657,26 @@ the same declarations the preview is. `data-theme` on it is always `acme`, a nam
 declares, which is what makes it a proof that inline custom properties are enough:
 
 ```elm
-colorField : Config msg -> Slot -> Field msg
-colorField config slot =
-    Tree.field (slotLabel slot)
-        (Input
-            { defaultInputConfig
-                | inputType = InputColor
-                , value = Color.oklchToHex (getSlot slot config.edited.colors)
-                , onInput = Just (config.onEdit << SetColor slot)
-            }
-        )
+chipRow : Config msg -> List Slot -> Leaf msg
+chipRow config slots =
+    Join defaultJoinConfig (List.map (JoinInput << colorChip config) slots)
+
+
+colorChip : Config msg -> Slot -> InputConfig msg
+colorChip config slot =
+    { defaultInputConfig
+        | inputType = InputColor
+        , size = Just SInput.Sm
+        , value = Color.oklchToHex (getSlot slot config.edited.colors)
+        , ariaLabel = Just (slotLabel slot)
+        , onInput = Just (config.onEdit << SetColor slot)
+    }
 ```
+
+Four chips to a `Join`, because daisyUI's `.input` is `width: 100%`: four loose in a `card-body`
+column are four full-width rows, while a `join`'s flex children shrink their 100% base sizes to a
+quarter each. Twenty of them as `Field` rows would be a twenty-row form rather than the four-across
+grid daisyUI's own generator shows.
 
 Two additions made it expressible: `InputType.InputColor` (a native `type="color"` picker, named by
 the `Field` it sits in) and `Leaf.Swatch`, a palette chip. daisyUI has no component whose job is

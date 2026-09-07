@@ -9,8 +9,8 @@ by its named type.
 
 | Level | Meaning |
 |---|---|
-| **Page** | Page shell, theme (a built-in name or a whole `CustomTheme`), the page header, or the single primary CTA. Chrome that lives outside the section flow. Rendered by `Daisy.Render` from fields on `Page`/`Shell`, never as a `Section`/`Block`/`Leaf`. `Page.header : Maybe (PageHeader msg)` (`{ title, breadcrumbs, actions }`) is here rather than at Section for exactly that reason: a dashboard's title bar is chrome, and the five-section budget is content. `Shell.Dashboard` carries `DashboardShell = { brand, sidebar, sidebarFooter, navbar }`. |
-| **Section** | A top-level band of the page. Constructors are exactly `Hero`, `Navbar`, `Footer`, `Grid`, `Stack`. `Navbar` contains Leaves; `Hero`, `Footer`, `Grid`, `Stack` contain Blocks. Max 5 per page (`Sections1`..`Sections5`). |
+| **Page** | Page shell, theme (a built-in name or a whole `CustomTheme`), the page header, or the single primary CTA. Chrome that lives outside the section flow. Rendered by `Daisy.Render` from fields on `Page`/`Shell`, never as a `Section`/`Block`/`Leaf`. `Page.header : Maybe (PageHeader msg)` (`{ title, breadcrumbs, actions }`) is here rather than at Section for exactly that reason: a dashboard's title bar is chrome, and the five-section budget is content. `Shell.Dashboard` carries `DashboardShell = { brand, sidebar, sidebarFooter, navbar, edges }`. `Cta.placement : CtaPlacement` says which piece of chrome the one primary button lands in (`InNavbar` / `InHeader` / `InSidebarFooter`) — the shell still owns the markup, and there is still exactly one. |
+| **Section** | A top-level band of the page. Constructors are exactly `Hero`, `Navbar`, `Footer`, `Grid`, `Stack`. `Navbar` contains Leaves; `Hero`, `Footer` and `Stack` contain Blocks. `Grid` contains a closed `GridSection`: `Columns GridConfig (List (Block msg))` for equal tracks, or `Spans (List (GridItem msg))` for the twelve-column band, where every cell states its `Span3..Span12` and holds a column of Blocks. The split is in the payload type so that a spanned cell in an equal grid — and a bare block in the twelve — are both a `TYPE MISMATCH`, without `Section` gaining a sixth constructor. Max 5 per page (`Sections1`..`Sections5`). |
 | **Block** | A self-contained content container that sits directly inside a Section. Contains Leaves, or a closed record/list of its own part records. Never contains another Block. |
 | **Leaf** | A terminal control or piece of content. Contains only data (`String`, `Float`, config), never another node. Leaves live inside Blocks, inside `Navbar`, or inside `Toast`/`Modal` via a Block. |
 | **Overlay** | `Modal`, `Drawer`, `Toast` only. Lives exclusively in `Page.overlays` and is rendered after all sections in one fixed wrapper (order: drawer, modal, toast). |
@@ -314,7 +314,7 @@ Every element the three demos require (SPEC step 7) maps to a placement above.
 | Requirement | Placement |
 |---|---|
 | Dashboard shell | as above |
-| Chart Bar / Donut / Area | `Block.Chart` ×3 inside `Section.Grid` |
+| Chart Bar / Donut / Area | `Block.Chart` ×3 inside `Section.Grid` (the `Bar` on a `base-200` track with rounded caps) |
 | Stat row | `Block.Stat` with a `List StatItem` |
 | Date-range Select | `Leaf.Select` in `CardParts.headerActions` of the "Date range" card. It was in `NavbarParts.end` until 2026-09-07: daisyUI's `.select` is `width: clamp(3rem, 20rem, 100%)`, whose max-content contribution is indeterminate, so in a `flex-wrap` row it takes a line of its own — which is what it did to the navbar. In a card header there is room for it. |
 

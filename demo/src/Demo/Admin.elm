@@ -1,4 +1,7 @@
-module Demo.Admin exposing (Config, page)
+module Demo.Admin exposing
+    ( Config, page
+    , ChartRange(..), allChartRanges, chartRangeLabel
+    )
 
 {-| The admin dashboard demo (SPEC.md step 7, row "Admin").
 
@@ -25,6 +28,15 @@ router's model this page reads plus the constructors it fires.
 
 @docs Config, page
 
+
+# The revenue chart's range
+
+The `Day | Month | Year` switch in the Revenue Statistics card header picks one
+of three datasets. It is a closed type owned by this module and kept by the
+router, exactly like every other piece of demo state.
+
+@docs ChartRange, allChartRanges, chartRangeLabel
+
 -}
 
 import BasePath
@@ -37,6 +49,7 @@ import Daisy.Schema.Chat as SChat
 import Daisy.Schema.Checkbox as SCheckbox
 import Daisy.Schema.Input as SInput
 import Daisy.Schema.Mask as SMask
+import Daisy.Schema.Stat as SStat
 import Daisy.Schema.Tab as STab
 import Daisy.Schema.Table as STable
 import Daisy.Tree as Tree
@@ -73,13 +86,48 @@ type alias Config msg =
     , lastMsg : String
     , toastVisible : Bool
     , search : String
+    , chartRange : ChartRange
+    , hoveredBar : Maybe Int
     , onNavigate : String -> msg
     , onTheme : Theme -> msg
     , onSearch : String -> msg
     , onNotifications : msg
     , onExport : msg
     , onRowAction : String -> msg
+    , onChartRange : ChartRange -> msg
+    , onChartHover : Maybe Int -> msg
     }
+
+
+{-| Which revenue dataset the chart is showing.
+-}
+type ChartRange
+    = Day
+    | Month
+    | Year
+
+
+{-| Every [`ChartRange`](#ChartRange), in the order the segmented control shows
+them.
+-}
+allChartRanges : List ChartRange
+allChartRanges =
+    [ Day, Month, Year ]
+
+
+{-| The label on a range's tab.
+-}
+chartRangeLabel : ChartRange -> String
+chartRangeLabel range =
+    case range of
+        Day ->
+            "Day"
+
+        Month ->
+            "Month"
+
+        Year ->
+            "Year"
 
 
 {-| The whole admin dashboard as one `Page`.
@@ -118,6 +166,11 @@ dashboard config =
     , sidebar = sidebar config
     , sidebarFooter = Just (sidebarUser config)
     , navbar = navbar config
+
+    -- Nexus draws a 1px hairline under its navbar and down the right edge of
+    -- its sidebar, measured in the browser at 1440: `border-*-width: 1px`,
+    -- colour = the theme's third surface. `Daisy.Render` owns both.
+    , edges = True
     }
 
 
@@ -131,7 +184,7 @@ would be dead links here, and a dead link in a demo is worse than a short one
 -}
 sidebar : Config msg -> MenuSpec msg
 sidebar config =
-    { config = Tree.defaultMenuConfig
+    { config = sidebarMenuConfig
     , items =
         [ sectionTitle "Dashboards"
         , navItem "Overview" Icon.Home (href config "/") (config.onNavigate "/") True Nothing
@@ -143,6 +196,25 @@ sidebar config =
         , docsItem config
         ]
     }
+
+
+{-| The sidebar menu's own configuration: everything default except the active
+row, which is `TintedActive`.
+
+Measured off Nexus at 1440, its active entry is `background-color` = the theme's
+base-200, `font-weight: 500`, `color` = base-content — a row one surface step up
+from the panel, not daisyUI's solid `--color-neutral` slab. `menu-active` stays
+reachable through `SolidActive`, which is still the default.
+
+-}
+sidebarMenuConfig : Tree.MenuConfig
+sidebarMenuConfig =
+    { defaultMenu | activeStyle = Tree.TintedActive }
+
+
+defaultMenu : Tree.MenuConfig
+defaultMenu =
+    Tree.defaultMenuConfig
 
 
 {-| A `menu-title` row. It labels the group under it and is not a link.
@@ -346,8 +418,14 @@ productSrc fill =
         ++ "%20fill-opacity='0.75'/%3E%3C/svg%3E"
 
 
-{-| The page CTA, with a leading `Download` glyph. `btn-sm`, so it is the same
-height as the icon buttons it shares the navbar with.
+{-| The page CTA, with a leading `Download` glyph.
+
+`InHeader` and `btn-sm`, which is where Nexus puts a page's action: its navbar
+carries only search, notifications and the signed-in user, and the title row
+carries what the page is _for_. The tree still allows exactly one primary
+button, and `Daisy.Render` still decides its markup — `Cta.placement` only says
+which piece of chrome it lands in.
+
 -}
 exportCta : Config msg -> Tree.Cta msg
 exportCta config =
@@ -356,17 +434,25 @@ exportCta config =
         base =
             Tree.cta "Export report" config.onExport
     in
-    { base | icon = Just Icon.Download, size = Just SButton.Sm }
+    { base
+        | icon = Just Icon.Download
+        , size = Just SButton.Sm
+        , placement = Tree.InHeader
+    }
 
 
 {-| Every theme `Daisy.Tree.allThemes` knows, as one control.
 
-`ThemeAsDropdown` is the only presentation that stays one control wide: the
-others render a sibling `input.theme-controller` per theme, which is 35
-controls in `navbar-end`. The dropdown opens on `:focus-within`, so tabbing to
-its `role="button"` trigger reveals the radio list and the next `Tab` lands on
-the checked theme; clicking or activating a radio fires `onSelect`, which the
-router turns into `ThemeChanged` and writes back to `Page.theme`.
+`ThemeAsIconDropdown`, which is Nexus's own: a `btn btn-ghost btn-circle` around
+a palette glyph, the same size and shape as the notification button beside it,
+rather than a full-width button reading "Theme". Both dropdowns stay one control
+wide — the other five presentations render a sibling `input.theme-controller`
+per theme, which is 35 controls in `navbar-end`.
+
+The dropdown opens on `:focus-within`, so tabbing to its `role=button` trigger
+reveals the radio list and the next `Tab` lands on the checked theme; clicking
+or activating a radio fires `onSelect`, which the router turns into
+`ThemeChanged` and writes back to `Page.theme`.
 
 -}
 themeSwitcher : Config msg -> Leaf msg
@@ -374,7 +460,7 @@ themeSwitcher config =
     ThemeSelect
         { themes = Tree.allThemes
         , current = config.theme
-        , presentation = ThemeAsDropdown
+        , presentation = ThemeAsIconDropdown
         , onSelect = Just config.onTheme
         }
 
@@ -419,12 +505,14 @@ scroll sideways at 375 rather than wrap.
 -}
 metricsSection : Config msg -> Section msg
 metricsSection _ =
-    Grid { columns = Tree.Cols4 }
-        [ metric Icon.CurrencyDollar "Revenue" "$587.54" (up "10.8%") "vs. $494.16 last period"
-        , metric Icon.ShoppingCart "Sales" "4,500" (up "21.2%") "vs. 3,845 last period"
-        , metric Icon.Users "Customers" "2,242" (down "6.8%") "vs. 2,448 last period"
-        , metric Icon.Pencil "Spending" "$112.54" (up "8.5%") "vs. $98.14 last period"
-        ]
+    Grid
+        (Tree.Columns { columns = Tree.Cols4 }
+            [ metric Icon.CurrencyDollar "Revenue" "$587.54" (up "10.8%") "vs. $494.16 last period"
+            , metric Icon.ShoppingCart "Sales" "4,500" (up "21.2%") "vs. 3,845 last period"
+            , metric Icon.Users "Customers" "2,242" (down "6.8%") "vs. 2,448 last period"
+            , metric Icon.Pencil "Spending" "$112.54" (up "8.5%") "vs. $98.14 last period"
+            ]
+        )
 
 
 metric : Icon.Icon -> String -> String -> Leaf msg -> String -> Block msg
@@ -434,12 +522,19 @@ metric icon title value trend desc =
         base =
             Tree.emptyStatItem title value
     in
-    Stat Tree.defaultStatConfig
+    -- `Fixed Vertical`, not the default. `.stats` is `grid-flow-col
+    -- overflow-x-auto`, so a one-tile row whose contents are wider than its
+    -- 269px cell becomes a scrollable region — and a scrollable region is a tab
+    -- stop of its own (`e2e/keyboard.spec.ts`), which the arrow glyph inside
+    -- the delta badge was enough to trigger. One tile looks identical either
+    -- way; only the flow direction changes.
+    Stat { direction = Tree.Fixed (Just SStat.Vertical) }
         [ { base | trend = Just trend, desc = Just desc, figure = Just (figureIcon icon) } ]
 
 
 {-| The delta pill beside a number: a soft badge with a leading arrow, exactly
-what Nexus puts there.
+what Nexus puts there — `\u{2191} 10.8%` in green, `\u{2193} 6.8%` in red. The arrow is
+`BadgeConfig.icon`, decorative, with the percentage as the badge's text.
 -}
 up : String -> Leaf msg
 up value =
@@ -452,17 +547,19 @@ down value =
 
 
 trendBadge : SBadge.Color -> Icon.Icon -> String -> Leaf msg
-trendBadge color _ value =
+trendBadge color icon value =
     Badge
         { defaultBadge
-            | color = Just color
+            | icon = Just icon
+            , color = Just color
             , style = Just SBadge.Soft
-            , size = Just SBadge.Sm
+            , size = Just SBadge.Xs
         }
         value
 
 
-{-| A `stat-figure` glyph. `Daisy.Render` paints the shaded tile around it.
+{-| A `stat-figure` glyph. `Daisy.Render` paints the shaded tile around it and
+pins it to the top of the tile (`self-start`), which is where Nexus's sits.
 -}
 figureIcon : Icon.Icon -> Leaf msg
 figureIcon icon =
@@ -474,42 +571,96 @@ defaultIcon =
     Tree.defaultIconConfig
 
 
-{-| The two chart panels, side by side.
+{-| The two chart panels, in Nexus's own 7:5 split.
+
+`GridSection.Spans` is the twelve-column grid; the seven-track cell is the
+revenue chart and the five-track cell the acquisition one. Measured off Nexus at
+1440: `grid-template-columns: repeat(12, 72.66px)`, `gap: 24px`, the first panel
+spanning seven tracks and the second five.
+
 -}
 chartsSection : Config msg -> Section msg
-chartsSection _ =
-    Grid { columns = Tree.Cols2 }
-        [ Card Tree.defaultCardConfig
-            { emptyCard
-                | title = Just "Revenue Statistics"
-                , headerTabs = Just { config = segmentedConfig, tabs = periodTabs }
-                , body =
-                    [ CardStat Tree.defaultStatConfig
-                        [ headline "Total income" "$184.78K" (up "3.24%") "in this year" ]
-                    , CardChart DChart.Bar revenueSeries
-                    ]
-            }
-        , Card Tree.defaultCardConfig
-            { emptyCard
-                | title = Just "Customer Acquisition"
-                , headerActions = [ predictionBadge ]
-                , body =
-                    [ -- `Responsive` is daisyUI's `stats-vertical
-                      -- lg:stats-horizontal`: two tiles side by side in a
-                      -- half-width card at 1440, stacked below `lg`. A `Fixed`
-                      -- horizontal pair is `grid-flow-col overflow-x-auto`, so
-                      -- at 375 it becomes a scrollable region no keyboard can
-                      -- reach — axe's `scrollable-region-focusable`, serious.
-                      CardStat { direction = Tree.Responsive }
-                        [ headline "Advertise" "$148" (up "4.78%") "spend per customer"
-                        , headline "Customers" "427" (up "3.15%") "acquired this month"
-                        ]
-                    , CardChart DChart.Line acquisitionSeries
-                    ]
-            }
-        ]
+chartsSection config =
+    Grid
+        (Tree.Spans
+            [ Tree.span Tree.Span7 (revenueCard config)
+            , Tree.span Tree.Span5 (acquisitionCard config)
+            ]
+        )
 
 
+{-| Nexus's Revenue Statistics panel: a headline number, then stacked
+`Orders`/`Revenue` columns on a full-height track with rounded caps, a hover
+tooltip and a legend. The `Day | Month | Year` strip in the header picks the
+dataset.
+-}
+revenueCard : Config msg -> Block msg
+revenueCard config =
+    Card dashboardCard
+        { emptyCard
+            | title = Just "Revenue Statistics"
+            , headerTabs = Just { config = segmentedConfig, tabs = periodTabs config }
+            , body =
+                [ CardStat Tree.defaultStatConfig
+                    [ totalIncome (revenueTotal config.chartRange) (up "3.24%") (revenueCaption config.chartRange) ]
+                , CardChart revenueChartConfig
+                    (revenueSeries config.chartRange)
+                    (Just
+                        { hovered = config.hoveredBar
+                        , onHover = config.onChartHover
+                        }
+                    )
+                ]
+        }
+
+
+{-| Nexus's bars, as a `BarStyle`: the two series stacked into one column, a
+`base-200` track behind every column, and both caps rounded.
+-}
+revenueChartConfig : DChart.ChartConfig
+revenueChartConfig =
+    DChart.Bar { stacked = True, track = True, rounded = True }
+
+
+acquisitionCard : Config msg -> Block msg
+acquisitionCard _ =
+    Card dashboardCard
+        { emptyCard
+            | title = Just "Customer Acquisition"
+            , headerActions = [ predictionBadge ]
+            , body =
+                [ -- `Responsive` is daisyUI's `stats-vertical
+                  -- lg:stats-horizontal`: two tiles side by side in a
+                  -- half-width card at 1440, stacked below `lg`. A `Fixed`
+                  -- horizontal pair is `grid-flow-col overflow-x-auto`, so
+                  -- at 375 it becomes a scrollable region no keyboard can
+                  -- reach — axe's `scrollable-region-focusable`, serious.
+                  CardStat { direction = Tree.Responsive }
+                    [ headline "Advertise" "$148" (up "4.78%") "spend per customer"
+                    , headline "Customers" "427" (up "3.15%") "acquired this month"
+                    ]
+                , CardChart (DChart.Line { stepped = True }) acquisitionSeries Nothing
+                ]
+        }
+
+
+{-| Every panel on this page is 20px-padded, which is the figure Nexus's own CSS
+sets on `.card-body` (measured: `padding: 20px`). daisyUI's two card sizes are
+24px and 16px, so this is `CardPadding.PaddingDashboard`.
+-}
+dashboardCard : Tree.CardConfig
+dashboardCard =
+    { defaultCard | padding = Tree.PaddingDashboard }
+
+
+defaultCard : Tree.CardConfig
+defaultCard =
+    Tree.defaultCardConfig
+
+
+{-| A labelled stat: the label above, the number with its delta beside it, and
+a caption under both. The two Customer Acquisition tiles read that way in Nexus.
+-}
 headline : String -> String -> Leaf msg -> String -> StatItem msg
 headline title value trend desc =
     let
@@ -518,6 +669,26 @@ headline title value trend desc =
             Tree.emptyStatItem title value
     in
     { base | trend = Just trend, desc = Just desc }
+
+
+{-| The Revenue Statistics headline: the big number, its delta inline to the
+right, and one muted caption **below** — which is the order Nexus reads in, and
+the opposite of a metric tile, where the label comes first.
+
+The title is deliberately empty. `Daisy.Render` emits no `stat-title` for an
+empty one (the same rule as an empty `breadcrumbs` trail and a `Tab` with no
+content), so the number is the first thing in the tile and the whole label
+lives in the caption.
+
+-}
+totalIncome : String -> Leaf msg -> String -> StatItem msg
+totalIncome value trend caption =
+    let
+        base : StatItem msg
+        base =
+            Tree.emptyStatItem "" value
+    in
+    { base | trend = Just trend, desc = Just caption }
 
 
 {-| `tabs tabs-box tabs-xs`, the segmented control Nexus uses to pick a period.
@@ -529,14 +700,18 @@ segmentedConfig =
     { style = Just STab.Box, size = Just STab.Xs, placement = Nothing }
 
 
-periodTabs : List (Tab msg)
-periodTabs =
-    [ segment "Day" False, segment "Month" False, segment "Year" True ]
-
-
-segment : String -> Bool -> Tab msg
-segment label active =
-    { label = label, active = active, disabled = False, content = [] }
+periodTabs : Config msg -> List (Tab msg)
+periodTabs config =
+    List.map
+        (\range ->
+            { label = chartRangeLabel range
+            , active = range == config.chartRange
+            , disabled = False
+            , content = []
+            , onClick = Just (config.onChartRange range)
+            }
+        )
+        allChartRanges
 
 
 predictionBadge : Leaf msg
@@ -551,64 +726,127 @@ emptyCard =
     Tree.emptyCardParts
 
 
-revenueSeries : DChart.ChartData
-revenueSeries =
-    { xLabels =
-        [ "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025" ]
-    , series =
-        [ { name = "Orders"
-          , color = DChart.Warning
-          , points = [ 42, 51, 49, 68, 81, 76, 93, 105, 114, 126 ]
-          }
-        , { name = "Revenue"
-          , color = DChart.Primary
-          , points = [ 98, 101, 124, 129, 142, 155, 168, 181, 194, 212 ]
-          }
-        ]
-    }
+{-| The three revenue datasets the `Day | Month | Year` strip switches between.
+
+They are three whole `ChartData` values rather than one sliced three ways,
+because the point of the switch in a Tier C test is that the _drawing_ changes:
+`Daisy.Render` keys the chart group by the dataset, so a different key remounts
+the SVG and replays the grow-in animation.
+
+-}
+revenueSeries : ChartRange -> DChart.ChartData
+revenueSeries range =
+    case range of
+        Day ->
+            { xLabels = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ]
+            , series =
+                [ DChart.series "Orders" DChart.Warning [ 12, 9, 14, 11, 18, 22, 16 ]
+                , DChart.series "Revenue" DChart.Primary [ 24, 21, 29, 26, 34, 41, 31 ]
+                ]
+            }
+
+        Month ->
+            { xLabels =
+                [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
+            , series =
+                [ DChart.series "Orders" DChart.Warning [ 31, 28, 36, 34, 42, 39, 47, 51, 46, 55, 62, 58 ]
+                , DChart.series "Revenue" DChart.Primary [ 64, 59, 71, 68, 83, 79, 92, 98, 90, 104, 118, 111 ]
+                ]
+            }
+
+        Year ->
+            { xLabels =
+                [ "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025" ]
+            , series =
+                [ DChart.series "Orders" DChart.Warning [ 42, 51, 49, 68, 81, 76, 93, 105, 114, 126 ]
+                , DChart.series "Revenue" DChart.Primary [ 98, 101, 124, 129, 142, 155, 168, 181, 194, 212 ]
+                ]
+            }
 
 
+revenueTotal : ChartRange -> String
+revenueTotal range =
+    case range of
+        Day ->
+            "$4.82K"
+
+        Month ->
+            "$62.14K"
+
+        Year ->
+            "$184.78K"
+
+
+revenueCaption : ChartRange -> String
+revenueCaption range =
+    case range of
+        Day ->
+            "Total income in this week"
+
+        Month ->
+            "Total income in this year"
+
+        Year ->
+            "Total income over ten years"
+
+
+{-| Nexus's Customer Acquisition chart: one stepped line for the measured series
+and a dashed one for the projection beside it — the convention `Series.dashed`
+exists for.
+-}
 acquisitionSeries : DChart.ChartData
 acquisitionSeries =
     { xLabels =
         [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" ]
     , series =
-        [ { name = "Customer"
-          , color = DChart.Info
-          , points = [ 18, 24, 22, 31, 38, 35, 44, 47, 52, 58, 61, 67 ]
-          }
-        , { name = "Advertise"
+        [ DChart.series "Customer" DChart.Info [ 18, 24, 22, 31, 38, 35, 44, 47, 52, 58, 61, 67 ]
+        , { name = "Prediction"
           , color = DChart.Neutral
           , points = [ 12, 15, 17, 19, 24, 26, 28, 31, 33, 36, 38, 41 ]
+          , dashed = True
           }
         ]
     }
 
 
 {-| The bottom band: the orders table and the message list beside it.
+
+Nexus's own is a five-column grid split 3:2. Twelve tracks cannot say 3:2
+exactly (it is 7.2 : 4.8), so this is 7:5 — 654px and 458px against Nexus's
+682 and 430 at 1440, a 28px difference in a 1136px column. `Span` starts at
+three of twelve for the reason its docs give, and the alternative (a second
+`GridColumns` value for five equal tracks) would be a column count that exists
+for one band on one page.
+
 -}
 activitySection : Config msg -> Section msg
 activitySection config =
-    Grid { columns = Tree.Cols2 }
-        [ Card Tree.defaultCardConfig
-            { emptyCard
-                | title = Just "Recent Orders"
-                , titleIcon = Just Icon.ShoppingCart
-                , headerActions = [ reportButton config ]
-                , body =
-                    [ CardTable
-                        { size = Just STable.Sm, modifiers = [] }
-                        (headerRow :: List.map (orderRow config) orders)
-                    ]
-            }
-        , Card Tree.defaultCardConfig
-            { emptyCard
-                | title = Just "Quick Chat"
-                , titleIcon = Just Icon.User
-                , headerActions = [ chatButton config ]
-                , body = [ CardChat (List.map chatMessage messages) ]
-            }
-        ]
+    Grid
+        (Tree.Spans
+            [ Tree.span Tree.Span7
+                (Card dashboardCard
+                    { emptyCard
+                        | title = Just "Recent Orders"
+                        , titleIcon = Just Icon.ShoppingCart
+                        , headerActions = [ reportButton config ]
+                        , body =
+                            [ CardTable
+                                { size = Just STable.Sm, modifiers = [] }
+                                (headerRow :: List.map (orderRow config) orders)
+                            ]
+                    }
+                )
+            , Tree.span Tree.Span5
+                (Card dashboardCard
+                    { emptyCard
+                        | title = Just "Quick Chat"
+                        , titleIcon = Just Icon.User
+                        , headerActions = [ chatButton config ]
+                        , body = [ CardChat (List.map chatMessage messages) ]
+                    }
+                )
+            ]
+        )
 
 
 reportButton : Config msg -> Leaf msg

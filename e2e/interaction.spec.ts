@@ -142,3 +142,79 @@ test("settings: cancelling the modal fires ModalCancelled", async ({
   await expect(page.getByText(pane)).toHaveText("last-msg: ModalCancelled");
   await expect(page.locator("dialog.modal")).toBeHidden();
 });
+
+test("admin: hovering the 2023 column opens its tooltip and highlights it", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/", theme);
+  await expect(page.getByText(pane)).toHaveText("last-msg: none");
+
+  // The revenue chart is `DChart.Bar { stacked, track, rounded }`, so every bin
+  // holds a `base-200` track bar and the two stacked series above it.
+  // `.elm-charts__bar` is elm-charts' own class on each drawn bar; the eighth
+  // *stacked* bar of the real series is 2023, which is the bin these
+  // assertions are about.
+  const chart = page.locator(".card", { hasText: "Revenue Statistics" }).first();
+  const bars = chart.locator(".elm-charts__bar");
+  await expect(bars.first()).toBeVisible();
+
+  // Nothing is hovered to begin with: no band, no tooltip.
+  await expect(chart.locator(".daisy-anim-band")).toHaveCount(0);
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(0);
+
+  // Eight bins in: the track element is drawn first (one bar per bin), so the
+  // eighth `.elm-charts__bar` is 2023's track and its centre is inside 2023's
+  // column whichever series the pointer lands nearest.
+  await bars.nth(7).scrollIntoViewIfNeeded();
+  const bin = await bars.nth(7).boundingBox();
+  await page.mouse.move(bin!.x + bin!.width / 2, bin!.y + bin!.height / 2);
+
+  // One tooltip, not one per `C.bars` element: the track draws its own bin at
+  // every x, and the renderer filters the hover grouping to the caller's own
+  // series so exactly one band and one card are drawn.
+  const tooltip = chart.locator(".daisy-anim-tooltip");
+  await expect(tooltip).toHaveCount(1);
+  await expect(tooltip).toContainText("2023");
+  await expect(tooltip).toContainText("Orders");
+  await expect(tooltip).toContainText("Revenue");
+  await expect(chart.locator(".daisy-anim-band")).toHaveCount(1);
+
+  // Hovering is not something the application "did": `Main.paneName` ignores
+  // `ChartHovered` exactly as it ignores `CalendarMsg`, so the debug pane is
+  // still on the message before it.
+  await expect(page.getByText(pane)).toHaveText("last-msg: none");
+
+  // Leaving the chart clears it again.
+  await page.mouse.move(4, 4);
+  await expect(chart.locator(".daisy-anim-tooltip")).toHaveCount(0);
+  await expect(chart.locator(".daisy-anim-band")).toHaveCount(0);
+});
+
+test("admin: the Day | Month | Year strip switches the revenue dataset", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/", theme);
+  const chart = page.locator(".card", { hasText: "Revenue Statistics" }).first();
+
+  // `Year`, the default: ten bins labelled 2016..2025.
+  await expect(chart.getByRole("tab", { name: "Year" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(chart).toContainText("2016");
+  await expect(chart).toContainText("over ten years");
+
+  await chart.getByRole("tab", { name: "Month" }).click();
+
+  // This one *is* stamped: it is a message the application acted on.
+  await expect(page.getByText(pane)).toHaveText("last-msg: ChartRangeChanged");
+  await expect(chart.getByRole("tab", { name: "Month" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(chart).toContainText("Jan");
+  await expect(chart).not.toContainText("2016");
+  await expect(chart).toContainText("$62.14K");
+});

@@ -93,14 +93,14 @@ hexToOklch hex =
                     chroma =
                         sqrt ((aStar * aStar) + (bStar * bStar))
                 in
-                { l = roundTo 4 (lightness * 100)
-                , c = roundTo 4 chroma
+                { l = roundTo 5 (lightness * 100)
+                , c = roundTo 5 chroma
                 , h =
                     if chroma < 1.0e-4 then
                         0
 
                     else
-                        roundTo 2 (normaliseHue (atan2 bStar aStar * 180 / pi))
+                        roundTo 3 (normaliseHue (atan2 bStar aStar * 180 / pi))
                 }
             )
 
@@ -323,9 +323,18 @@ hexDigitChar n =
 
 
 {-| Round to `places` decimals. The conversion is a chain of transcendental
-functions, so the last few bits of a `Float` are noise; keeping four decimals of
-lightness and chroma and two of hue is finer than any screen can show and keeps
-the printed CSS short.
+functions, so the last few bits of a `Float` are noise, and a theme's CSS should
+not print thirteen of them.
+
+`hexToOklch` keeps **five** decimals of lightness and chroma and **three** of
+hue, and those figures are the ones that make `hex -> OKLCH -> hex` the identity
+rather than nearly one. Four and two — which is what daisyUI's own theme sources
+print, and what this module kept at first — are not enough: at high chroma a
+hundredth of a degree of hue is more than half of one 8-bit channel step, so
+about six colours in ten thousand come back one LSB out (`#03defb` -> `#02defb`
+is one). `tests/ColorTest.elm` fuzzes that round trip, so it found this as an
+occasional failure rather than never; the fix is precision, not a tolerance.
+
 -}
 roundTo : Int -> Float -> Float
 roundTo places value =

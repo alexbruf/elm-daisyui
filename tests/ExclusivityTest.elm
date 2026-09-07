@@ -170,7 +170,11 @@ auraFuzzer =
 
 badgeConfigFuzzer : Fuzzer BadgeConfig
 badgeConfigFuzzer =
-    Fuzz.map4 (\color style size tip -> { color = color, style = style, size = size, tooltip = tip })
+    Fuzz.map5
+        (\icon color style size tip ->
+            { icon = icon, color = color, style = style, size = size, tooltip = tip }
+        )
+        (Fuzz.maybe (Fuzz.oneOfValues DIcon.allIcons))
         (maybeOf SBadge.allColors)
         (maybeOf SBadge.allStyles)
         (maybeOf SBadge.allSizes)
@@ -583,6 +587,32 @@ leafFuzzers =
 -- BLOCK FUZZERS -------------------------------------------------------------
 
 
+{-| A menu entry that is active, so the two `MenuActiveStyle` branches are
+both actually reached: `SolidActive` emits `menu-active`, `TintedActive` emits
+two tokens and no daisyUI class at all.
+-}
+activeItem : MenuItem Msg
+activeItem =
+    let
+        (MenuItem base) =
+            menuItem "Home"
+    in
+    MenuItem { base | active = True, href = Just "#" }
+
+
+{-| Two series, one of them dashed, over three bins: enough for a stack, a
+track, a hovered band and a two-row tooltip.
+-}
+chartFuzzData : Chart.ChartData
+chartFuzzData =
+    { xLabels = [ "Jan", "Feb", "Mar" ]
+    , series =
+        [ Chart.series "Orders" Chart.Warning [ 4, 8, 6 ]
+        , { name = "Prediction", color = Chart.Neutral, points = [ 2, 3, 5 ], dashed = True }
+        ]
+    }
+
+
 {-| One `card-body` child of each shape, so the fuzzer covers the block-shaped
 ones as well as the leaves.
 -}
@@ -590,7 +620,7 @@ cardChildren : List (CardChild Msg)
 cardChildren =
     [ CardLeaf (Text "body")
     , CardAlert defaultAlertConfig [ Text "Saved" ]
-    , CardChart Chart.Line { series = [], xLabels = [] }
+    , CardChart (Chart.Line Chart.defaultLineStyle) { series = [], xLabels = [] } Nothing
     , CardTable defaultTableConfig [ { header = True, cells = [ tableCell (Text "Name") ] } ]
     , CardStat defaultStatConfig [ emptyStatItem "Downloads" "31K" ]
     , CardForm [ { legend = Just "Account", fields = [ field "Email" (Input defaultInputConfig) ] } ]
@@ -620,7 +650,7 @@ blockFuzzers =
       , Fuzz.map4
             (\style size modifiers aura ->
                 Card
-                    { style = style, size = size, modifiers = modifiers, aura = aura, hover3d = True }
+                    { style = style, size = size, padding = PaddingDashboard, modifiers = modifiers, aura = aura, hover3d = True }
                     { figure = Just (Image defaultImageConfig "a.png")
                     , title = Just "Title"
                     , titleIcon = Just DIcon.ChartBar
@@ -628,8 +658,8 @@ blockFuzzers =
                         Just
                             { config = { style = Just STab.Box, size = Just STab.Xs, placement = Nothing }
                             , tabs =
-                                [ { label = "Day", active = False, disabled = False, content = [] }
-                                , { label = "Year", active = True, disabled = False, content = [] }
+                                [ { label = "Day", active = False, disabled = False, content = [], onClick = Nothing }
+                                , { label = "Year", active = True, disabled = False, content = [], onClick = Nothing }
                                 ]
                             }
                     , headerActions = [ Button defaultButtonConfig "Report" ]
@@ -643,13 +673,14 @@ blockFuzzers =
             (Fuzz.maybe auraFuzzer)
       )
     , ( "card body children"
-      , Fuzz.map
-            (\style ->
+      , Fuzz.map2
+            (\style padding ->
                 Card
-                    { defaultCardConfig | style = style }
+                    { defaultCardConfig | style = style, padding = padding }
                     { emptyCardParts | title = Just "Title", body = cardChildren }
             )
             (maybeOf SCard.allStyles)
+            (Fuzz.oneOfValues allCardPaddings)
       )
     , ( "carousel"
       , Fuzz.map3
@@ -700,14 +731,29 @@ blockFuzzers =
             Fuzz.bool
       )
     , ( "menu"
-      , Fuzz.map3
-            (\size direction modifiers ->
-                Menu { size = size, direction = direction, modifiers = modifiers }
-                    [ menuItem "Home" ]
+      , Fuzz.map4
+            (\size direction activeStyle modifiers ->
+                Menu { size = size, direction = direction, activeStyle = activeStyle, modifiers = modifiers }
+                    [ activeItem ]
             )
             (maybeOf SMenu.allSizes)
             (maybeOf SMenu.allDirections)
+            (Fuzz.oneOfValues allMenuActiveStyles)
             (subsetOf SMenu.allModifiers)
+      )
+    , ( "chart"
+      , -- Every `ChartConfig` — both line styles, all eight bar styles, the
+        -- donut and the area — crossed with hovering nothing and hovering a
+        -- bin, which is what decides whether the band and the tooltip are
+        -- drawn at all.
+        Fuzz.map2
+            (\config hovered ->
+                Chart config
+                    chartFuzzData
+                    (Just { hovered = hovered, onHover = Hovered })
+            )
+            (Fuzz.oneOfValues Chart.allChartConfigs)
+            (Fuzz.oneOfValues [ Nothing, Just 0, Just 1, Just 2 ])
       )
     , ( "pagination"
       , Fuzz.map
@@ -779,7 +825,7 @@ blockFuzzers =
       , Fuzz.map3
             (\style size placement ->
                 Tabs { style = style, size = size, placement = placement }
-                    [ { label = "Tab 1", active = True, disabled = False, content = [ Text "one" ] } ]
+                    [ { label = "Tab 1", active = True, disabled = False, content = [ Text "one" ], onClick = Nothing } ]
             )
             (maybeOf STab.allStyles)
             (maybeOf STab.allSizes)
@@ -811,7 +857,28 @@ blockFuzzers =
 
 sectionFuzzers : List ( String, Fuzzer (Section Msg) )
 sectionFuzzers =
-    [ ( "footer"
+    [ ( "equal-column grid"
+      , Fuzz.map
+            (\columns -> Grid (Columns { columns = columns } [ Prose [ Text "a" ] ]))
+            (Fuzz.oneOfValues [ Cols1, Cols2, Cols3, Cols4 ])
+      )
+    , ( "twelve-column grid"
+      , -- Two cells, each with its own span and its own number of blocks, so
+        -- the cell wrapper is exercised both as a single panel and as a column
+        -- of them.
+        Fuzz.map2
+            (\left right ->
+                Grid
+                    (Spans
+                        [ span left (Prose [ Text "a" ])
+                        , spanColumn right [ Prose [ Text "b" ], Prose [ Text "c" ] ]
+                        ]
+                    )
+            )
+            (Fuzz.oneOfValues allSpans)
+            (Fuzz.oneOfValues allSpans)
+      )
+    , ( "footer"
       , Fuzz.map2
             (\direction placement ->
                 Footer { direction = direction, placement = placement }
@@ -855,8 +922,8 @@ overlayFuzzers =
 
 pageFuzzer : Fuzzer (Page Msg)
 pageFuzzer =
-    Fuzz.map4
-        (\theme dockSize fabModifiers ctaConfig ->
+    Fuzz.map5
+        (\theme dockSize fabModifiers ctaConfig chrome ->
             Page
                 { header =
                     Just
@@ -875,9 +942,10 @@ pageFuzzer =
                                     { avatar = "a.png", name = "Ada", subtitle = "@ada" }
                                 )
                         , navbar = emptyNavbarParts
+                        , edges = chrome.edges
                         }
                 , sections = Sections1 (Stack defaultStackConfig [ Prose [ Text "one" ] ])
-                , cta = ctaConfig
+                , cta = { ctaConfig | placement = chrome.placement }
                 , overlays = []
                 , theme = theme
                 , dock =
@@ -899,6 +967,18 @@ pageFuzzer =
         (maybeOf SDock.allSizes)
         (subsetOf SFab.allModifiers)
         ctaFuzzer
+        chromeFuzzer
+
+
+{-| The two shell decisions that are not a class: where `Page.cta` lands and
+whether the dashboard draws its hairline edges. Both change which elements
+exist, so they belong in the page fuzzer rather than in a fixture.
+-}
+chromeFuzzer : Fuzzer { placement : CtaPlacement, edges : Bool }
+chromeFuzzer =
+    Fuzz.map2 (\placement edges -> { placement = placement, edges = edges })
+        (Fuzz.oneOfValues allCtaPlacements)
+        Fuzz.bool
 
 
 {-| Every theme the page can carry: the thirty-five built-ins, and a `Custom`
