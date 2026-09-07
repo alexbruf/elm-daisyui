@@ -39,6 +39,7 @@ import Daisy.Tree as Tree
         , HeadingLevel(..)
         , IndicatorPayload(..)
         , Leaf(..)
+        , MenuGlyph(..)
         , MenuItem(..)
         , MenuSpec
         , NavbarParts
@@ -142,7 +143,7 @@ docsItem : Config msg -> MenuItem msg
 docsItem config =
     MenuItem
         { label = "Docs"
-        , icon = Just Icon.Document
+        , glyph = Just (MenuIcon Icon.Document)
         , badge = Nothing
         , active = False
         , disabled = False
@@ -186,7 +187,7 @@ navItem : String -> Icon.Icon -> String -> msg -> Bool -> MenuItem msg
 navItem label icon path onClick active =
     MenuItem
         { label = label
-        , icon = Just icon
+        , glyph = Just (MenuIcon icon)
         , badge = Nothing
         , active = active
         , disabled = False

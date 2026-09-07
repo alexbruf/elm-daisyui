@@ -535,6 +535,51 @@ leafFuzzers =
             (subsetOf SSkeleton.allModifiers)
       )
     , ( "status", Fuzz.map Status statusConfigFuzzer )
+    , ( "colorChips"
+      , Fuzz.map3
+            (\glyph label handled ->
+                ColorChips
+                    [ { label = label
+                      , chips =
+                            [ { color = { l = 45, c = 0.24, h = 277.023 }
+                              , contentColor = { l = 93, c = 0.034, h = 272.788 }
+                              , value = { l = 45, c = 0.24, h = 277.023 }
+                              , glyph = glyph
+                              , ariaLabel = label
+                              , onChange =
+                                    if handled then
+                                        Just Typed
+
+                                    else
+                                        Nothing
+                              }
+                            ]
+                      }
+                    ]
+            )
+            (Fuzz.oneOfValues allChipGlyphs)
+            (Fuzz.oneOfValues [ "base", "primary" ])
+            Fuzz.bool
+      )
+    , ( "radiusTiles"
+      , Fuzz.map3
+            (\current aria handled ->
+                RadiusTiles
+                    { ariaLabel = aria
+                    , onSelect =
+                        if handled then
+                            Just RadiusPicked
+
+                        else
+                            Nothing
+                    }
+                    { group = "Boxes", current = current }
+            )
+            (Fuzz.oneOfValues allRadii)
+            (Fuzz.maybe (Fuzz.constant "Corner radius of boxes"))
+            Fuzz.bool
+      )
+    , ( "themeDots", Fuzz.map ThemeDots (Fuzz.oneOfValues allThemes) )
     , ( "swatch"
       , Fuzz.map3
             (\color aria tip ->

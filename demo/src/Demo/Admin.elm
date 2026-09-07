@@ -62,6 +62,7 @@ import Daisy.Tree as Tree
         , IndicatorPayload(..)
         , InputType(..)
         , Leaf(..)
+        , MenuGlyph(..)
         , MenuItem(..)
         , MenuSpec
         , NavbarParts
@@ -242,7 +243,7 @@ docsItem config =
     in
     MenuItem
         { base
-            | icon = Just Icon.Document
+            | glyph = Just (MenuIcon Icon.Document)
             , href = Just (href config "/docs/")
         }
 
@@ -272,7 +273,7 @@ navItem label icon path onClick active badge =
     in
     MenuItem
         { base
-            | icon = Just icon
+            | glyph = Just (MenuIcon icon)
             , active = active
             , href = Just path
             , onClick = Just onClick

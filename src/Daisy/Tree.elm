@@ -27,7 +27,7 @@ module Daisy.Tree exposing
     , DiffParts
     , Fieldset, Field, LabelPlacement(..), field
     , ListRow, ListCell, listCell
-    , MenuConfig, defaultMenuConfig, MenuActiveStyle(..), allMenuActiveStyles, MenuItem(..), MenuBadge, MenuSpec, menuItem
+    , MenuConfig, defaultMenuConfig, MenuActiveStyle(..), allMenuActiveStyles, MenuItem(..), MenuGlyph(..), allMenuGlyphs, MenuBadge, MenuSpec, menuItem
     , MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
     , NavConfig, defaultNavConfig
     , PaginationConfig, defaultPaginationConfig, PaginationData
@@ -43,6 +43,7 @@ module Daisy.Tree exposing
     , ButtonConfig, defaultButtonConfig, ButtonColor(..), allButtonColors, buttonColorToSchema
     , CalendarConfig, defaultCalendarConfig, CalendarLocale(..), CalendarMonths(..), CalendarState(..), CalendarValue(..), CalendarMsg(..), setCalendarValue
     , CheckboxConfig, defaultCheckboxConfig
+    , ColorChipGroup, ColorChip, ChipGlyph(..), allChipGlyphs
     , DividerConfig, defaultDividerConfig
     , FileInputConfig, defaultFileInputConfig
     , FilterData, FilterReset(..)
@@ -56,8 +57,9 @@ module Daisy.Tree exposing
     , MegamenuConfig, defaultMegamenuConfig, MegamenuItem
     , OtpConfig, defaultOtpConfig, OtpData
     , ProgressConfig, defaultProgressConfig, ProgressData
-    , RadialProgressData
+    , RadialProgressData, RadialSize(..), allRadialSizes, radialSizeToString
     , RadioConfig, defaultRadioConfig, RadioData
+    , RadiusTilesConfig, defaultRadiusTilesConfig, RadiusTilesData
     , RangeConfig, defaultRangeConfig, RangeData
     , RatingConfig, defaultRatingConfig, RatingModifier(..), allRatingModifiers, ratingModifierToSchema, RatingData
     , SelectConfig, defaultSelectConfig, SelectData
@@ -162,7 +164,7 @@ format has.
 @docs DiffParts
 @docs Fieldset, Field, LabelPlacement, field
 @docs ListRow, ListCell, listCell
-@docs MenuConfig, defaultMenuConfig, MenuActiveStyle, allMenuActiveStyles, MenuItem, MenuBadge, MenuSpec, menuItem
+@docs MenuConfig, defaultMenuConfig, MenuActiveStyle, allMenuActiveStyles, MenuItem, MenuGlyph, allMenuGlyphs, MenuBadge, MenuSpec, menuItem
 @docs MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
 @docs NavConfig, defaultNavConfig
 @docs PaginationConfig, defaultPaginationConfig, PaginationData
@@ -182,6 +184,7 @@ format has.
 @docs ButtonConfig, defaultButtonConfig, ButtonColor, allButtonColors, buttonColorToSchema
 @docs CalendarConfig, defaultCalendarConfig, CalendarLocale, CalendarMonths, CalendarState, CalendarValue, CalendarMsg, setCalendarValue
 @docs CheckboxConfig, defaultCheckboxConfig
+@docs ColorChipGroup, ColorChip, ChipGlyph, allChipGlyphs
 @docs DividerConfig, defaultDividerConfig
 @docs FileInputConfig, defaultFileInputConfig
 @docs FilterData, FilterReset
@@ -195,8 +198,9 @@ format has.
 @docs MegamenuConfig, defaultMegamenuConfig, MegamenuItem
 @docs OtpConfig, defaultOtpConfig, OtpData
 @docs ProgressConfig, defaultProgressConfig, ProgressData
-@docs RadialProgressData
+@docs RadialProgressData, RadialSize, allRadialSizes, radialSizeToString
 @docs RadioConfig, defaultRadioConfig, RadioData
+@docs RadiusTilesConfig, defaultRadiusTilesConfig, RadiusTilesData
 @docs RangeConfig, defaultRangeConfig, RangeData
 @docs RatingConfig, defaultRatingConfig, RatingModifier, allRatingModifiers, ratingModifierToSchema, RatingData
 @docs SelectConfig, defaultSelectConfig, SelectData
@@ -242,7 +246,7 @@ import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
 import Daisy.Chart exposing (ChartConfig, ChartData, ChartInteraction)
 import Daisy.Color as Color
-import Daisy.Icon exposing (Icon)
+import Daisy.Icon exposing (Icon, allIcons)
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Aura as SAura
@@ -1838,7 +1842,7 @@ turns the click into an `onUrlRequest` on its own).
 type MenuItem msg
     = MenuItem
         { label : String
-        , icon : Maybe Icon
+        , glyph : Maybe MenuGlyph
         , badge : Maybe MenuBadge
         , active : Bool
         , disabled : Bool
@@ -1848,6 +1852,28 @@ type MenuItem msg
         , onClick : Maybe msg
         , submenu : List (MenuItem msg)
         }
+
+
+{-| The one glyph a menu row may carry in front of its label.
+
+A closed pair rather than two fields, because a row has one leading glyph: an
+icon from [`Daisy.Icon`](Daisy-Icon), or the four-colour palette tile that says
+"this row is a theme". daisyUI's own theme generator draws the second one on
+every row of its theme list, and it is not an icon at all — it is four dots
+painted from that theme's own `--color-*` values, which `Daisy.Render` reads out
+of [`Daisy.Themes`](Daisy-Themes) and writes as an inline `style`.
+
+-}
+type MenuGlyph
+    = MenuIcon Icon
+    | MenuThemeDots Theme
+
+
+{-| One [`MenuGlyph`](#MenuGlyph) of each shape, for fuzzers and coverage tests.
+-}
+allMenuGlyphs : List MenuGlyph
+allMenuGlyphs =
+    List.map MenuIcon allIcons ++ List.map MenuThemeDots allThemes
 
 
 {-| A badge shown at the end of a menu item.
@@ -1867,7 +1893,7 @@ menuItem : String -> MenuItem msg
 menuItem label =
     MenuItem
         { label = label
-        , icon = Nothing
+        , glyph = Nothing
         , badge = Nothing
         , active = False
         , disabled = False
@@ -2240,6 +2266,7 @@ type Leaf msg
     | Button (ButtonConfig msg) String
     | Calendar (CalendarConfig msg) CalendarState
     | Checkbox (CheckboxConfig msg)
+    | ColorChips (List (ColorChipGroup msg))
     | Countdown Float
     | Divider DividerConfig (Maybe String)
     | FileInput (FileInputConfig msg)
@@ -2258,6 +2285,7 @@ type Leaf msg
     | Progress ProgressConfig ProgressData
     | RadialProgress RadialProgressData
     | Radio (RadioConfig msg) RadioData
+    | RadiusTiles (RadiusTilesConfig msg) RadiusTilesData
     | Range (RangeConfig msg) RangeData
     | Rating (RatingConfig msg) RatingData
     | Select (SelectConfig msg) SelectData
@@ -2268,6 +2296,7 @@ type Leaf msg
     | Text String
     | TextRotate (List String)
     | Textarea (TextareaConfig msg)
+    | ThemeDots Theme
     | ThemeSelect (ThemeSelectData msg)
     | Toggle (ToggleConfig msg) ToggleData
     | UserChip (UserChipConfig msg) UserChipData
@@ -2631,6 +2660,83 @@ defaultCheckboxConfig =
     , tooltip = Nothing
     , onCheck = Nothing
     }
+
+
+{-| One labelled group of a [`Leaf.ColorChips`](#Leaf) editor.
+
+daisyUI's own theme generator groups its twenty `--color-*` pickers exactly this
+way: `base-100`, `base-200`, `base-300` and `base-content` under one caption
+reading `base`, then each brand or state colour beside its own `-content`
+partner under the colour's name. The caption is the group's, not the chip's,
+because that is the only place the two halves of a pair are one thing.
+
+-}
+type alias ColorChipGroup msg =
+    { label : String
+    , chips : List (ColorChip msg)
+    }
+
+
+{-| One chip of a [`ColorChipGroup`](#ColorChipGroup): a square painted in the
+colour it edits, opening the browser's own colour picker when it is clicked.
+
+`color` and `contentColor` are values, not classes: the chip shows a colour the
+page is _editing_, which by definition is not yet any theme's `--color-*`, so
+`Daisy.Render` paints it with an inline `background-color` / `color` pair read
+straight off these two fields. That is the same reason
+[`customThemeStyle`](#customThemeStyle) exists.
+
+`value` is a third colour, and it is the one the chip _edits_ — what the picker
+opens on and what `onChange` reports back. It is separate from the two painted
+ones because a pair of chips shows one pair of colours twice: daisyUI's
+`primary` chip and its `primary-content` chip are both a `--color-primary`
+square with a `--color-primary-content` `A` on it, and which of the two a click
+changes is the only difference between them. Squashing the three into two would
+make "the square that edits the letter" unrepresentable.
+
+`glyph` is what is drawn on the chip, and it is a closed
+[`ChipGlyph`](#ChipGlyph) rather than a string because daisyUI draws two
+different things there at two different type sizes.
+
+`ariaLabel` is required rather than a `Maybe`: the chip has no visible text that
+names the variable it edits (`A` names nothing), and a colour input with no
+accessible name is an axe `critical`.
+
+-}
+type alias ColorChip msg =
+    { color : Oklch
+    , contentColor : Oklch
+    , value : Oklch
+    , glyph : ChipGlyph
+    , ariaLabel : String
+    , onChange : Maybe (String -> msg)
+    }
+
+
+{-| What a [`ColorChip`](#ColorChip) draws on itself.
+
+  - `ChipBlank` draws nothing. daisyUI's chip for a brand or state colour is a
+    plain painted square: its partner beside it carries the letter for the pair.
+  - `ChipLabel` is a caption — `100`, `200`, `300` on the three base surfaces,
+    at the body type size.
+  - `ChipSpecimen` is the bold `A` daisyUI puts on every chip that edits a
+    `-content` colour. It is a _specimen_, not a label: it is drawn large and
+    heavy in the content colour over the surface colour, so the pair can be
+    judged by looking at it. That is why it carries no string — the letter is
+    the same one every time, and a caption would be a different thing.
+
+-}
+type ChipGlyph
+    = ChipBlank
+    | ChipLabel String
+    | ChipSpecimen
+
+
+{-| One [`ChipGlyph`](#ChipGlyph) of each shape, for fuzzers and coverage tests.
+-}
+allChipGlyphs : List ChipGlyph
+allChipGlyphs =
+    [ ChipBlank, ChipLabel "100", ChipSpecimen ]
 
 
 {-| Groups of the daisyUI `divider` component.
@@ -3002,8 +3108,41 @@ least the value the dial shows; a real page says what is being measured.
 type alias RadialProgressData =
     { value : Float
     , label : String
+    , size : RadialSize
     , ariaLabel : Maybe String
     }
+
+
+{-| How big a `radial-progress` is drawn.
+
+daisyUI sizes it with a `--size` custom property and ships no class for it, so
+this is a closed pair rather than a length: `RadialDefault` is daisyUI's own
+5rem, and `RadialCompact` is the 3rem its dashboard templates use when the dial
+sits beside a number instead of being the number.
+
+-}
+type RadialSize
+    = RadialCompact
+    | RadialDefault
+
+
+{-| Both [`RadialSize`](#RadialSize) values.
+-}
+allRadialSizes : List RadialSize
+allRadialSizes =
+    [ RadialCompact, RadialDefault ]
+
+
+{-| The `--size` a [`RadialSize`](#RadialSize) sets, as a CSS length.
+-}
+radialSizeToString : RadialSize -> String
+radialSizeToString size =
+    case size of
+        RadialCompact ->
+            "3rem"
+
+        RadialDefault ->
+            "5rem"
 
 
 {-| Groups of the daisyUI `radio` component.
@@ -3029,6 +3168,45 @@ defaultRadioConfig =
 type alias RadioData =
     { name : String
     , checked : Bool
+    }
+
+
+{-| A [`Leaf.RadiusTiles`](#Leaf) group: which of the five
+[`Radius`](#Radius) steps is chosen, and what to do when another is.
+
+`onSelect` carries the `Radius` itself rather than a string, because every
+option the control offers is one of the five and there is no sixth to parse.
+
+-}
+type alias RadiusTilesConfig msg =
+    { ariaLabel : Maybe String
+    , onSelect : Maybe (Radius -> msg)
+    }
+
+
+{-| A radius group that changes nothing and names itself only through its
+`group`.
+-}
+defaultRadiusTilesConfig : RadiusTilesConfig msg
+defaultRadiusTilesConfig =
+    { ariaLabel = Nothing, onSelect = Nothing }
+
+
+{-| The radio-group name of a [`Leaf.RadiusTiles`](#Leaf) and the step it is on.
+
+`group` is both the `name` shared by the five radios — which is what makes them
+exclusive — and the prefix of each one's accessible name, so `2rem` in the
+`Boxes` group and `2rem` in the `Fields` group are two different controls to a
+screen reader and to a test.
+
+The five options are always [`allRadii`](#allRadii): daisyUI's generator offers
+exactly those, and a subset would be a set of steps the exported CSS could not
+have come from.
+
+-}
+type alias RadiusTilesData =
+    { group : String
+    , current : Radius
     }
 
 

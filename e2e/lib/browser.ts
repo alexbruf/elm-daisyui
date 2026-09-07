@@ -568,12 +568,19 @@ export function collectFocusables() {
     "[tabindex]:not([tabindex='-1'])",
   ].join(",");
 
+  // `opacity: 0` is deliberately **not** a reason to drop a control here, unlike
+  // in the paint-facing helpers above: a transparent element is still laid out,
+  // still hit-tested and still in the tab order, so the browser focuses it on
+  // Tab whether this list expects it or not. That is exactly the colour picker
+  // lying over a `Leaf.ColorChips` chip, and a list that omitted it would be
+  // asserting a tab order the page does not have. Everything genuinely hidden
+  // on these pages is hidden with `display`, `visibility` (daisyUI's closed
+  // `drawer-side`), `aria-hidden` or `inert`.
   function visible(el: Element): boolean {
     for (let n: Element | null = el; n; n = n.parentElement) {
       const s = getComputedStyle(n);
       if (s.display === "none") return false;
       if (s.visibility === "hidden" || s.visibility === "collapse") return false;
-      if (parseFloat(s.opacity) === 0) return false;
       if (n.getAttribute("aria-hidden") === "true") return false;
       if (n.hasAttribute("inert")) return false;
     }

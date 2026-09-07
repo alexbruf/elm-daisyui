@@ -75,6 +75,7 @@ import Daisy.Tree as Tree
         , Border(..)
         , ButtonColor(..)
         , CardChild(..)
+        , ChipGlyph(..)
         , ColorScheme(..)
         , CustomTheme
         , DashboardShell
@@ -84,10 +85,12 @@ import Daisy.Tree as Tree
         , JoinItem(..)
         , Leaf(..)
         , ListRow
+        , MenuGlyph(..)
         , MenuItem(..)
         , MenuSpec
         , NavbarParts
         , Page(..)
+        , RadialSize(..)
         , Radius(..)
         , Row
         , Section(..)
@@ -841,11 +844,22 @@ previewCard =
 {-| The three columns daisyUI's generator has, as one twelve-column band.
 
 Measured on <https://daisyui.com/theme-generator/> at 1440: a theme list of
-~190px, an editor of ~250px, and a preview of 879px laid out
-`grid gap-6 xl:grid-cols-3` in 277px columns. In a `Shell.Plain` content column
-of 1392px, twelve tracks are 94px each, so 2 : 3 : 7 is 212 : 330 : 802 — and
-the preview cell divides itself into three 256px columns
-(`CellColumns.CellThree`), which is the same grid one step narrower.
+191px, an editor of 224px in a 272px rail, and a preview of 879px laid out
+`grid gap-6 xl:grid-cols-3` in 277px columns.
+
+In a `Shell.Plain` content column of 1392px, twelve tracks are 101.33px each
+with 16px gutters, so a cell of N tracks is `101.33N + 16(N-1)`:
+2 : 3 : 7 is 218.7 : 336 : 805.3, and the preview cell divides itself into three
+257.8px columns (`CellColumns.CellThree`).
+
+**That split is forced, not chosen.** The theme list needs ~112px of row
+(`caramellatte` at the `menu-xs` step behind an 18px palette tile), so `Span2`
+is its floor. The editor holds a 224px chip grid _and_ a 280px radius row inside
+a `p-5` card body, so `Span3` (296px inner) is its floor — `Span2` would be
+178.7px inner. That leaves `Span7`, and 3 x 277 + 2 x 16 = 863px of preview is
+between `Span7` (805.3) and `Span8` (922.7), so no split gives daisyUI's card
+width. Ours is 19.2px narrower; `docs/tree-decisions.md`, "The generator's
+editor column", section 4 has the arithmetic.
 
 -}
 generatorSection : Config msg -> Section msg
@@ -872,10 +886,18 @@ edit the `<select>` used to, which is why that select is gone. `Block.Menu` is
 the component daisyUI uses there too, and `MenuActiveStyle.TintedActive` is the
 quiet marked row it draws.
 
-The glyph is one `swatch` icon rather than the four-colour dot daisyUI shows,
-and that is a real limit rather than a choice: their dot is a `[data-theme]`
-element painted in _that_ theme's colours, and `Page.theme` is one field — the
-tree has exactly one theme per page on purpose.
+The glyph is daisyUI's own four-colour tile: that theme's `base-100` with its
+`base-content`, `primary`, `secondary` and `accent` on it. It is a
+`MenuGlyph.MenuThemeDots`, which carries a whole `Theme` rather than an
+[`Icon`](Daisy-Icon) — a row of the list _is_ a theme, and none of its four
+colours can be a class, because the class would paint the theme being edited
+instead of the theme the row is offering. `Daisy.Render` reads the values out of
+the generated `Daisy.Themes` and writes them inline, exactly as it writes a
+`Theme.Custom` onto the page root.
+
+There is no "Hold to add theme" button. daisyUI's saves a theme into the
+browser's local storage, which is a `Cmd` and a port; this page keeps `acme` at
+the top of `My themes` and edits it in place.
 
 -}
 themesMenu : Config msg -> Block msg
@@ -884,9 +906,9 @@ themesMenu config =
         { defaultMenu | size = Just SMenu.Xs }
         (groupTitle "Themes"
             :: groupTitle "My themes"
-            :: themeRow config (Tree.themeNameToString DemoThemes.acmeName)
+            :: themeRow config (Custom DemoThemes.acme)
             :: groupTitle "daisyUI themes"
-            :: List.map (themeRow config << Tree.themeToString) Tree.allThemes
+            :: List.map (themeRow config) Tree.allThemes
         )
 
 
@@ -909,15 +931,24 @@ groupTitle label =
     MenuItem { base | title = True }
 
 
-themeRow : Config msg -> String -> MenuItem msg
-themeRow config name =
+themeRow : Config msg -> Theme -> MenuItem msg
+themeRow config theme =
     let
+        name : String
+        name =
+            case theme of
+                Custom custom ->
+                    Tree.themeNameToString custom.name
+
+                builtin ->
+                    Tree.themeToString builtin
+
         (MenuItem base) =
             Tree.menuItem name
     in
     MenuItem
         { base
-            | icon = Just Icon.Swatch
+            | glyph = Just (MenuThemeDots theme)
             , active = name == startingPoint config.edited
             , onClick = Just (config.onEdit (StartFrom name))
         }
@@ -930,22 +961,10 @@ themeRow config name =
 editorColumn : Config msg -> List (Block msg)
 editorColumn config =
     [ nameCard config
-    , colorGroupCard "base" [ SlotBase100, SlotBase200, SlotBase300, SlotBaseContent ] config
-    , colorGroupCard "brand"
-        [ SlotPrimary, SlotPrimaryContent, SlotSecondary, SlotSecondaryContent ]
-        config
-    , colorGroupCard "accent / neutral"
-        [ SlotAccent, SlotAccentContent, SlotNeutral, SlotNeutralContent ]
-        config
-    , colorGroupCard "state"
-        [ SlotInfo, SlotInfoContent, SlotSuccess, SlotSuccessContent ]
-        config
-    , colorGroupCard "warning / error"
-        [ SlotWarning, SlotWarningContent, SlotError, SlotErrorContent ]
-        config
+    , changeColorsCard config
     , radiusCard config
     , sizeCard config
-    , paletteCard
+    , paletteCard config
     ]
 
 
@@ -1003,57 +1022,123 @@ nameInput config =
         }
 
 
-{-| One row of daisyUI's "Change Colors" grid: four square swatches, the group's
-name under them.
+{-| daisyUI's "Change Colors" grid: `base` across the top, then each brand and
+state colour beside its own `-content` partner.
 
-Their row is a colour and its `-content` beside it, twice — `primary`, the
-`A` chip that edits `--color-primary-content`, then `secondary` and its `A` —
-with the two names underneath. This is that, with a native `type="color"` picker
-as each square: the `A` glyph cannot be drawn _inside_ an input, so the
-`-content` square shows the content colour itself.
+One `Leaf.ColorChips`, not twenty `Field` rows and not five cards of four
+`Join`ed colour inputs, which is what this was. The chips are exactly daisyUI's:
+44x40 rounded squares painted in the colour they edit, `100` / `200` / `300` on
+the three base surfaces, and a bold `A` on every chip whose _content_ colour it
+is — so the pair shows the letter it is responsible for making readable. The
+`A` chip of `base` sits on `base-300` rather than on `base-content`, again as
+daisyUI's does: `base-content` is a text colour, and a chip filled with it would
+be a black square in every light theme.
 
-Four to a `Join`, because daisyUI's `.input` is `width: 100%`: four loose in a
-`card-body` column are four full-width rows, while a `join`'s flex children
-shrink their 100% base sizes to a quarter each.
+Each square opens the browser's own colour picker, because the input lies over
+it invisible; the name a screen reader and a test read is the `--color-*`
+variable the chip edits (`primary`, `primary-content`), which is what
+`e2e/theme-generator.spec.ts` asks for by label.
 
 -}
-colorGroupCard : String -> List Slot -> Config msg -> Block msg
-colorGroupCard title slots config =
+changeColorsCard : Config msg -> Block msg
+changeColorsCard config =
     Card previewCard
         { emptyCard
-            | body =
-                [ CardLeaf
-                    (Join Tree.defaultJoinConfig
-                        (List.map (JoinInput << colorChip config) slots)
-                    )
-                , CardLeaf (Text title)
-                ]
+            | title = Just "Change Colors"
+            , titleIcon = Just Icon.Swatch
+            , body = [ CardLeaf (ColorChips (colorGroups config)) ]
         }
 
 
-colorChip : Config msg -> Slot -> Tree.InputConfig msg
-colorChip config slot =
-    { defaultInput
-        | inputType = InputColor
-        , size = Just SInput.Sm
-        , value = Color.oklchToHex (getSlot slot config.edited.colors)
-        , ariaLabel = Just (slotLabel slot)
-        , onInput = Just (config.onEdit << SetColor slot)
+{-| daisyUI's own grouping, in its order: the four base slots as one group, then
+eight pairs.
+-}
+colorGroups : Config msg -> List (Tree.ColorChipGroup msg)
+colorGroups config =
+    baseGroup config
+        :: List.map (pairGroup config)
+            [ ( SlotPrimary, SlotPrimaryContent )
+            , ( SlotSecondary, SlotSecondaryContent )
+            , ( SlotAccent, SlotAccentContent )
+            , ( SlotNeutral, SlotNeutralContent )
+            , ( SlotInfo, SlotInfoContent )
+            , ( SlotSuccess, SlotSuccessContent )
+            , ( SlotWarning, SlotWarningContent )
+            , ( SlotError, SlotErrorContent )
+            ]
+
+
+baseGroup : Config msg -> Tree.ColorChipGroup msg
+baseGroup config =
+    let
+        colors : Tree.ThemeColors
+        colors =
+            config.edited.colors
+
+        ink : Oklch
+        ink =
+            colors.baseContent
+    in
+    { label = "base"
+    , chips =
+        [ chip config SlotBase100 (ChipLabel "100") colors.base100 ink
+        , chip config SlotBase200 (ChipLabel "200") colors.base200 ink
+        , chip config SlotBase300 (ChipLabel "300") colors.base300 ink
+        , chip config SlotBaseContent ChipSpecimen colors.base300 ink
+        ]
+    }
+
+
+pairGroup : Config msg -> ( Slot, Slot ) -> Tree.ColorChipGroup msg
+pairGroup config ( surface, content ) =
+    let
+        background : Oklch
+        background =
+            getSlot surface config.edited.colors
+
+        foreground : Oklch
+        foreground =
+            getSlot content config.edited.colors
+    in
+    { label = slotLabel surface
+    , chips =
+        [ chip config surface ChipBlank background foreground
+        , chip config content ChipSpecimen background foreground
+        ]
+    }
+
+
+{-| One chip: painted `background` with its `glyph` in `foreground`, editing
+whichever of the two `slot` names.
+-}
+chip : Config msg -> Slot -> ChipGlyph -> Oklch -> Oklch -> Tree.ColorChip msg
+chip config slot glyph background foreground =
+    { color = background
+    , contentColor = foreground
+    , value = getSlot slot config.edited.colors
+    , glyph = glyph
+    , ariaLabel = slotLabel slot
+    , onChange = Just (config.onEdit << SetColor slot)
     }
 
 
 {-| daisyUI's `Radius` block: three rows of five tiles, labelled `Boxes`,
 `Fields` and `Selectors`.
 
-Each row is a `join` of `btn-xs` buttons with the current step `btn-neutral` —
-their tiles are rounded squares drawn at the radius they set, which needs a
-per-option `border-radius` no class can express; the value is the label instead.
+Each row is a `Leaf.RadiusTiles` — a real radio group whose five steps are drawn
+as the corner each one sets, which is what daisyUI's own generator shows. The
+tile is two sides of a box at that `border-radius`, so the control says what it
+does without naming a length; the length is still the step's accessible name
+(`Boxes 2rem`), prefixed by the group so `2rem` here and `2rem` in the next
+group are two different controls.
 
-`btn-neutral` and not `btn-active`: `.btn-active` derives its background from
-the button's own colour with a `color-mix()`, so the pair it paints is one the
-_composition_ chose — 4.28:1 in `valentine`, which `e2e/contrast.spec.ts`
-refuses. `--color-neutral` over `--color-neutral-content` is a pair daisyUI
-itself declares, in every theme.
+`Daisy.Render` marks the current step `btn-neutral` and leaves the tile's border
+at `currentColor`, so the marked corner comes out `--color-neutral-content` and
+no colour is chosen by this page at all. `btn-neutral` and not `btn-active`:
+`.btn-active` derives its background from the button's own colour with a
+`color-mix()`, so the pair it paints is one the _composition_ chose — 4.28:1 in
+`valentine`, which `e2e/contrast.spec.ts` refuses. `--color-neutral` over
+`--color-neutral-content` is a pair daisyUI itself declares, in every theme.
 
 -}
 radiusCard : Config msg -> Block msg
@@ -1153,11 +1238,11 @@ withoutUnit length =
 
 radiusChoice : Config msg -> String -> RadiusTarget -> Radius -> Leaf msg
 radiusChoice config group target current =
-    lengthChoice config
-        group
-        (SetRadius target)
-        (List.map Tree.radiusToString Tree.allRadii)
-        (Tree.radiusToString current)
+    RadiusTiles
+        { ariaLabel = Just (group ++ " radius")
+        , onSelect = Just (\radius -> config.onEdit (SetRadius target (Tree.radiusToString radius)))
+        }
+        { group = group, current = current }
 
 
 sizeChoice : Config msg -> String -> SizeTarget -> Size -> Leaf msg
@@ -1225,13 +1310,13 @@ renderer paints the chip from a named token pair per
 [`SwatchColor`](Daisy-Tree#SwatchColor), and the caller only names the slot.
 
 -}
-paletteCard : Block msg
-paletteCard =
+paletteCard : Config msg -> Block msg
+paletteCard config =
     Card previewCard
         { emptyCard
             | title = Just "Palette"
             , titleIcon = Just Icon.Eye
-            , body = List.map swatchRow swatches
+            , body = CardLeaf (ThemeDots (Custom config.edited)) :: List.map swatchRow swatches
         }
 
 
@@ -1276,10 +1361,11 @@ generatorLink config =
 {-| daisyUI's own preview grid, card for card and in its order.
 
 Their three columns are `flex flex-col gap-4` stacks inside one
-`grid xl:grid-cols-3`; ours is one `CellColumns.CellThree` cell, so the cards
-flow row-major rather than being packed per column. The set and the order are
-theirs; `docs/tree-decisions.md` lists the two blocks that could not be
-reproduced and why.
+`grid xl:grid-cols-3`, and so are ours: `CellColumns.CellThree` deals a cell's
+blocks into three columns, so nineteen cards become `7 + 7 + 5` and pack per
+column exactly as theirs do — which is the three groups this list is already
+written in. The set and the order are theirs; `docs/tree-decisions.md` lists the
+two blocks that could not be reproduced and why.
 
 -}
 previewCards : Config msg -> List (Block msg)
@@ -1498,9 +1584,12 @@ byte-stable — the same reason the other demos draw their avatars that way.
 -}
 productImage : String
 productImage =
-    "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20240%20120'%3E"
-        ++ "%3Crect%20width='240'%20height='120'%20fill='%23c6f24e'/%3E"
-        ++ "%3Cpath%20d='M20%2090c40-30%2080-40%20200-55v45z'%20fill='white'%20fill-opacity='0.75'/%3E%3C/svg%3E"
+    -- 240x142, the 1.7:1 the product photo in daisyUI's own preview card has
+    -- (259x153 measured at 1440). A 2:1 placeholder made the card 24px shorter
+    -- than theirs on its own.
+    "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20240%20142'%3E"
+        ++ "%3Crect%20width='240'%20height='142'%20fill='%23c6f24e'/%3E"
+        ++ "%3Cpath%20d='M20%20112c40-36%2080-48%20200-66v54z'%20fill='white'%20fill-opacity='0.75'/%3E%3C/svg%3E"
 
 
 searchCard : Config msg -> Block msg
@@ -1616,12 +1705,16 @@ previewSeries =
 
 {-| Their score card: a dial and a `stat`.
 
-daisyUI puts the `radial-progress` in the `stat-figure`, beside the number.
-Ours is a `CardLeaf` above the `stat` instead: a 5rem dial plus its
+daisyUI puts the `radial-progress` in the `stat-figure`, beside the number, and
+so does this — but only since the dial gained a size. A 5rem dial plus its
 `stat-figure` tile is a 96px grid column, and 96px of figure beside 168px of
-text does not fit a 256px preview card — `.stats` is `overflow-x: auto`, so it
-would become a scrollable region and therefore a tab stop of its own
-(`e2e/keyboard.spec.ts`).
+text does not fit a 256px preview card: `.stats` is `overflow-x: auto`, so it
+became a scrollable region and therefore a tab stop of its own
+(`e2e/keyboard.spec.ts`), and the dial spent a pass sitting above the `stat`
+instead. `RadialSize.RadialCompact` is what closed that: a 3rem
+dial in its `stat-figure` tile is 64px beside 85px of `stat-value`, which fits
+the 178px a `stat` has inside a 258px preview card, so the dial is back where
+daisyUI puts it.
 
 -}
 pageScoreCard : Block msg
@@ -1629,11 +1722,7 @@ pageScoreCard =
     Card previewCard
         { emptyCard
             | body =
-                [ CardLeaf
-                    (RadialProgress
-                        { value = 91, label = "91", ariaLabel = Just "Page score" }
-                    )
-                , CardStat { direction = Tree.Fixed (Just SStat.Vertical) }
+                [ CardStat { direction = Tree.Fixed (Just SStat.Vertical) }
                     [ pageScoreStat ]
                 ]
         }
@@ -1646,7 +1735,18 @@ pageScoreStat =
         base =
             Tree.emptyStatItem "Page Score" "91/100"
     in
-    { base | desc = Just "All good" }
+    { base
+        | desc = Just "All good"
+        , figure =
+            Just
+                (RadialProgress
+                    { value = 91
+                    , label = "91"
+                    , size = RadialCompact
+                    , ariaLabel = Just "Page score"
+                    }
+                )
+    }
 
 
 recentOrdersCard : Block msg

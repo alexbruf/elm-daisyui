@@ -61,6 +61,7 @@ import Chart.Events as CE
 import Chart.Item as CI
 import Chart.Svg as CS
 import Daisy.Chart as Chart exposing (ChartConfig(..), ChartData, Series)
+import Daisy.Color as Color
 import Daisy.Icon as Icon exposing (Icon)
 import Daisy.Render.Icons as Icons
 import Daisy.Schema.Accordion as SAccordion
@@ -131,6 +132,7 @@ import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
 import Daisy.Schema.Validator as SValidator
+import Daisy.Themes as Themes
 import Daisy.Tree as Tree exposing (..)
 import Date exposing (Date)
 import Html exposing (Html)
@@ -181,10 +183,13 @@ tokens =
     , tokenColSpan10Lg
     , tokenColSpan11Lg
     , tokenColSpan12Lg
+    , tokenGapDot
+    , tokenGapXs
     , tokenGapSm
     , tokenGap
     , tokenGapMd
     , tokenGapLg
+    , tokenPaddingXs
     , tokenPaddingSm
     , tokenPadding
     , tokenPaddingCard
@@ -197,6 +202,17 @@ tokens =
     , tokenJustifyCenter
     , tokenGrow
     , tokenShrink0
+    , tokenRelative
+    , tokenAbsolute
+    , tokenCursorPointer
+    , tokenOpacity0
+    , tokenSrOnly
+    , tokenChipWidth
+    , tokenChipHeight
+    , tokenTileWidth
+    , tokenTileHeight
+    , tokenDotSize
+    , tokenHFull
     , tokenMtAuto
     , tokenSelfStart
     , tokenWFull
@@ -207,6 +223,9 @@ tokens =
     , tokenOverflowHidden
     , tokenBorderBottom
     , tokenBorderRight
+    , tokenBorderTop2
+    , tokenBorderEnd2
+    , tokenBorderBox
     , tokenBorderEdge
     , tokenFixed
     , tokenInset0
@@ -237,14 +256,18 @@ tokens =
     , tokenBgError
     , tokenTextErrorContent
     , tokenShadowSm
+    , tokenRoundedMd
     , tokenRoundedLg
+    , tokenRoundedFull
     , tokenTextXs
     , tokenTextSm
     , tokenTextBase
     , tokenTextMuted
+    , tokenText2xl
     , tokenFontMedium
     , tokenFontBold
     , tokenFontSemibold
+    , tokenFontBlack
     , tokenHeading1
     , tokenHeading2
     , tokenHeading3
@@ -411,6 +434,27 @@ tokenColSpan12Lg =
     "lg:col-span-12"
 
 
+{-| 2px: the gutter between the four dots of a `MenuGlyph.MenuThemeDots` tile.
+
+An 18px tile with four 4px dots in it is daisyUI's own theme-list glyph, and at
+that size the gutter is a fraction of a step rather than a step.
+
+-}
+tokenGapDot : String
+tokenGapDot =
+    "gap-0.5"
+
+
+{-| 4px: the gap between a `Leaf.ColorChips` group's row of chips and the
+caption under it. daisyUI's generator sets the same 4px there, and the next step
+up (8px) reads as a separator rather than as a label belonging to the row above
+it.
+-}
+tokenGapXs : String
+tokenGapXs =
+    "gap-1"
+
+
 tokenGapSm : String
 tokenGapSm =
     "gap-2"
@@ -437,6 +481,14 @@ tokenGapMd =
 tokenGapLg : String
 tokenGapLg =
     "gap-8"
+
+
+{-| 4px: the frame of a `MenuGlyph.MenuThemeDots` tile, which is what turns four
+dots into a little swatch of the theme's `base-100`.
+-}
+tokenPaddingXs : String
+tokenPaddingXs =
+    "p-1"
 
 
 tokenPaddingSm : String
@@ -527,6 +579,109 @@ tokenShrink0 =
     "shrink-0"
 
 
+{-| The containing block of a `Leaf.ColorChips` chip.
+
+The chip is a painted square with a native colour input lying on top
+of it, because a colour input cannot be styled into a swatch — Chrome draws its
+own bevelled well inside it — and cannot hold the `A` glyph either. The input is
+therefore made invisible and stretched over the square, which needs the square
+to be a positioned ancestor.
+
+-}
+tokenRelative : String
+tokenRelative =
+    "relative"
+
+
+{-| The invisible colour input lying over a `Leaf.ColorChips` chip. With
+`tokenInset0` it covers exactly the painted square, so a click anywhere on the
+chip opens the browser's own picker.
+-}
+tokenAbsolute : String
+tokenAbsolute =
+    "absolute"
+
+
+{-| A pointer over a control whose element is not a button: the colour input
+over a chip, and the `<label>` of a `Leaf.RadiusTiles` step.
+-}
+tokenCursorPointer : String
+tokenCursorPointer =
+    "cursor-pointer"
+
+
+{-| Hides the colour input over a `Leaf.ColorChips` chip while leaving it
+clickable and focusable — `opacity-0`, not `hidden` and not `sr-only`: the
+element still has to receive the click that opens the picker.
+
+Not to be confused with `opacity-50`, which is on
+`tests/RenderPurityTest.elm`'s `forbidden` list: that one dims _visible_ content
+without changing its computed colour, which is a contrast failure a classifier
+cannot see. Nothing is being de-emphasised here; the element is not drawn at
+all.
+
+-}
+tokenOpacity0 : String
+tokenOpacity0 =
+    "opacity-0"
+
+
+{-| The radio behind a `Leaf.RadiusTiles` step: reachable by keyboard and
+announced by a screen reader, drawn nowhere. The visible control is the tile
+beside it, which is a picture of a corner and has no text of its own.
+-}
+tokenSrOnly : String
+tokenSrOnly =
+    "sr-only"
+
+
+{-| 44px, the width of a `Leaf.ColorChips` chip. Measured on daisyUI's own
+generator at 1440: its chips are `h-10 w-14` shrunk by a 224px rail to 44x40.
+Fixed here rather than shrunk, so the chip is the same size whatever the rail
+it sits in.
+-}
+tokenChipWidth : String
+tokenChipWidth =
+    "w-11"
+
+
+{-| 40px, the height of a `Leaf.ColorChips` chip. See `tokenChipWidth`.
+-}
+tokenChipHeight : String
+tokenChipHeight =
+    "h-10"
+
+
+{-| 32px, the width of a `Leaf.RadiusTiles` corner tile — daisyUI's own
+`h-6 w-8`.
+-}
+tokenTileWidth : String
+tokenTileWidth =
+    "w-8"
+
+
+{-| 24px, the height of a `Leaf.RadiusTiles` corner tile.
+-}
+tokenTileHeight : String
+tokenTileHeight =
+    "h-6"
+
+
+{-| 4px: one dot of a `MenuGlyph.MenuThemeDots` tile.
+-}
+tokenDotSize : String
+tokenDotSize =
+    "size-1"
+
+
+{-| Stretches the invisible colour input to its chip's height, beside
+`tokenWFull`.
+-}
+tokenHFull : String
+tokenHFull =
+    "h-full"
+
+
 {-| Pins the last child of the sidebar column to the bottom of the panel.
 -}
 tokenMtAuto : String
@@ -608,6 +763,38 @@ tokenBorderBottom =
 tokenBorderRight : String
 tokenBorderRight =
     "border-r"
+
+
+{-| The top half of a `Leaf.RadiusTiles` corner. The tile draws two sides of a
+box at the radius the step sets, which is how daisyUI's own generator shows a
+radius rather than naming it. Both sides are left at `currentColor`, so the arc
+is the button's own foreground and a marked step needs no colour utility.
+-}
+tokenBorderTop2 : String
+tokenBorderTop2 =
+    "border-t-2"
+
+
+{-| The trailing half of a `Leaf.RadiusTiles` corner. See `tokenBorderTop2`.
+-}
+tokenBorderEnd2 : String
+tokenBorderEnd2 =
+    "border-e-2"
+
+
+{-| The hairline around a `Leaf.ColorChips` chip.
+
+The one place in this renderer that draws a box on all four sides, and the
+reason `border` left `tests/RenderPurityTest.elm`'s `forbidden` list. A chip
+painted `--color-base-100` on a `card-body` that is also `--color-base-100` is
+an invisible control: the outline is what makes it a chip at all, so it is a
+correctness requirement rather than decoration. One use site,
+`colorChipHtml`, and no caller can reach it.
+
+-}
+tokenBorderBox : String
+tokenBorderBox =
+    "border"
 
 
 {-| The colour of both edges: `--color-base-300`, the third surface.
@@ -819,6 +1006,14 @@ tokenShadowSm =
     "shadow-sm"
 
 
+{-| The 6px corner of an 18px `MenuGlyph.MenuThemeDots` tile. `tokenRoundedLg`
+(8px) on an 18px square is nearly a circle.
+-}
+tokenRoundedMd : String
+tokenRoundedMd =
+    "rounded-md"
+
+
 {-| The fixed 8px corner of the small painted surfaces the renderer draws
 itself: a `stat-figure`'s tile, a `Leaf.UserChip`'s panel.
 
@@ -831,6 +1026,13 @@ to 4px before using it there; a package cannot, so the corner is a constant.
 tokenRoundedLg : String
 tokenRoundedLg =
     "rounded-lg"
+
+
+{-| A dot of a `MenuGlyph.MenuThemeDots` tile.
+-}
+tokenRoundedFull : String
+tokenRoundedFull =
+    "rounded-full"
 
 
 {-| The caption step, 12px: the second line of a `Leaf.UserChip`, a chart
@@ -878,6 +1080,20 @@ tokenTextMuted =
     "text-base-content/60"
 
 
+{-| 24px: the `A` a `Leaf.ColorChips` chip draws in its `-content` colour. The
+glyph has to be big and heavy enough to judge a colour pair by, which is what
+daisyUI's own `text-2xl font-black` is for.
+
+It holds the same string as `tokenHeading2` and is a separate constant on
+purpose: a chip's specimen letter is not a heading, and moving the `Leaf.Heading`
+type scale must not silently resize it.
+
+-}
+tokenText2xl : String
+tokenText2xl =
+    "text-2xl"
+
+
 tokenFontMedium : String
 tokenFontMedium =
     "font-medium"
@@ -886,6 +1102,13 @@ tokenFontMedium =
 tokenFontBold : String
 tokenFontBold =
     "font-bold"
+
+
+{-| The weight of a `Leaf.ColorChips` chip's `A`. See `tokenText2xl`.
+-}
+tokenFontBlack : String
+tokenFontBlack =
+    "font-black"
 
 
 tokenFontSemibold : String
@@ -1159,7 +1382,36 @@ generator page", section 3 has the compiled `elm/virtual-dom` source.
 -}
 customProperty : String -> String -> Html.Attribute msg
 customProperty name value =
-    Attr.attribute "style" (name ++ ":" ++ value)
+    inlineStyle [ declaration name value ]
+
+
+{-| A whole `style` attribute built from declarations.
+
+The plural form of `customProperty`, and the only other way inline CSS is
+written here. An element can carry one `style` attribute, so a chip that paints
+both its background and its foreground has to write them together; two
+`Attr.attribute "style"` calls would silently keep the last one.
+
+Every use is a value that cannot be a class: a colour the page is _editing_ (so
+not yet any theme's `--color-*`), or a `border-radius` chosen per option. A
+utility would need one class per possible value, which is not a finite set.
+
+-}
+inlineStyle : List String -> Html.Attribute msg
+inlineStyle declarations =
+    Attr.attribute "style" (String.join ";" declarations)
+
+
+{-| One CSS declaration, `property:value`.
+
+Its first argument is a CSS property name on its way into a `style` attribute,
+never a class; `tools/render-class-audit.js` strips a literal in this position
+for the same reason it strips one passed to `Attr.style`.
+
+-}
+declaration : String -> String -> String
+declaration property value =
+    property ++ ":" ++ value
 
 
 {-| daisyUI's `--value`, the custom property `radial-progress` and `countdown`
@@ -1168,6 +1420,15 @@ both read. It is a property name, not a class, so it is not a `tokens` entry.
 valueProperty : String
 valueProperty =
     "--value"
+
+
+{-| daisyUI's `--size`, the diameter of a `radial-progress`. There is no class
+for it — daisyUI's own dashboard templates write the property — so
+`Daisy.Tree.RadialSize` names the two steps and this writes one of them.
+-}
+sizeProperty : String
+sizeProperty =
+    "--size"
 
 
 {-| Fire `msg` when the browser asks to dismiss a `<dialog>`.
@@ -2180,7 +2441,72 @@ gridItemHtml : GridItem msg -> Html msg
 gridItemHtml item =
     Html.div
         [ classes (spanToken item.span :: cellColumnsTokens item.columns) ]
-        (List.map block item.blocks)
+        (cellChildren item.columns item.blocks)
+
+
+{-| A cell's blocks, either as themselves or dealt into columns.
+
+`CellOne` is a plain column and its blocks are its children. `CellTwo` and
+`CellThree` put each of their columns in a `flex flex-col` of its own and deal
+the blocks into them in order, which is what daisyUI's theme-generator preview
+does and what CSS multi-column would do: the cards **pack per column** instead
+of flowing row-major, so a short card leaves no hole under it and the next card
+in that column moves up.
+
+A grid of blocks cannot do that — a grid row is as tall as its tallest cell —
+and the alternative that can, `columns-3`, needs a `mb-*` utility on every
+child, which is on `tests/RenderPurityTest.elm`'s `forbidden` list and stays
+there.
+
+Below the breakpoint the outer grid is one or two tracks, so the columns stack
+or pair up; daisyUI's own preview behaves the same way, for the same reason.
+
+-}
+cellChildren : CellColumns -> List (Block msg) -> List (Html msg)
+cellChildren columns blocks =
+    case cellColumnCount columns of
+        Nothing ->
+            List.map block blocks
+
+        Just count ->
+            List.map
+                (\column -> Html.div [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ] (List.map block column))
+                (dealIntoColumns count blocks)
+
+
+cellColumnCount : CellColumns -> Maybe Int
+cellColumnCount columns =
+    case columns of
+        CellOne ->
+            Nothing
+
+        CellTwo ->
+            Just 2
+
+        CellThree ->
+            Just 3
+
+
+{-| The blocks in `count` consecutive runs, the first ones as long as they need
+to be. `19` blocks into three columns is `7 + 7 + 5`, which is exactly how
+daisyUI's own preview assigns its nineteen cards.
+-}
+dealIntoColumns : Int -> List (Block msg) -> List (List (Block msg))
+dealIntoColumns count blocks =
+    let
+        size : Int
+        size =
+            max 1 (ceiling (toFloat (List.length blocks) / toFloat count))
+
+        step : Int -> List (Block msg) -> List (List (Block msg))
+        step remaining rest =
+            if remaining <= 0 then
+                []
+
+            else
+                List.take size rest :: step (remaining - 1) (List.drop size rest)
+    in
+    step count blocks
 
 
 {-| How a cell arranges its own blocks: one fixed-gap column, or a grid of two
@@ -2896,6 +3222,23 @@ menuActiveTokens style =
             [ tokenBgGround, tokenFontMedium ]
 
 
+{-| The one glyph a menu row may carry, drawn at the same size whichever it is.
+
+`MenuThemeDots` is daisyUI's theme-list tile: the row is a _theme_, and the
+glyph paints that theme's own colours rather than the page's. It is
+`aria-hidden`, because the row's label already names the theme.
+
+-}
+menuGlyphHtml : MenuGlyph -> Html msg
+menuGlyphHtml glyph =
+    case glyph of
+        MenuIcon icon ->
+            iconHtml [] defaultIconConfig icon
+
+        MenuThemeDots theme ->
+            themeDotsHtml [] theme
+
+
 menuItemHtml : MenuActiveStyle -> MenuItem msg -> Html msg
 menuItemHtml activeStyle (MenuItem item) =
     let
@@ -2910,7 +3253,7 @@ menuItemHtml activeStyle (MenuItem item) =
                 ++ flag item.focus (SMenu.modifierToClass SMenu.Focus)
 
         body =
-            maybeHtml (iconHtml [] defaultIconConfig) item.icon
+            maybeHtml menuGlyphHtml item.glyph
                 ++ [ Html.text item.label ]
                 ++ maybeHtml (\b -> badgeHtml [] b.config b.label) item.badge
     in
@@ -3194,6 +3537,9 @@ leafWith extra theLeaf =
                 []
                 |> withTooltip config.tooltip
 
+        ColorChips groups ->
+            colorChipsHtml extra groups
+
         Countdown value ->
             Html.span
                 [ classes (SCountdown.component :: extra) ]
@@ -3337,7 +3683,10 @@ leafWith extra theLeaf =
             -- value the dial is showing.
             Html.div
                 (classes (SRadialProgress.component :: extra)
-                    :: customProperty valueProperty (String.fromFloat data.value)
+                    :: inlineStyle
+                        [ declaration valueProperty (String.fromFloat data.value)
+                        , declaration sizeProperty (Tree.radialSizeToString data.size)
+                        ]
                     :: Attr.attribute "role" "progressbar"
                     :: Attr.attribute "aria-valuenow" (String.fromFloat data.value)
                     :: ariaLabelAttrs
@@ -3363,6 +3712,9 @@ leafWith extra theLeaf =
                 )
                 []
                 |> withTooltip config.tooltip
+
+        RadiusTiles config data ->
+            radiusTilesHtml extra config data
 
         Range config data ->
             Html.input
@@ -3452,6 +3804,9 @@ leafWith extra theLeaf =
                 )
                 []
                 |> withTooltip config.tooltip
+
+        ThemeDots theme ->
+            themeDotsHtml extra theme
 
         ThemeSelect data ->
             themeSelectHtml extra data
@@ -3985,6 +4340,313 @@ swatchHtml extra config color label =
         )
         [ Html.text label ]
         |> withTooltip config.tooltip
+
+
+{-| daisyUI's "Change Colors" editor: a grid of painted squares, each opening
+the browser's own colour picker.
+
+Three things about it are not obvious.
+
+**The colour is an inline `background-color`, not a class.** A theme editor
+shows colours that are being _edited_: they are not `--color-primary` yet, so
+there is no utility that could paint them. `Leaf.Swatch` is the other case — a
+picture of a variable a theme already has — and it stays a class pair.
+
+**The picker lies on top of the square.** A colour input cannot be
+styled into a swatch (Chrome draws its own bevelled well inside whatever box it
+is given) and cannot contain the `A` glyph, so the square is a `div` and the
+input is stretched over it invisible (`tokenOpacity0`, not `hidden`: it still
+has to take the click). Its `aria-label` is the only name it has, which is why
+`ColorChip.ariaLabel` is not a `Maybe`.
+
+**Groups are packed into rows of four chips.** daisyUI lays the groups out as a
+`grid-cols-4` where each group claims one track per chip, so `base` (four chips)
+fills a row and each colour/`-content` pair takes half of one. Packing rows here
+produces the same geometry without a `col-span` per count, and without the
+`w-fit` grid's tracks widening to the largest group.
+
+-}
+colorChipsHtml : List String -> List (ColorChipGroup msg) -> Html msg
+colorChipsHtml extra groups =
+    Html.div
+        [ classes ([ tokenFlex, tokenFlexCol, tokenGap ] ++ extra) ]
+        (List.map
+            (\row -> Html.div [ classes [ tokenFlex, tokenGap ] ] (List.map colorChipGroupHtml row))
+            (packedChipRows groups)
+        )
+
+
+{-| How many chips fit across daisyUI's chip grid: four, which is `base-100`,
+`base-200`, `base-300` and `base-content`.
+-}
+chipsPerRow : Int
+chipsPerRow =
+    4
+
+
+{-| The groups, packed greedily into rows of at most `chipsPerRow` chips.
+
+Greedy and left to right, so the order the caller gave is the order that shows:
+a group never moves past one that came before it, and a group of more than four
+chips gets a row of its own rather than being split.
+
+-}
+packedChipRows : List (ColorChipGroup msg) -> List (List (ColorChipGroup msg))
+packedChipRows groups =
+    List.reverse
+        (List.foldl
+            (\group rows ->
+                case rows of
+                    row :: rest ->
+                        if chipsIn row + List.length group.chips <= chipsPerRow then
+                            (row ++ [ group ]) :: rest
+
+                        else
+                            [ group ] :: row :: rest
+
+                    [] ->
+                        [ [ group ] ]
+            )
+            []
+            groups
+        )
+
+
+chipsIn : List (ColorChipGroup msg) -> Int
+chipsIn row =
+    List.sum (List.map (List.length << .chips) row)
+
+
+colorChipGroupHtml : ColorChipGroup msg -> Html msg
+colorChipGroupHtml group =
+    Html.div
+        [ classes [ tokenFlex, tokenFlexCol, tokenGapXs ] ]
+        [ Html.div [ classes [ tokenFlex, tokenGap ] ] (List.map colorChipHtml group.chips)
+        , Html.div [ classes [ tokenTextXs, tokenTextMuted ] ] [ Html.text group.label ]
+        ]
+
+
+colorChipHtml : ColorChip msg -> Html msg
+colorChipHtml chip =
+    Html.div
+        [ classes
+            ([ tokenRelative
+             , tokenShrink0
+             , tokenChipWidth
+             , tokenChipHeight
+             , tokenBorderBox
+             , tokenBorderEdge
+             , tokenRoundedLg
+             , tokenFlex
+             , tokenItemsCenter
+             , tokenJustifyCenter
+             ]
+                ++ chipGlyphTokens chip.glyph
+            )
+        , inlineStyle
+            [ declaration "background-color" (Color.oklchToCss chip.color)
+            , declaration "color" (Color.oklchToCss chip.contentColor)
+            ]
+        ]
+        [ Html.text (chipGlyphText chip.glyph)
+        , Html.input
+            (classes
+                [ tokenAbsolute
+                , tokenInset0
+                , tokenWFull
+                , tokenHFull
+                , tokenOpacity0
+                , tokenCursorPointer
+                ]
+                :: Attr.type_ (inputTypeAttr InputColor)
+                :: Attr.value (Color.oklchToHex chip.value)
+                :: Attr.attribute "aria-label" chip.ariaLabel
+                :: onInputAttrs chip.onChange
+            )
+            []
+        ]
+
+
+{-| daisyUI's radius picker: five steps, each drawn as the corner it sets.
+
+A `join` of `btn`-sized `<label>`s over `sr-only` radios, which is a real radio
+group — exclusive by name, arrow-key navigable, announced as one control — with
+a picture instead of a word on each step. The picture is two sides of a box at
+that step's `border-radius`, written as an inline declaration because a radius
+is a value out of a five-member set and no utility spells `--radius-box`'s
+steps.
+
+Both sides are left at `currentColor`, so the arc is the button's own
+foreground: the marked step is `btn-neutral` and its corner comes out
+`--color-neutral-content` with no colour utility anywhere. `btn-neutral` and not
+`btn-active` for the reason `Demo.ThemeGenerator` gives — `.btn-active`'s
+background is a `color-mix()` the composition chose, 4.28:1 in `valentine`.
+
+-}
+radiusTilesHtml : List String -> RadiusTilesConfig msg -> RadiusTilesData -> Html msg
+radiusTilesHtml extra config data =
+    Html.div
+        [ classes (SJoin.component :: extra)
+        , Attr.attribute "role" "radiogroup"
+        , Attr.attribute "aria-label" (Maybe.withDefault data.group config.ariaLabel)
+        ]
+        (List.map (radiusTileHtml config data) Tree.allRadii)
+
+
+radiusTileHtml : RadiusTilesConfig msg -> RadiusTilesData -> Radius -> Html msg
+radiusTileHtml config data option =
+    let
+        value : String
+        value =
+            Tree.radiusToString option
+
+        current : Bool
+        current =
+            option == data.current
+    in
+    Html.label
+        [ classes
+            ([ joinItemClass
+             , SButton.component
+             , SButton.sizeToClass SButton.Sm
+             , tokenCursorPointer
+             ]
+                ++ flag current (SButton.colorToClass SButton.Neutral)
+            )
+        ]
+        [ Html.input
+            (classes [ tokenSrOnly ]
+                :: Attr.type_ "radio"
+                :: Attr.name data.group
+                :: Attr.value value
+                :: Attr.checked current
+                :: Attr.attribute "aria-label" (data.group ++ " " ++ value)
+                :: onRadiusAttrs config.onSelect option
+            )
+            []
+        , Html.div
+            [ classes
+                [ tokenTileWidth
+                , tokenTileHeight
+                , tokenBorderTop2
+                , tokenBorderEnd2
+                ]
+            , inlineStyle [ declaration "border-start-end-radius" value ]
+            , Attr.attribute "aria-hidden" "true"
+            ]
+            []
+        ]
+
+
+{-| The type step a chip's glyph is drawn at: body size for a caption, and
+daisyUI's `text-2xl font-black` for the `A` specimen, which is meant to be
+judged rather than read.
+-}
+chipGlyphTokens : ChipGlyph -> List String
+chipGlyphTokens glyph =
+    case glyph of
+        ChipBlank ->
+            []
+
+        ChipLabel _ ->
+            [ tokenTextBase ]
+
+        ChipSpecimen ->
+            [ tokenText2xl, tokenFontBlack ]
+
+
+chipGlyphText : ChipGlyph -> String
+chipGlyphText glyph =
+    case glyph of
+        ChipBlank ->
+            ""
+
+        ChipLabel text ->
+            text
+
+        ChipSpecimen ->
+            chipSpecimenLetter
+
+
+{-| daisyUI's own specimen letter. One letter, always the same one, so the eye
+compares chips rather than reading them.
+-}
+chipSpecimenLetter : String
+chipSpecimenLetter =
+    "A"
+
+
+onRadiusAttrs : Maybe (Radius -> msg) -> Radius -> List (Html.Attribute msg)
+onRadiusAttrs maybe option =
+    case maybe of
+        Just f ->
+            [ Ev.onCheck (\_ -> f option) ]
+
+        Nothing ->
+            []
+
+
+{-| daisyUI's theme glyph: four of a theme's own colours as dots on a tile of
+its `base-100`.
+
+The tile is a picture of a theme, so every colour in it is that theme's, not the
+page's — which means none of them can be a class: `bg-primary` on this page is
+the theme being _edited_, and the row is showing `nord`. The four values are
+read out of `Daisy.Themes` (or straight off a `Theme.Custom`) and written
+inline, which is the same reason `Daisy.Tree.customThemeStyle` exists.
+
+daisyUI's own order is `base-content`, `primary`, `secondary`, `accent` — the
+text colour first, because that is the one that says whether a theme is light
+or dark before any of the others.
+
+-}
+themeDotsHtml : List String -> Theme -> Html msg
+themeDotsHtml extra theme =
+    let
+        colors : Tree.ThemeColors
+        colors =
+            (themeAsCustom theme).colors
+    in
+    Html.div
+        [ classes
+            ([ tokenGrid
+             , tokenGridCols2
+             , tokenGapDot
+             , tokenRoundedMd
+             , tokenPaddingXs
+             , tokenShadowSm
+             , tokenShrink0
+             ]
+                ++ extra
+            )
+        , inlineStyle [ declaration "background-color" (Color.oklchToCss colors.base100) ]
+        , Attr.attribute "aria-hidden" "true"
+        ]
+        (List.map themeDotHtml
+            [ colors.baseContent, colors.primary, colors.secondary, colors.accent ]
+        )
+
+
+themeDotHtml : Color.Oklch -> Html msg
+themeDotHtml value =
+    Html.div
+        [ classes [ tokenDotSize, tokenRoundedFull ]
+        , inlineStyle [ declaration "background-color" (Color.oklchToCss value) ]
+        ]
+        []
+
+
+{-| The declarations behind any `Theme`, built-in or not. `Daisy.Themes` is the
+generated table of the thirty-five, and a `Theme.Custom` already is one.
+-}
+themeAsCustom : Theme -> CustomTheme
+themeAsCustom theme =
+    case theme of
+        Custom custom ->
+            custom
+
+        _ ->
+            Maybe.withDefault Themes.light (Themes.builtinToCustom theme)
 
 
 {-| The `( background, foreground )` token pair of every `SwatchColor`. This is

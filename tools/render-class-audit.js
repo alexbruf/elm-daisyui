@@ -27,6 +27,9 @@
 //
 // "Free" means: what is left of a line after removing `Html.text "..."`,
 // `Attr.<fn> "..."`, `Attr.attribute "..." "..."`, `Attr.style "..." "..."`,
+// `declaration "..."` (a CSS *property* name on its way into a `style`
+// attribute - `Daisy.Render.declaration` is the only thing that builds one, and
+// its first argument is never a class),
 // `SvgA.<fn> "..."`, `Html.node "..."` / `Svg.node "..."` / `Keyed.node "..."` (a tag name),
 // `Decode.<fn> "..."` (a JSON field name) and `String.join " "` arguments, i.e.
 // literals that are not being handed to the DOM as an attribute value or as
@@ -117,6 +120,7 @@ function stripAttributeContexts(line) {
   return line
     .replace(/Attr\.attribute\s+"(?:[^"\\]|\\.)*"\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/Attr\.style\s+"(?:[^"\\]|\\.)*"\s+"(?:[^"\\]|\\.)*"/g, "")
+    .replace(/\bdeclaration\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/(?:Attr|SvgA|Ev|Decode)\.[A-Za-z0-9_]+\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/(?:Html|Svg|Keyed)\.node\s+"(?:[^"\\]|\\.)*"/g, "")
     .replace(/Html\.text\s+"(?:[^"\\]|\\.)*"/g, "")

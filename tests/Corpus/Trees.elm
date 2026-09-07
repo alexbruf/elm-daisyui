@@ -977,7 +977,7 @@ menuEntries =
                     (MenuItem
                         { label = "Title"
                         , href = Nothing
-                        , icon = Nothing
+                        , glyph = Nothing
                         , badge = Nothing
                         , active = False
                         , disabled = False
@@ -998,7 +998,7 @@ menuEntries =
                         (toFlag
                             { label = "Item 2"
                             , href = Nothing
-                            , icon = Nothing
+                            , glyph = Nothing
                             , badge = Nothing
                             , active = False
                             , disabled = False
@@ -1017,7 +1017,7 @@ menuEntries =
                     [ MenuItem
                         { label = "Parent"
                         , href = Nothing
-                        , icon = Nothing
+                        , glyph = Nothing
                         , badge = Nothing
                         , active = False
                         , disabled = False
@@ -1047,7 +1047,7 @@ menuEntries =
                         MenuItem
                             { label = "Inbox"
                             , href = Nothing
-                            , icon = Nothing
+                            , glyph = Nothing
                             , badge =
                                 Just
                                     { config = { bdg | color = color, size = Just SBadge.Xs }
@@ -1752,7 +1752,7 @@ megamenuEntries =
             MenuItem
                 { label = "Title"
                 , href = Nothing
-                , icon = Nothing
+                , glyph = Nothing
                 , badge = Nothing
                 , active = False
                 , disabled = False
@@ -1859,7 +1859,7 @@ leafEntries =
             leaf (Progress { defaultProgressConfig | color = color } { value = Just 40, max = 100 })
 
         radial =
-            leaf (RadialProgress { value = 70, label = "70%", ariaLabel = Nothing })
+            leaf (RadialProgress { value = 70, label = "70%", size = RadialDefault, ariaLabel = Nothing })
 
         range config =
             leaf (Range config { min = 0, max = 100, value = 40 })

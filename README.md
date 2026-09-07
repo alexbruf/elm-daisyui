@@ -197,9 +197,17 @@ Button
     ""
 ```
 
-The icon fields are all `Maybe` with a `Nothing` default: `MenuItem.icon` (a sidebar glyph),
-`ButtonConfig.icon` and `Cta.icon` (a leading glyph), and `StatItem.figure`, which takes any `Leaf`
-and therefore takes `Leaf.Icon` as it stands.
+The icon fields are all `Maybe` with a `Nothing` default: `ButtonConfig.icon` and `Cta.icon`
+(a leading glyph), and `StatItem.figure`, which takes any `Leaf` and therefore takes `Leaf.Icon` as
+it stands. A menu row's leading glyph is `MenuItem.glyph : Maybe MenuGlyph`, a closed pair — an
+icon, or the four-colour tile of a theme:
+
+```elm
+MenuItem { base | glyph = Just (MenuIcon Icon.Home) }
+
+-- a theme-picker row, painted from that theme's own colours
+MenuItem { base | glyph = Just (MenuThemeDots Nord) }
+```
 
 Import `Daisy.Icon` **qualified**. Three of its constructors (`Calendar`, `Menu`, `Check`) also name
 a `Daisy.Tree` constructor, so `exposing (..)` on both at once is ambiguous.

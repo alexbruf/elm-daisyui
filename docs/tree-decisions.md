@@ -1947,7 +1947,7 @@ nineteen, in their order, flowing row-major through a `CellThree` cell.
 | 6 | Search + `Find` | `Join [JoinInput, JoinButton]` |
 | 7 | `Create new account` | `CardForm` of every control a theme reshapes — input, password, select, textarea, file input, two toggles, a radio, a checkbox — plus `Register` and `Or login` |
 | 8 | Sales volume: bar chart, sentence, `Charts`/`Details` | `CardChart (Bar { rounded = True })` + `CardLeaf` + `card-actions` |
-| 9 | `Page Score`: radial dial beside a `stat` | The dial is a `CardLeaf` **above** the `stat`, not its `stat-figure`: a 5rem dial plus its tile is a 96px grid column, and `.stat-title`/`-value`/`-desc` are all `white-space: nowrap`, so 96px of figure beside 170px of text turns a 218px `.stats` into a scrollable region — and a scrollable region is a tab stop of its own |
+| 9 | `Page Score`: radial dial beside a `stat` | `StatItem.figure = RadialProgress { size = RadialCompact }`, which is where daisyUI puts it. It took a pass to get there: a 5rem dial plus its tile is a 96px grid column, and `.stat-title`/`-value`/`-desc` are all `white-space: nowrap`, so 96px of figure beside 170px of text turned a 218px `.stats` into a scrollable region — and a scrollable region is a tab stop of its own. `RadialSize` closed that (section 13); a 3rem dial in its tile is 64px beside 85px of `stat-value` |
 | 10 | Recent orders | `CardList` of five rows, each a glyph, a growing name and a soft status badge |
 | 11 | September Revenue | `CardStat` with a delta badge |
 | 12 | `Write a new post` | `Join` of `B`/`I`/`U`, a `Textarea`, a character count, `Draft`/`Publish` |
@@ -1965,13 +1965,17 @@ nineteen, in their order, flowing row-major through a `CellThree` cell.
 dock. And their `Preview` card's tag chips sit under its header; ours are in
 `card-actions` at the foot of the same card, for the reason in the table.
 
-**One arrangement difference.** Their three columns are three independent
-`flex flex-col` stacks, so the cards pack per column (a masonry). Ours is one
-grid, so the cards flow row-major and a short card leaves space under it. The
-set, the order and the sizes are theirs; the packing is not, and closing that
-would need either CSS multi-column (whose children need a `mb-*` utility —
-`mb-4` is on `RenderPurityTest`'s `forbidden` list, and rightly) or three cells
-of the band, which twelve tracks cannot divide into `2 + 3 + 3 * n`.
+**The arrangement difference is closed.** It used to read: their three columns
+are three independent `flex flex-col` stacks, so the cards pack per column (a
+masonry), while ours was one grid, so the cards flowed row-major and a short
+card left space under it. `CellColumns` now renders as daisyUI's own structure —
+`Daisy.Render.cellChildren` deals the cell's blocks into two or three
+`flex flex-col` columns inside the responsive grid — so the packing is theirs
+too. Nineteen blocks into three columns is `7 + 7 + 5`, which is exactly how
+daisyUI assigns its own nineteen cards. It took the `/theme` page from 3149px
+tall to 2251px. CSS multi-column was still refused, for the reason it always
+was: its children need a `mb-*` utility, and `mb-4` is on `RenderPurityTest`'s
+`forbidden` list.
 
 ### 11. Two Admin measurements, and three more renderer changes
 
@@ -2017,3 +2021,272 @@ of the band, which twelve tracks cannot divide into `2 + 3 + 3 * n`.
 | `GridItem.columns : CellColumns` (`CellOne \| CellTwo \| CellThree`), `spanGrid` | Their preview is a grid **inside** the region beside the editor. This is that, as a property of the cell rather than a nesting level: the children are still blocks, and a block still never contains a block. `CellOne` is what every cell was, so nothing existing changed. |
 | `CardChild.CardList` | Half of their preview cards are a list of rows in a panel, and a `card-body` is a column that cannot hold a `Block`. Same reason `CardTable`, `CardChat` and `CardStat` exist. |
 | `BadgeConfig.icon` | See section 11. |
+
+
+## The generator's editor column (2026-09-07)
+
+The verdict on the previous pass was that `/theme`'s editor rail still read as a
+form beside daisyUI's, not as daisyUI's. Four things were wrong, and closing
+them added three leaves, one closed glyph type on `MenuItem`, one size on
+`radial-progress`, and twenty-two tokens. Measurements below are daisyUI's own
+generator at 1440, read out of the live page.
+
+### 1. Colour chips: `Leaf.ColorChips`
+
+daisyUI's chip is a 44x40 `rounded-lg` button painted in the colour it edits,
+with a bold `A` on it in the paired `-content` colour:
+
+```html
+<button class="border-base-content/10 grid h-10 w-14 rounded-lg border-1 …
+        aria-label="Choose --color-primary-content: oklch(93% 0.034 272.788)"
+        style="color: oklch(0.93 …); background-color: oklch(0.45 …)">A</button>
+```
+
+Ours was twenty `input input-sm` colour fields, four to a `join`, in five
+cards. What replaced it is one leaf:
+
+```elm
+| ColorChips (List (ColorChipGroup msg))
+
+type alias ColorChipGroup msg = { label : String, chips : List (ColorChip msg) }
+
+type alias ColorChip msg =
+    { color : Oklch, contentColor : Oklch, value : Oklch
+    , glyph : ChipGlyph, ariaLabel : String, onChange : Maybe (String -> msg) }
+
+type ChipGlyph = ChipBlank | ChipLabel String | ChipSpecimen
+```
+
+Five decisions in that.
+
+- **The colours are values, not classes.** `Leaf.Swatch` shows a colour a theme
+  *has*, so `bg-primary` is exactly right for it. A generator shows a colour
+  that is being *edited*: it is not `--color-primary` yet, and there is no
+  utility that could paint it. The chip is therefore an inline
+  `background-color` / `color` pair written from `Daisy.Color.oklchToCss` — the
+  same `oklch()` string the root carries, deliberately, so
+  `e2e/contrast.spec.ts` and `e2e/a11y.spec.ts` recognise the painted bytes as
+  daisyUI's own `--color-X` / `--color-X-content` pair with no change to either
+  classifier. A hex would have gamut-mapped differently and defeated that.
+- **Three colours, not two.** A pair of chips shows *one* pair of colours twice:
+  daisyUI's `primary` chip and its `primary-content` chip are both a `primary`
+  square with a `primary-content` `A` on it, and which of the two a click edits
+  is the only difference between them. `value` is that third field; without it
+  "the square that edits the letter" is unrepresentable, and the picker on the
+  `-content` chip would open on the wrong colour.
+- **The picker lies on top.** `<input type="color">` cannot be styled into a
+  swatch — Chrome draws its own bevelled well inside whatever box it is given —
+  and cannot contain the glyph. The square is a `div`, the input is
+  `absolute inset-0 w-full h-full opacity-0 cursor-pointer` over it, and its
+  `aria-label` is the `--color-*` name. `opacity-0` and not `hidden`: it still
+  has to take the click. `ChipGlyph` is closed because daisyUI draws two
+  different things at two different type sizes there — `100`/`200`/`300` at the
+  body step, and the `A` at `text-2xl font-black`.
+- **One leaf for the whole editor, not one per chip.** The layout is a grid of
+  *groups*, and a `card-body` is a column that cannot arrange leaves in rows.
+  `Daisy.Render.packedChipRows` deals the groups into rows of at most four
+  chips, which reproduces daisyUI's `grid-cols-4` with a `col-span` per chip
+  count — `base` (four chips) fills a row, each colour/`-content` pair takes
+  half of one — without four `col-span-*` tokens, and without a `w-fit` grid's
+  tracks widening to the largest group.
+- **The chips are a fixed 44x40, not shrunk.** daisyUI's are `h-10 w-14` (40x56)
+  squeezed to 44x40 by a 224px rail. Ours are `h-10 w-11` and `shrink-0`, so the
+  chip is 44x40 whatever the rail is: the row is 4 x 44 + 3 x 16 = **224px**, the
+  same number, in a 296px card body.
+
+`e2e/theme-generator.spec.ts` gained an assertion that the square under the
+`primary` picker really computes to `oklch(0.62 0.265 303.9)` — the check that
+would catch the paint falling back to a class.
+
+### 2. Theme-list dots: `MenuGlyph`
+
+daisyUI's theme list draws a tile per row — the theme's `base-100` with four
+4px dots of its `base-content`, `primary`, `secondary` and `accent`:
+
+```html
+<div class="grid grid-cols-2 gap-0.5 rounded-md p-1 shadow-sm"
+     style="background-color: oklch(100% 0 0)">
+  <div class="size-1 rounded-full" style="background-color: oklch(21% …)"></div> …
+```
+
+(The task sheet said "primary, secondary, accent, neutral"; the live DOM says
+`base-content` first and no `neutral`, and the DOM is what was copied.)
+
+The glyph is `MenuItem`'s, so `icon : Maybe Icon` became
+
+```elm
+type MenuGlyph = MenuIcon Icon | MenuThemeDots Theme
+```
+
+with `glyph : Maybe MenuGlyph`. A **closed pair, not a second field**: a row has
+one leading glyph, and `icon = Just …, dots = Just …` would be a contradiction
+the type allowed. `Leaf.ThemeDots Theme` exists as well, for the tile outside a
+menu — the `Palette` card leads with the edited theme's own — and both go
+through one `themeDotsHtml`.
+
+`Daisy.Render` imports `Daisy.Themes` for this, its first dependency on the
+generated theme table. It has to: `Theme` is a *name*, and the row is showing
+the four colours behind somebody else's name. Every one of them is inline for
+the same reason as the chips, one step sharper — `bg-primary` on that tile would
+paint the theme being edited, not the theme the row is offering.
+
+"Hold to add theme" is not reproduced. daisyUI's saves into `localStorage`,
+which is a `Cmd` and a port; `My themes` keeps `acme` and the editor edits it in
+place.
+
+### 3. Radius tiles: `Leaf.RadiusTiles`
+
+daisyUI draws each radius step as the corner it sets: a `h-6 w-8` box with only
+its top and inline-end borders, at `border-start-end-radius: <step>`. Ours
+were five buttons reading `0`, `0.25`, `0.5`, `1`, `2`.
+
+```elm
+| RadiusTiles (RadiusTilesConfig msg) RadiusTilesData
+```
+
+with `RadiusTilesData = { group : String, current : Radius }` and the five
+options always `allRadii`. It is **one leaf and not five**, for the reason
+`Leaf.Filter` is one leaf: a radio group is one control, and five loose radios
+could not be made exclusive by the type. It renders as a `join` of `btn btn-sm`
+`<label>`s over `sr-only` radios — a real `role="radiogroup"`, arrow-key
+navigable, each step named `"<group> <length>"` so `2rem` in `Boxes` and `2rem`
+in `Fields` are two different controls.
+
+The tile's two borders are left at `currentColor`. That is the whole reason the
+control needs no colour token: the marked step is `btn-neutral`, so its corner
+comes out `--color-neutral-content`, and an unmarked one comes out
+`--color-base-content`. `btn-neutral` and not `btn-active` for the reason the
+previous pass recorded — `.btn-active`'s background is a `color-mix()` the
+composition chose, 4.28:1 in `valentine`.
+
+The radius itself is an inline declaration. A `border-radius` out of a
+five-member set is a *value*; a utility would need one class per possible
+length, which is not a finite set. `Daisy.Render.inlineStyle` /
+`declaration` are the generalisation of `customProperty` that this and the
+chips needed — an element carries one `style` attribute, so a chip that paints
+both its background and its foreground has to write them together.
+
+### 4. Preview geometry, and the numbers that did not close
+
+| Measurement | daisyUI | ours | note |
+| --- | --- | --- | --- |
+| Preview grid | `grid gap-6 xl:grid-cols-3` of three `flex flex-col gap-4` columns, 879px | one `GridItem` `CellThree`, 805.3px | |
+| Card width | **277px** | **257.8px** | **-19.2px (-6.9%)**. See below |
+| Column gap | 24px between columns, 16px within one | 16px both | 24px would cost another 5.4px of card width |
+| Card packing | per column (masonry) | per column | closed this pass, section 5 |
+| Product figure | 259 x 152.9 | 257.8 x 152.5 | the placeholder's aspect went 2:1 -> 1.7:1 |
+| `radial-progress` | 48px (`--size: 3rem`) | 48px | `RadialSize.RadialCompact` |
+| Terminal | 277 x 128 | 257.8 x 128 | |
+| `Preview` card | 277 x 258 | 257.8 x 308 | +50px: see below |
+| `Page Score` card | 277 x 118 | 257.8 x 160 | +42px: the `stat-figure` tile and this package's `stat` type scale |
+
+**Why the cards are 19px narrow, exactly.** To draw 277px cards in three
+columns the preview cell needs `3 x 277 + 2 x 16 = 863px`. The band is the page's
+1392px content column in twelve tracks with 16px gutters, so a track is 101.33px
+and a cell of *N* tracks is `101.33N + 16(N-1)`: **Span7 = 805.3px** and
+**Span8 = 922.7px**. 863 is between them, so no split gives 277.
+
+Span8 would give 291.6px (+14.6, closer in the absolute) — but it leaves four
+tracks, 453.3px, for two rails that need more than that:
+
+- the theme list needs ~112px of row (18px tile + 12px gap + `caramellatte` at
+  the `menu-xs` step + padding), so **Span2 = 218.7px** is its floor;
+- the editor needs the 224px chip grid *and* the 280px radius row (5 x (32px
+  tile + 2 x 12px `btn-sm` padding)) inside a `p-5` card body, so
+  **Span3 = 336px** (296px inner) is its floor. Span2 would be 178.7px inner.
+
+218.7 + 336 + two 16px gutters is 586.7px, which leaves exactly Span7. So
+Span2 / Span3 / Span7 is not a preference, it is the only split the twelve
+tracks allow, and −19.2px is the closest this band reaches. Widening it would
+mean changing `<main>`'s 24px gutter, which is every other demo's too.
+
+**Why the `Preview` card is 50px tall.** Its four rows are a `CardList`, and
+`.list .list-row`'s padding is a hard-coded `1rem` in daisyUI's own
+`list.css` — no variable, no size class — so a row with a `checkbox-sm` in it
+is 52px. daisyUI's own preview does not use the `list` component there: its
+rows are `flex items-center justify-between py-2` with a dashed rule, 37px.
+Matching that would mean the renderer overriding a daisyUI component's padding
+with a token, which is a thing it does exactly once already (`stat`, for a
+documented measurement) and which is not worth a second exception for a preview
+card. Four rows x 15px is the 50px.
+
+### 5. `CellColumns` renders as columns, not as a grid
+
+`GridItem.columns` used to put the cell's blocks straight into a
+`grid … xl:grid-cols-3 items-start`. It now deals them into two or three
+`flex flex-col gap-4` columns inside that same responsive grid, which is
+daisyUI's own structure and gives the per-column packing §10 recorded as the one
+arrangement difference. `Daisy.Render.dealIntoColumns` takes consecutive runs of
+`ceil(n / count)` — nineteen into three is `7 + 7 + 5`, exactly daisyUI's own
+assignment, and exactly the three groups `Demo.ThemeGenerator.previewCards`
+already listed in its comments. Below the breakpoint the outer grid is one or
+two tracks and the columns stack or pair up; daisyUI's behaves the same way.
+
+`/theme` went from 3149px to 2251px tall. The three other demos do not use
+`CellTwo`/`CellThree`, so none of their baselines moved.
+
+### 6. `RadialSize`
+
+`radial-progress` is sized by a `--size` custom property and daisyUI ships no
+class for it, so `RadialProgressData` gained a closed pair rather than a length:
+`RadialDefault` is daisyUI's stock 5rem and `RadialCompact` is the 3rem its
+dashboard templates use when the dial sits *beside* a number. That is what let
+the `Page Score` dial go back into its `stat-figure`, where daisyUI puts it: at
+3rem the figure column is 64px, against 85px of `stat-value` in the 178px a
+`stat` has inside a 258px card, so `.stats` is no longer wider than its cell and
+`e2e/keyboard.spec.ts` no longer sees a scrollable region.
+
+### 7. `Daisy.Render.tokens`: 100 -> 122, and one entry left `forbidden`
+
+| Tokens | Job |
+| --- | --- |
+| `relative`, `absolute`, `inset-0`(existing), `opacity-0`, `cursor-pointer`, `w-full`(existing), `h-full` | The colour picker lying over a chip. |
+| `w-11`, `h-10` | The chip, at daisyUI's rendered 44x40. |
+| `text-2xl`, `font-black` | Its `A` specimen. `text-2xl` holds the same string as `tokenHeading2` and is a separate constant on purpose: a specimen letter is not a heading, and moving the `Leaf.Heading` scale must not resize it. |
+| `gap-1` | Between a chip group's row and its caption. |
+| `border` | The chip's hairline — the one entry that left `forbidden`, below. |
+| `sr-only`, `w-8`, `h-6`, `border-t-2`, `border-e-2` | A `Leaf.RadiusTiles` step: the hidden radio and the two-sided corner. |
+| `grid-cols-2`(existing), `gap-0.5`, `p-1`, `rounded-md`, `shadow-sm`(existing), `size-1`, `rounded-full` | The four-dot theme tile. |
+
+`border` **left** `forbidden`, and it is the fifth entry ever to. That entry
+exists to prevent "a box drawn around an arbitrary element", which is a
+decoration a renderer sprinkles. A colour chip's outline is not one: a chip
+painted `--color-base-100` sits on a `card-body` that is also
+`--color-base-100`, so without it the control is not visible at all. It is the
+same argument `border-b` / `border-r` already carry as `DashboardShell.edges`,
+one step further round the box — one use site (`colorChipHtml`), the existing
+`tokenBorderEdge` for its colour, and no caller can reach either, because
+`Leaf.ColorChips` takes colours and labels and never a class. daisyUI's own
+generator draws the same hairline on the same chip. `forbidden` is 20 entries.
+
+### 8. Two tools extended, mechanically
+
+- **`tools/render-class-audit.js`** strips a literal in `declaration "…"`
+  position, exactly as it already strips one in `Attr.style "…" "…"` position:
+  the first argument of `Daisy.Render.declaration` is a CSS *property* name on
+  its way into a `style` attribute, and property names are class-shaped
+  (`background-color`). Nothing else about the rule changed.
+- **`e2e/lib/browser.ts`'s `collectFocusables`** no longer treats `opacity: 0`
+  as hidden. It is the only one of that file's helpers that must not: a
+  transparent element is still laid out, still hit-tested and still in the tab
+  order, so the browser tabs to it whether the expected list contains it or not,
+  and a list that omitted the twenty colour pickers was asserting a tab order
+  the page does not have. The paint-facing helpers (`collectContrast`) keep the
+  rule. Everything genuinely hidden on these pages is hidden with `display`,
+  `visibility` (daisyUI's closed `drawer-side`), `aria-hidden` or `inert`.
+
+Neither `e2e/a11y.spec.ts` nor `e2e/contrast.spec.ts` needed a change. Both
+already decide "daisyUI's own colour pair" in the browser, on painted sRGB
+bytes, against the root's `--color-*` values — so an inline-painted chip is
+classified exactly like a class-painted one, which is why the chips are written
+with `oklch()` rather than hex.
+
+### 9. What the e2e suite gained
+
+`e2e/theme-generator.spec.ts`'s colour test now also asserts the chip's painted
+background, and its shape test drives the radius control as what it now is: a
+radio group whose visible control is the `<label>` around an `sr-only` radio,
+whose tile computes to `border-start-end-radius: 32px` at the `2rem` step, and
+exactly one of whose five steps carries `btn-neutral`. All 36 `/theme`
+screenshot baselines were regenerated (`e2e/snapshots/local/theme-*.png`); the
+other 108 are byte-identical.

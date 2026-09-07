@@ -70,6 +70,7 @@ import Daisy.Schema.Timeline as STimeline
 import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
+import Daisy.Themes as Themes
 import Daisy.Tree as Tree exposing (..)
 import Date
 import Html exposing (Html)
@@ -88,6 +89,7 @@ type Msg
     | CalendarChanged CalendarMsg
     | Picked CalendarValue
     | Hovered (Maybe Int)
+    | RadiusPicked Radius
 
 
 {-| The fixtures, in named chunks. Chunking keeps each rendered tree small
@@ -177,6 +179,7 @@ leaves =
         ++ buttonLeaves
         ++ calendarLeaves
         ++ checkboxLeaves
+        ++ colorChipLeaves
         ++ dividerLeaves
         ++ fileInputLeaves
         ++ iconLeaves
@@ -190,6 +193,7 @@ leaves =
         ++ otpLeaves
         ++ progressLeaves
         ++ radioLeaves
+        ++ radiusTileLeaves
         ++ rangeLeaves
         ++ ratingLeaves
         ++ selectLeaves
@@ -208,7 +212,8 @@ plainLeaves : List (Leaf Msg)
 plainLeaves =
     [ Countdown 12
     , HoverGallery [ "a.png", "b.png" ]
-    , RadialProgress { value = 70, label = "70%", ariaLabel = Just "Disk used" }
+    , RadialProgress { value = 70, label = "70%", size = RadialDefault, ariaLabel = Just "Disk used" }
+    , RadialProgress { value = 30, label = "30%", size = RadialCompact, ariaLabel = Just "Page score" }
     , Text "plain text"
     , TextRotate [ "one", "two" ]
     , Filter
@@ -563,6 +568,85 @@ swatchLeaves =
            ]
 
 
+{-| daisyUI's colour-chip editor, with a four-chip group and a pair — the two
+row widths `Daisy.Render.packedChipRows` has to produce — and one chip with no
+handler, so the branch that renders a read-only chip is walked too.
+
+Every colour here is a literal `Oklch`, not a theme's: that is the whole point
+of `Leaf.ColorChips`, which paints values a theme does not have yet.
+
+-}
+colorChipLeaves : List (Leaf Msg)
+colorChipLeaves =
+    let
+        chip : ChipGlyph -> String -> Oklch -> Oklch -> ColorChip Msg
+        chip glyph label color contentColor =
+            { color = color
+            , contentColor = contentColor
+            , value = color
+            , glyph = glyph
+            , ariaLabel = label
+            , onChange = Just Typed
+            }
+
+        ink : Oklch
+        ink =
+            { l = 21, c = 0.006, h = 285.885 }
+
+        paper : Oklch
+        paper =
+            { l = 100, c = 0, h = 0 }
+
+        violet : Oklch
+        violet =
+            { l = 45, c = 0.24, h = 277.023 }
+    in
+    [ ColorChips
+        [ { label = "base"
+          , chips =
+                [ chip (ChipLabel "100") "base-100" paper ink
+                , chip (ChipLabel "200") "base-200" { paper | l = 98 } ink
+                , chip (ChipLabel "300") "base-300" { paper | l = 95 } ink
+                , chip ChipSpecimen "base-content" { paper | l = 95 } ink
+                ]
+          }
+        , { label = "primary"
+          , chips =
+                [ chip ChipBlank "primary" violet paper
+                , chip ChipSpecimen "primary-content" violet paper
+                ]
+          }
+        , { label = "secondary"
+          , chips =
+                [ { color = violet
+                  , contentColor = paper
+                  , value = paper
+                  , glyph = ChipBlank
+                  , ariaLabel = "secondary"
+                  , onChange = Nothing
+                  }
+                ]
+          }
+        ]
+    ]
+
+
+{-| One radius group per step, so every `Radius` is both the marked option and
+an unmarked one, and one with an accessible name of its own.
+-}
+radiusTileLeaves : List (Leaf Msg)
+radiusTileLeaves =
+    List.map
+        (\r -> RadiusTiles defaultRadiusTilesConfig { group = "Boxes", current = r })
+        allRadii
+        ++ [ RadiusTiles
+                { ariaLabel = Just "Corner radius of boxes"
+                , onSelect = Just RadiusPicked
+                }
+                { group = "Boxes", current = RadiusLg }
+           ]
+
+
 swapLeaves : List (Leaf Msg)
 swapLeaves =
     List.map (\v -> Swap { defaultSwapConfig | style = Just v } swapFaces) SSwap.allStyles
@@ -601,6 +685,12 @@ themeLeaves =
         , ThemeAsDropdown
         , ThemeAsIconDropdown
         ]
+        -- `Leaf.ThemeDots` paints a theme's own four colours inline: a built-in,
+        -- which `Daisy.Render` reads out of the generated `Daisy.Themes`, and a
+        -- `Theme.Custom`, which already carries them.
+        ++ [ ThemeDots Nord
+           , ThemeDots (Custom Themes.nord)
+           ]
 
 
 toggleLeaves : List (Leaf Msg)
@@ -878,7 +968,7 @@ menuItems =
     [ MenuItem
         { label = "Section"
         , href = Nothing
-        , icon = Nothing
+        , glyph = Nothing
         , badge = Nothing
         , active = False
         , disabled = False
@@ -890,7 +980,7 @@ menuItems =
     , MenuItem
         { label = "Dashboard"
         , href = Nothing
-        , icon = Just DIcon.Home
+        , glyph = Just (MenuIcon DIcon.Home)
         , badge = Just { config = defaultBadgeConfig, label = "2" }
         , active = True
         , disabled = True
@@ -902,7 +992,7 @@ menuItems =
     , MenuItem
         { label = "More"
         , href = Nothing
-        , icon = Nothing
+        , glyph = Nothing
         , badge = Nothing
         , active = False
         , disabled = False

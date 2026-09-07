@@ -127,14 +127,21 @@ test("changing the primary colour repaints the root, the CTA and the export", as
   );
   expect(before).toBe("oklch(62% 0.265 303.9)");
 
-  // The colour chips are a wrapping grid inside `card-actions` (a `card-body`
-  // is a column, so a `Field` per colour would be a twenty-row form), and each
-  // native picker is named by the CSS variable it edits — `ariaLabel`, with the
-  // same string as its tooltip. A colour input cannot be typed into, and
-  // `fill()` refuses it, so the value is set the way the picker would and the
-  // `input` event is dispatched — which is the event `Daisy.Render` listens for.
+  // The colour chips are one `Leaf.ColorChips`: painted 44x40 squares laid out
+  // in daisyUI's own rows, each with a native `type="color"` picker lying over
+  // it invisible. The picker's `aria-label` is the `--color-*` variable it
+  // edits, which is the only name it has. A colour input cannot be typed into,
+  // and `fill()` refuses it, so the value is set the way the picker would and
+  // the `input` event is dispatched — which is the event `Daisy.Render` listens
+  // for.
   const primaryInput = page.getByLabel("primary", { exact: true });
   await expect(primaryInput).toHaveAttribute("type", "color");
+  // The square under it is painted from the theme, not by a class: a colour
+  // being edited is not `--color-primary` yet, so no utility could paint it.
+  const chip = primaryInput.locator("xpath=..");
+  await expect
+    .poll(() => chip.evaluate((el) => getComputedStyle(el).backgroundColor))
+    .toBe("oklch(0.62 0.265 303.9)");
   await primaryInput.evaluate((el: HTMLInputElement) => {
     el.value = "#ff0000";
     el.dispatchEvent(new Event("input", { bubbles: true }));
@@ -170,14 +177,18 @@ test("the shape controls reach daisyUI's own measurements", async ({ page }) => 
   await open(page, "/theme", CUSTOM);
   const root = page.locator("[data-theme]").first();
 
-  // The six length controls are `join`s of `btn-xs` buttons with the current
-  // step `btn-active`, not `<select>`s — the shape daisyUI's own generator
-  // uses, and the one that shows how many steps there are and which is current
-  // without being opened. Each button's visible text is the value without its
-  // unit (`0.25`), because six five-step rows have to fit a 355px rail; its
-  // accessible name is the whole length prefixed by the group, which is what
-  // keeps `2rem` in one control distinguishable from `2rem` in the next.
-  await page.getByRole("button", { name: "Boxes 2rem" }).click();
+  // The three radius controls are `Leaf.RadiusTiles`: a real radio group whose
+  // five steps are *drawn* as the corner each one sets, which is what daisyUI's
+  // own generator shows. The step's accessible name is the length prefixed by
+  // the group, which is what keeps `2rem` in one control distinguishable from
+  // `2rem` in the next; the visible content is a picture, not a word.
+  // The radio itself is `sr-only` — the visible control is the tile in the
+  // `<label>` around it, which is what a pointer hits and what a screen reader
+  // announces through the radio's own name.
+  const boxes2rem = page.getByRole("radio", { name: "Boxes 2rem" });
+  const boxes2remStep = boxes2rem.locator("xpath=..");
+  await boxes2remStep.click();
+  await expect(boxes2rem).toBeChecked();
   await expect
     .poll(() =>
       root.evaluate((el) =>
@@ -185,17 +196,26 @@ test("the shape controls reach daisyUI's own measurements", async ({ page }) => 
       ),
     )
     .toBe("2rem");
-  // The pressed step is the marked one, and it is the only one in its group.
-  // `btn-neutral`, not `btn-active`: see `Demo.ThemeGenerator.lengthChoice` —
-  // `.btn-active`'s background is a `color-mix()` the composition chose, which
-  // is 4.28:1 in `valentine`, while `--color-neutral` / `--color-neutral-content`
-  // is a pair daisyUI declares in every theme.
-  await expect(page.getByRole("button", { name: "Boxes 2rem" })).toHaveClass(
-    /btn-neutral/,
-  );
+  // The tile really is drawn at the radius it sets, from an inline declaration:
+  // a `border-radius` out of a five-member set is not a utility.
+  const tile = boxes2rem.locator("xpath=following-sibling::div[1]");
+  await expect
+    .poll(() => tile.evaluate((el) => getComputedStyle(el).borderStartEndRadius))
+    .toBe("32px");
+  // The chosen step is the marked one, and it is the only one in its group.
+  // `btn-neutral`, not `btn-active`: `.btn-active`'s background is a
+  // `color-mix()` the composition chose, which is 4.28:1 in `valentine`, while
+  // `--color-neutral` / `--color-neutral-content` is a pair daisyUI declares in
+  // every theme.
+  await expect(boxes2remStep).toHaveClass(/btn-neutral/);
   const markedBoxSteps = await page
-    .getByRole("button", { name: /^Boxes / })
-    .evaluateAll((els) => els.filter((el) => el.classList.contains("btn-neutral")).length);
+    .getByRole("radio", { name: /^Boxes / })
+    .evaluateAll(
+      (els) =>
+        els.filter((el) =>
+          el.parentElement!.classList.contains("btn-neutral"),
+        ).length,
+    );
   expect(markedBoxSteps, "one step of `Boxes` is marked").toBe(1);
 
   await page.getByRole("button", { name: "Border width 2px" }).click();
@@ -412,7 +432,7 @@ test("the theme list loads a built-in, and Randomize replaces it", async ({
 test("an edited theme survives navigation to another demo", async ({ page }) => {
   await open(page, "/theme", CUSTOM);
 
-  await page.getByRole("button", { name: "Boxes 2rem" }).click();
+  await page.getByRole("radio", { name: "Boxes 2rem" }).locator("xpath=..").click();
   await expect(page.getByText(pane)).toHaveText("last-msg: ThemeEdited");
 
   await page.getByRole("link", { name: "Overview" }).click();

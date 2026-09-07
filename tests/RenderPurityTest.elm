@@ -98,7 +98,7 @@ emitted =
 in any render: spacing, sizing and colour are decided by `Render.tokens`, and
 `btn-primary` may only come from `Page.cta`.
 
-Four entries have left this list, each because it became a named `Daisy.Render`
+Five entries have left this list, each because it became a named `Daisy.Render`
 token with one job, not because a render wanted room.
 
 Three went in the Nexus design pass (2026-09-07):
@@ -122,6 +122,20 @@ The fourth went in the custom-theme pass (2026-09-07):
     constant has exactly one use site, `Daisy.Render.swatchClasses`, and no
     caller can reach one: `Leaf.Swatch` takes a closed
     `Daisy.Tree.SwatchColor`, never a class.
+
+The fifth went in the colour-chip pass (2026-09-07):
+
+  - `border` is `tokenBorderBox`, the hairline around a `Leaf.ColorChips` chip.
+    This entry existed to prevent "a box drawn around an arbitrary element",
+    which is a _decoration_ a renderer sprinkles; the chip's outline is not one.
+    A chip painted `--color-base-100` sits on a `card-body` that is also
+    `--color-base-100`, so without the hairline the control is not visible at
+    all — the same argument `border-b` / `border-r` already carry as
+    `DashboardShell.edges`, one step further round the box. It has exactly one
+    use site, `Daisy.Render.colorChipHtml`, its colour is the existing
+    `tokenBorderEdge`, and no caller can reach either: `Leaf.ColorChips` takes
+    colours and labels, never a class. daisyUI's own generator draws the same
+    hairline on the same chip.
 
 `text-primary` did **not** follow it and stays forbidden: it is a _foreground_
 utility over an arbitrary element, which is exactly the sprinkled colour this
@@ -157,7 +171,6 @@ forbidden =
     , "grid-cols-6"
     , "max-w-md"
     , "space-y-4"
-    , "border"
     , "opacity-50"
     ]
 
