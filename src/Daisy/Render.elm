@@ -219,6 +219,9 @@ tokens =
     , tokenWSidebar
     , tokenMinHScreen
     , tokenChartHeight
+    , tokenEmbedHeightSm
+    , tokenEmbedHeightMd
+    , tokenEmbedHeightLg
     , tokenOverflowXAuto
     , tokenOverflowHidden
     , tokenBorderBottom
@@ -728,6 +731,36 @@ lets the box grow with the drawing.
 tokenChartHeight : String
 tokenChartHeight =
     "min-h-64"
+
+
+{-| The three `Leaf.Embed` box heights: 160px, 256px, 384px.
+
+They are `h-`, not the `min-h-` a chart gets, and that is the difference
+between the two: a chart is drawn by this renderer, which knows the aspect
+ratio it scales to, while an embed is drawn by the caller and this box is the
+only thing that bounds it. A `min-h-` would let an embed grow the page and push
+the next block down; a fixed height plus `overflow-hidden` cannot.
+
+160 / 256 / 384 rather than a free number for the same reason `Block.Chart` has
+one height: page geometry is the renderer's, and three steps are what the demos
+need — a sparkline strip, a chart-sized panel, a full-card diagram. 256 is the
+same 16rem `tokenChartHeight` pins, so an embed and a chart sit at the same
+height side by side in a `Cols2` grid.
+
+-}
+tokenEmbedHeightSm : String
+tokenEmbedHeightSm =
+    "h-40"
+
+
+tokenEmbedHeightMd : String
+tokenEmbedHeightMd =
+    "h-64"
+
+
+tokenEmbedHeightLg : String
+tokenEmbedHeightLg =
+    "h-96"
 
 
 tokenOverflowXAuto : String
@@ -1875,8 +1908,8 @@ page (Page p) =
             :: classes [ tokenMinHScreen, tokenBgBase ]
             :: themeAttrs p.theme
         )
-        (shell p.shell p.header p.cta p.sections
-            ++ [ overlayLayer p.overlays p.dock p.fab ]
+        (shell p.theme p.shell p.header p.cta p.sections
+            ++ [ overlayLayer p.theme p.overlays p.dock p.fab ]
         )
 
 
@@ -1916,8 +1949,8 @@ themeAttrs theme =
             []
 
 
-shell : Shell msg -> Maybe (PageHeader msg) -> Cta msg -> Sections msg -> List (Html msg)
-shell theShell theHeader theCta theSections =
+shell : Theme -> Shell msg -> Maybe (PageHeader msg) -> Cta msg -> Sections msg -> List (Html msg)
+shell theme theShell theHeader theCta theSections =
     let
         placement =
             ctaPlacementFor theShell theHeader theCta
@@ -1931,7 +1964,7 @@ shell theShell theHeader theCta theSections =
                 []
 
         headerHtml =
-            maybeHtml (pageHeaderHtml (ctaAt InHeader)) theHeader
+            maybeHtml (pageHeaderHtml theme (ctaAt InHeader)) theHeader
     in
     case theShell of
         Plain ->
@@ -1946,7 +1979,7 @@ shell theShell theHeader theCta theSections =
                     , tokenTextSm
                     ]
                 ]
-                (plainBody headerHtml (ctaAt InNavbar) theSections)
+                (plainBody theme headerHtml (ctaAt InNavbar) theSections)
             ]
 
         Dashboard d ->
@@ -1965,7 +1998,7 @@ shell theShell theHeader theCta theSections =
                     []
                 , Html.div
                     [ classes [ drawerContentPart, tokenFlex, tokenFlexCol, tokenMinHScreen, tokenBgGround ] ]
-                    [ navbarHtml
+                    [ navbarHtml theme
                         { start = d.navbar.start
                         , center = d.navbar.center
                         , end = d.navbar.end
@@ -1975,14 +2008,14 @@ shell theShell theHeader theCta theSections =
                         (ctaAt InNavbar)
                     , Html.main_
                         [ classes [ tokenFlex, tokenFlexCol, tokenGapMd, tokenPaddingLg, tokenTextSm ] ]
-                        (headerHtml ++ sectionList [] theSections)
+                        (headerHtml ++ sectionList theme [] theSections)
                     ]
                 , Html.div
                     [ classes [ drawerSidePart ] ]
                     [ Html.label
                         [ Attr.for shellDrawerId, classes [ drawerOverlayPart ] ]
                         []
-                    , sidebarHtml (ctaAt InSidebarFooter) d
+                    , sidebarHtml theme (ctaAt InSidebarFooter) d
                     ]
                 ]
             ]
@@ -2032,8 +2065,8 @@ below the leading navbar bands and above the first content band, which is where
 `Shell.Dashboard` puts it relative to its own navbar.
 
 -}
-plainBody : List (Html msg) -> List (Html msg) -> Sections msg -> List (Html msg)
-plainBody headerHtml theCta theSections =
+plainBody : Theme -> List (Html msg) -> List (Html msg) -> Sections msg -> List (Html msg)
+plainBody theme headerHtml theCta theSections =
     let
         list =
             sectionsToList theSections
@@ -2050,7 +2083,7 @@ plainBody headerHtml theCta theSections =
             if chrome > 0 then
                 List.indexedMap
                     (\i section_ ->
-                        sectionWith
+                        sectionWith theme
                             (if i == 0 then
                                 theCta
 
@@ -2062,7 +2095,7 @@ plainBody headerHtml theCta theSections =
                     list
 
             else
-                sectionList theCta theSections
+                sectionList theme theCta theSections
     in
     List.take chrome rendered ++ headerHtml ++ List.drop chrome rendered
 
@@ -2097,8 +2130,8 @@ brand row above the menu and a user chip below it, the three have to share one
 templates build it.
 
 -}
-sidebarHtml : List (Html msg) -> DashboardShell msg -> Html msg
-sidebarHtml theCta d =
+sidebarHtml : Theme -> List (Html msg) -> DashboardShell msg -> Html msg
+sidebarHtml theme theCta d =
     Html.div
         [ classes
             ([ tokenFlex
@@ -2113,7 +2146,7 @@ sidebarHtml theCta d =
         ]
         (maybeHtml brandHtml d.brand
             ++ [ menuHtml [ tokenWFull, tokenGrow ] d.sidebar ]
-            ++ sidebarTail (theCta ++ maybeHtml leaf d.sidebarFooter)
+            ++ sidebarTail (theCta ++ maybeHtml (leafOf theme) d.sidebarFooter)
         )
 
 
@@ -2159,11 +2192,11 @@ column, so it lands in the same place whichever shell the page uses and it costs
 none of the five-section budget.
 
 -}
-pageHeaderHtml : List (Html msg) -> PageHeader msg -> Html msg
-pageHeaderHtml theCta h =
+pageHeaderHtml : Theme -> List (Html msg) -> PageHeader msg -> Html msg
+pageHeaderHtml theme theCta h =
     let
         trailing =
-            List.map leaf h.actions ++ theCta
+            List.map (leafOf theme) h.actions ++ theCta
     in
     Html.div
         [ classes
@@ -2186,7 +2219,7 @@ pageHeaderHtml theCta h =
                     -- `max-width: 100%; overflow-x: auto`, a parent sized to
                     -- that outer width clips the last 4px of the last crumb.
                     -- A parent that is the whole row cannot.
-                    breadcrumbsHtml h.breadcrumbs
+                    breadcrumbsHtml theme h.breadcrumbs
 
                 else
                     -- With something beside it the trail is *not* pinned with
@@ -2206,7 +2239,7 @@ pageHeaderHtml theCta h =
                             , tokenGap
                             ]
                         ]
-                        (breadcrumbsHtml h.breadcrumbs ++ trailing)
+                        (breadcrumbsHtml theme h.breadcrumbs ++ trailing)
                     ]
                )
         )
@@ -2282,8 +2315,8 @@ sectionsToList theSections =
             [ a, b, c, d, e ]
 
 
-sectionList : List (Html msg) -> Sections msg -> List (Html msg)
-sectionList extra theSections =
+sectionList : Theme -> List (Html msg) -> Sections msg -> List (Html msg)
+sectionList theme extra theSections =
     let
         list =
             sectionsToList theSections
@@ -2293,7 +2326,7 @@ sectionList extra theSections =
     in
     List.indexedMap
         (\i s ->
-            sectionWith
+            sectionWith theme
                 (if i == last then
                     extra
 
@@ -2313,11 +2346,11 @@ sectionList extra theSections =
 -}
 section : Section msg -> Html msg
 section =
-    sectionWith []
+    sectionWith standaloneTheme []
 
 
-sectionWith : List (Html msg) -> Section msg -> Html msg
-sectionWith extra theSection =
+sectionWith : Theme -> List (Html msg) -> Section msg -> Html msg
+sectionWith theme extra theSection =
     case theSection of
         Hero config blocks ->
             Html.div
@@ -2325,12 +2358,12 @@ sectionWith extra theSection =
                 (flagHtml config.overlay (Html.div [ classes [ heroOverlayPart ] ] [])
                     ++ [ Html.div
                             [ classes [ heroContentPart, tokenFlex, tokenFlexCol, tokenGap ] ]
-                            (List.map block blocks ++ extra)
+                            (List.map (blockIn theme Anywhere) blocks ++ extra)
                        ]
                 )
 
         Navbar parts ->
-            navbarHtml parts [] [] extra
+            navbarHtml theme parts [] [] extra
 
         Footer config blocks ->
             Html.footer
@@ -2341,22 +2374,22 @@ sectionWith extra theSection =
                         ++ [ tokenPadding, tokenGap ]
                     )
                 ]
-                (List.map (blockIn InFooter) blocks ++ extra)
+                (List.map (blockIn theme InFooter) blocks ++ extra)
 
         Grid (Columns config blocks) ->
             Html.div
                 [ classes (tokenGrid :: gridColumnsTokens config.columns ++ [ tokenGap ]) ]
-                (List.map block blocks ++ extra)
+                (List.map (blockIn theme Anywhere) blocks ++ extra)
 
         Grid (Spans items) ->
             Html.div
                 [ classes [ tokenGrid, tokenGridCols1, tokenGridCols12Lg, tokenGap ] ]
-                (List.map gridItemHtml items ++ extra)
+                (List.map (gridItemHtml theme) items ++ extra)
 
         Stack config blocks ->
             Html.div
                 [ classes [ tokenFlex, tokenFlexCol, tokenGap, alignToken config.align ] ]
-                (List.map block blocks ++ extra)
+                (List.map (blockIn theme Anywhere) blocks ++ extra)
 
 
 {-| The navbar, with the page's own gutter.
@@ -2377,8 +2410,8 @@ let a notification badge sit on top of the next control in the row
 `.indicator`).
 
 -}
-navbarHtml : NavbarParts msg -> List String -> List (Html msg) -> List (Html msg) -> Html msg
-navbarHtml parts extra before after =
+navbarHtml : Theme -> NavbarParts msg -> List String -> List (Html msg) -> List (Html msg) -> Html msg
+navbarHtml theme parts extra before after =
     Html.div
         [ classes ([ SNavbar.component, tokenBgBase, tokenGapSm, tokenPadding ] ++ extra) ]
         -- `navbar-start` and `navbar-end` are each exactly 50% wide, so their
@@ -2386,11 +2419,11 @@ navbarHtml parts extra before after =
         -- wrap inside their own half instead.
         [ Html.div
             [ classes [ navbarStartPart, tokenFlexWrap, tokenGap ] ]
-            (before ++ List.map leaf parts.start)
-        , Html.div [ classes [ navbarCenterPart ] ] (List.map leaf parts.center)
+            (before ++ List.map (leafOf theme) parts.start)
+        , Html.div [ classes [ navbarCenterPart ] ] (List.map (leafOf theme) parts.center)
         , Html.div
             [ classes [ navbarEndPart, tokenFlexWrap, tokenGap ] ]
-            (List.map leaf parts.end ++ after)
+            (List.map (leafOf theme) parts.end ++ after)
         ]
 
 
@@ -2437,11 +2470,11 @@ one kind of grid. Below `lg` the wrapper claims nothing and the single column
 of `tokenGridCols1` decides the width.
 
 -}
-gridItemHtml : GridItem msg -> Html msg
-gridItemHtml item =
+gridItemHtml : Theme -> GridItem msg -> Html msg
+gridItemHtml theme item =
     Html.div
         [ classes (spanToken item.span :: cellColumnsTokens item.columns) ]
-        (cellChildren item.columns item.blocks)
+        (cellChildren theme item.columns item.blocks)
 
 
 {-| A cell's blocks, either as themselves or dealt into columns.
@@ -2462,15 +2495,15 @@ Below the breakpoint the outer grid is one or two tracks, so the columns stack
 or pair up; daisyUI's own preview behaves the same way, for the same reason.
 
 -}
-cellChildren : CellColumns -> List (Block msg) -> List (Html msg)
-cellChildren columns blocks =
+cellChildren : Theme -> CellColumns -> List (Block msg) -> List (Html msg)
+cellChildren theme columns blocks =
     case cellColumnCount columns of
         Nothing ->
-            List.map block blocks
+            List.map (blockIn theme Anywhere) blocks
 
         Just count ->
             List.map
-                (\column -> Html.div [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ] (List.map block column))
+                (\column -> Html.div [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ] (List.map (blockIn theme Anywhere) column))
                 (dealIntoColumns count blocks)
 
 
@@ -2621,25 +2654,25 @@ type BlockContext
 -}
 block : Block msg -> Html msg
 block =
-    blockIn Anywhere
+    blockIn standaloneTheme Anywhere
 
 
-blockIn : BlockContext -> Block msg -> Html msg
-blockIn context theBlock =
+blockIn : Theme -> BlockContext -> Block msg -> Html msg
+blockIn theme context theBlock =
     case theBlock of
         Accordion config items ->
             Html.div
                 [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
-                (List.map (accordionItemHtml config) items)
+                (List.map (accordionItemHtml theme config) items)
 
         Alert config leaves ->
-            alertHtml config leaves
+            alertHtml theme config leaves
 
         Breadcrumbs leaves ->
-            breadcrumbsBlock leaves
+            breadcrumbsBlock theme leaves
 
         Card config parts ->
-            cardHtml config parts
+            cardHtml theme config parts
 
         Carousel config items ->
             Html.div
@@ -2651,7 +2684,7 @@ blockIn context theBlock =
                     )
                 ]
                 (List.map
-                    (\item -> Html.div [ classes [ carouselItemPart ] ] (List.map leaf item.content))
+                    (\item -> Html.div [ classes [ carouselItemPart ] ] (List.map (leafOf theme) item.content))
                     items
                 )
 
@@ -2659,29 +2692,29 @@ blockIn context theBlock =
             chartHtml config data interaction
 
         Chat messages ->
-            chatHtml messages
+            chatHtml theme messages
 
         Collapse config parts ->
             Html.div
                 [ classes ([ SCollapse.component ] ++ List.map SCollapse.modifierToClass config.modifiers) ]
                 [ Html.input [ Attr.type_ "checkbox" ] []
                 , Html.div [ classes [ collapseTitlePart ] ] [ Html.text parts.title ]
-                , Html.div [ classes [ collapseContentPart ] ] (List.map leaf parts.content)
+                , Html.div [ classes [ collapseContentPart ] ] (List.map (leafOf theme) parts.content)
                 ]
 
         Diff parts ->
             Html.figure
                 [ classes [ SDiff.component ] ]
-                [ Html.div [ classes [ diffItem1Part ] ] [ leaf parts.item1 ]
-                , Html.div [ classes [ diffItem2Part ] ] [ leaf parts.item2 ]
+                [ Html.div [ classes [ diffItem1Part ] ] [ leafOf theme parts.item1 ]
+                , Html.div [ classes [ diffItem2Part ] ] [ leafOf theme parts.item2 ]
                 , Html.div [ classes [ diffResizerPart ] ] []
                 ]
 
         Form fieldsets ->
-            formHtml fieldsets
+            formHtml theme fieldsets
 
         ListBlock rows ->
-            listHtml rows
+            listHtml theme rows
 
         Menu config items ->
             menuHtml [] { config = config, items = items }
@@ -2696,7 +2729,7 @@ blockIn context theBlock =
                             [ Html.div [ classes [ SInput.component ] ] [ Html.text toolbar ] ]
                     )
                     parts.toolbar
-                    ++ [ Html.div [ classes [ tokenPadding ] ] (List.map leaf parts.content) ]
+                    ++ [ Html.div [ classes [ tokenPadding ] ] (List.map (leafOf theme) parts.content) ]
                 )
 
         MockupCode lines ->
@@ -2721,7 +2754,7 @@ blockIn context theBlock =
             Html.div
                 [ classes [ SMockupPhone.component ] ]
                 [ Html.div [ classes [ mockupPhoneCameraPart ] ] []
-                , Html.div [ classes [ mockupPhoneDisplayPart ] ] (List.map leaf parts.content)
+                , Html.div [ classes [ mockupPhoneDisplayPart ] ] (List.map (leafOf theme) parts.content)
                 ]
 
         MockupWindow parts ->
@@ -2730,13 +2763,13 @@ blockIn context theBlock =
                 (maybeHtml
                     (\t -> Html.div [ classes [ tokenTextSm, tokenPaddingSm, tokenFontBold ] ] [ Html.text t ])
                     parts.title
-                    ++ [ Html.div [ classes [ tokenPadding ] ] (List.map leaf parts.content) ]
+                    ++ [ Html.div [ classes [ tokenPadding ] ] (List.map (leafOf theme) parts.content) ]
                 )
 
         Nav config leaves ->
             Html.nav
                 [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
-                (maybeHtml (navTitleHtml context) config.title ++ List.map leaf leaves)
+                (maybeHtml (navTitleHtml context) config.title ++ List.map (leafOf theme) leaves)
 
         Pagination config data ->
             Html.div
@@ -2755,7 +2788,7 @@ blockIn context theBlock =
                 )
 
         Prose leaves ->
-            Html.div [ classes [ tokenProse ] ] (List.map leaf leaves)
+            Html.div [ classes [ tokenProse ] ] (List.map (leafOf theme) leaves)
 
         Stacked config leaves ->
             Html.div
@@ -2765,10 +2798,10 @@ blockIn context theBlock =
                         ++ opt SStack.modifierToClass (Maybe.map stackedAlignModifier config.align)
                     )
                 ]
-                (List.map leaf leaves)
+                (List.map (leafOf theme) leaves)
 
         Stat config items ->
-            statsHtml Anywhere config items
+            statsHtml theme Anywhere config items
 
         Steps config steps ->
             Html.ul
@@ -2776,10 +2809,10 @@ blockIn context theBlock =
                 (List.map stepHtml steps)
 
         Table config rows ->
-            tableHtml config rows
+            tableHtml theme config rows
 
         Tabs config tabs ->
-            tabsHtml config tabs
+            tabsHtml theme config tabs
 
         Timeline config items ->
             Html.ul
@@ -2791,26 +2824,26 @@ blockIn context theBlock =
                             config.modifiers
                     )
                 ]
-                (List.map timelineItemHtml items)
+                (List.map (timelineItemHtml theme) items)
 
 
-breadcrumbsBlock : List (Leaf msg) -> Html msg
-breadcrumbsBlock leaves =
+breadcrumbsBlock : Theme -> List (Leaf msg) -> Html msg
+breadcrumbsBlock theme leaves =
     Html.div
         [ classes [ SBreadcrumbs.component, tokenTextSm ] ]
-        [ Html.ul [] (List.map (\l -> Html.li [] [ leaf l ]) leaves) ]
+        [ Html.ul [] (List.map (\l -> Html.li [] [ leafOf theme l ]) leaves) ]
 
 
 {-| The same trail, or nothing at all when there is none — what the page header
 needs, where an empty `breadcrumbs` would still paint its own padding.
 -}
-breadcrumbsHtml : List (Leaf msg) -> List (Html msg)
-breadcrumbsHtml leaves =
+breadcrumbsHtml : Theme -> List (Leaf msg) -> List (Html msg)
+breadcrumbsHtml theme leaves =
     if List.isEmpty leaves then
         []
 
     else
-        [ breadcrumbsBlock leaves ]
+        [ breadcrumbsBlock theme leaves ]
 
 
 navTitleHtml : BlockContext -> String -> Html msg
@@ -2823,18 +2856,18 @@ navTitleHtml context title =
             Html.h6 [ classes [ tokenFontBold, tokenTextSm ] ] [ Html.text title ]
 
 
-accordionItemHtml : AccordionConfig -> AccordionItem msg -> Html msg
-accordionItemHtml config item =
+accordionItemHtml : Theme -> AccordionConfig -> AccordionItem msg -> Html msg
+accordionItemHtml theme config item =
     Html.div
         [ classes ([ SAccordion.component ] ++ List.map SAccordion.modifierToClass config.modifiers) ]
         [ Html.input [ Attr.type_ "radio", Attr.name config.name ] []
         , Html.div [ classes [ accordionTitlePart ] ] [ Html.text item.title ]
-        , Html.div [ classes [ accordionContentPart ] ] (List.map leaf item.content)
+        , Html.div [ classes [ accordionContentPart ] ] (List.map (leafOf theme) item.content)
         ]
 
 
-cardHtml : CardConfig -> CardParts msg -> Html msg
-cardHtml config parts =
+cardHtml : Theme -> CardConfig -> CardParts msg -> Html msg
+cardHtml theme config parts =
     Html.div
         [ classes
             ([ SCard.component ]
@@ -2849,12 +2882,12 @@ cardHtml config parts =
                 ++ [ tokenBgBase, tokenShadowSm ]
             )
         ]
-        (maybeHtml (\f -> Html.figure [] [ leaf f ]) parts.figure
+        (maybeHtml (\f -> Html.figure [] [ leafOf theme f ]) parts.figure
             ++ [ Html.div
                     [ classes (cardBodyPart :: cardPaddingTokens config.padding) ]
-                    (cardHeaderHtml parts
-                        ++ List.map cardChildHtml parts.body
-                        ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map leaf parts.actions) ]
+                    (cardHeaderHtml theme parts
+                        ++ List.map (cardChildHtml theme) parts.body
+                        ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map (leafOf theme) parts.actions) ]
                     )
                ]
         )
@@ -2888,8 +2921,8 @@ way, because a grid of panels wants the numbers inside them to be the loudest
 thing on the page.
 
 -}
-cardHeaderHtml : CardParts msg -> List (Html msg)
-cardHeaderHtml parts =
+cardHeaderHtml : Theme -> CardParts msg -> List (Html msg)
+cardHeaderHtml theme parts =
     let
         titleHtml =
             maybeHtml
@@ -2903,8 +2936,8 @@ cardHeaderHtml parts =
                 parts.title
 
         rightHtml =
-            maybeHtml (\spec -> tabsHtml spec.config spec.tabs) parts.headerTabs
-                ++ List.map leaf parts.headerActions
+            maybeHtml (\spec -> tabsHtml theme spec.config spec.tabs) parts.headerTabs
+                ++ List.map (leafOf theme) parts.headerActions
     in
     if List.isEmpty rightHtml then
         titleHtml
@@ -2928,36 +2961,36 @@ the bare block, so "a chart in a card" and "a chart in a section" are the same
 markup. There is no `CardCard` to render: a card cannot hold a card.
 
 -}
-cardChildHtml : CardChild msg -> Html msg
-cardChildHtml child =
+cardChildHtml : Theme -> CardChild msg -> Html msg
+cardChildHtml theme child =
     case child of
         CardLeaf value ->
-            leaf value
+            leafOf theme value
 
         CardAlert config leaves ->
-            alertHtml config leaves
+            alertHtml theme config leaves
 
         CardChart config data interaction ->
             chartHtml config data interaction
 
         CardChat messages ->
-            chatHtml messages
+            chatHtml theme messages
 
         CardTable config rows ->
-            tableHtml config rows
+            tableHtml theme config rows
 
         CardList rows ->
-            listHtml rows
+            listHtml theme rows
 
         CardStat config items ->
-            statsHtml InCard config items
+            statsHtml theme InCard config items
 
         CardForm fieldsets ->
-            formHtml fieldsets
+            formHtml theme fieldsets
 
 
-alertHtml : AlertConfig -> List (Leaf msg) -> Html msg
-alertHtml config leaves =
+alertHtml : Theme -> AlertConfig -> List (Leaf msg) -> Html msg
+alertHtml theme config leaves =
     Html.div
         [ classes
             ([ SAlert.component ]
@@ -2967,18 +3000,18 @@ alertHtml config leaves =
             )
         , Attr.attribute "role" "alert"
         ]
-        (List.map leaf leaves)
+        (List.map (leafOf theme) leaves)
 
 
-formHtml : List (Fieldset msg) -> Html msg
-formHtml fieldsets =
+formHtml : Theme -> List (Fieldset msg) -> Html msg
+formHtml theme fieldsets =
     Html.form
         [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ]
-        (List.map fieldsetHtml fieldsets)
+        (List.map (fieldsetHtml theme) fieldsets)
 
 
-statsHtml : BlockContext -> StatConfig -> List (StatItem msg) -> Html msg
-statsHtml context config items =
+statsHtml : Theme -> BlockContext -> StatConfig -> List (StatItem msg) -> Html msg
+statsHtml theme context config items =
     Html.div
         [ classes
             (SStat.component
@@ -2994,7 +3027,7 @@ statsHtml context config items =
                 ++ surfaceFor context
             )
         ]
-        (List.map statItemHtml items)
+        (List.map (statItemHtml theme) items)
 
 
 surfaceFor : BlockContext -> List String
@@ -3027,30 +3060,30 @@ for the same reason `CardTable` does: "a list of rows in a panel" is the shape
 half of a dashboard's cards have, and a `card-body` is a column that cannot hold
 a `Block`.
 -}
-listHtml : List (ListRow msg) -> Html msg
-listHtml rows =
+listHtml : Theme -> List (ListRow msg) -> Html msg
+listHtml theme rows =
     Html.ul
         [ classes [ SList.component ] ]
         (List.map
-            (\row -> Html.li [ classes [ listRowClass ] ] (List.map listCellHtml row.cells))
+            (\row -> Html.li [ classes [ listRowClass ] ] (List.map (listCellHtml theme) row.cells))
             rows
         )
 
 
-listCellHtml : ListCell msg -> Html msg
-listCellHtml cell =
+listCellHtml : Theme -> ListCell msg -> Html msg
+listCellHtml theme cell =
     let
         marks =
             flag cell.grow (SList.modifierToClass SList.ColGrow)
                 ++ flag cell.wrap (SList.modifierToClass SList.ColWrap)
     in
     if List.isEmpty marks then
-        leaf cell.content
+        leafOf theme cell.content
 
     else
         -- `list-col-grow` / `list-col-wrap` mark one cell of a `list-row`, so
         -- they need an element of their own around that cell's content.
-        Html.div [ classes marks ] [ leaf cell.content ]
+        Html.div [ classes marks ] [ leafOf theme cell.content ]
 
 
 carouselSnapModifier : CarouselSnap -> SCarousel.Modifier
@@ -3082,15 +3115,15 @@ stackedAlignModifier align =
             SStack.End
 
 
-chatHtml : List (ChatMessage msg) -> Html msg
-chatHtml messages =
+chatHtml : Theme -> List (ChatMessage msg) -> Html msg
+chatHtml theme messages =
     Html.div
         [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
-        (List.map chatMessageHtml messages)
+        (List.map (chatMessageHtml theme) messages)
 
 
-chatMessageHtml : ChatMessage msg -> Html msg
-chatMessageHtml message =
+chatMessageHtml : Theme -> ChatMessage msg -> Html msg
+chatMessageHtml theme message =
     Html.div
         [ classes [ SChat.component, SChat.placementToClass message.placement ] ]
         (maybeHtml
@@ -3103,7 +3136,7 @@ chatMessageHtml message =
             ++ maybeHtml (\h -> Html.div [ classes [ chatHeaderPart ] ] [ Html.text h ]) message.header
             ++ [ Html.div
                     [ classes ([ chatBubblePart ] ++ opt SChat.colorToClass message.color) ]
-                    (List.map leaf message.bubble)
+                    (List.map (leafOf theme) message.bubble)
                ]
             ++ maybeHtml (\f -> Html.div [ classes [ chatFooterPart ] ] [ Html.text f ]) message.footer
         )
@@ -3126,22 +3159,22 @@ maybeAttr f maybe =
             []
 
 
-fieldsetHtml : Fieldset msg -> Html msg
-fieldsetHtml fs =
+fieldsetHtml : Theme -> Fieldset msg -> Html msg
+fieldsetHtml theme fs =
     Html.fieldset
         [ classes [ SFieldset.component ] ]
         (maybeHtml
             (\l -> Html.legend [ classes [ fieldsetLegendPart ] ] [ Html.text l ])
             fs.legend
-            ++ List.map fieldHtml fs.fields
+            ++ List.map (fieldHtml theme) fs.fields
         )
 
 
-fieldHtml : Field msg -> Html msg
-fieldHtml f =
+fieldHtml : Theme -> Field msg -> Html msg
+fieldHtml theme f =
     let
         control =
-            leafWith (flag f.validate SValidator.component) f.control
+            leafIn theme (flag f.validate SValidator.component) f.control
 
         hint =
             maybeHtml (\h -> Html.p [ classes [ validatorHintPart ] ] [ Html.text h ]) f.hint
@@ -3309,8 +3342,8 @@ dashboard templates do to it:
     same figure a `card-body` uses (`CardPadding.PaddingDashboard`).
 
 -}
-statItemHtml : StatItem msg -> Html msg
-statItemHtml item =
+statItemHtml : Theme -> StatItem msg -> Html msg
+statItemHtml theme item =
     Html.div
         [ classes [ statPart, tokenPaddingCard ] ]
         (maybeHtml
@@ -3324,7 +3357,7 @@ statItemHtml item =
                         , tokenPaddingSm
                         ]
                     ]
-                    [ leaf f ]
+                    [ leafOf theme f ]
             )
             item.figure
             ++ (if item.title == "" then
@@ -3353,12 +3386,12 @@ statItemHtml item =
                         , tokenGapSm
                         ]
                     ]
-                    (Html.text item.value :: maybeHtml leaf item.trend)
+                    (Html.text item.value :: maybeHtml (leafOf theme) item.trend)
                ]
             ++ maybeHtml
                 (\d -> Html.div [ classes [ statDescPart, tokenTextSm ] ] [ Html.text d ])
                 item.desc
-            ++ [ Html.div [ classes [ statActionsPart ] ] (List.map leaf item.actions) ]
+            ++ [ Html.div [ classes [ statActionsPart ] ] (List.map (leafOf theme) item.actions) ]
         )
 
 
@@ -3371,8 +3404,8 @@ stepHtml step =
         )
 
 
-tableHtml : TableConfig -> List (Row msg) -> Html msg
-tableHtml config rows =
+tableHtml : Theme -> TableConfig -> List (Row msg) -> Html msg
+tableHtml theme config rows =
     let
         ( headers, body ) =
             List.partition .header rows
@@ -3390,7 +3423,7 @@ tableHtml config rows =
                 (List.map
                     (\r ->
                         Html.tr []
-                            (List.map (\c -> Html.th [] (tableCellHtml c)) r.cells)
+                            (List.map (\c -> Html.th [] (tableCellHtml theme c)) r.cells)
                     )
                     headers
                 )
@@ -3398,7 +3431,7 @@ tableHtml config rows =
                 (List.map
                     (\r ->
                         Html.tr []
-                            (List.map (\c -> Html.td [] (tableCellHtml c)) r.cells)
+                            (List.map (\c -> Html.td [] (tableCellHtml theme c)) r.cells)
                     )
                     body
                 )
@@ -3414,21 +3447,21 @@ has always rendered. A cell that has one gets the flex wrapper daisyUI's own
 part class is involved, so nothing can leak onto an element that is not a cell.
 
 -}
-tableCellHtml : TableCell msg -> List (Html msg)
-tableCellHtml cell =
+tableCellHtml : Theme -> TableCell msg -> List (Html msg)
+tableCellHtml theme cell =
     case cell.leading of
         Nothing ->
-            [ leaf cell.content ]
+            [ leafOf theme cell.content ]
 
         Just leading ->
             [ Html.div
                 [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
-                [ leaf leading, leaf cell.content ]
+                [ leafOf theme leading, leafOf theme cell.content ]
             ]
 
 
-tabsHtml : TabsConfig -> List (Tab msg) -> Html msg
-tabsHtml config tabs =
+tabsHtml : Theme -> TabsConfig -> List (Tab msg) -> Html msg
+tabsHtml theme config tabs =
     Html.div
         [ classes
             ([ STab.component ]
@@ -3438,7 +3471,7 @@ tabsHtml config tabs =
             )
         , Attr.attribute "role" "tablist"
         ]
-        (List.concatMap tabHtml tabs)
+        (List.concatMap (tabHtml theme) tabs)
 
 
 {-| One tab, and the `tab-content` panel it owns — if it owns one.
@@ -3449,8 +3482,8 @@ daisyUI shows the panel that follows the active tab (`.tab-active +
 in. A tab with no content therefore emits no panel at all.
 
 -}
-tabHtml : Tab msg -> List (Html msg)
-tabHtml tab =
+tabHtml : Theme -> Tab msg -> List (Html msg)
+tabHtml theme tab =
     clickableHtml tab.onClick
         (classes
             ([ tabPart ]
@@ -3466,12 +3499,12 @@ tabHtml tab =
                 []
 
             else
-                [ Html.div [ classes [ tabContentPart ] ] (List.map leaf tab.content) ]
+                [ Html.div [ classes [ tabContentPart ] ] (List.map (leafOf theme) tab.content) ]
            )
 
 
-timelineItemHtml : TimelineItem msg -> Html msg
-timelineItemHtml item =
+timelineItemHtml : Theme -> TimelineItem msg -> Html msg
+timelineItemHtml theme item =
     let
         -- `timeline-box` sits on one *side* of one item, never on the
         -- `timeline` container, so it is a flag per side here.
@@ -3482,7 +3515,7 @@ timelineItemHtml item =
         (maybeHtml
             (\s -> Html.div [ classes (timelineStartPart :: boxed item.startBox) ] [ Html.text s ])
             item.start
-            ++ maybeHtml (\m -> Html.div [ classes [ timelineMiddlePart ] ] [ leaf m ]) item.middle
+            ++ maybeHtml (\m -> Html.div [ classes [ timelineMiddlePart ] ] [ leafOf theme m ]) item.middle
             ++ maybeHtml
                 (\e -> Html.div [ classes (timelineEndPart :: boxed item.endBox) ] [ Html.text e ])
                 item.end
@@ -3497,11 +3530,32 @@ timelineItemHtml item =
 -}
 leaf : Leaf msg -> Html msg
 leaf =
-    leafWith []
+    leafIn standaloneTheme []
 
 
-leafWith : List String -> Leaf msg -> Html msg
-leafWith extra theLeaf =
+{-| The theme a leaf rendered on its own is told it is in.
+
+Only [`page`](#page) knows a page's real `Theme`, and it threads it down to
+every leaf so a `Leaf.Embed` can branch on it. The three lower-level
+renderers exposed for tests have no page above them, so they report `Light` —
+the theme daisyUI itself falls back to when no `data-theme` is set. Nothing
+the renderer draws depends on this value: every colour it emits is a
+`var(--color-*)`, resolved by the browser against whatever `data-theme` is
+actually in force. It reaches exactly one place, `ThemeContext.theme`.
+
+-}
+standaloneTheme : Theme
+standaloneTheme =
+    Light
+
+
+leafOf : Theme -> Leaf msg -> Html msg
+leafOf theme =
+    leafIn theme []
+
+
+leafIn : Theme -> List String -> Leaf msg -> Html msg
+leafIn theme extra theLeaf =
     case theLeaf of
         Avatar config src ->
             avatarHtml extra config src
@@ -3560,6 +3614,9 @@ leafWith extra theLeaf =
                 ]
                 [ Html.text (Maybe.withDefault "" label) ]
                 |> withTooltip config.tooltip
+
+        Embed config embedView ->
+            embedHtml theme extra config embedView
 
         FileInput config ->
             Html.input
@@ -3805,8 +3862,8 @@ leafWith extra theLeaf =
                 []
                 |> withTooltip config.tooltip
 
-        ThemeDots theme ->
-            themeDotsHtml extra theme
+        ThemeDots dotsTheme ->
+            themeDotsHtml extra dotsTheme
 
         ThemeSelect data ->
             themeSelectHtml extra data
@@ -3830,6 +3887,112 @@ leafWith extra theLeaf =
                 )
                 []
                 |> withTooltip config.tooltip
+
+
+{-| A custom view, in a box the renderer owns.
+
+`Leaf.Embed` is the one place a caller's own `Html` enters the tree, and every
+guarantee this package makes about it is made by this wrapper rather than by
+the type of what it holds:
+
+  - **It cannot overlap a neighbour.** The box is `relative overflow-hidden`
+    with a fixed height, all `tokens`, so whatever the embed draws is clipped
+    to a rectangle in normal flow. An embed that positions something absolutely
+    positions it against this box, and an embed that draws past the edge is cut
+    off rather than laid over the block below.
+  - **It cannot hold structure.** `Embed` is a `Leaf`, so no block, section or
+    overlay can appear inside it; a modal opened from an embed is still a
+    `Page.overlays` entry.
+  - **It announces itself.** A `role=figure` box named by the config's `label` as
+    `aria-label`, because the tree cannot see what was drawn and so cannot name
+    it.
+  - **It is themed, not classed.** `NoClassOutsideRender` forbids a `class`
+    attribute inside an embed, so its only palette is the
+    [`ThemeContext`](Daisy-Tree#ThemeContext) built here: `var(--color-*)`
+    strings that the browser resolves against the active `data-theme`, exactly
+    as a `Block.Chart` series does.
+
+What the box does **not** get is coverage: `CoverageTest` and the corpus read
+classes back off rendered markup, and an embed emits none. Overlap, contrast
+and a11y still see it, because those are read off the painted page.
+
+-}
+embedHtml : Theme -> List String -> EmbedConfig -> (ThemeContext -> Html msg) -> Html msg
+embedHtml theme extra config embedView =
+    Html.div
+        [ classes
+            ([ tokenRelative, tokenOverflowHidden, tokenWFull, embedHeightToken config.height ]
+                ++ extra
+            )
+        , Attr.attribute "role" "figure"
+        , Attr.attribute "aria-label" config.label
+        ]
+        [ embedView (themeContext theme) ]
+
+
+{-| The record a `Leaf.Embed`'s view function is called with.
+
+Every field is a value the renderer already owns: the two colour functions are
+the ones `Block.Chart` paints its series and its bar track with, and
+`radiusBox` is the variable daisyUI's own `rounded-box` resolves to. Nothing
+here is a class, so an embed can follow the theme without being able to reach
+daisyUI's component CSS.
+
+-}
+themeContext : Theme -> ThemeContext
+themeContext theme =
+    { color = Chart.semanticColorToCss
+    , surface = surfaceToCss
+    , theme = theme
+    , radiusBox = radiusBoxProperty
+    }
+
+
+{-| daisyUI's four base variables, as CSS values.
+
+`Daisy.Tree.Surface` is closed, so this is the whole set an embed can reach —
+there is no way to name `--color-primary-content`, or anything else, from
+inside one.
+
+-}
+surfaceToCss : Surface -> String
+surfaceToCss surface =
+    case surface of
+        Base100 ->
+            "var(--color-base-100)"
+
+        Base200 ->
+            "var(--color-base-200)"
+
+        Base300 ->
+            "var(--color-base-300)"
+
+        BaseContent ->
+            "var(--color-base-content)"
+
+
+{-| `var(--radius-box)`: the corner daisyUI gives a card, as a value an embed
+can put on a shape of its own. It is a variable reference, not a class, for the
+same reason `surfaceToCss` is.
+-}
+radiusBoxProperty : String
+radiusBoxProperty =
+    "var(--radius-box)"
+
+
+{-| The height token for one `Daisy.Tree.EmbedHeight`.
+-}
+embedHeightToken : EmbedHeight -> String
+embedHeightToken height =
+    case height of
+        EmbedSm ->
+            tokenEmbedHeightSm
+
+        EmbedMd ->
+            tokenEmbedHeightMd
+
+        EmbedLg ->
+            tokenEmbedHeightLg
 
 
 {-| Who is signed in: portrait, name, and one de-emphasised line under it.
@@ -5209,8 +5372,8 @@ withHover3d on html =
 -- OVERLAYS AND FIXED CHROME -------------------------------------------------
 
 
-overlayLayer : List (Overlay msg) -> Maybe (Dock msg) -> Maybe (Fab msg) -> Html msg
-overlayLayer overlays maybeDock maybeFab =
+overlayLayer : Theme -> List (Overlay msg) -> Maybe (Dock msg) -> Maybe (Fab msg) -> Html msg
+overlayLayer theme overlays maybeDock maybeFab =
     let
         isDrawer o =
             case o of
@@ -5243,9 +5406,9 @@ overlayLayer overlays maybeDock maybeFab =
     in
     Html.div
         [ classes [ tokenFixed, tokenInset0, tokenZOverlay, tokenPointerEventsNone ] ]
-        (List.map overlay ordered
+        (List.map (overlayIn theme) ordered
             ++ maybeHtml dockHtml maybeDock
-            ++ maybeHtml fabHtml maybeFab
+            ++ maybeHtml (fabHtml theme) maybeFab
         )
 
 
@@ -5254,7 +5417,12 @@ modal, toast, inside a single fixed wrapper, so an application never chooses a
 stacking order.
 -}
 overlay : Overlay msg -> Html msg
-overlay theOverlay =
+overlay =
+    overlayIn standaloneTheme
+
+
+overlayIn : Theme -> Overlay msg -> Html msg
+overlayIn theme theOverlay =
     case theOverlay of
         Drawer config sections ->
             Html.div
@@ -5287,7 +5455,7 @@ overlay theOverlay =
                     [ Html.label [ Attr.for config.id, classes [ drawerOverlayPart ] ] []
                     , Html.div
                         [ classes [ tokenWSidebar, tokenMinHScreen, tokenBgBase, tokenPadding ] ]
-                        (List.map section sections)
+                        (List.map (sectionWith theme []) sections)
                     ]
                 ]
 
@@ -5319,10 +5487,10 @@ overlay theOverlay =
                     (maybeHtml
                         (\t -> Html.h3 [ classes [ tokenFontBold ] ] [ Html.text t ])
                         config.title
-                        ++ List.map block blocks
+                        ++ List.map (blockIn theme Anywhere) blocks
                         ++ [ Html.div
                                 [ classes [ modalActionPart ] ]
-                                (List.map leaf config.actions)
+                                (List.map (leafOf theme) config.actions)
                            ]
                     )
                 , Html.label
@@ -5341,7 +5509,7 @@ overlay theOverlay =
                         ++ [ tokenPointerEventsAuto ]
                     )
                 ]
-                (List.map block blocks)
+                (List.map (blockIn theme Anywhere) blocks)
 
 
 dockHtml : Dock msg -> Html msg
@@ -5369,8 +5537,8 @@ dockHtml dock =
         )
 
 
-fabHtml : Fab msg -> Html msg
-fabHtml fab =
+fabHtml : Theme -> Fab msg -> Html msg
+fabHtml theme fab =
     Html.div
         [ classes
             ([ SFab.component ]
@@ -5380,14 +5548,14 @@ fabHtml fab =
         ]
         ([ Html.div
             [ Attr.tabindex 0, Attr.attribute "role" "button" ]
-            [ leaf fab.main ]
+            [ leafOf theme fab.main ]
          ]
             -- `fab-main-action` goes on the button itself, which is where every
             -- daisyUI fab example puts it; it is a separate leaf from the
             -- trigger above, not the same one drawn twice.
-            ++ maybeHtml (leafWith [ fabMainActionPart ]) fab.mainAction
-            ++ List.map (\a -> Html.div [] [ leaf a ]) fab.actions
-            ++ maybeHtml (\c -> Html.div [ classes [ fabClosePart ] ] [ leaf c ]) fab.close
+            ++ maybeHtml (leafIn theme [ fabMainActionPart ]) fab.mainAction
+            ++ List.map (\a -> Html.div [] [ leafOf theme a ]) fab.actions
+            ++ maybeHtml (\c -> Html.div [ classes [ fabClosePart ] ] [ leafOf theme c ]) fab.close
         )
 
 

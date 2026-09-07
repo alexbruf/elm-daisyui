@@ -119,6 +119,22 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
 - `Daisy.Tree` defines its own `ButtonColor` that omits `Primary`; Render maps it to `Daisy.Schema.Button.Color`. The only primary button is `Page.cta`.
 - Components with `part` classes take a record of parts (a part cannot appear outside its component or twice).
 - `dropdown` and `tooltip` are fields on leaves, not nodes. No `Raw Html` constructor. Ever.
+- **Custom views go through `Leaf.Embed` and nowhere else.** `Embed EmbedConfig (ThemeContext -> Html msg)`,
+  `EmbedConfig = { height : EmbedHeight, label : String }` with `EmbedHeight = EmbedSm | EmbedMd | EmbedLg`
+  (160/256/384px, fixed `Render.tokens`, never a number from the caller). `Daisy.Render` draws the
+  result inside a `relative overflow-hidden w-full` box of that height, with `role="figure"` and
+  `aria-label = label`, so an embed cannot overlap its neighbours, cannot escape its box and cannot
+  go unnamed. It is a `Leaf`: no block, section or overlay inside it, and it cannot stand where one
+  belongs (`tools/should-not-compile/Reject/EmbedAsBlock.elm`).
+  The embed is themed, not classed: `Daisy.Render` hands it a
+  `ThemeContext = { color : SemanticColor -> String, surface : Surface -> String, theme : Theme, radiusBox : String }`
+  whose colours are `var(--color-*)` / `var(--radius-box)` strings, so the drawing follows the active
+  theme with no re-render. `NoClassOutsideRender` and `NoRawSchemaStrings` still apply inside an
+  embed — **no `class` attribute at all** — so inline `style` and SVG presentation attributes are how
+  it paints. Embed view functions live under `demo/src/Viz/`, the only path `NoHtmlInDemo` exempts;
+  `Demo.*` pages still may not import `Html`.
+  The trade-off, stated once: coverage and the corpus cannot see inside an embed (it emits no
+  classes), while overlap, overflow, contrast, a11y and the theme/chart-colour sweeps still can.
 - `Theme` is either one of the 35 built-ins or `Custom CustomTheme` — the same 29 declarations
   daisyUI's own theme format has, every field a closed type. `ThemeName` is opaque (`themeName`
   validates `[a-z][a-z0-9-]*` and refuses the 35 reserved names; `themeNameOf` is the only way to
@@ -264,4 +280,4 @@ bash tools/ci.sh                   # everything, in order
 
 ## When blocked
 
-State the assumption inline, continue, and list it in the final report. Do not add escape hatches to the tree; put inexpressible examples in `fixtures/rejected.md` with a reason.
+State the assumption inline, continue, and list it in the final report. Do not add escape hatches to the tree; put inexpressible examples in `fixtures/rejected.md` with a reason. `Leaf.Embed` is not that escape hatch: it is for a *drawing* daisyUI has no component for (the demo's conversion funnel), never for hand-writing markup a `Block` or `Leaf` should express.

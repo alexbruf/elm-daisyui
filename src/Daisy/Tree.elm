@@ -45,6 +45,8 @@ module Daisy.Tree exposing
     , CheckboxConfig, defaultCheckboxConfig
     , ColorChipGroup, ColorChip, ChipGlyph(..), allChipGlyphs
     , DividerConfig, defaultDividerConfig
+    , EmbedConfig, embedConfig, EmbedHeight(..), allEmbedHeights
+    , ThemeContext, Surface(..), allSurfaces
     , FileInputConfig, defaultFileInputConfig
     , FilterData, FilterReset(..)
     , IconConfig, defaultIconConfig, IconSize(..)
@@ -186,6 +188,8 @@ format has.
 @docs CheckboxConfig, defaultCheckboxConfig
 @docs ColorChipGroup, ColorChip, ChipGlyph, allChipGlyphs
 @docs DividerConfig, defaultDividerConfig
+@docs EmbedConfig, embedConfig, EmbedHeight, allEmbedHeights
+@docs ThemeContext, Surface, allSurfaces
 @docs FileInputConfig, defaultFileInputConfig
 @docs FilterData, FilterReset
 @docs IconConfig, defaultIconConfig, IconSize
@@ -244,7 +248,7 @@ always owns the wrapper element and the anchor can never go missing.
 import Cally.Date as CallyDate
 import Cally.Multi as CallyMulti
 import Cally.Range as CallyRange
-import Daisy.Chart exposing (ChartConfig, ChartData, ChartInteraction)
+import Daisy.Chart exposing (ChartConfig, ChartData, ChartInteraction, SemanticColor)
 import Daisy.Color as Color
 import Daisy.Icon exposing (Icon, allIcons)
 import Daisy.Schema.Accordion as SAccordion
@@ -296,6 +300,7 @@ import Daisy.Schema.Toast as SToast
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Schema.Tooltip as STooltip
 import Date exposing (Date)
+import Html exposing (Html)
 
 
 
@@ -2269,6 +2274,7 @@ type Leaf msg
     | ColorChips (List (ColorChipGroup msg))
     | Countdown Float
     | Divider DividerConfig (Maybe String)
+    | Embed EmbedConfig (ThemeContext -> Html msg)
     | FileInput (FileInputConfig msg)
     | Filter (FilterData msg)
     | HoverGallery (List ImageSrc)
@@ -2754,6 +2760,106 @@ type alias DividerConfig =
 defaultDividerConfig : DividerConfig
 defaultDividerConfig =
     { color = Nothing, direction = Nothing, placement = Nothing, tooltip = Nothing }
+
+
+{-| The box a [`Leaf.Embed`](#Leaf) is drawn in.
+
+`height` is one of three fixed steps, not a number: the renderer owns page
+geometry, so an embed can no more choose its own height than a `Block.Chart`
+can. `label` is the accessible name of the box — the embed's Html is opaque to
+every guarantee this package makes, so the one thing the tree insists on is
+that it announces itself. The renderer puts it on a `role="figure"` element as
+`aria-label`, which is what `e2e/a11y.spec.ts` reads.
+
+-}
+type alias EmbedConfig =
+    { height : EmbedHeight
+    , label : String
+    }
+
+
+{-| A medium embed with this accessible name.
+
+There is no `defaultEmbedConfig`: a label has no sensible default, and an
+unlabelled figure is exactly the thing this config exists to prevent.
+
+    embedConfig "Conversion funnel"
+        --> { height = EmbedMd, label = "Conversion funnel" }
+
+-}
+embedConfig : String -> EmbedConfig
+embedConfig label =
+    { height = EmbedMd, label = label }
+
+
+{-| The three heights a [`Leaf.Embed`](#Leaf) box can have.
+
+They map to fixed height tokens in `Daisy.Render` (160px, 256px, 384px), the
+same way `Block.Chart` gets one fixed minimum height. The box is
+`overflow-hidden`, so whatever the embed draws is clipped to it and cannot
+overlap the block below.
+
+-}
+type EmbedHeight
+    = EmbedSm
+    | EmbedMd
+    | EmbedLg
+
+
+{-| Every [`EmbedHeight`](#EmbedHeight) value.
+-}
+allEmbedHeights : List EmbedHeight
+allEmbedHeights =
+    [ EmbedSm, EmbedMd, EmbedLg ]
+
+
+{-| What `Daisy.Render` hands a [`Leaf.Embed`](#Leaf)'s view function.
+
+An embed writes its own `Html` — it is the one place in this package that can
+— so it needs the theme's colours the same way `Block.Chart` does, and it may
+not read them off a class: `NoClassOutsideRender` forbids a `class` attribute
+in an embed, so its only palette is this record.
+
+  - `color` is [`Daisy.Chart.semanticColorToCss`](Daisy-Chart#semanticColorToCss):
+    `color Primary` is `"var(--color-primary)"`, so the drawing follows the
+    active theme live, with no re-render.
+  - `surface` is the same for the four base variables (see [`Surface`](#Surface)).
+  - `theme` is the page's `Theme`, for the rare embed that has to branch on
+    light and dark rather than on a variable (a hatch pattern, a shadow).
+    `Daisy.Render.leaf` rendered standalone reports `Light`; only
+    `Daisy.Render.page` knows a page's real theme.
+  - `radiusBox` is `"var(--radius-box)"`, so a rounded shape inside an embed
+    matches the card it sits in.
+
+-}
+type alias ThemeContext =
+    { color : SemanticColor -> String
+    , surface : Surface -> String
+    , theme : Theme
+    , radiusBox : String
+    }
+
+
+{-| daisyUI's four base variables, as a closed type.
+
+They are deliberately not a ninth `Daisy.Chart.SemanticColor`: a surface is the
+paper, not the ink (see `Daisy.Chart`'s note on the bar track), and a shape
+painted `Base100` on a `Base100` card would be invisible while passing every
+contrast check.
+
+-}
+type Surface
+    = Base100
+    | Base200
+    | Base300
+    | BaseContent
+
+
+{-| Every [`Surface`](#Surface) value.
+-}
+allSurfaces : List Surface
+allSurfaces =
+    [ Base100, Base200, Base300, BaseContent ]
 
 
 {-| Groups of the daisyUI `file-input` component.

@@ -27,6 +27,24 @@ btnClass =
                                 , under = "\"btn\""
                                 }
                             ]
+            , test "a Viz.* embed module is not exempt: a raw daisyUI class is still reported" <|
+                \() ->
+                    """module Viz.Funnel exposing (label)
+
+label : String
+label =
+    "btn"
+"""
+                        |> Review.Test.run rule
+                        |> Review.Test.expectErrors
+                            [ Review.Test.error
+                                { message = "String literal \"btn\" is a raw daisyUI class name"
+                                , details =
+                                    [ "This exact string appears in fixtures/schema.json as a daisyUI class. Hand-writing a schema class as a string bypasses the typed Daisy.Tree / Daisy.Schema constructors that guarantee no contradictory modifiers or invalid nesting. Use the generated Daisy.Schema type and constructor instead; only Daisy.Render is allowed to turn those into class strings."
+                                    ]
+                                , under = "\"btn\""
+                                }
+                            ]
             , test "a raw part class string (card-body) outside the exempt modules is reported" <|
                 \() ->
                     """module Some.Tree exposing (cardBodyPart)

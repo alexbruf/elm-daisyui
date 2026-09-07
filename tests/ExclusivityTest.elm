@@ -395,6 +395,16 @@ leafFuzzers =
             (maybeOf SCheckbox.allSizes)
             (Fuzz.maybe (Fuzz.constant "Agree"))
       )
+    , ( "embed"
+      , -- A `Leaf.Embed` declares no class group — it emits no daisyUI class
+        -- at all, like `Leaf.Icon` and `Leaf.Heading` — so there is nothing
+        -- here for the exclusivity rule to make contradictory. The entry
+        -- exists because this harness enumerates one per leaf constructor, and
+        -- it is a `Fuzz.constant` rather than a generated value because an
+        -- embed holds a function: `Helpers.Fixtures.embedLeaf` is the fixed
+        -- sample every other embed assertion is made about too.
+        Fuzz.constant Fixtures.embedLeaf
+      )
     , ( "divider"
       , Fuzz.map3
             (\color direction placement ->

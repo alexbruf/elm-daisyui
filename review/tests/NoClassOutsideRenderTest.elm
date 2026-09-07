@@ -39,6 +39,28 @@ view =
                                 , under = "Html.Attributes.class"
                                 }
                             ]
+            , test "a Viz.* embed module may not call Html.Attributes.class either" <|
+                \() ->
+                    """module Viz.Funnel exposing (view)
+
+import Html
+import Html.Attributes
+
+
+view : Html.Html msg
+view =
+    Html.div [ Html.Attributes.class "funnel" ] []
+"""
+                        |> Review.Test.runWithProjectData project rule
+                        |> Review.Test.expectErrors
+                            [ Review.Test.error
+                                { message = "`Html.Attributes.class` is only allowed in Daisy.Render"
+                                , details =
+                                    [ "daisyUI class strings must only be emitted from src/Daisy/Render.elm so that the rest of the codebase can only build views through Daisy.Tree. Express this through Daisy.Tree instead, and let Daisy.Render turn it into classes."
+                                    ]
+                                , under = "Html.Attributes.class"
+                                }
+                            ]
             , test "classList exposed unqualified outside Daisy.Render" <|
                 \() ->
                     """module Some.View exposing (view)
@@ -151,6 +173,20 @@ import Html.Attributes
 view : Html.Html msg
 view =
     Html.div [ Html.Attributes.attribute "id" "main" ] []
+"""
+                        |> Review.Test.runWithProjectData project rule
+                        |> Review.Test.expectNoErrors
+            , test "a Viz.* embed module styles itself with Html.Attributes.style, which is allowed" <|
+                \() ->
+                    """module Viz.Funnel exposing (view)
+
+import Html
+import Html.Attributes
+
+
+view : Html.Html msg
+view =
+    Html.div [ Html.Attributes.style "fill" "var(--color-primary)" ] []
 """
                         |> Review.Test.runWithProjectData project rule
                         |> Review.Test.expectNoErrors

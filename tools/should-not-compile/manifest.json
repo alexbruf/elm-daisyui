@@ -67,5 +67,8 @@
   ],
   "Reject/UnspannedCellInTwelveGrid.elm": [
     "TYPE MISMATCH"
+  ],
+  "Reject/EmbedAsBlock.elm": [
+    "TYPE MISMATCH"
   ]
 }

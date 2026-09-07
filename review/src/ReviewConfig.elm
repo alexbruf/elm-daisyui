@@ -7,7 +7,10 @@ tests under review/src and review/tests:
   - NoClassOutsideRender: only src/Daisy/Render.elm may call
     Html.Attributes.class / classList / attribute "class" ...
   - NoHtmlInDemo: demo/src modules may not import Html/Html.\*/Svg/Svg.\*,
-    except Main, which may bare-import Html only.
+    except Main, which may bare-import Html only, and demo/src/Viz/, which
+    holds the `Leaf.Embed` view functions and so writes Html/Svg by
+    definition. NoClassOutsideRender and NoRawSchemaStrings still apply
+    there, so an embed cannot reach a daisyUI class.
   - NoRawSchemaStrings: no string literal may exactly equal a daisyUI class
     from fixtures/schema.json, outside Daisy.Schema/Daisy.Schema.\*/Daisy.Render.
 

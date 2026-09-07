@@ -27,8 +27,11 @@ The compiler and the test suite together guarantee:
    and `Page.cta` is a mandatory single field, so "six sections" and "zero or two primary CTAs" are
    type errors rather than runtime checks.
 
-There is no `Raw Html` escape hatch, and there never will be. Markup the tree cannot express is
-recorded in [`fixtures/rejected.md`](fixtures/rejected.md) with a reason.
+There is no `Raw Html` constructor. Custom markup has exactly one door — [`Leaf.Embed`](#custom-views),
+which is a *framed* one: the renderer draws it in a fixed, clipped, labelled box, hands it the theme's
+colours as CSS variables, and forbids it a class attribute. Markup the tree cannot express is still
+recorded in [`fixtures/rejected.md`](fixtures/rejected.md) with a reason; an embed is for a drawing
+daisyUI has no component for, not for hand-writing markup a `Block` or `Leaf` should express.
 
 ## Install
 
@@ -282,6 +285,66 @@ so a `.css` file in a package never reaches you. Write it to a real stylesheet a
 Everything in it is inside `@media (prefers-reduced-motion: no-preference)`, so a reader who has
 asked for less motion gets the undecorated page. The drawing is keyed by its data, so replacing a
 dataset replays the animation and hovering does not.
+
+## Custom views
+
+Sometimes the drawing you need is not one of the five chart kinds and is not a daisyUI component
+either. `Leaf.Embed` is the one way your own `Html` reaches a page, and everything about it is
+the renderer's except what you draw:
+
+```elm
+import Daisy.Tree exposing (..)
+import Viz.Funnel
+
+funnelCard : Block msg
+funnelCard =
+    Card defaultCardConfig
+        { emptyCardParts
+            | title = Just "Conversion funnel"
+            , body = [ CardLeaf (Embed (embedConfig "Conversion funnel") Viz.Funnel.view) ]
+        }
+```
+
+`Daisy.Render` wraps the result in `relative overflow-hidden w-full` at one of three fixed heights
+(`EmbedSm` 160px, `EmbedMd` 256px, `EmbedLg` 384px — `EmbedMd` is the height a `Block.Chart` gets,
+so the two sit level side by side), with `role="figure"` and the config's `label` as `aria-label`.
+So an embed cannot overlap the block below it, cannot escape its box, and cannot go unnamed. It is a
+`Leaf`, so it cannot hold — or stand in for — a block, a section or an overlay.
+
+Your view function is called with a `ThemeContext`, which is the whole palette an embed gets:
+
+```elm
+view : ThemeContext -> Html msg
+view ctx =
+    Svg.svg [ SvgA.viewBox "0 0 640 240" ]
+        [ Svg.rect [ SvgA.fill (ctx.surface Base200), {- ... -} ] []
+        , Path.element band [ SvgA.fill (ctx.color Primary) ]
+        , Svg.text_ [ SvgA.fill (ctx.surface BaseContent) ] [ Svg.text "Visitors" ]
+        ]
+```
+
+| Field | Value |
+|---|---|
+| `color : SemanticColor -> String` | `"var(--color-primary)"`, `"var(--color-accent)"`, … — the same eight the charts use |
+| `surface : Surface -> String` | `Base100`, `Base200`, `Base300`, `BaseContent` as `var(--color-base-*)` |
+| `theme : Theme` | the page's theme, for a drawing that must branch on light and dark rather than on a variable |
+| `radiusBox : String` | `"var(--radius-box)"`, so a rounded shape matches the card around it |
+
+They are CSS variables, not colour values, so the drawing follows the active theme with no
+re-render and no message — the same way a chart series does.
+
+**An embed may not carry a class.** `NoClassOutsideRender` reports `Html.Attributes.class` inside
+one exactly as it does anywhere outside `Daisy.Render`, and `NoRawSchemaStrings` reports a daisyUI
+class written as a literal. Style an embed with inline `style`, SVG presentation attributes and the
+`ThemeContext` colours. In this repo's demo the exemption that lets an embed import `Html`/`Svg` at
+all is a single directory, `demo/src/Viz/`; the demo pages themselves still cannot.
+
+**What you give up** is class coverage. `CoverageTest`, the corpus and `tools/render-class-audit.js`
+read classes back off rendered markup, and an embed emits none, so nothing inside one is checked by
+them. Overlap, overflow, contrast, accessibility and the theme sweeps are unaffected: they measure
+the painted page. `demo/src/Viz/Funnel.elm` is the worked example — a conversion funnel drawn with
+`gampleman/elm-visualization`, whose bands are asserted to equal the theme's own `--color-primary`,
+`--color-secondary` and `--color-accent` in every theme.
 
 ## Calendar
 
@@ -713,6 +776,7 @@ tree-level reasoning is in [`docs/tree-decisions.md`](docs/tree-decisions.md).
 | A `card-body` or any other `part` class on a standalone element | parts are fields of their component's parts record |
 | Tailwind variant prefixes such as `is-drawer-open:` | they are variants, not classes an element can carry |
 | Per-call spacing overrides between sections or blocks | spacing comes from one constant table, `Daisy.Render.tokens` |
+| A custom view that sizes itself, holds blocks, or carries a daisyUI class | `Leaf.Embed` is boxed by the renderer at one of three fixed heights, is a leaf, and is forbidden a `class` attribute by `NoClassOutsideRender` |
 
 ## Testing and CI
 

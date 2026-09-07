@@ -30,6 +30,7 @@ import Daisy.Tree exposing (..)
 import Expect
 import Helpers.Classes as Classes
 import Helpers.Fixtures as Fixtures exposing (Msg(..))
+import Html.Attributes as Attr
 import Set exposing (Set)
 import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
@@ -177,6 +178,18 @@ forbidden =
 
 {-| A tree with no event handlers, so `Expect.equal` can compare the rendered
 values themselves (Elm cannot compare functions).
+
+**`Leaf.Embed` is deliberately not in it.** `Embed` holds a
+`ThemeContext -> Html msg`, so a tree containing one holds a function, and
+`Expect.equal` on two such trees would crash the runtime rather than fail —
+the same reason every other fixture here is handler-free. Embeds are still
+covered: they are in `Helpers.Fixtures.leaves`, so every test below that goes
+through `Fixtures.groups` (the class budget, the forbidden utilities, the
+"renders identically twice" check, which compares printed markup rather than
+values) sees them, and `Helpers.Fixtures.embedLeaf` gets the two tests of its
+own at the end of this module. What is lost is only the _value_ equality
+claim, and only for trees with an embed in them.
+
 -}
 staticPage : Page Msg
 staticPage =
@@ -271,6 +284,32 @@ suite =
                 )
                 forbidden
             )
+        , describe "an embed is opaque to the class budget, and emits no daisyUI class"
+            [ test "the sample embed's markup carries no daisyUI class at all" <|
+                \_ ->
+                    Classes.allClassesIn (Render.leaf Fixtures.embedLeaf)
+                        |> Set.intersect Schema.allClasses
+                        |> Set.toList
+                        |> List.map
+                            (\class ->
+                                class
+                                    ++ " reached a Leaf.Embed; an embed may not carry a daisyUI class"
+                            )
+                        |> Classes.expectNoProblems
+            , test "the box the renderer wraps it in is inside the budget" <|
+                \_ ->
+                    Classes.allClassesIn (Render.leaf Fixtures.embedLeaf)
+                        |> Set.toList
+                        |> List.filter (\class -> not (Set.member class allowed))
+                        |> Expect.equalLists []
+            , test "the box announces itself" <|
+                \_ ->
+                    Query.fromHtml (Render.leaf Fixtures.embedLeaf)
+                        |> Query.has
+                            [ Selector.attribute (Attr.attribute "role" "figure")
+                            , Selector.attribute (Attr.attribute "aria-label" "Sample embed")
+                            ]
+            ]
         , describe "cross-checked with Test.Html.Query"
             (List.map
                 (\class ->

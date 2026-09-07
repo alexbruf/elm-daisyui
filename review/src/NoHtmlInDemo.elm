@@ -28,6 +28,22 @@ etc. So: a path starting with `../` or with `src/Daisy/` is library code and
 is always exempt (it legitimately imports `Html` from `Daisy.Render`); any
 other file is demo code and is subject to this rule.
 
+**Embed modules under `demo/src/Viz/` are exempt.** `Daisy.Tree.Leaf.Embed`
+takes a `ThemeContext -> Html msg`, so a demo that uses one has to write
+`Html`/`Svg` somewhere. That somewhere is a `Viz.*` module under
+`demo/src/Viz/`, and nothing else: `Demo.*` pages still may not import `Html`,
+so an embed cannot be inlined into a page and the boundary stays one directory
+wide. What the exemption does **not** relax is the class rule --
+`NoClassOutsideRender` and `NoRawSchemaStrings` both still apply here, so an
+embed may not call `Html.Attributes.class` at all and may not write a daisyUI
+class as a string. An embed styles itself with inline `style`/SVG presentation
+attributes and the colours `Daisy.Tree.ThemeContext` hands it, which are
+`var(--color-*)` values rather than classes. Both spellings of the path are
+accepted for the same reason the library exemption below accepts two:
+`elm-review` run from inside `demo/` reports the file as
+`src/Viz/Funnel.elm`, and a run that reached it from the repo root would
+report `demo/src/Viz/Funnel.elm`.
+
 **The package's own `tests/` are exempt too.** The root `elm-review` run
 reviews `tests/` alongside `src/`, and the Tier A suite is about rendered
 `Html`: it builds `Html` wrappers for `Test.Html.Query`, and the fixtures it
@@ -64,16 +80,25 @@ contextCreator =
         |> Rule.withModuleName
 
 
-isLibraryFile : String -> Bool
-isLibraryFile filePath =
+isExemptFile : String -> Bool
+isExemptFile filePath =
     String.startsWith "../" filePath
         || String.startsWith "src/Daisy/" filePath
         || String.startsWith "tests/" filePath
+        || isEmbedFile filePath
+
+
+{-| A `Leaf.Embed` view module: `demo/src/Viz/`, spelled either way.
+-}
+isEmbedFile : String -> Bool
+isEmbedFile filePath =
+    String.startsWith "src/Viz/" filePath
+        || String.startsWith "demo/src/Viz/" filePath
 
 
 importVisitor : Node Import -> Context -> ( List (Rule.Error {}), Context )
 importVisitor node context =
-    if isLibraryFile context.filePath then
+    if isExemptFile context.filePath then
         ( [], context )
 
     else

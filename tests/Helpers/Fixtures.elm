@@ -1,6 +1,7 @@
 module Helpers.Fixtures exposing
     ( Msg(..)
     , blocks
+    , embedLeaf
     , groups
     , leaves
     , overlays
@@ -74,6 +75,9 @@ import Daisy.Themes as Themes
 import Daisy.Tree as Tree exposing (..)
 import Date
 import Html exposing (Html)
+import Html.Attributes as Attr
+import Svg
+import Svg.Attributes as SvgA
 import Time
 
 
@@ -181,6 +185,7 @@ leaves =
         ++ checkboxLeaves
         ++ colorChipLeaves
         ++ dividerLeaves
+        ++ embedLeaves
         ++ fileInputLeaves
         ++ iconLeaves
         ++ imageLeaves
@@ -330,6 +335,50 @@ dividerLeaves =
     List.map (\v -> Divider { defaultDividerConfig | color = Just v } (Just "or")) SDivider.allColors
         ++ List.map (\v -> Divider { defaultDividerConfig | direction = Just v } Nothing) SDivider.allDirections
         ++ List.map (\v -> Divider { defaultDividerConfig | placement = Just v } Nothing) SDivider.allPlacements
+
+
+{-| One `Leaf.Embed` at each of the three heights, all drawing
+[`embedDrawing`](#embedLeaf).
+-}
+embedLeaves : List (Leaf Msg)
+embedLeaves =
+    List.map
+        (\height -> Embed { height = height, label = "Sample embed" } embedDrawing)
+        allEmbedHeights
+
+
+{-| A fixed sample embed, exported so `RenderPurityTest` can assert on exactly
+this one: an embed's markup is the caller's, so the only honest claim the suite
+can make about embeds in general is about a sample it wrote itself.
+
+It touches all four `ThemeContext` fields, which is what makes it a coverage
+fixture: `color`, `surface`, `theme` and `radiusBox`.
+
+-}
+embedLeaf : Leaf Msg
+embedLeaf =
+    Embed { height = EmbedMd, label = "Sample embed" } embedDrawing
+
+
+embedDrawing : Tree.ThemeContext -> Html Msg
+embedDrawing ctx =
+    Html.div
+        [ Attr.style "border-radius" ctx.radiusBox
+        , Attr.style "background" (ctx.surface Base200)
+        ]
+        [ Svg.svg
+            [ SvgA.viewBox "0 0 100 40" ]
+            [ Svg.rect
+                [ SvgA.width "60"
+                , SvgA.height "20"
+                , SvgA.fill (ctx.color Chart.Primary)
+                ]
+                []
+            , Svg.text_
+                [ SvgA.fill (ctx.surface BaseContent) ]
+                [ Svg.text (themeToString ctx.theme) ]
+            ]
+        ]
 
 
 fileInputLeaves : List (Leaf Msg)

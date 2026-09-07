@@ -52,6 +52,7 @@ import Daisy.Tree as Tree
         , Theme
         )
 import Date exposing (Date)
+import Viz.Funnel
 
 
 {-| What the analytics page needs from the router.
@@ -572,8 +573,35 @@ trafficSection config =
     Stack { align = AlignStretch }
         [ chartCard ("Sessions and signups — " ++ config.dateRange)
             (CardChart DChart.Area trafficSeries Nothing)
+        , funnelCard
         , debugPane config
         ]
+
+
+{-| The one custom view on the demo: a conversion funnel, drawn by
+`Viz.Funnel` and carried into the tree as a `Leaf.Embed`.
+
+`Block.Chart` cannot draw it — the tree's chart type is a closed set of five
+kinds and a funnel is not one of them — and before `Leaf.Embed` that made it a
+`fixtures/rejected.md` entry. It is still a `Leaf`, so it sits in a `Card` like
+any other leaf and cannot hold a block, a section or an overlay; and
+`Daisy.Render` boxes it at a fixed height, so it cannot overlap the debug pane
+under it however it draws.
+
+`Tree.embedConfig` defaults to `EmbedMd`, the same 16rem the chart cards above
+it are pinned to, so the two panels read as one column.
+
+-}
+funnelCard : Block msg
+funnelCard =
+    Card borderedCard
+        { emptyCard
+            | title = Just "Conversion funnel"
+            , body =
+                [ CardLeaf
+                    (Embed (Tree.embedConfig "Conversion funnel") Viz.Funnel.view)
+                ]
+        }
 
 
 trafficSeries : DChart.ChartData

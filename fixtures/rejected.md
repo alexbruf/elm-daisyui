@@ -12,6 +12,12 @@ Reasons use two categories:
 - `unmapped: not yet hand-written` — expressible in principle, but no tree has
   been written for it yet.
 
+`Leaf.Embed` does **not** empty this table. An embed is for a *drawing* daisyUI
+has no component for (the demo's conversion funnel), and it cannot carry a
+daisyUI class at all — `NoClassOutsideRender` forbids the `class` attribute
+inside one — so it cannot reproduce any of the markup below. See
+`docs/tree-decisions.md`, "Embed (2026-09-07)".
+
 Regenerate `tests/Corpus/Rejected.elm` from this table with
 `bun tools/gen-corpus-elm.js`.
 

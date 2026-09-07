@@ -54,6 +54,28 @@ main =
                                 }
                                 |> Review.Test.atExactly { start = { row = 3, column = 8 }, end = { row = 3, column = 23 } }
                             ]
+            , test "a module outside demo/src/Viz/ is still reported, even with a Viz-like name" <|
+                \() ->
+                    """module Vizual.Funnel exposing (view)
+
+import Svg
+
+
+view : Svg.Svg msg
+view =
+    Svg.svg [] []
+"""
+                        |> Review.Test.run rule
+                        |> Review.Test.expectErrors
+                            [ Review.Test.error
+                                { message = "`import Svg` is not allowed in demo/src"
+                                , details =
+                                    [ "Demo apps are built only through Daisy.Tree, rendered by Daisy.Render.page. The router (Main) is the sole exception and may `import Html` bare (for its view/Program type signatures and to call Daisy.Render.page) -- never Html.Attributes, another Html.* submodule, or Svg."
+                                    ]
+                                , under = "Svg"
+                                }
+                                |> Review.Test.atExactly { start = { row = 3, column = 8 }, end = { row = 3, column = 11 } }
+                            ]
             , test "Demo.* module importing Svg is reported" <|
                 \() ->
                     """module Demo.Analytics exposing (icon)
@@ -154,6 +176,37 @@ init =
 """
                         ]
                         |> Review.Test.expectNoErrors
+            , test "Viz.* embed module (demo/src/Viz/) may import Html.Attributes" <|
+                \() ->
+                    """module Viz.Funnel exposing (view)
+
+import Html
+import Html.Attributes
+import Svg
+import Svg.Attributes
+
+
+view : Html.Html msg
+view =
+    Html.div [ Html.Attributes.style "color" "red" ] [ Svg.svg [] [] ]
+"""
+                        |> Review.Test.run rule
+                        |> Review.Test.expectNoErrors
+            , test "the exemption is by path: demo/src/Viz/Funnel.elm is exempt under that spelling too" <|
+                \() ->
+                    Review.Test.runOnModulesWithProjectData projectWithRootSpelledEmbed
+                        rule
+                        [ """module Demo.Admin exposing (init)
+
+import Browser
+
+
+init : ()
+init =
+    ()
+"""
+                        ]
+                        |> Review.Test.expectNoErrors
             , test "Demo.* module with no Html/Svg import is allowed" <|
                 \() ->
                     """module Demo.Admin exposing (init)
@@ -191,5 +244,30 @@ import Svg
 suite : Html.Html msg
 suite =
     Html.text "fixtures are rendered Html"
+"""
+            }
+
+
+{-| A `Leaf.Embed` view module at the path a run from the repo root would
+report it under. `Review.Test.run` derives every path from the module name as
+`src/<Module>.elm`, which is exactly the spelling the run from inside `demo/`
+produces, so the `demo/src/Viz/` half of the exemption needs the project data
+form to be exercised at all.
+-}
+projectWithRootSpelledEmbed : Project
+projectWithRootSpelledEmbed =
+    Project.new
+        |> Project.addModule
+            { path = "demo/src/Viz/Funnel.elm"
+            , source = """module Viz.Funnel exposing (view)
+
+import Html
+import Html.Attributes
+import Svg
+
+
+view : Html.Html msg
+view =
+    Html.div [ Html.Attributes.style "color" "red" ] [ Svg.svg [] [] ]
 """
             }

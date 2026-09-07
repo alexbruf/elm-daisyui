@@ -268,6 +268,7 @@ other 36-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 | `interaction.spec.ts` | interaction | full matrix |
 | `theme-generator.spec.ts` | — (the custom-theme feature) | `desktop-light`, the `/theme` route |
 | `animation.spec.ts` | — (the motion stylesheet) | `desktop-light`, `/` |
+| `embed.spec.ts` | — (`Leaf.Embed`, the custom-view door) | full matrix, `/analytics` |
 
 `a11y.spec.ts` asserts zero serious/critical axe violations, which is the
 SPEC row, and additionally **prints** the moderate/minor tally for every scan
@@ -295,6 +296,34 @@ reader (the daisyUI class list is read from the generated schema at test time,
 not copied) and `open()`. `lib/browser.ts` holds the collectors that run inside
 the page; each one is passed whole to `page.evaluate`, so each is
 self-contained by construction.
+
+## `embed.spec.ts`
+
+`Daisy.Tree.Leaf.Embed` is the one place a caller's own `Html` reaches a page
+(`docs/tree-decisions.md`, "Embed (2026-09-07)"). It is opaque to every check
+that reads classes back off markup — `CoverageTest`, the corpus and
+`tools/render-class-audit.js` all see a box with nothing in it — so the
+guarantees it still has to keep are the ones only a browser can measure. Six
+tests on `/analytics`, whose "Conversion funnel" card holds the demo's embed
+(`demo/src/Viz/Funnel.elm`):
+
+- **It follows the theme.** The three funnel bands' computed `fill` must equal
+  the theme's own `--color-primary` / `--color-secondary` / `--color-accent`, in
+  `light`, `dark`, `nord` and `acme`. `acme` is the demo's `Theme.Custom`, whose
+  variables exist only as inline properties on the page root, so this also
+  proves an embed reaches a theme no stylesheet declares. The 36-theme version
+  of the same claim comes for free in `themes.spec.ts`'s chart-colour sweep:
+  that sweep reads every `svg *` whose `stroke`/`fill` attribute is a
+  `var(--color-*)`, and the funnel's are.
+- **It is boxed.** `EmbedMd` is 256px, `overflow: hidden`, `position: relative`,
+  and no descendant's rect may leave the box by more than a pixel of layout
+  rounding. That is the guarantee the type system cannot make — the renderer's
+  box is what stops a custom view from overlapping the block below it.
+- **It announces itself.** `role="figure"` with `aria-label="Conversion funnel"`.
+- **It carries no daisyUI class.** The static half is `NoClassOutsideRender`,
+  which forbids the `class` attribute inside an embed outright; this is the same
+  claim measured on the painted page, so a class arriving some other way would
+  still be caught.
 
 ## Known `fixme`s
 
