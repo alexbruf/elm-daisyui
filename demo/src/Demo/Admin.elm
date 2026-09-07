@@ -2,9 +2,13 @@ module Demo.Admin exposing (Config, page)
 
 {-| The admin dashboard demo (SPEC.md step 7, row "Admin").
 
-Dashboard shell, four `Stat` tiles in a four-column `Grid`, one `Chart Line`,
-one `Table` with badges and a per-row action button, one `Toast` overlay shown
-after the page CTA fires, and a `ThemeSelect` switcher in the navbar.
+Dashboard shell, four `Stat` tiles in a four-column `Grid`, one `Chart Line`
+and one `Table` (with badges and a per-row action button) each inside a `Card`
+with a `card-title`, one `Toast` overlay shown after the page CTA fires, and a
+`ThemeSelect` switcher in the navbar that offers all 35 themes as a dropdown.
+
+Section titles are `Leaf.Heading` leaves inside `Prose`: one `H1` for the page
+and an `H2` per following section, which is the page's document outline.
 
 Built only from `Daisy.Tree` / `Daisy.Chart` / `Daisy.Schema.*` constructors —
 this module imports no `Html`, so every class on the page comes from
@@ -22,11 +26,15 @@ import Daisy.Chart as DChart
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Badge as SBadge
 import Daisy.Schema.Button as SButton
+import Daisy.Schema.Card as SCard
 import Daisy.Schema.Menu as SMenu
 import Daisy.Schema.Table as STable
 import Daisy.Tree as Tree
     exposing
-        ( Block(..)
+        ( Align(..)
+        , Block(..)
+        , CardChild(..)
+        , HeadingLevel(..)
         , Leaf(..)
         , MenuItem(..)
         , MenuSpec
@@ -38,7 +46,7 @@ import Daisy.Tree as Tree
         , Sections(..)
         , Shell(..)
         , StatItem
-        , Theme(..)
+        , Theme
         , ThemePresentation(..)
         )
 
@@ -127,23 +135,28 @@ navItem label path onClick active =
 
 navbar : Config msg -> NavbarParts msg
 navbar config =
-    { start = [ Text "Revenue overview" ]
+    { start = [ Text "Acme Console" ]
     , center = []
     , end = [ themeSwitcher config ]
     }
 
 
-{-| The switcher offers a short list rather than all 35 themes: `ThemeSelect`
-renders one sibling control per theme, so the full set would not fit in a
-navbar. The `?theme=` URL parameter (handled in `Main`) still reaches every
-theme, which is what the Tier C themes sweep uses.
+{-| Every theme `Daisy.Tree.allThemes` knows, as one control.
+
+`ThemeAsDropdown` is the only presentation that stays one control wide: the
+others render a sibling `input.theme-controller` per theme, which is 35
+controls in `navbar-end`. The dropdown opens on `:focus-within`, so tabbing to
+its `role="button"` trigger reveals the radio list and the next `Tab` lands on
+the checked theme; clicking or activating a radio fires `onSelect`, which the
+router turns into `ThemeChanged` and writes back to `Page.theme`.
+
 -}
 themeSwitcher : Config msg -> Leaf msg
 themeSwitcher config =
     ThemeSelect
-        { themes = [ Light, Dark, Corporate, Nord ]
+        { themes = Tree.allThemes
         , current = config.theme
-        , presentation = ThemeAsSelect
+        , presentation = ThemeAsDropdown
         , onSelect = Just config.onTheme
         }
 
@@ -156,7 +169,9 @@ headerSection : Section msg
 headerSection =
     Stack Tree.defaultStackConfig
         [ Prose
-            [ Text "Revenue, orders and account health across every channel, refreshed hourly." ]
+            [ Heading H1 "Revenue overview"
+            , Text "Revenue, orders and account health across every channel, refreshed hourly."
+            ]
         ]
 
 
@@ -180,12 +195,41 @@ statBlock title value desc =
     Stat Tree.defaultStatConfig [ { base | desc = Just desc } ]
 
 
+{-| `AlignStretch`, so the card fills the band. The other three `Align` values
+shrink every block to its content width, which is what used to force a
+one-column `Grid` here.
+-}
 chartSection : Section msg
 chartSection =
-    Stack Tree.defaultStackConfig
-        [ Prose [ Text "Net revenue vs. operating cost, last twelve months (thousands USD)." ]
-        , Chart DChart.Line revenueSeries
+    Stack { align = AlignStretch }
+        [ Prose [ Heading H2 "Revenue trend" ]
+        , Card borderedCard
+            { emptyCard
+                | title = Just "Net revenue vs. operating cost"
+                , body =
+                    [ CardLeaf (Text "Last twelve months, thousands USD.")
+                    , CardChart DChart.Line revenueSeries
+                    ]
+            }
         ]
+
+
+emptyCard : Tree.CardParts msg
+emptyCard =
+    Tree.emptyCardParts
+
+
+{-| `card-border` — without a style a `card` paints nothing of its own, so on a
+`base-100` page it is invisible and "the chart is in a card" does not read.
+-}
+borderedCard : Tree.CardConfig
+borderedCard =
+    { defaultCard | style = Just SCard.Border }
+
+
+defaultCard : Tree.CardConfig
+defaultCard =
+    Tree.defaultCardConfig
 
 
 revenueSeries : DChart.ChartData
@@ -205,17 +249,23 @@ revenueSeries =
     }
 
 
-{-| A one-column `Grid` rather than a `Stack`: grid children stretch to the
-band width, whereas `Section.Stack` aligns on the cross axis (`Align` has no
-stretch), which would shrink the table to its content.
+{-| An `AlignStretch` stack: the table's card fills the band, and the debug
+pane sits under it. The shell is `Dashboard`, so the page CTA lives in the
+navbar and stretching the last section cannot reach it.
 -}
 ordersSection : Config msg -> Section msg
 ordersSection config =
-    Grid { columns = Tree.Cols1 }
-        [ Prose [ Text "Most recent orders" ]
-        , Table
-            { size = Nothing, modifiers = [ STable.Zebra ] }
-            (headerRow :: List.map (orderRow config) orders)
+    Stack { align = AlignStretch }
+        [ Prose [ Heading H2 "Orders" ]
+        , Card borderedCard
+            { emptyCard
+                | title = Just "Most recent orders"
+                , body =
+                    [ CardTable
+                        { size = Nothing, modifiers = [ STable.Zebra ] }
+                        (headerRow :: List.map (orderRow config) orders)
+                    ]
+            }
         , debugPane config
         ]
 

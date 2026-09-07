@@ -21,7 +21,9 @@ by its named type.
 Two support types are not daisyUI components and appear in the tree anyway: `Block.Prose` (Tailwind typography)
 and `Block.Chart` (`Daisy.Chart` over `terezka/elm-charts`). `Leaf.Image` is also not a daisyUI component but is
 required by `card` (figure), `carousel`, `diff`, `stack`, `avatar` and `hover-gallery`; it emits no daisyUI class
-of its own, only the `mask` / `hover-3d` properties.
+of its own, only the `mask` / `hover-3d` properties. `Leaf.Heading` is the third: it renders a bare
+`<h1>`/`<h2>`/`<h3>` and emits no class at all, so that a page has a document outline for Tailwind typography
+(inside `Block.Prose`) and for assistive technology to read.
 
 `Section.Stack` (a fixed-gap vertical layout band) is **not** the daisyUI `stack` component. The daisyUI `stack`
 component (overlapping children) is placed at Block as `Block.Stacked`. See Unsure.
@@ -38,7 +40,7 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | breadcrumbs | Block | `Block.Breadcrumbs` | `List (Leaf msg)` (Link/Text leaves) | A `<div class="breadcrumbs">` wrapping a `<ul>` of links: it holds multiple leaves, so it cannot be a Leaf. |
 | button | Leaf | `Leaf.Button` | `String` label | Fixed by the spec sketch. `ButtonColor` omits `Primary`; the only primary button is `Page.cta`. |
 | calendar | Excluded | — | — | The three `component` classes (`cally`, `react-day-picker`, `vc`) are styling hooks for third-party JS widgets (a web component and two React/JS libraries). Rendering them needs foreign markup the tree cannot generate. |
-| card | Block | `Block.Card` | `CardParts msg` = `{ figure : Maybe (Leaf msg), title : Maybe String, body : List (Leaf msg), actions : List (Leaf msg) }` | Fixed by the spec sketch; `card-title`/`card-body`/`card-actions` are `part` classes, so a parts record makes `card-body` outside a card unrepresentable. |
+| card | Block | `Block.Card` | `CardParts msg` = `{ figure : Maybe (Leaf msg), title : Maybe String, body : List (CardChild msg), actions : List (Leaf msg) }` | Fixed by the spec sketch; `card-title`/`card-body`/`card-actions` are `part` classes, so a parts record makes `card-body` outside a card unrepresentable. `CardChild` is `CardLeaf`/`CardChart`/`CardTable`/`CardStat`/`CardForm` — the block shapes a dashboard card is made of, with no `CardCard`, so a card still cannot hold a card. |
 | carousel | Block | `Block.Carousel` | `List (CarouselItem msg)`, each `{ content : List (Leaf msg) }` (the `carousel-item` part) | A scroll-snap container of items; sits directly in a Section like any other content container. |
 | chat | Block | `Block.Chat` | `List (ChatMessage msg)`, each a parts record `{ placement, image, header, footer, bubble }` | `chat-image`/`chat-header`/`chat-footer`/`chat-bubble` are `part` classes and repeat per message, so one parts record per message inside a Block-level list. |
 | checkbox | Leaf | `Leaf.Checkbox` | `CheckboxConfig` only | A terminal form control; used both inside a `Form` field and standalone inside a table row header. |
@@ -49,21 +51,22 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | dock | Page | field `dock : Maybe (Dock msg)` on `Page` (rendered in the fixed chrome layer) | `Dock` holds `List DockItem` (`{ icon, label, active }`, `dock-label` part) | Viewport-fixed bottom navigation. Placed in a Section it would intersect content and break `overlap.spec`; it is shell chrome, like the navbar. |
 | drawer | Overlay | `Overlay.Drawer` | `List (Section msg)` | Fixed by the spec. Also referenced (not re-placed) by `Shell.Dashboard`, which renders `drawer` + `drawer-open` at `lg:` with the sidebar `menu` and the `navbar`; that is the only `drawer` outside `Overlay`. |
 | dropdown | Property | field `dropdown : Maybe (Dropdown msg)` on `ButtonConfig`, `LinkConfig`, `AvatarConfig` | `Dropdown` holds a `Menu msg` or `List (Leaf msg)` (the `dropdown-content` part) | Fixed by the spec: dropdown is a property on a Leaf, not a node, so it always has an anchor and lands in the renderer-managed overlay layer. |
-| fab | Page | field `fab : Maybe (Fab msg)` on `Page` (fixed chrome layer) | `Fab` holds `{ main : Leaf msg, actions : List (Leaf msg), close : Maybe (Leaf msg) }` (`fab-main-action`, `fab-close` parts) | Viewport-fixed floating action button that overlaps page content by design; same argument as `dock`. |
+| fab | Page | field `fab : Maybe (Fab msg)` on `Page` (fixed chrome layer) | `Fab` holds `{ main : Leaf msg, mainAction : Maybe (Leaf msg), actions : List (Leaf msg), close : Maybe (Leaf msg) }` (`fab-main-action` goes on the `mainAction` leaf itself, `fab-close` on a wrapper) | Viewport-fixed floating action button that overlaps page content by design; same argument as `dock`. |
 | fieldset | Parts-of | part record inside `Block.Form`: `Fieldset msg = { legend : Maybe String, fields : List (Field msg) }` | `List (Field msg)` | `fieldset-legend` is a `part`, and a fieldset only ever means something inside a form. Making it a record makes a stray legend unrepresentable. |
 | file-input | Leaf | `Leaf.FileInput` | `FileInputConfig` only | Terminal form control, used as a `Field.control`. |
-| filter | Leaf | `Leaf.Filter` | `FilterConfig` + `{ name : String, options : List String, reset : Bool }` (data) | A `<form class="filter">` of radio inputs styled as buttons plus a `filter-reset` input: one logical control, all of whose content is plain data. |
+| filter | Leaf | `Leaf.Filter` | `{ name : String, options : List String, selected : Maybe String, reset : Maybe FilterReset }` (data) | A `<form class="filter">` of radio inputs styled as buttons plus an optional reset input: one logical control, all of whose content is plain data. `FilterReset` is `ResetPart` (the `filter-reset` part) or `ResetButton` (the plain `btn btn-square` the `<form>` idiom uses). |
 | footer | Section | `Section.Footer` | `List (Block msg)` — in practice `Block.Nav` columns | Fixed by the spec. `footer-title` is emitted only when a `Block.Nav` is a direct child of a Footer, so the part never escapes its component. |
 | hero | Section | `Section.Hero` | `List (Block msg)` | Fixed by the spec. `hero-content` wraps the blocks and `hero-overlay` comes from `HeroConfig.overlay`; both parts are renderer-emitted. |
+| (heading) | Leaf | `Leaf.Heading` | `HeadingLevel` (`H1`/`H2`/`H3`) + `String` | Not a daisyUI component and emits no daisyUI class. A page otherwise has no `<h1>`: `Leaf.Text` is a text node and `Block.Prose` is a `<div>`, so Tailwind typography had nothing to style and axe reported `page-has-heading-one` on every demo. |
 | hover-3d | Property | field `hover3d : Bool` on `ImageConfig` and `CardConfig` | none | Decoration only: a wrapper plus eight empty divs the renderer emits. It has no authorable content. |
 | hover-gallery | Leaf | `Leaf.HoverGallery` | `List ImageSrc` (data) | A `<figure class="hover-gallery">` whose children are only `<img>` tags: terminal content with no nodes inside. |
 | indicator | Property | field `indicator : Maybe (Indicator msg)` on Leaf configs (Button, Avatar, Input, Link) | `Indicator` holds `IndicatorConfig` + a `Badge`/`Status` payload (the `indicator-item` part) | Same shape as `tooltip`/`dropdown`: a wrapper that decorates exactly one anchor element. Placing it as a node would let `indicator-item` appear without an anchor. |
-| input | Leaf | `Leaf.Input` | `InputConfig` only | Fixed by the spec sketch; the canonical terminal form control. |
+| input | Leaf | `Leaf.Input` | `InputConfig` only | Fixed by the spec sketch; the canonical terminal form control. `InputConfig` also carries the HTML validation constraints (`inputType`, `required`, `pattern`, `minLength`, `maxLength`) daisyUI's `validator` / `validator-hint` pair needs to ever fire, plus `ariaLabel`. |
 | join | Leaf | `Leaf.Join` | `List (JoinItem msg)`, a closed non-recursive type (`JoinButton`/`JoinInput`/`JoinSelect`/`JoinText`) | It groups adjacent *controls* into one unit and must be usable as a `Field.control` (docs: "Fieldset with multiple join items") and inside a Navbar, both of which only accept Leaves. `JoinItem` being a separate type keeps `Leaf` non-recursive. |
 | kbd | Leaf | `Leaf.Kbd` | `String` | Terminal inline content. |
 | label | Parts-of | fields on `Field msg`: `{ label : Maybe String, labelPlacement : Start \| End \| Floating }` | none | `label` and `floating-label` only wrap or precede a control; as a record field the label cannot exist without its input. |
 | link | Leaf | `Leaf.Link` | `String` | Fixed by the spec sketch. |
-| list | Block | `Block.List` | `List (ListRow msg)`, each `{ cells : List (Leaf msg) }` (the `list-row` component class) | A `<ul class="list">` of `list-row` items holding images, text and buttons: structurally a Table-like Block. |
+| list | Block | `Block.ListBlock` (no config) | `List (ListRow msg)`, each `{ cells : List (ListCell msg) }`, a cell being `{ content : Leaf msg, grow : Bool, wrap : Bool }` | A `<ul class="list">` of `list-row` items holding images, text and buttons: structurally a Table-like Block. `list-col-grow` / `list-col-wrap` mark one *cell*, so they are flags there and the block has no config left at all. |
 | loading | Leaf | `Leaf.Loading` | `LoadingConfig` only | Terminal spinner glyph. |
 | mask | Property | field `mask : Maybe Mask` on `ImageConfig` and `AvatarConfig` | none | A clip-path shape applied to one existing element ("Avatar with mask"); it has no children and cannot stand alone. |
 | megamenu | Leaf | `Leaf.Megamenu` | `List MegamenuItem` where `MegamenuItem = { label : String, menu : Menu msg }` (data) | It belongs in a `Navbar`, which accepts Leaves only. All its content is a closed list of labelled menus; the renderer generates the `popover`/`popovertarget` ids and the `megamenu-active` part. |
@@ -80,11 +83,11 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | radial-progress | Leaf | `Leaf.RadialProgress` | `{ value : Float, label : String }` | Terminal element; its size/thickness are CSS variables, not classes. |
 | radio | Leaf | `Leaf.Radio` | `RadioConfig` + `{ name : String }` | Terminal form control. |
 | range | Leaf | `Leaf.Range` | `RangeConfig` + `{ min, max, value }` | Terminal form control. |
-| rating | Leaf | `Leaf.Rating` | `RatingConfig` + `{ name : String, count : Int, value : Int }` | Terminal form control; its stars are `mask` shapes the renderer emits. |
+| rating | Leaf | `Leaf.Rating` | `RatingConfig` (`shape : Maybe SMask.Style`, `modifiers : List RatingModifier`) + `{ name, count, value, clearable }` | Terminal form control; its stars are `mask` shapes, chosen by `shape` (default `mask-star-2`). `rating-hidden` belongs on the blank first radio, so it is `clearable` on the data, not a container modifier. |
 | select | Leaf | `Leaf.Select` | `SelectConfig` + `{ options : List String, selected : Maybe String }` | Terminal form control. Required as a Navbar Leaf by the Analytics demo (date range). |
 | skeleton | Leaf | `Leaf.Skeleton` | `SkeletonConfig` only | A placeholder shape with no content. |
 | stack | Block | `Block.Stacked` | `List (Leaf msg)` | daisyUI `stack` overlaps its children; it is a content container in a Section, so Block is its level. Named `Stacked` because `Section.Stack` already exists and is a different thing. See Unsure. |
-| stat | Block | `Block.Stat` | `List (StatItem msg)`, each a parts record `{ figure, title, value, desc, actions }` | The component class is `stats`; `stat`, `stat-title`, `stat-value`, `stat-desc`, `stat-figure`, `stat-actions` are `part` classes that repeat per tile, so the Block holds a list of part records. See Unsure. |
+| stat | Block | `Block.Stat` | `StatConfig` (`direction : StatDirection` = `Fixed (Maybe Direction)` or `Responsive`) + `List (StatItem msg)`, each a parts record `{ figure, title, value, desc, actions }` | The component class is `stats`; `stat`, `stat-title`, `stat-value`, `stat-desc`, `stat-figure`, `stat-actions` are `part` classes that repeat per tile, so the Block holds a list of part records. See Unsure. |
 | status | Leaf | `Leaf.Status` | `StatusConfig` only | A terminal coloured dot, typically used as the payload of an `indicator` or inside a table cell. |
 | steps | Block | `Block.Steps` | `List (Step msg)`, each `{ label : String, color : Maybe StepColor, icon : Maybe String }` (`step`, `step-icon` parts) | Progress container placed in a Section; its per-step colour lives on the `step` part, not the container. |
 | swap | Leaf | `Leaf.Swap` | `{ on : String, off : String, indeterminate : Maybe String }` (the three part classes) | One checkbox-driven control with exactly two/three fixed faces: terminal. |
@@ -92,8 +95,8 @@ component (overlapping children) is placed at Block as `Block.Stacked`. See Unsu
 | table | Block | `Block.Table TableConfig (List (Row msg))` | `List (Row msg)` where `Row = { cells : List (Leaf msg) }` | Fixed by the spec. Rows hold Leaves, which is what the Admin demo's badge + row-action button needs. |
 | textarea | Leaf | `Leaf.Textarea` | `TextareaConfig` only | Terminal form control. |
 | text-rotate | Leaf | `Leaf.TextRotate` | `List String` | Terminal animated text; its children are only words. |
-| theme-controller | Leaf | `Leaf.ThemeSelect` | `{ themes : List Theme, current : Theme }` (data) | The class only ever sits on a checkbox/radio/select input whose `value` is a theme name. As a Leaf it can go in the Navbar (Admin demo). `Page.theme` sets the initial `data-theme` on the shell; `ThemeSelect` is the control that changes it. See Unsure. |
-| timeline | Block | `Block.Timeline` | `List (TimelineItem msg)`, each a parts record `{ start, middle, end }` | `timeline-start`/`-middle`/`-end` are `part` classes repeating per item; the container is a content block in a Section. |
+| theme-controller | Leaf | `Leaf.ThemeSelect` | `{ themes : List Theme, current : Theme, presentation : ThemePresentation }` (data) | The class only ever sits on a checkbox/radio/select input whose `value` is a theme name. `ThemeAsDropdown` is the compact presentation (daisyUI's documented `dropdown` + `dropdown-content` radios); every other one is a sibling control per theme, which is 35 controls wide with `allThemes`. As a Leaf it can go in the Navbar (Admin demo). `Page.theme` sets the initial `data-theme` on the shell; `ThemeSelect` is the control that changes it. See Unsure. |
+| timeline | Block | `Block.Timeline` | `TimelineConfig` (`modifiers : List TimelineModifier`, which omits `timeline-box`) + `List (TimelineItem msg)`, each a parts record `{ start, startBox, middle, end, endBox }` | `timeline-start`/`-middle`/`-end` are `part` classes repeating per item; the container is a content block in a Section. `timeline-box` sits on one *side of one item*, so it is `startBox` / `endBox` there. |
 | toast | Overlay | `Overlay.Toast` | `List (Block msg)` (in practice `Block.Alert`) | Fixed by the spec as an Overlay. Children changed from `List Leaf` to `List Block` because every daisyUI toast example contains `alert`. See Unsure. |
 | toggle | Leaf | `Leaf.Toggle` | `ToggleConfig` + `{ checked : Bool }` | Terminal form control; required by the Settings demo as a `Field.control`. |
 | tooltip | Property | field `tooltip : Maybe Tooltip` on every Leaf config | `Tooltip = { text : String, config : TooltipConfig }` (`tooltip-content` part) | Fixed by the spec: tooltip is a property on a Leaf, not a node. |
@@ -223,7 +226,7 @@ Legend for the group columns: `-` = group absent in frontmatter, otherwise the n
 | kbd | - | - | 5 | - | - | - | - | - | |
 | label | - | - | - | - | - | - | - | - | `component` has 2 classes: `label`, `floating-label`; drives `Field.labelPlacement` |
 | link | 8 | 1 | - | - | - | - | - | - | |
-| list | - | - | - | - | - | - | 2 | - | `component` has 2 classes: `list`, `list-row` |
+| list | - | - | - | - | - | - | 2 | - | `component` has 2 classes: `list`, `list-row`; both modifiers are per-cell flags |
 | loading | - | 6 | 5 | - | - | - | - | - | |
 | mask | - | 14 | - | - | - | - | 2 | - | property config on Image/Avatar |
 | megamenu | - | - | 5 | 1 | - | - | 2 | - | part: megamenu-active; `direction` has only `megamenu-vertical` |
@@ -240,7 +243,7 @@ Legend for the group columns: `-` = group absent in frontmatter, otherwise the n
 | radial-progress | - | - | - | - | - | - | - | - | no groups; value/size are CSS variables |
 | radio | 8 | - | 5 | - | - | - | - | - | |
 | range | 8 | - | 5 | 1 | - | - | - | - | `direction` has only `range-vertical` |
-| rating | - | - | 5 | - | - | - | 2 | - | |
+| rating | - | - | 5 | - | - | - | 2 | - | `rating-hidden` is `RatingData.clearable`, not a container modifier |
 | select | 8 | 1 | 5 | - | - | - | - | - | |
 | skeleton | - | - | - | - | - | - | 1 | - | |
 | stack (Block.Stacked) | - | - | - | - | - | - | 4 | - | modifier group is really exclusive (Unsure 15) |
@@ -252,8 +255,8 @@ Legend for the group columns: `-` = group absent in frontmatter, otherwise the n
 | table | - | - | 5 | - | - | - | 3 | - | |
 | textarea | 8 | 1 | 5 | - | - | - | - | - | |
 | text-rotate | - | - | - | - | - | - | - | - | no groups |
-| theme-controller | - | - | - | - | - | - | - | - | no groups; config is pure data (`themes`, `current`, `presentation`) |
-| timeline | - | - | - | 2 | - | - | 3 | - | parts: timeline-start, timeline-middle, timeline-end |
+| theme-controller | - | - | - | - | - | - | - | - | no groups; config is pure data (`themes`, `current`, `presentation`, incl. `ThemeAsDropdown`) |
+| timeline | - | - | - | 2 | - | - | 3 | - | parts: timeline-start, timeline-middle, timeline-end; `timeline-box` is a per-side flag on the item |
 | toast | - | - | - | - | 6 | - | - | - | placement is two axes (Unsure 14) |
 | toggle | 8 | - | 5 | - | - | - | - | - | |
 | tooltip | 7 | - | - | - | 7 | - | 1 | - | part: tooltip-content; property config on every Leaf; placement is two axes (Unsure 14) |

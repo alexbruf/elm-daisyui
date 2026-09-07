@@ -2,9 +2,13 @@ module Demo.Settings exposing (Config, currencies, retentionWindows, page)
 
 {-| The form-heavy demo (SPEC.md step 7, row "Settings").
 
-Plain shell, two `Form` blocks made of `Fieldset`s carrying toggles, selects
-and inputs (one of them validated), the page's single primary CTA, and a
-`Modal` confirm overlay whose confirm button fires a message.
+Plain shell, two `Card`s each holding a `Form` of `Fieldset`s carrying toggles,
+selects and inputs (one of them a real `type="email" required` field, so
+daisyUI's `validator-hint` can actually show), the page's single primary CTA,
+and a `Modal` confirm overlay whose confirm button fires a message.
+
+Section titles are `Leaf.Heading` leaves inside `Prose` plus each card's
+`card-title` (an `<h2>`), which gives the page its document outline.
 
 Like every `Demo.*` module this imports no `Html`.
 
@@ -14,14 +18,19 @@ Like every `Demo.*` module this imports no `Html`.
 
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Button as SButton
+import Daisy.Schema.Card as SCard
 import Daisy.Schema.Input as SInput
 import Daisy.Schema.Modal as SModal
 import Daisy.Schema.Toggle as SToggle
 import Daisy.Tree as Tree
     exposing
-        ( Block(..)
+        ( Align(..)
+        , Block(..)
+        , CardChild(..)
         , Field
         , Fieldset
+        , HeadingLevel(..)
+        , InputType(..)
         , LabelPlacement(..)
         , Leaf(..)
         , NavbarParts
@@ -76,7 +85,9 @@ retentionWindows =
 {-| The whole settings screen as one `Page`.
 
 The shell is `Plain`, so `Daisy.Render` places the CTA at the end of the last
-section rather than in a navbar.
+section rather than in a navbar. That is why the warning band and the footer
+are two sections rather than one: the warning wants `AlignStretch` to fill the
+band, and a stretched _last_ section would stretch the CTA across the page.
 
 -}
 page : Config msg -> Page msg
@@ -84,10 +95,11 @@ page config =
     Page
         { shell = Plain
         , sections =
-            Sections4
+            Sections5
                 navSection
                 headerSection
                 (formsSection config)
+                warningSection
                 (footerSection config)
         , cta = Tree.cta "Save changes" config.onSave
         , overlays = [ confirmModal config ]
@@ -135,20 +147,51 @@ headerSection : Section msg
 headerSection =
     Stack Tree.defaultStackConfig
         [ Prose
-            [ Text "Workspace settings apply to everyone on the Acme account." ]
+            [ Heading H1 "Workspace settings"
+            , Text "Workspace settings apply to everyone on the Acme account."
+            ]
         ]
 
 
+{-| The two form groups, each in a `Card`. The `card-title` is the group's
+heading (`Daisy.Render` draws it as an `<h2>`), which is also why no `Prose`
+heading sits on top: a `Prose` block in a two-column grid would take one of the
+two cells, and the card already carries the rank.
+-}
 formsSection : Config msg -> Section msg
 formsSection config =
     Grid { columns = Tree.Cols2 }
-        [ Form
+        [ formCard "General"
             [ workspaceFieldset config
             , notificationFieldset config
             ]
-        , Form
+        , formCard "Privacy"
             [ dataFieldset config ]
         ]
+
+
+formCard : String -> List (Fieldset msg) -> Block msg
+formCard title fieldsets =
+    Card borderedCard
+        { emptyCard | title = Just title, body = [ CardForm fieldsets ] }
+
+
+emptyCard : Tree.CardParts msg
+emptyCard =
+    Tree.emptyCardParts
+
+
+{-| `card-border` — without a style a `card` paints nothing of its own, so on a
+`base-100` page it is invisible and the two form groups read as one band.
+-}
+borderedCard : Tree.CardConfig
+borderedCard =
+    { defaultCard | style = Just SCard.Border }
+
+
+defaultCard : Tree.CardConfig
+defaultCard =
+    Tree.defaultCardConfig
 
 
 workspaceFieldset : Config msg -> Fieldset msg
@@ -160,6 +203,9 @@ workspaceFieldset config =
                 { defaultInput
                     | placeholder = "Acme Inc"
                     , value = config.workspaceName
+                    , required = True
+                    , minLength = Just 2
+                    , maxLength = Just 60
                     , onInput = Just config.onWorkspaceName
                 }
             )
@@ -170,6 +216,8 @@ workspaceFieldset config =
                     | color = Just SInput.Info
                     , placeholder = "ops@acme.test"
                     , value = config.contactEmail
+                    , inputType = InputEmail
+                    , required = True
                     , onInput = Just config.onContactEmail
                 }
             )
@@ -236,18 +284,29 @@ toggleField label control =
     { base | labelPlacement = LabelEnd }
 
 
-{-| A `Stack`, not a one-column `Grid`. With `Shell.Plain` the renderer appends
-the page CTA to the _last section's_ container, so a `Grid` here would stretch
-the CTA across the whole band.
+{-| The warning band, on its own so it can stretch. An `AlignStart` stack
+shrinks an `Alert` to its content width, which is what visibly clipped this one
+at 1440 (`docs/screenshots/demo-settings-modal.png`); `AlignStretch` fills the
+band.
+-}
+warningSection : Section msg
+warningSection =
+    Stack { align = AlignStretch }
+        [ Alert
+            { color = Just SAlert.Warning, style = Nothing, direction = Nothing }
+            [ Text "Saving asks for confirmation: retention changes delete history permanently." ]
+        ]
+
+
+{-| The last section, and it deliberately keeps `AlignStart`. With `Shell.Plain`
+the renderer appends the page CTA to the _last section's_ container, so a
+stretched stack (or a one-column `Grid`) here would stretch the single primary
+button across the whole page.
 -}
 footerSection : Config msg -> Section msg
 footerSection config =
     Stack Tree.defaultStackConfig
-        [ Alert
-            { color = Just SAlert.Warning, style = Nothing, direction = Nothing }
-            [ Text "Saving asks for confirmation: retention changes delete history permanently." ]
-        , debugPane config
-        ]
+        [ debugPane config ]
 
 
 {-| The debug pane the Tier C "interaction" spec reads. Same convention on

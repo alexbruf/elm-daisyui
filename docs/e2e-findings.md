@@ -91,22 +91,39 @@ reason — neither depends on the viewport.
 ## 4. Things the demos still cannot express
 
 Not Tier C failures, but the specs ran into them and they are worth keeping
-next to the findings above. All are in `docs/demo-findings.md`:
+next to the findings above. All are in `docs/demo-findings.md`, and all three
+have since been fixed in `Daisy.Tree` — see "Expressibility refinements
+(2026-09-07)" in `docs/tree-decisions.md`. The originals follow, struck.
 
-- **No heading leaf** (item 1). axe reports `page-has-heading-one` and `region`
-  as *moderate* on every demo. The `a11y` spec asserts zero serious/critical,
-  which is the row as written, so these do not fail it — but a `Leaf.Heading`
-  would clear them.
-- **`.stats` has no responsive direction** (new). daisyUI's `.stats` is
-  `grid-flow-col overflow-x-auto`, and `StatConfig.direction` is a single value
-  with no breakpoint, so a multi-item `Stat` block is a row that scrolls
-  sideways on a phone rather than wrapping. daisyUI's own idiom is
-  `stats-vertical lg:stats-horizontal`, which the tree cannot say.
-  *Worked around* by giving `Demo.Analytics` one `Stat` block per tile inside a
-  `Grid`, which wraps with the grid.
-- **A form control outside a `Field` cannot be named** (new). `SelectConfig`,
-  `InputConfig` and friends have no label field, so a bare control in a navbar
-  is an unnamed form control (axe `select-name`, critical). `Daisy.Render` now
-  falls back to the control's `Tooltip` text as its `aria-label`, which is the
-  only description the tree lets such a control carry; an `ariaLabel` field
-  would be the real fix, but that is a tree change.
+- ~~**No heading leaf** (item 1).~~ **Fixed:** `Leaf.Heading HeadingLevel
+  String`. axe reported `page-has-heading-one` and `region` as *moderate* on
+  every demo. The `a11y` spec asserts zero serious/critical, which is the row
+  as written, so these did not fail it — but a `Leaf.Heading` clears
+  `page-has-heading-one`. Measured in `desktop-light` before and after the
+  demos took the headings: Admin 2 moderate -> 1, Analytics 2 -> 1, Settings
+  1 -> 0, Settings-with-modal 0 -> 0; `a11y.spec.ts` now prints that tally on
+  every scan. What survives is `region` on the two dashboards, because the
+  `Dashboard` shell puts its navbar outside `<main>` and that content is
+  therefore in no landmark. It is a `Daisy.Render` shape rather than a
+  composition one, and it is moderate, so it is recorded here rather than
+  fixed under a row that does not ask for it.
+- ~~**`.stats` has no responsive direction** (new).~~ **Fixed:**
+  `StatConfig.direction` is now `StatDirection = Fixed (Maybe Direction) |
+  Responsive`, and `Responsive` emits `stats-vertical lg:stats-horizontal`.
+  daisyUI's `.stats` is `grid-flow-col overflow-x-auto`, and `direction` used
+  to be a single value with no breakpoint, so a multi-item `Stat` block was a
+  row that scrolled sideways on a phone rather than wrapping. *Worked around at
+  the time* by giving `Demo.Analytics` one `Stat` block per tile inside a
+  `Grid`, which wraps with the grid. That workaround is now gone:
+  `Demo.Analytics` is one `Stat { direction = Responsive }` block of four
+  items in a `Grid Cols1`, and `responsive.spec.ts`'s "stat cards wrap without
+  overlapping" holds at all three viewports.
+- ~~**A form control outside a `Field` cannot be named** (new).~~ **Fixed:**
+  `ariaLabel : Maybe String` on every bare control config (`SelectConfig`,
+  `InputConfig`, `TextareaConfig`, `CheckboxConfig`, `RadioConfig`,
+  `ToggleConfig`, `RangeConfig`, `FileInputConfig`, `RatingConfig`). These had
+  no label field, so a bare control in a navbar was an unnamed form control
+  (axe `select-name`, critical). `Daisy.Render` still falls back to the
+  control's `Tooltip` text when `ariaLabel` is `Nothing`, but
+  `Demo.Analytics`' navbar select no longer needs it: it carries
+  `ariaLabel = Just "Date range"` and no `Tooltip` at all.

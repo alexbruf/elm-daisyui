@@ -205,9 +205,19 @@ plainLeaves =
         { name = "filter-fixture"
         , options = [ "All", "Some" ]
         , selected = Just "All"
-        , reset = True
+        , reset = Just ResetPart
         , onSelect = Just Typed
         }
+    , Filter
+        { name = "filter-form-fixture"
+        , options = [ "All", "Some" ]
+        , selected = Nothing
+        , reset = Just (ResetButton [ SButton.Square ])
+        , onSelect = Nothing
+        }
+    , Heading H1 "Page title"
+    , Heading H2 "Section title"
+    , Heading H3 "Block title"
     ]
 
 
@@ -296,7 +306,17 @@ inputLeaves : List (Leaf Msg)
 inputLeaves =
     List.map Input inputConfigs
         ++ List.map (\i -> Input { defaultInputConfig | indicator = Just i }) indicators
-        ++ [ Input { defaultInputConfig | placeholder = "p", value = "v", onInput = Just Typed } ]
+        ++ [ Input { defaultInputConfig | placeholder = "p", value = "v", onInput = Just Typed }
+           , Input
+                { defaultInputConfig
+                    | inputType = InputEmail
+                    , required = True
+                    , pattern = Just "[^@]+@[^@]+"
+                    , minLength = Just 3
+                    , maxLength = Just 64
+                    , ariaLabel = Just "Contact email"
+                }
+           ]
 
 
 joinLeaves : List (Leaf Msg)
@@ -387,12 +407,20 @@ rangeData =
 ratingLeaves : List (Leaf Msg)
 ratingLeaves =
     List.map (\v -> Rating { defaultRatingConfig | size = Just v } ratingData) SRating.allSizes
-        ++ [ Rating { defaultRatingConfig | modifiers = SRating.allModifiers, onRate = Just Rated } ratingData ]
+        ++ List.map (\v -> Rating { defaultRatingConfig | shape = Just v } ratingData) SMask.allStyles
+        ++ [ Rating
+                { defaultRatingConfig
+                    | modifiers = allRatingModifiers
+                    , ariaLabel = Just "Rate this"
+                    , onRate = Just Rated
+                }
+                { ratingData | clearable = True }
+           ]
 
 
 ratingData : RatingData
 ratingData =
-    { name = "rating-fixture", count = 3, value = 2 }
+    { name = "rating-fixture", count = 3, value = 2, clearable = False }
 
 
 selectLeaves : List (Leaf Msg)
@@ -449,7 +477,7 @@ themeLeaves =
                 , onSelect = Just Themed
                 }
         )
-        [ ThemeAsSelect, ThemeAsRadios, ThemeAsToggle, ThemeAsCheckbox, ThemeAsSwap ]
+        [ ThemeAsSelect, ThemeAsRadios, ThemeAsToggle, ThemeAsCheckbox, ThemeAsSwap, ThemeAsDropdown ]
 
 
 toggleLeaves : List (Leaf Msg)
@@ -551,6 +579,7 @@ cardBlocks =
         ++ List.map (\v -> Card { defaultCardConfig | size = Just v } cardParts) SCard.allSizes
         ++ [ Card { defaultCardConfig | modifiers = SCard.allModifiers } cardParts
            , Card { defaultCardConfig | hover3d = True } cardParts
+           , Card defaultCardConfig cardBlockChildren
            ]
         ++ List.map (\a -> Card { defaultCardConfig | aura = Just a } cardParts) auras
 
@@ -559,8 +588,23 @@ cardParts : CardParts Msg
 cardParts =
     { figure = Just (Image defaultImageConfig "a.png")
     , title = Just "Title"
-    , body = [ Text "body" ]
+    , body = [ CardLeaf (Text "body") ]
     , actions = [ Button defaultButtonConfig "Buy" ]
+    }
+
+
+{-| A card whose body holds one of each block-shaped `CardChild`.
+-}
+cardBlockChildren : CardParts Msg
+cardBlockChildren =
+    { cardParts
+        | body =
+            [ CardLeaf (Text "body")
+            , CardChart Chart.Line chartData
+            , CardTable defaultTableConfig tableRows
+            , CardStat defaultStatConfig statItems
+            , CardForm formFieldsets
+            ]
     }
 
 
@@ -636,8 +680,14 @@ collapseBlocks =
 
 listBlocks : List (Block Msg)
 listBlocks =
-    [ ListBlock { defaultListConfig | modifiers = SList.allModifiers }
-        [ { cells = [ Text "row" ] } ]
+    [ ListBlock
+        [ { cells =
+                [ listCell (Text "row")
+                , { content = Text "grows", grow = True, wrap = False }
+                , { content = Text "wraps", grow = False, wrap = True }
+                ]
+          }
+        ]
     ]
 
 
@@ -720,7 +770,8 @@ stackedBlocks =
 
 statBlocks : List (Block Msg)
 statBlocks =
-    List.map (\v -> Stat { defaultStatConfig | direction = Just v } statItems) SStat.allDirections
+    List.map (\v -> Stat { direction = Fixed (Just v) } statItems) SStat.allDirections
+        ++ [ Stat { direction = Responsive } statItems ]
 
 
 statItems : List (StatItem Msg)
@@ -775,12 +826,18 @@ tabs =
 timelineBlocks : List (Block Msg)
 timelineBlocks =
     List.map (\v -> Timeline { defaultTimelineConfig | direction = Just v } timelineItems) STimeline.allDirections
-        ++ [ Timeline { defaultTimelineConfig | modifiers = STimeline.allModifiers } timelineItems ]
+        ++ [ Timeline { defaultTimelineConfig | modifiers = allTimelineModifiers } timelineItems ]
 
 
 timelineItems : List (TimelineItem Msg)
 timelineItems =
-    [ { start = Just "1984", middle = Just (Badge defaultBadgeConfig "ok"), end = Just "First Macintosh" } ]
+    [ { start = Just "1984"
+      , startBox = True
+      , middle = Just (Badge defaultBadgeConfig "ok")
+      , end = Just "First Macintosh"
+      , endBox = True
+      }
+    ]
 
 
 
@@ -801,6 +858,7 @@ sections =
     , Stack { align = AlignStart } [ Prose [ Text "a" ] ]
     , Stack { align = AlignCenter } [ Prose [ Text "a" ] ]
     , Stack { align = AlignEnd } [ Prose [ Text "a" ] ]
+    , Stack { align = AlignStretch } [ Prose [ Text "a" ] ]
     ]
         ++ List.map (\v -> Footer { defaultFooterConfig | direction = Just v } footerBlocks) SFooter.allDirections
         ++ List.map (\v -> Footer { defaultFooterConfig | placement = Just v } footerBlocks) SFooter.allPlacements
@@ -966,6 +1024,7 @@ fab : Fab Msg
 fab =
     { config = { modifiers = SFab.allModifiers }
     , main = Button defaultButtonConfig "+"
+    , mainAction = Just (Button defaultButtonConfig "Main")
     , actions = [ Button defaultButtonConfig "A" ]
     , close = Just (Button defaultButtonConfig "x")
     }

@@ -44,14 +44,9 @@ all =
     , { id = "fab--00", reason = "inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta`" }
     , { id = "fab--05", reason = "inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta`" }
     , { id = "fab--06", reason = "inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta`" }
-    , { id = "fab--07", reason = "inexpressible: `fab-main-action` on the button itself; the renderer emits it on the wrapper around `Fab.main`" }
     , { id = "fab--08", reason = "inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta`" }
-    , { id = "fab--09", reason = "inexpressible: `fab-main-action` on the button itself; the renderer emits it on the wrapper around `Fab.main`" }
-    , { id = "fab--10", reason = "inexpressible: `fab-main-action` on the button itself; the renderer emits it on the wrapper around `Fab.main`" }
-    , { id = "filter--00", reason = "inexpressible: the reset control is a plain `btn btn-square`; `FilterData.reset` always emits the `filter-reset` part" }
-    , { id = "filter--02", reason = "inexpressible: the reset control is a plain `btn btn-square`; `FilterData.reset` always emits the `filter-reset` part" }
+    , { id = "fab--09", reason = "inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta`" }
     , { id = "footer--02", reason = "inexpressible: a `btn-primary` inside a `join`; `btn-primary` is reserved for `Page.cta`, which the shell places outside any join" }
-    , { id = "hero--03", reason = "inexpressible: a `fieldset` inside a `card` inside a hero; `CardParts.body` holds leaves, and a `Form` is a block" }
     , { id = "indicator--03", reason = "inexpressible: `indicator` on the `tab` element itself; the renderer always emits its own `indicator` wrapper around the anchor" }
     , { id = "indicator--04", reason = "inexpressible: `indicator` on the `avatar` element itself; the renderer wraps the avatar in its own `indicator` element" }
     , { id = "indicator--06", reason = "inexpressible: a button as the `indicator-item`; `IndicatorPayload` is a badge or a status" }
@@ -62,8 +57,6 @@ all =
     , { id = "indicator--15", reason = "inexpressible: two `indicator` placement classes on one element (a corner); the schema declares `placement` as pick-at-most-one" }
     , { id = "indicator--17", reason = "inexpressible: two `indicator` placement classes on one element (a corner); the schema declares `placement` as pick-at-most-one" }
     , { id = "input--15", reason = "inexpressible: `validator` on one input inside a `join`; `Field.validate` marks the whole control, which here is the join" }
-    , { id = "list--01", reason = "inexpressible: `list-col-grow` / `list-col-wrap` mark one cell of a row, but `ListConfig.modifiers` puts list modifiers on the `list` container" }
-    , { id = "list--02", reason = "inexpressible: `list-col-grow` / `list-col-wrap` mark one cell of a row, but `ListConfig.modifiers` puts list modifiers on the `list` container" }
     , { id = "menu--05", reason = "inexpressible: a tooltip on a menu item; `tooltip` is a field on leaf configs and `MenuItem` is not a leaf" }
     , { id = "menu--06", reason = "inexpressible: a tooltip on a menu item; `tooltip` is a field on leaf configs and `MenuItem` is not a leaf" }
     , { id = "menu--16", reason = "inexpressible: `menu-dropdown-show` on an item's toggle and submenu, but `MenuConfig.modifiers` puts menu modifiers on the `menu` container" }
@@ -72,11 +65,6 @@ all =
     , { id = "navbar--05", reason = "inexpressible: `avatar` and `btn` on one element; `Leaf.Avatar` always renders its own `avatar` element" }
     , { id = "navbar--07", reason = "inexpressible: a horizontal `menu` inside a `navbar`; `Section.Navbar` holds leaves and `Menu` is a block (a known gap recorded in docs/placement.md)" }
     , { id = "navbar--08", reason = "inexpressible: a `navbar` carrying `collapse-title`; `collapse` parts belong to `Block.Collapse` and a section cannot sit inside a block" }
-    , { id = "rating--00", reason = "inexpressible: the star shape (`mask-star`, `mask-heart`); the renderer fixes rating items to `mask mask-star-2` and `RatingConfig` has no shape field" }
-    , { id = "rating--01", reason = "inexpressible: the star shape (`mask-star`, `mask-heart`); the renderer fixes rating items to `mask mask-star-2` and `RatingConfig` has no shape field" }
-    , { id = "rating--03", reason = "inexpressible: the star shape (`mask-star`, `mask-heart`); the renderer fixes rating items to `mask mask-star-2` and `RatingConfig` has no shape field" }
-    , { id = "rating--06", reason = "inexpressible: `rating-hidden` on the first radio and `mask-half-1` / `mask-half-2` on the items; `RatingConfig.modifiers` puts rating modifiers on the `rating` container" }
-    , { id = "rating--07", reason = "inexpressible: `rating-hidden` on the first radio and `mask-half-1` / `mask-half-2` on the items; `RatingConfig.modifiers` puts rating modifiers on the `rating` container" }
     , { id = "stack--02", reason = "inexpressible: `card` blocks inside a `stack`; `Block.Stacked` holds leaves, and a block cannot contain another block" }
     , { id = "stack--03", reason = "inexpressible: `card` blocks inside a `stack`; `Block.Stacked` holds leaves, and a block cannot contain another block" }
     , { id = "stack--04", reason = "inexpressible: `card` blocks inside a `stack`; `Block.Stacked` holds leaves, and a block cannot contain another block" }
@@ -87,21 +75,7 @@ all =
     , { id = "theme-controller--02", reason = "inexpressible: a `theme-controller` swap with `swap-on` / `swap-off` faces; `ThemeSelect` renders the controller as one input per theme, with no faces" }
     , { id = "theme-controller--05", reason = "inexpressible: `theme-controller` and `toggle` on separate elements; `ThemeSelect` emits both classes on one input" }
     , { id = "theme-controller--07", reason = "inexpressible: a sized `radio theme-controller`; `ThemeSelectData` has no size field" }
-    , { id = "theme-controller--08", reason = "inexpressible: a `theme-controller` carrying `join-item` / `btn` classes; `ThemeSelect` is a leaf of its own and cannot be a join item or a dropdown entry" }
-    , { id = "theme-controller--09", reason = "inexpressible: a `theme-controller` carrying `join-item` / `btn` classes; `ThemeSelect` is a leaf of its own and cannot be a join item or a dropdown entry" }
-    , { id = "timeline--00", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--01", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--02", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--03", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--04", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--05", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--06", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--07", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--08", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--09", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--10", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--11", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
-    , { id = "timeline--12", reason = "inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container" }
+    , { id = "theme-controller--08", reason = "inexpressible: a `theme-controller` carrying `join-item`; `ThemeSelect` is a leaf of its own and cannot be a `JoinItem`" }
     , { id = "toast--01", reason = "inexpressible: a horizontal and a vertical `toast` placement on one element (a corner); the schema declares `placement` as pick-at-most-one" }
     , { id = "toast--02", reason = "inexpressible: a horizontal and a vertical `toast` placement on one element (a corner); the schema declares `placement` as pick-at-most-one" }
     , { id = "toast--03", reason = "inexpressible: a horizontal and a vertical `toast` placement on one element (a corner); the schema declares `placement` as pick-at-most-one" }

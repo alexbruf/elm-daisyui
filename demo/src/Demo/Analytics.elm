@@ -2,9 +2,13 @@ module Demo.Analytics exposing (Config, dateRanges, page)
 
 {-| The chart-heavy demo (SPEC.md step 7, row "Analytics").
 
-Dashboard shell, a horizontal `Stat` row, a `Chart Bar` and a `Chart Donut`
-side by side, a full-width `Chart Area`, and a date-range `Select` in the
-navbar.
+Dashboard shell, one responsive `Stat` row of four tiles, a `Chart Bar` and a
+`Chart Donut` side by side and a full-width `Chart Area` — each chart in its
+own `Card` with a `card-title` — and a date-range `Select` in the navbar.
+
+Section titles are `Leaf.Heading` leaves inside `Prose`, plus the `card-title`
+of each chart card (daisyUI renders `card-title` as an `<h2>`), so the page has
+one `H1` and a heading per band.
 
 Like every `Demo.*` module this imports no `Html`: the page is a `Daisy.Tree`
 value and `Daisy.Render` owns every class.
@@ -14,11 +18,15 @@ value and `Daisy.Render` owns every class.
 -}
 
 import Daisy.Chart as DChart
+import Daisy.Schema.Card as SCard
 import Daisy.Schema.Menu as SMenu
 import Daisy.Schema.Select as SSelect
 import Daisy.Tree as Tree
     exposing
-        ( Block(..)
+        ( Align(..)
+        , Block(..)
+        , CardChild(..)
+        , HeadingLevel(..)
         , Leaf(..)
         , MenuItem(..)
         , MenuSpec
@@ -27,6 +35,7 @@ import Daisy.Tree as Tree
         , Section(..)
         , Sections(..)
         , Shell(..)
+        , StatDirection(..)
         , StatItem
         , Theme
         )
@@ -110,22 +119,22 @@ navItem label path onClick active =
 
 navbar : Config msg -> NavbarParts msg
 navbar config =
-    { start = [ Text "Acquisition" ]
+    { start = [ Text "Acme Console" ]
     , center = []
     , end = [ dateRangeSelect config ]
     }
 
 
-{-| The navbar has no `Field` to label it, so the select carries a `Tooltip`.
-`Daisy.Render` uses the tooltip text as the control's accessible name, which
-is what keeps the navbar select from being an unnamed form control.
+{-| The navbar has no `Field` to label it, so the select names itself with
+`ariaLabel`. It used to borrow the name from a `Tooltip` it did not otherwise
+want — `SelectConfig` had no label field at all — and that workaround is gone.
 -}
 dateRangeSelect : Config msg -> Leaf msg
 dateRangeSelect config =
     Select
         { defaultSelect
             | size = Just SSelect.Sm
-            , tooltip = Just { text = "Date range", config = Tree.defaultTooltipConfig }
+            , ariaLabel = Just "Date range"
             , onSelect = Just config.onRangeSelect
         }
         { options = dateRanges, selected = Just config.dateRange }
@@ -152,28 +161,32 @@ headerSection : Section msg
 headerSection =
     Stack Tree.defaultStackConfig
         [ Prose
-            [ Text "Where sessions come from, what they cost, and how many of them convert." ]
+            [ Heading H1 "Acquisition"
+            , Text "Where sessions come from, what they cost, and how many of them convert."
+            ]
         ]
 
 
-{-| One `Stat` block per tile rather than one block holding four items.
-daisyUI's `.stats` is `grid-flow-col overflow-x-auto`, so a four-item block is
-a single row that scrolls sideways at 375px instead of wrapping; four blocks in
-a `Grid` wrap with the grid. Recorded in `docs/e2e-findings.md`.
+{-| One `Stat` block holding all four tiles, with `direction = Responsive`.
+
+`Responsive` is daisyUI's own `stats-vertical lg:stats-horizontal` idiom: a
+column on a phone, a row from `lg` up. A `Fixed` horizontal row would scroll
+sideways at 375 instead of wrapping, because `.stats` is `grid-flow-col
+overflow-x-auto` — which is why this used to be four separate blocks in a
+`Grid Cols4`. The one-column `Grid` is what makes the block fill the band.
+
 -}
 statsSection : Section msg
 statsSection =
-    Grid { columns = Tree.Cols4 }
-        [ statBlock "Sessions" "486,204" "9.1% week over week"
-        , statBlock "Conversion" "3.24%" "0.31 points above plan"
-        , statBlock "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"
-        , statBlock "Assisted revenue" "$91,470" "31% of total revenue"
+    Grid { columns = Tree.Cols1 }
+        [ Prose [ Heading H2 "Key metrics" ]
+        , Stat { direction = Responsive }
+            [ statItem "Sessions" "486,204" "9.1% week over week"
+            , statItem "Conversion" "3.24%" "0.31 points above plan"
+            , statItem "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"
+            , statItem "Assisted revenue" "$91,470" "31% of total revenue"
+            ]
         ]
-
-
-statBlock : String -> String -> String -> Block msg
-statBlock title value desc =
-    Stat Tree.defaultStatConfig [ statItem title value desc ]
 
 
 statItem : String -> String -> String -> StatItem msg
@@ -186,12 +199,41 @@ statItem title value desc =
     { base | desc = Just desc }
 
 
+{-| Two chart cards side by side. Their `card-title`s are the band's headings:
+`Daisy.Render` draws `card-title` as an `<h2>`, so a `Prose` heading on top of
+them would only repeat the same rank — and a `Prose` block in a two-column grid
+would take one of the two cells.
+-}
 breakdownSection : Section msg
 breakdownSection =
     Grid { columns = Tree.Cols2 }
-        [ Chart DChart.Bar channelSeries
-        , Chart DChart.Donut deviceSeries
+        [ chartCard "Sessions by channel" (CardChart DChart.Bar channelSeries)
+        , chartCard "Sessions by device" (CardChart DChart.Donut deviceSeries)
         ]
+
+
+chartCard : String -> CardChild msg -> Block msg
+chartCard title child =
+    Card borderedCard
+        { emptyCard | title = Just title, body = [ child ] }
+
+
+emptyCard : Tree.CardParts msg
+emptyCard =
+    Tree.emptyCardParts
+
+
+{-| `card-border` — without a style a `card` paints nothing of its own, so on a
+`base-100` page it is invisible and "the chart is in a card" does not read.
+-}
+borderedCard : Tree.CardConfig
+borderedCard =
+    { defaultCard | style = Just SCard.Border }
+
+
+defaultCard : Tree.CardConfig
+defaultCard =
+    Tree.defaultCardConfig
 
 
 channelSeries : DChart.ChartData
@@ -225,11 +267,16 @@ deviceSeries =
     }
 
 
+{-| `AlignStretch`, so the card fills the band rather than shrinking to its
+content. The shell is `Dashboard`, so the page CTA sits in the navbar and
+stretching the last section cannot reach it.
+-}
 trafficSection : Config msg -> Section msg
 trafficSection config =
-    Stack Tree.defaultStackConfig
-        [ Prose [ Text ("Sessions and signups — " ++ config.dateRange) ]
-        , Chart DChart.Area trafficSeries
+    Stack { align = AlignStretch }
+        [ Prose [ Heading H2 "Traffic" ]
+        , chartCard ("Sessions and signups — " ++ config.dateRange)
+            (CardChart DChart.Area trafficSeries)
         , debugPane config
         ]
 

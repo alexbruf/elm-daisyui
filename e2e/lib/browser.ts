@@ -398,9 +398,20 @@ export function collectChartColors() {
 /**
  * Every control sequential focus navigation visits, in DOM (= tree) order.
  *
- * Radio groups are the one place where "focusable" and "in the tab order"
- * differ: a group is a single tab stop — the checked radio, or the first one
- * when none is checked — and the arrow keys move inside it.
+ * Two places where "focusable" and "in the tab order" differ:
+ *
+ *   - **Radio groups.** A group is a single tab stop — the checked radio, or
+ *     the first one when none is checked — and the arrow keys move inside it.
+ *   - **Disclosure widgets.** daisyUI's `dropdown` hides its `dropdown-content`
+ *     with `display:none` until the wrapper is `:focus-within`, so tabbing to
+ *     the trigger is what reveals the panel and the *next* Tab lands inside it.
+ *     Collecting the closed page would therefore under-count: the panel's
+ *     controls are genuinely reachable from the keyboard. Every `.dropdown` is
+ *     forced open with daisyUI's own `dropdown-open` class for the length of
+ *     the collection and restored immediately, so the expectation is the
+ *     sequence a keyboard user actually walks. This makes the assertion
+ *     stricter — a dropdown whose panel could *not* be tabbed into would now
+ *     fail it.
  */
 export function collectFocusables() {
   const sel = [
@@ -425,27 +436,6 @@ export function collectFocusables() {
     return r.width > 0.5 && r.height > 0.5;
   }
 
-  const all = [...document.querySelectorAll(sel)]
-    .filter((el) => visible(el))
-    .filter((el) => (el as HTMLElement).tabIndex >= 0);
-
-  const skip = new Set<Element>();
-  const groups = new Map<string, HTMLInputElement[]>();
-  for (const el of all) {
-    const input = el as HTMLInputElement;
-    if (input.tagName === "INPUT" && input.type === "radio" && input.name) {
-      const list = groups.get(input.name) ?? [];
-      list.push(input);
-      groups.set(input.name, list);
-    }
-  }
-  for (const list of groups.values()) {
-    const stop = list.find((r) => r.checked) ?? list[0];
-    for (const r of list) if (r !== stop) skip.add(r);
-  }
-
-  return all.filter((el) => !skip.has(el)).map((el) => key(el));
-
   function key(el: Element): string {
     const cls =
       typeof el.className === "string" && el.className.trim()
@@ -454,6 +444,39 @@ export function collectFocusables() {
     const text = (el.textContent ?? "").trim().slice(0, 24);
     const value = (el as HTMLInputElement).value ?? "";
     return `${el.tagName.toLowerCase()}${cls}|${text || value}`;
+  }
+
+  // Reveal every closed dropdown for the length of the collection, then put
+  // the DOM back exactly as it was (synchronously, before Elm can re-render).
+  const opened = [...document.querySelectorAll(".dropdown")].filter((el) => {
+    if (el.classList.contains("dropdown-open")) return false;
+    el.classList.add("dropdown-open");
+    return true;
+  });
+
+  try {
+    const all = [...document.querySelectorAll(sel)]
+      .filter((el) => visible(el))
+      .filter((el) => (el as HTMLElement).tabIndex >= 0);
+
+    const skip = new Set<Element>();
+    const groups = new Map<string, HTMLInputElement[]>();
+    for (const el of all) {
+      const input = el as HTMLInputElement;
+      if (input.tagName === "INPUT" && input.type === "radio" && input.name) {
+        const list = groups.get(input.name) ?? [];
+        list.push(input);
+        groups.set(input.name, list);
+      }
+    }
+    for (const list of groups.values()) {
+      const stop = list.find((r) => r.checked) ?? list[0];
+      for (const r of list) if (r !== stop) skip.add(r);
+    }
+
+    return all.filter((el) => !skip.has(el)).map((el) => key(el));
+  } finally {
+    for (const el of opened) el.classList.remove("dropdown-open");
   }
 }
 

@@ -10,33 +10,33 @@ module Daisy.Tree exposing
     , Block(..)
     , AccordionConfig, defaultAccordionConfig, AccordionItem
     , AlertConfig, defaultAlertConfig
-    , CardConfig, defaultCardConfig, CardParts, emptyCardParts
+    , CardConfig, defaultCardConfig, CardParts, emptyCardParts, CardChild(..)
     , CarouselConfig, defaultCarouselConfig, CarouselItem, CarouselSnap(..)
     , ChatMessage
     , CollapseConfig, defaultCollapseConfig, CollapseParts
     , DiffParts
     , Fieldset, Field, LabelPlacement(..), field
-    , ListConfig, defaultListConfig, ListRow
+    , ListRow, ListCell, listCell
     , MenuConfig, defaultMenuConfig, MenuItem(..), MenuBadge, MenuSpec, menuItem
     , MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
     , NavConfig, defaultNavConfig
     , PaginationConfig, defaultPaginationConfig, PaginationData
     , StackedConfig, defaultStackedConfig, StackedAlign(..)
-    , StatConfig, defaultStatConfig, StatItem, emptyStatItem
+    , StatConfig, defaultStatConfig, StatDirection(..), StatItem, emptyStatItem
     , StepsConfig, defaultStepsConfig, Step
     , TableConfig, defaultTableConfig, Row
     , TabsConfig, defaultTabsConfig, Tab
-    , TimelineConfig, defaultTimelineConfig, TimelineItem
-    , Leaf(..), ImageSrc
+    , TimelineConfig, defaultTimelineConfig, TimelineModifier(..), allTimelineModifiers, timelineModifierToSchema, TimelineItem
+    , Leaf(..), ImageSrc, HeadingLevel(..)
     , AvatarConfig, defaultAvatarConfig, AvatarItem
     , BadgeConfig, defaultBadgeConfig
     , ButtonConfig, defaultButtonConfig, ButtonColor(..), allButtonColors, buttonColorToSchema
     , CheckboxConfig, defaultCheckboxConfig
     , DividerConfig, defaultDividerConfig
     , FileInputConfig, defaultFileInputConfig
-    , FilterData
+    , FilterData, FilterReset(..)
     , ImageConfig, defaultImageConfig
-    , InputConfig, defaultInputConfig
+    , InputConfig, defaultInputConfig, InputType(..)
     , JoinConfig, defaultJoinConfig, JoinItem(..)
     , KbdConfig, defaultKbdConfig
     , LinkConfig, defaultLinkConfig
@@ -47,7 +47,7 @@ module Daisy.Tree exposing
     , RadialProgressData
     , RadioConfig, defaultRadioConfig, RadioData
     , RangeConfig, defaultRangeConfig, RangeData
-    , RatingConfig, defaultRatingConfig, RatingData
+    , RatingConfig, defaultRatingConfig, RatingModifier(..), allRatingModifiers, ratingModifierToSchema, RatingData
     , SelectConfig, defaultSelectConfig, SelectData
     , SkeletonConfig, defaultSkeletonConfig
     , StatusConfig, defaultStatusConfig
@@ -123,37 +123,37 @@ that can emit a class.
 @docs Block
 @docs AccordionConfig, defaultAccordionConfig, AccordionItem
 @docs AlertConfig, defaultAlertConfig
-@docs CardConfig, defaultCardConfig, CardParts, emptyCardParts
+@docs CardConfig, defaultCardConfig, CardParts, emptyCardParts, CardChild
 @docs CarouselConfig, defaultCarouselConfig, CarouselItem, CarouselSnap
 @docs ChatMessage
 @docs CollapseConfig, defaultCollapseConfig, CollapseParts
 @docs DiffParts
 @docs Fieldset, Field, LabelPlacement, field
-@docs ListConfig, defaultListConfig, ListRow
+@docs ListRow, ListCell, listCell
 @docs MenuConfig, defaultMenuConfig, MenuItem, MenuBadge, MenuSpec, menuItem
 @docs MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
 @docs NavConfig, defaultNavConfig
 @docs PaginationConfig, defaultPaginationConfig, PaginationData
 @docs StackedConfig, defaultStackedConfig, StackedAlign
-@docs StatConfig, defaultStatConfig, StatItem, emptyStatItem
+@docs StatConfig, defaultStatConfig, StatDirection, StatItem, emptyStatItem
 @docs StepsConfig, defaultStepsConfig, Step
 @docs TableConfig, defaultTableConfig, Row
 @docs TabsConfig, defaultTabsConfig, Tab
-@docs TimelineConfig, defaultTimelineConfig, TimelineItem
+@docs TimelineConfig, defaultTimelineConfig, TimelineModifier, allTimelineModifiers, timelineModifierToSchema, TimelineItem
 
 
 # Leaves
 
-@docs Leaf, ImageSrc
+@docs Leaf, ImageSrc, HeadingLevel
 @docs AvatarConfig, defaultAvatarConfig, AvatarItem
 @docs BadgeConfig, defaultBadgeConfig
 @docs ButtonConfig, defaultButtonConfig, ButtonColor, allButtonColors, buttonColorToSchema
 @docs CheckboxConfig, defaultCheckboxConfig
 @docs DividerConfig, defaultDividerConfig
 @docs FileInputConfig, defaultFileInputConfig
-@docs FilterData
+@docs FilterData, FilterReset
 @docs ImageConfig, defaultImageConfig
-@docs InputConfig, defaultInputConfig
+@docs InputConfig, defaultInputConfig, InputType
 @docs JoinConfig, defaultJoinConfig, JoinItem
 @docs KbdConfig, defaultKbdConfig
 @docs LinkConfig, defaultLinkConfig
@@ -164,7 +164,7 @@ that can emit a class.
 @docs RadialProgressData
 @docs RadioConfig, defaultRadioConfig, RadioData
 @docs RangeConfig, defaultRangeConfig, RangeData
-@docs RatingConfig, defaultRatingConfig, RatingData
+@docs RatingConfig, defaultRatingConfig, RatingModifier, allRatingModifiers, ratingModifierToSchema, RatingData
 @docs SelectConfig, defaultSelectConfig, SelectData
 @docs SkeletonConfig, defaultSkeletonConfig
 @docs StatusConfig, defaultStatusConfig
@@ -225,7 +225,6 @@ import Daisy.Schema.Input as SInput
 import Daisy.Schema.Join as SJoin
 import Daisy.Schema.Kbd as SKbd
 import Daisy.Schema.Link as SLink
-import Daisy.Schema.List as SList
 import Daisy.Schema.Loading as SLoading
 import Daisy.Schema.Mask as SMask
 import Daisy.Schema.Megamenu as SMegamenu
@@ -621,11 +620,16 @@ defaultGridConfig =
 
 
 {-| Cross-axis alignment of a `Stack` section.
+
+`AlignStretch` (`items-stretch`) is the one that lets a `Table`, `Alert` or
+`Card` fill the band; the other three shrink every block to its content width.
+
 -}
 type Align
     = AlignStart
     | AlignCenter
     | AlignEnd
+    | AlignStretch
 
 
 {-| Configuration of a `Stack` section. This is a fixed-gap vertical band, not
@@ -635,7 +639,14 @@ type alias StackConfig =
     { align : Align }
 
 
-{-| A stack whose blocks stretch from the start edge.
+{-| A stack whose blocks sit at the start edge.
+
+The default is deliberately **not** `AlignStretch`, even though stretching is
+what most bands want: under `Shell.Plain` the renderer appends `Page.cta` to
+the last section's container, so a stretched last `Stack` would stretch the
+page's single primary button across the whole page. Ask for `AlignStretch`
+where you want it instead.
+
 -}
 defaultStackConfig : StackConfig
 defaultStackConfig =
@@ -660,7 +671,7 @@ type Block msg
     | Collapse CollapseConfig (CollapseParts msg)
     | Diff (DiffParts msg)
     | Form (List (Fieldset msg))
-    | ListBlock ListConfig (List (ListRow msg))
+    | ListBlock (List (ListRow msg))
     | Menu MenuConfig (List (MenuItem msg))
     | MockupBrowser (MockupBrowserParts msg)
     | MockupCode (List CodeLine)
@@ -747,9 +758,27 @@ unrepresentable.
 type alias CardParts msg =
     { figure : Maybe (Leaf msg)
     , title : Maybe String
-    , body : List (Leaf msg)
+    , body : List (CardChild msg)
     , actions : List (Leaf msg)
     }
+
+
+{-| What a `card-body` may hold: leaves, plus the four block shapes a
+dashboard card is actually made of.
+
+There is deliberately no `CardCard`: a card can never contain a card, which is
+what `tools/should-not-compile/Reject/CardInCard.elm` and
+`Reject/CardInCardBody.elm` pin down. Every constructor here takes exactly the
+arguments its `Block` counterpart takes, and `Daisy.Render` renders it through
+the same helper, so a chart in a card and a bare chart are the same markup.
+
+-}
+type CardChild msg
+    = CardLeaf (Leaf msg)
+    | CardChart ChartConfig ChartData
+    | CardTable TableConfig (List (Row msg))
+    | CardStat StatConfig (List (StatItem msg))
+    | CardForm (List (Fieldset msg))
 
 
 {-| A card with nothing in it.
@@ -883,23 +912,34 @@ field label control =
     }
 
 
-{-| Groups of the daisyUI `list` component.
--}
-type alias ListConfig =
-    { modifiers : List SList.Modifier }
-
-
-{-| A list with no column modifiers.
--}
-defaultListConfig : ListConfig
-defaultListConfig =
-    { modifiers = [] }
-
-
 {-| One `list-row`.
 -}
 type alias ListRow msg =
-    { cells : List (Leaf msg) }
+    { cells : List (ListCell msg) }
+
+
+{-| One cell of a `list-row`.
+
+`list-col-grow` and `list-col-wrap` mark a single cell, not the whole list, so
+they are flags here rather than modifiers on the block. A cell with neither
+flag is rendered as its bare leaf.
+
+-}
+type alias ListCell msg =
+    { content : Leaf msg
+    , grow : Bool
+    , wrap : Bool
+    }
+
+
+{-| A plain cell that neither grows nor wraps.
+
+    listCell (Text "Cy Ganderton")
+
+-}
+listCell : Leaf msg -> ListCell msg
+listCell content =
+    { content = content, grow = False, wrap = False }
 
 
 {-| Groups of the daisyUI `menu` component. `menu-active`, `menu-disabled` and
@@ -1076,14 +1116,27 @@ defaultStackedConfig =
 {-| Groups of the daisyUI `stat` component. The container class is `stats`.
 -}
 type alias StatConfig =
-    { direction : Maybe SStat.Direction }
+    { direction : StatDirection }
+
+
+{-| How a `stats` container lays its tiles out.
+
+`Fixed` is the schema `direction` group: one class, or none. `Responsive` is
+daisyUI's own `stats-vertical lg:stats-horizontal` idiom — a column on a phone,
+a row from `lg` up. It is a separate constructor rather than a flag beside
+`direction` so there is no combination where one silently wins over the other.
+
+-}
+type StatDirection
+    = Fixed (Maybe SStat.Direction)
+    | Responsive
 
 
 {-| A stats container with no direction class.
 -}
 defaultStatConfig : StatConfig
 defaultStatConfig =
-    { direction = Nothing }
+    { direction = Fixed Nothing }
 
 
 {-| One tile: the `stat`, `stat-figure`, `stat-title`, `stat-value`,
@@ -1178,11 +1231,44 @@ type alias Tab msg =
     }
 
 
+{-| The container-level modifiers of the daisyUI `timeline` component.
+
+This deliberately omits `timeline-box`, the way [`ButtonColor`](#ButtonColor)
+omits `btn-primary`: daisyUI puts that class on one _side of one item_, so it
+is `startBox` / `endBox` on [`TimelineItem`](#TimelineItem) and cannot be
+listed here.
+
+-}
+type TimelineModifier
+    = TimelineSnapIcon
+    | TimelineCompact
+
+
+{-| Every [`TimelineModifier`](#TimelineModifier) value.
+-}
+allTimelineModifiers : List TimelineModifier
+allTimelineModifiers =
+    [ TimelineSnapIcon, TimelineCompact ]
+
+
+{-| Widen a [`TimelineModifier`](#TimelineModifier) to the generated schema
+type.
+-}
+timelineModifierToSchema : TimelineModifier -> STimeline.Modifier
+timelineModifierToSchema modifier =
+    case modifier of
+        TimelineSnapIcon ->
+            STimeline.SnapIcon
+
+        TimelineCompact ->
+            STimeline.Compact
+
+
 {-| Groups of the daisyUI `timeline` component.
 -}
 type alias TimelineConfig =
     { direction : Maybe STimeline.Direction
-    , modifiers : List STimeline.Modifier
+    , modifiers : List TimelineModifier
     }
 
 
@@ -1195,11 +1281,17 @@ defaultTimelineConfig =
 
 {-| The `timeline-start`, `timeline-middle` and `timeline-end` parts of one
 entry.
+
+`startBox` / `endBox` put `timeline-box` on that side of this item, which is
+where daisyUI puts it.
+
 -}
 type alias TimelineItem msg =
     { start : Maybe String
+    , startBox : Bool
     , middle : Maybe (Leaf msg)
     , end : Maybe String
+    , endBox : Bool
     }
 
 
@@ -1221,6 +1313,7 @@ type Leaf msg
     | FileInput (FileInputConfig msg)
     | Filter (FilterData msg)
     | HoverGallery (List ImageSrc)
+    | Heading HeadingLevel String
     | Image (ImageConfig msg) ImageSrc
     | Input (InputConfig msg)
     | Join JoinConfig (List (JoinItem msg))
@@ -1251,6 +1344,20 @@ need one.
 -}
 type alias ImageSrc =
     String
+
+
+{-| The rank of a [`Leaf.Heading`](#Leaf).
+
+`Heading` is not a daisyUI component and emits no daisyUI class: it renders a
+bare `<h1>` / `<h2>` / `<h3>`, which Tailwind typography styles when the
+heading sits inside a `Block.Prose`. It exists because a page otherwise has no
+document outline at all — `Leaf.Text` is a text node and `Prose` is a `<div>`.
+
+-}
+type HeadingLevel
+    = H1
+    | H2
+    | H3
 
 
 {-| Groups of the daisyUI `avatar` component plus the `mask`, `dropdown`,
@@ -1396,6 +1503,7 @@ type alias CheckboxConfig msg =
     { color : Maybe SCheckbox.Color
     , size : Maybe SCheckbox.Size
     , checked : Bool
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onCheck : Maybe (Bool -> msg)
     }
@@ -1405,7 +1513,13 @@ type alias CheckboxConfig msg =
 -}
 defaultCheckboxConfig : CheckboxConfig msg
 defaultCheckboxConfig =
-    { color = Nothing, size = Nothing, checked = False, tooltip = Nothing, onCheck = Nothing }
+    { color = Nothing
+    , size = Nothing
+    , checked = False
+    , ariaLabel = Nothing
+    , tooltip = Nothing
+    , onCheck = Nothing
+    }
 
 
 {-| Groups of the daisyUI `divider` component.
@@ -1431,6 +1545,7 @@ type alias FileInputConfig msg =
     { color : Maybe SFileInput.Color
     , style : Maybe SFileInput.Style
     , size : Maybe SFileInput.Size
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onInput : Maybe (String -> msg)
     }
@@ -1440,20 +1555,39 @@ type alias FileInputConfig msg =
 -}
 defaultFileInputConfig : FileInputConfig msg
 defaultFileInputConfig =
-    { color = Nothing, style = Nothing, size = Nothing, tooltip = Nothing, onInput = Nothing }
+    { color = Nothing
+    , style = Nothing
+    , size = Nothing
+    , ariaLabel = Nothing
+    , tooltip = Nothing
+    , onInput = Nothing
+    }
 
 
-{-| A `filter`: a radio group styled as buttons, plus an optional
-`filter-reset`. daisyUI's `filter` declares no class groups, so this is all
-data.
+{-| A `filter`: a radio group styled as buttons, plus an optional reset
+control. daisyUI's `filter` declares no class groups, so this is all data.
 -}
 type alias FilterData msg =
     { name : String
     , options : List String
     , selected : Maybe String
-    , reset : Bool
+    , reset : Maybe FilterReset
     , onSelect : Maybe (String -> msg)
     }
+
+
+{-| How a `filter`'s reset control is drawn.
+
+daisyUI has two idioms and the class set differs between them. `ResetPart`
+carries the `filter-reset` part, which is what a filter outside a `<form>`
+needs. `ResetButton` is the plain `btn` a filter _inside_ a real `<form>` uses
+(daisyUI's own examples make it `btn-square`), where the browser's form reset
+does the work and no part class is involved.
+
+-}
+type FilterReset
+    = ResetPart
+    | ResetButton (List SButton.Modifier)
 
 
 {-| The `mask` and `hover-3d` properties of an image, plus its alt text.
@@ -1474,7 +1608,31 @@ defaultImageConfig =
     { alt = "", mask = Nothing, hover3d = False, tooltip = Nothing, onClick = Nothing }
 
 
-{-| Groups of the daisyUI `input` component.
+{-| What an `input` accepts. Rendered as the `type` attribute, which is half
+of what makes daisyUI's `validator` class do anything: the styling hangs off
+`:user-invalid`, and only a real constraint can make a control invalid.
+-}
+type InputType
+    = InputText
+    | InputEmail
+    | InputPassword
+    | InputNumber
+    | InputUrl
+    | InputTel
+    | InputSearch
+    | InputDate
+
+
+{-| Groups of the daisyUI `input` component, plus the HTML validation
+constraints daisyUI's `validator` / `validator-hint` pair needs.
+
+`inputType`, `required`, `pattern`, `minLength` and `maxLength` are rendered as
+the matching HTML attributes. Without at least one of them a `Field` marked
+`validate = True` can never become `:user-invalid`, so its hint would never
+show.
+
+`pattern` is a regular expression (the HTML `pattern` attribute), never a class.
+
 -}
 type alias InputConfig msg =
     { color : Maybe SInput.Color
@@ -1482,13 +1640,19 @@ type alias InputConfig msg =
     , size : Maybe SInput.Size
     , placeholder : String
     , value : String
+    , inputType : InputType
+    , required : Bool
+    , pattern : Maybe String
+    , minLength : Maybe Int
+    , maxLength : Maybe Int
+    , ariaLabel : Maybe String
     , indicator : Maybe Indicator
     , tooltip : Maybe Tooltip
     , onInput : Maybe (String -> msg)
     }
 
 
-{-| An empty input with no colour, style or size class.
+{-| An empty, unconstrained text input with no colour, style or size class.
 -}
 defaultInputConfig : InputConfig msg
 defaultInputConfig =
@@ -1497,6 +1661,12 @@ defaultInputConfig =
     , size = Nothing
     , placeholder = ""
     , value = ""
+    , inputType = InputText
+    , required = False
+    , pattern = Nothing
+    , minLength = Nothing
+    , maxLength = Nothing
+    , ariaLabel = Nothing
     , indicator = Nothing
     , tooltip = Nothing
     , onInput = Nothing
@@ -1673,6 +1843,7 @@ type alias RadialProgressData =
 type alias RadioConfig msg =
     { color : Maybe SRadio.Color
     , size : Maybe SRadio.Size
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onCheck : Maybe (Bool -> msg)
     }
@@ -1682,7 +1853,7 @@ type alias RadioConfig msg =
 -}
 defaultRadioConfig : RadioConfig msg
 defaultRadioConfig =
-    { color = Nothing, size = Nothing, tooltip = Nothing, onCheck = Nothing }
+    { color = Nothing, size = Nothing, ariaLabel = Nothing, tooltip = Nothing, onCheck = Nothing }
 
 
 {-| The group name of a radio and whether it is selected.
@@ -1699,6 +1870,7 @@ type alias RangeConfig msg =
     { color : Maybe SRange.Color
     , size : Maybe SRange.Size
     , direction : Maybe SRange.Direction
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onInput : Maybe (String -> msg)
     }
@@ -1708,7 +1880,13 @@ type alias RangeConfig msg =
 -}
 defaultRangeConfig : RangeConfig msg
 defaultRangeConfig =
-    { color = Nothing, size = Nothing, direction = Nothing, tooltip = Nothing, onInput = Nothing }
+    { color = Nothing
+    , size = Nothing
+    , direction = Nothing
+    , ariaLabel = Nothing
+    , tooltip = Nothing
+    , onInput = Nothing
+    }
 
 
 {-| The bounds and value of a range.
@@ -1720,29 +1898,78 @@ type alias RangeData =
     }
 
 
+{-| The container-level modifiers of the daisyUI `rating` component.
+
+This omits `rating-hidden` the way [`TimelineModifier`](#TimelineModifier)
+omits `timeline-box`: daisyUI puts it on the rating's _first, blank_ radio, so
+it is `clearable` on [`RatingData`](#RatingData).
+
+`RatingHalf` also drives the item masks: with it the renderer alternates
+`mask-half-1` / `mask-half-2` across the radios, which is the only way daisyUI's
+half-star rating works.
+
+-}
+type RatingModifier
+    = RatingHalf
+
+
+{-| Every [`RatingModifier`](#RatingModifier) value.
+-}
+allRatingModifiers : List RatingModifier
+allRatingModifiers =
+    [ RatingHalf ]
+
+
+{-| Widen a [`RatingModifier`](#RatingModifier) to the generated schema type.
+-}
+ratingModifierToSchema : RatingModifier -> SRating.Modifier
+ratingModifierToSchema modifier =
+    case modifier of
+        RatingHalf ->
+            SRating.Half
+
+
 {-| Groups of the daisyUI `rating` component.
+
+`shape` is the `mask-*` clip-path each radio wears. `Nothing` keeps the
+renderer's default (`mask-star-2`), which is what daisyUI's own rating examples
+use most.
+
 -}
 type alias RatingConfig msg =
     { size : Maybe SRating.Size
-    , modifiers : List SRating.Modifier
+    , modifiers : List RatingModifier
+    , shape : Maybe SMask.Style
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onRate : Maybe (Int -> msg)
     }
 
 
-{-| A rating with no size class.
+{-| A rating of default-shaped stars with no size class.
 -}
 defaultRatingConfig : RatingConfig msg
 defaultRatingConfig =
-    { size = Nothing, modifiers = [], tooltip = Nothing, onRate = Nothing }
+    { size = Nothing
+    , modifiers = []
+    , shape = Nothing
+    , ariaLabel = Nothing
+    , tooltip = Nothing
+    , onRate = Nothing
+    }
 
 
 {-| The group name, number of stars and current value of a rating.
+
+`clearable = True` puts daisyUI's blank `rating-hidden` radio first, so the
+rating can be set back to "no stars".
+
 -}
 type alias RatingData =
     { name : String
     , count : Int
     , value : Int
+    , clearable : Bool
     }
 
 
@@ -1752,6 +1979,7 @@ type alias SelectConfig msg =
     { color : Maybe SSelect.Color
     , style : Maybe SSelect.Style
     , size : Maybe SSelect.Size
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onSelect : Maybe (String -> msg)
     }
@@ -1761,7 +1989,13 @@ type alias SelectConfig msg =
 -}
 defaultSelectConfig : SelectConfig msg
 defaultSelectConfig =
-    { color = Nothing, style = Nothing, size = Nothing, tooltip = Nothing, onSelect = Nothing }
+    { color = Nothing
+    , style = Nothing
+    , size = Nothing
+    , ariaLabel = Nothing
+    , tooltip = Nothing
+    , onSelect = Nothing
+    }
 
 
 {-| The options of a select and which one is chosen.
@@ -1837,12 +2071,14 @@ type alias TextareaConfig msg =
     , size : Maybe STextarea.Size
     , placeholder : String
     , value : String
+    , required : Bool
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onInput : Maybe (String -> msg)
     }
 
 
-{-| An empty textarea with no colour, style or size class.
+{-| An empty, optional textarea with no colour, style or size class.
 -}
 defaultTextareaConfig : TextareaConfig msg
 defaultTextareaConfig =
@@ -1851,14 +2087,22 @@ defaultTextareaConfig =
     , size = Nothing
     , placeholder = ""
     , value = ""
+    , required = False
+    , ariaLabel = Nothing
     , tooltip = Nothing
     , onInput = Nothing
     }
 
 
-{-| How a `theme-controller` is presented. daisyUI's five docs examples
-(toggle, checkbox, radio group, select, swap) are five presentations of one
-control, not five components.
+{-| How a `theme-controller` is presented. daisyUI's docs examples (toggle,
+checkbox, radio group, select, swap, dropdown) are presentations of one
+control, not separate components.
+
+`ThemeAsDropdown` is the only compact one: every other presentation renders one
+sibling control per theme, which is 35 controls wide with `allThemes`.
+It renders daisyUI's documented "Using a dropdown" markup — a `btn` trigger and
+a `dropdown-content` list of `theme-controller` radios.
+
 -}
 type ThemePresentation
     = ThemeAsSelect
@@ -1866,6 +2110,7 @@ type ThemePresentation
     | ThemeAsToggle
     | ThemeAsCheckbox
     | ThemeAsSwap
+    | ThemeAsDropdown
 
 
 {-| A theme switcher. `theme-controller` declares no class groups, so this is
@@ -1885,6 +2130,7 @@ type alias ThemeSelectData msg =
 type alias ToggleConfig msg =
     { color : Maybe SToggle.Color
     , size : Maybe SToggle.Size
+    , ariaLabel : Maybe String
     , tooltip : Maybe Tooltip
     , onCheck : Maybe (Bool -> msg)
     }
@@ -1894,7 +2140,7 @@ type alias ToggleConfig msg =
 -}
 defaultToggleConfig : ToggleConfig msg
 defaultToggleConfig =
-    { color = Nothing, size = Nothing, tooltip = Nothing, onCheck = Nothing }
+    { color = Nothing, size = Nothing, ariaLabel = Nothing, tooltip = Nothing, onCheck = Nothing }
 
 
 {-| Whether a toggle is on.
@@ -2144,10 +2390,17 @@ type alias DockItem msg =
 
 {-| A viewport-fixed floating action button, with the `fab-main-action` and
 `fab-close` parts.
+
+`main` is the trigger the user sees when the fab is closed. `mainAction` is the
+separate button daisyUI marks `fab-main-action`, which stays in place once the
+speed dial is open; the part class goes on that leaf itself, which is where
+every daisyUI example puts it.
+
 -}
 type alias Fab msg =
     { config : FabConfig
     , main : Leaf msg
+    , mainAction : Maybe (Leaf msg)
     , actions : List (Leaf msg)
     , close : Maybe (Leaf msg)
     }

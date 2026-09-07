@@ -31,6 +31,28 @@ test("admin: the toast appears after the CTA and dismisses itself", async ({
   await expect(page.getByText(pane)).toHaveText("last-msg: ToastDismissed");
 });
 
+test("admin: the theme dropdown changes the page theme", async ({
+  page,
+  theme,
+}) => {
+  await open(page, "/", theme);
+  const root = page.locator("[data-theme]").first();
+  await expect(root).toHaveAttribute("data-theme", theme);
+
+  // daisyUI's dropdown opens on `:focus-within`, so the panel is
+  // `display:none` until its `role="button"` trigger is activated.
+  const trigger = page.getByRole("button", { name: "Theme" });
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+
+  const nord = page.locator('input.theme-controller[value="nord"]');
+  await expect(nord).toBeVisible();
+  await nord.click();
+
+  await expect(page.getByText(pane)).toHaveText("last-msg: ThemeChanged");
+  await expect(root).toHaveAttribute("data-theme", "nord");
+});
+
 test("settings: confirming the modal fires ModalConfirmed", async ({
   page,
   theme,

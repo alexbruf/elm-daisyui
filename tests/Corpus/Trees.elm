@@ -29,6 +29,7 @@ import Daisy.Schema.Collapse as SCollapse
 import Daisy.Schema.Divider as SDivider
 import Daisy.Schema.Dock as SDock
 import Daisy.Schema.Dropdown as SDropdown
+import Daisy.Schema.Fab as SFab
 import Daisy.Schema.FileInput as SFileInput
 import Daisy.Schema.Footer as SFooter
 import Daisy.Schema.Indicator as SIndicator
@@ -143,6 +144,13 @@ overlay =
 img : ImageSrc
 img =
     "https://img.daisyui.com/images/profile/demo/1@94.webp"
+
+
+{-| A `card-body` of plain leaves.
+-}
+cardBody : List (Leaf Msg) -> List (CardChild Msg)
+cardBody =
+    List.map CardLeaf
 
 
 {-| Several leaves at once: a `Prose` block adds no daisyUI class of its own,
@@ -270,7 +278,7 @@ cardParts : CardParts Msg
 cardParts =
     { figure = Just (Image defaultImageConfig img)
     , title = Just "Card Title"
-    , body = [ Text "A card component has a figure, a body part, and inside body there are title and actions parts" ]
+    , body = cardBody [ Text "A card component has a figure, a body part, and inside body there are title and actions parts" ]
     , actions = []
     }
 
@@ -490,9 +498,10 @@ cardEntries =
                 { emptyCardParts
                     | title = Just "Premium"
                     , body =
-                        [ Badge { bdg | color = Just SBadge.Warning, size = Just SBadge.Xs } "MOST POPULAR"
-                        , Text "$29 / month"
-                        ]
+                        cardBody
+                            [ Badge { bdg | color = Just SBadge.Warning, size = Just SBadge.Xs } "MOST POPULAR"
+                            , Text "$29 / month"
+                            ]
                 }
             ]
       )
@@ -508,7 +517,7 @@ cardEntries =
       , blocks
             [ Card crd
                 { cardParts
-                    | body = [ Badge { bdg | color = Just SBadge.Secondary } "NEW" ]
+                    | body = cardBody [ Badge { bdg | color = Just SBadge.Secondary } "NEW" ]
                     , actions = [ Badge { bdg | style = Just SBadge.Outline } "Fashion" ]
                 }
             ]
@@ -526,7 +535,7 @@ cardEntries =
       , block
             (Card crd
                 { emptyCardParts
-                    | body = [ Text "We are using cookies for no reason." ]
+                    | body = cardBody [ Text "We are using cookies for no reason." ]
                     , actions = [ Button { btn | size = Just SButton.Sm, modifiers = [ SButton.Square ] } "x" ]
                 }
             )
@@ -640,7 +649,7 @@ statEntries =
             }
 
         stats direction figure =
-            block (Stat { direction = direction } [ { item | figure = figure } ])
+            block (Stat { direction = Fixed direction } [ { item | figure = figure } ])
     in
     [ ( "stat--00", stats Nothing Nothing )
     , ( "stat--01"
@@ -873,6 +882,35 @@ heroEntries =
     [ ( "hero--00", hero False copy )
     , ( "hero--01", hero False (Prose [ Image defaultImageConfig img ] :: copy) )
     , ( "hero--02", hero False (Prose [ Image defaultImageConfig img ] :: copy) )
+    , ( "hero--03"
+      , hero False
+            [ Card crd
+                { emptyCardParts
+                    | body =
+                        [ CardForm
+                            [ { legend = Nothing
+                              , fields =
+                                    [ field "Email" (Input inp)
+                                    , field "Password" (Input { inp | inputType = InputPassword })
+                                    , { label = Nothing
+                                      , labelPlacement = LabelStart
+                                      , control = Link { lnk | style = Just SLink.Hover } "Forgot password?"
+                                      , validate = False
+                                      , hint = Nothing
+                                      }
+                                    , { label = Nothing
+                                      , labelPlacement = LabelStart
+                                      , control = Button { btn | color = Just Neutral } "Login"
+                                      , validate = False
+                                      , hint = Nothing
+                                      }
+                                    ]
+                              }
+                            ]
+                        ]
+                }
+            ]
+      )
     , ( "hero--04", hero True copy )
     ]
 
@@ -1200,7 +1238,7 @@ auraEntries : List ( String, Node )
 auraEntries =
     let
         auraCard style size =
-            block (Card { crd | aura = Just { style = style, size = size } } { emptyCardParts | body = [ Text "Aura" ] })
+            block (Card { crd | aura = Just { style = style, size = size } } { emptyCardParts | body = cardBody [ Text "Aura" ] })
 
         auraButton style size =
             leaf (Button { btn | aura = Just { style = style, size = size } } "Button")
@@ -1222,9 +1260,10 @@ auraEntries =
                 { crd | aura = Just { style = Just SAura.Rainbow, size = Nothing } }
                 { emptyCardParts
                     | body =
-                        [ Badge { bdg | color = Just SBadge.Warning, size = Just SBadge.Xs } "MOST POPULAR"
-                        , Text "$29 / month"
-                        ]
+                        cardBody
+                            [ Badge { bdg | color = Just SBadge.Warning, size = Just SBadge.Xs } "MOST POPULAR"
+                            , Text "$29 / month"
+                            ]
                 }
             ]
       )
@@ -1335,7 +1374,7 @@ dividerEntries =
             Divider config (Just "OR")
 
         inCard config =
-            block (Card crd { emptyCardParts | body = [ divider config ] })
+            block (Card crd { emptyCardParts | body = cardBody [ divider config ] })
 
         plain =
             defaultDividerConfig
@@ -1405,7 +1444,7 @@ fabEntries =
                 { btn | color = color, size = Just SButton.Lg, modifiers = [ SButton.Circle ] }
                 "A"
 
-        fab config main actions close =
+        fabWith config main mainAction actions close =
             PageNode
                 (Page
                     { shell = Plain
@@ -1414,9 +1453,31 @@ fabEntries =
                     , overlays = []
                     , theme = Light
                     , dock = Nothing
-                    , fab = Just { config = config, main = main, actions = actions, close = close }
+                    , fab =
+                        Just
+                            { config = config
+                            , main = main
+                            , mainAction = mainAction
+                            , actions = actions
+                            , close = close
+                            }
                     }
                 )
+
+        fab config main actions close =
+            fabWith config main Nothing actions close
+
+        flower =
+            { defaultFabConfig | modifiers = [ SFab.Flower ] }
+
+        tipped =
+            Button
+                { btn
+                    | size = Just SButton.Lg
+                    , modifiers = [ SButton.Circle ]
+                    , tooltip = Just { text = "Label", config = { defaultTooltipConfig | placement = Just STooltip.Left } }
+                }
+                "A"
     in
     [ ( "fab--01", fab defaultFabConfig (round (Just Secondary)) [ round Nothing ] Nothing )
     , ( "fab--02", fab defaultFabConfig (round (Just Success)) [ round Nothing ] Nothing )
@@ -1431,6 +1492,16 @@ fabEntries =
             (round (Just Info))
             [ round Nothing ]
             (Just (round (Just Error)))
+      )
+    , ( "fab--07"
+      , fabWith flower (round (Just Success)) (Just (round Nothing)) [ round Nothing ] Nothing
+      )
+    , ( "fab--10"
+      , fabWith flower
+            (round (Just Info))
+            (Just (round (Just Success)))
+            [ tipped, Button { btn | size = Just SButton.Lg, modifiers = [ SButton.Circle ], tooltip = Just (tooltip "Label") } "A" ]
+            Nothing
       )
     ]
 
@@ -1764,20 +1835,42 @@ leafEntries =
     , ( "countdown--06", countdown )
     , ( "diff--00", block (Diff { item1 = Image defaultImageConfig img, item2 = Image defaultImageConfig img }) )
     , ( "diff--01", block (Diff { item1 = Text "DAISY", item2 = Text "DAISY" }) )
+    , ( "filter--00"
+      , leaf
+            (Filter
+                { name = "frameworks"
+                , options = [ "Svelte", "Vue", "React" ]
+                , selected = Nothing
+                , reset = Just (ResetButton [ SButton.Square ])
+                , onSelect = Nothing
+                }
+            )
+      )
     , ( "filter--01"
       , leaf
             (Filter
                 { name = "frameworks"
                 , options = [ "Svelte", "Vue", "React" ]
                 , selected = Nothing
-                , reset = True
+                , reset = Just ResetPart
+                , onSelect = Nothing
+                }
+            )
+      )
+    , ( "filter--02"
+      , leaf
+            (Filter
+                { name = "frameworks"
+                , options = [ "Svelte", "Vue", "React" ]
+                , selected = Nothing
+                , reset = Just (ResetButton [ SButton.Square ])
                 , onSelect = Nothing
                 }
             )
       )
     , ( "hover-3d--00", leaf (Image { defaultImageConfig | hover3d = True } img) )
     , ( "hover-3d--01"
-      , block (Card { crd | hover3d = True } { emptyCardParts | body = [ Text "Card" ] })
+      , block (Card { crd | hover3d = True } { emptyCardParts | body = cardBody [ Text "Card" ] })
       )
     , ( "hover-3d--02", leaf (Image { defaultImageConfig | hover3d = True } img) )
     , ( "hover-gallery--00", leaf (HoverGallery [ img, img, img ]) )
@@ -1799,10 +1892,34 @@ leafEntries =
     , ( "kbd--06", kbd defaultKbdConfig )
     , ( "list--00"
       , block
-            (ListBlock defaultListConfig
+            (ListBlock
                 [ { cells =
-                        [ Text "Dio Lupa"
-                        , Button { btn | style = Just SButton.Ghost, modifiers = [ SButton.Square ] } "▶"
+                        [ listCell (Text "Dio Lupa")
+                        , listCell (Button { btn | style = Just SButton.Ghost, modifiers = [ SButton.Square ] } "▶")
+                        ]
+                  }
+                ]
+            )
+      )
+    , ( "list--01"
+      , block
+            (ListBlock
+                [ { cells =
+                        [ listCell (Text "Dio Lupa")
+                        , { content = Text "Remaining Reason", grow = True, wrap = False }
+                        , listCell (Button { btn | style = Just SButton.Ghost, modifiers = [ SButton.Square ] } "▶")
+                        ]
+                  }
+                ]
+            )
+      )
+    , ( "list--02"
+      , block
+            (ListBlock
+                [ { cells =
+                        [ listCell (Text "Dio Lupa")
+                        , { content = Text "Remaining Reason", grow = False, wrap = True }
+                        , listCell (Button { btn | style = Just SButton.Ghost, modifiers = [ SButton.Square ] } "▶")
                         ]
                   }
                 ]
@@ -1884,16 +2001,40 @@ leafEntries =
 ratingEntries : List ( String, Node )
 ratingEntries =
     let
+        stars config =
+            { name = "rating", count = 5, value = 3, clearable = False }
+
         rating config =
-            leaf (Rating config { name = "rating", count = 5, value = 3 })
+            leaf (Rating config (stars config))
     in
-    [ ( "rating--02", rating defaultRatingConfig )
+    [ ( "rating--00", rating { defaultRatingConfig | shape = Just SMask.Star } )
+    , ( "rating--01", rating { defaultRatingConfig | shape = Just SMask.Star } )
+    , ( "rating--02", rating defaultRatingConfig )
+    , ( "rating--03", rating { defaultRatingConfig | shape = Just SMask.Heart } )
     , ( "rating--04", rating defaultRatingConfig )
     , ( "rating--05"
       , leaves
             (List.map
-                (\size -> Rating { defaultRatingConfig | size = Just size } { name = "rating", count = 5, value = 3 })
+                (\size ->
+                    Rating
+                        { defaultRatingConfig | size = Just size }
+                        { name = "rating", count = 5, value = 3, clearable = False }
+                )
                 SRating.allSizes
+            )
+      )
+    , ( "rating--06"
+      , leaf
+            (Rating
+                { defaultRatingConfig | size = Just SRating.Lg }
+                { name = "rating", count = 5, value = 3, clearable = True }
+            )
+      )
+    , ( "rating--07"
+      , leaf
+            (Rating
+                { defaultRatingConfig | size = Just SRating.Lg, modifiers = [ RatingHalf ] }
+                { name = "rating", count = 10, value = 3, clearable = True }
             )
       )
     ]
@@ -1968,16 +2109,73 @@ themeEntries =
     , ( "theme-controller--03", controller ThemeAsToggle )
     , ( "theme-controller--04", controller ThemeAsToggle )
     , ( "theme-controller--06", controller ThemeAsToggle )
+    , ( "theme-controller--09", controller ThemeAsDropdown )
     ]
 
 
 timelineEntries : List ( String, Node )
 timelineEntries =
-    [ ( "timeline--13"
+    let
+        entry start startBox end endBox =
+            { start = start
+            , startBox = startBox
+            , middle = Just (Text "*")
+            , end = end
+            , endBox = endBox
+            }
+
+        timeline direction items =
+            block (Timeline { direction = direction, modifiers = [] } items)
+
+        horizontal =
+            timeline Nothing
+
+        vertical =
+            timeline (Just STimeline.Vertical)
+
+        bothSides =
+            [ entry (Just "1984") False (Just "First Macintosh computer") True ]
+
+        endOnly =
+            [ { start = Nothing
+              , startBox = False
+              , middle = Just (Text "*")
+              , end = Just "First Macintosh computer"
+              , endBox = True
+              }
+            ]
+
+        startOnly =
+            [ entry (Just "1984") True Nothing False ]
+
+        alternating =
+            [ entry (Just "1984") True Nothing False
+            , entry Nothing False (Just "iMac") True
+            ]
+
+        noIcons =
+            [ { start = Just "1984", startBox = True, middle = Nothing, end = Nothing, endBox = False }
+            , { start = Nothing, startBox = False, middle = Nothing, end = Just "iMac", endBox = True }
+            ]
+    in
+    [ ( "timeline--00", horizontal bothSides )
+    , ( "timeline--01", horizontal endOnly )
+    , ( "timeline--02", horizontal startOnly )
+    , ( "timeline--03", horizontal alternating )
+    , ( "timeline--04", horizontal alternating )
+    , ( "timeline--05", horizontal noIcons )
+    , ( "timeline--06", vertical bothSides )
+    , ( "timeline--07", vertical endOnly )
+    , ( "timeline--08", vertical startOnly )
+    , ( "timeline--09", vertical alternating )
+    , ( "timeline--10", vertical alternating )
+    , ( "timeline--11", vertical noIcons )
+    , ( "timeline--12", vertical bothSides )
+    , ( "timeline--13"
       , block
             (Timeline
-                { direction = Just STimeline.Vertical, modifiers = [ STimeline.SnapIcon ] }
-                [ { start = Just "1984", middle = Just (Text "*"), end = Just "First Macintosh computer" } ]
+                { direction = Just STimeline.Vertical, modifiers = [ TimelineSnapIcon ] }
+                [ entry (Just "1984") False (Just "First Macintosh computer") False ]
             )
       )
     ]

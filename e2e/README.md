@@ -60,6 +60,24 @@ URL at boot (e.g. passing it in as an Elm flag) and applying daisyUI's
 `data-theme` attribute accordingly — this file does not do that wiring
 itself, only the harness/convention.
 
+`?theme=` remains the only way the specs set a theme. What changed on the
+demo side is the *switcher*: the Admin navbar now renders
+`ThemePresentation.ThemeAsDropdown` over all 35 `Daisy.Tree.allThemes`
+values instead of four sibling `btn`s. It is one `role="button"` trigger
+labelled "Theme" plus a `dropdown-content` `<ul>` of `theme-controller`
+radios that daisyUI keeps at `display:none` until the wrapper is
+`:focus-within`. Two consequences for anything written against it:
+
+- to reach a radio, activate the trigger first
+  (`page.getByRole("button", { name: "Theme" }).click()`), then
+  `page.locator('input.theme-controller[value="nord"]')`;
+- `lib/browser.ts`'s `collectFocusables` adds daisyUI's own `dropdown-open`
+  class to every `.dropdown` for the length of the collection (and removes
+  it again), because the panel's controls *are* keyboard-reachable — tabbing
+  to the trigger is what opens it. Without that the expected tab order would
+  be short by one stop and `keyboard.spec.ts` would be asserting less, not
+  more.
+
 ## Determinism
 
 Every spec navigates through `open()` in `lib/daisy.ts`, which is the only
@@ -99,6 +117,16 @@ other 35-theme sweeps (chart colours in `themes.spec.ts`, contrast in
 | `keyboard.spec.ts` | keyboard | full matrix |
 | `interaction.spec.ts` | interaction | full matrix |
 
+`a11y.spec.ts` asserts zero serious/critical axe violations, which is the
+SPEC row, and additionally **prints** the moderate/minor tally for every scan
+as `axe <demo> <theme>: moderate=<n> minor=<n> <rule>[<impact>]x<nodes>`. It
+is reported, never asserted, so a composition change's effect on the findings
+the row does not fail on is visible in the run output. Since the demos gained
+`Leaf.Heading`, `page-has-heading-one` is gone from all three; what is left is
+`region` (2 nodes on Admin, 3 on Analytics, 0 on Settings) — the `Dashboard`
+shell's navbar sits outside `<main>`, which is a `Daisy.Render` shape, not a
+demo one.
+
 `lib/daisy.ts` holds the demo list, the theme list, the `fixtures/schema.json`
 reader (the daisyUI class list is read from the generated schema at test time,
 not copied) and `open()`. `lib/browser.ts` holds the collectors that run inside
@@ -114,3 +142,12 @@ below 4.5:1 in about twenty themes and cannot be changed without editing
 composition chooses. `docs/e2e-findings.md` has the measurements and the rest
 of the reasoning, including why `layers.spec.ts` asserts the renderer's fixed
 overlay order rather than SPEC's "toast is above modal".
+
+Re-measured after the 2026-09-07 demo recomposition: in the `light` projects
+all three would now pass (0 text nodes under 4.5:1, daisyUI's own pairs
+included), but in the `dark` projects each demo still has exactly one — the
+page's single `btn-primary` CTA, `--color-primary` under
+`--color-primary-content` at 4.13:1. That pair is daisyUI's, the tree allows
+exactly one primary CTA and that is what `Daisy.Render` emits, so the three
+`fixme`s stay as they are rather than being un-fixme'd into a per-project
+flake.

@@ -148,6 +148,7 @@ tokens =
     , tokenItemsStart
     , tokenItemsCenter
     , tokenItemsEnd
+    , tokenItemsStretch
     , tokenJustifyBetween
     , tokenWFull
     , tokenWSidebar
@@ -161,10 +162,15 @@ tokens =
     , tokenPointerEventsAuto
     , tokenDrawerOpenLg
     , tokenHiddenLg
+    , tokenStatsHorizontalLg
     , tokenProse
     , tokenBgBase
     , tokenTextSm
     , tokenFontBold
+    , tokenFontSemibold
+    , tokenHeading1
+    , tokenHeading2
+    , tokenHeading3
     , tokenSizeIcon
     ]
 
@@ -264,6 +270,11 @@ tokenItemsEnd =
     "items-end"
 
 
+tokenItemsStretch : String
+tokenItemsStretch =
+    "items-stretch"
+
+
 tokenJustifyBetween : String
 tokenJustifyBetween =
     "justify-between"
@@ -285,7 +296,7 @@ tokenMinHScreen =
 
 
 {-| A chart's _minimum_ height. elm-charts scales its SVG to the width of this
-container and derives the drawn height from the `chartWidth : chartHeight`
+container and derives the drawn height from the `chartWidth : chartViewboxHeight`
 ratio, so a fixed `h-` would be overflowed (and the next block overlapped) on
 any container wider than that ratio allows. A `min-h-` pins the small end and
 lets the box grow with the drawing.
@@ -335,6 +346,24 @@ tokenHiddenLg =
     "lg:hidden"
 
 
+{-| Tailwind's `lg` variant prefix. Never emitted on its own: it only exists so
+a responsive class can be built from a schema class instead of being retyped as
+a literal.
+-}
+tokenLgPrefix : String
+tokenLgPrefix =
+    "lg:"
+
+
+{-| daisyUI's own responsive `stats` idiom, `stats-vertical lg:stats-horizontal`
+(`StatDirection.Responsive`). The class name comes from
+`Daisy.Schema.Stat.directionToClass`, so widening the schema renames this too.
+-}
+tokenStatsHorizontalLg : String
+tokenStatsHorizontalLg =
+    tokenLgPrefix ++ SStat.directionToClass SStat.Horizontal
+
+
 tokenProse : String
 tokenProse =
     "prose"
@@ -353,6 +382,30 @@ tokenTextSm =
 tokenFontBold : String
 tokenFontBold =
     "font-bold"
+
+
+tokenFontSemibold : String
+tokenFontSemibold =
+    "font-semibold"
+
+
+{-| `Leaf.Heading`'s fixed type scale (`docs/demo-findings.md` item 10): each
+`HeadingLevel` gets a named size token instead of relying on `Block.Prose`'s
+Tailwind Typography styling, which the demo app never loads.
+-}
+tokenHeading1 : String
+tokenHeading1 =
+    "text-3xl"
+
+
+tokenHeading2 : String
+tokenHeading2 =
+    "text-2xl"
+
+
+tokenHeading3 : String
+tokenHeading3 =
+    "text-xl"
 
 
 tokenSizeIcon : String
@@ -519,6 +572,25 @@ onCheckAttrs maybe =
 
         Nothing ->
             []
+
+
+{-| The accessible name of a bare control.
+
+A control inside a `Field` is named by the `<label>` that wraps it, but one in
+a navbar or a toolbar has no label at all. `ariaLabel` is the name the author
+wrote; with none, the control's tooltip text is the only description the tree
+lets it carry, so it doubles as the name (which is what the a11y spec found the
+Analytics navbar `select` needed).
+
+-}
+ariaLabelAttrs : Maybe String -> Maybe Tooltip -> List (Html.Attribute msg)
+ariaLabelAttrs explicit tip =
+    case explicit of
+        Just label ->
+            [ Attr.attribute "aria-label" label ]
+
+        Nothing ->
+            optAttr (\t -> Attr.attribute "aria-label" t.text) tip
 
 
 
@@ -1115,6 +1187,9 @@ alignToken align =
         AlignEnd ->
             tokenItemsEnd
 
+        AlignStretch ->
+            tokenItemsStretch
+
 
 flagHtml : Bool -> Html msg -> List (Html msg)
 flagHtml on html =
@@ -1212,15 +1287,13 @@ blockIn context theBlock =
                 ]
 
         Form fieldsets ->
-            Html.form
-                [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ]
-                (List.map fieldsetHtml fieldsets)
+            formHtml fieldsets
 
-        ListBlock config rows ->
+        ListBlock rows ->
             Html.ul
-                [ classes ([ SList.component ] ++ List.map SList.modifierToClass config.modifiers) ]
+                [ classes [ SList.component ] ]
                 (List.map
-                    (\row -> Html.li [ classes [ listRowClass ] ] (List.map leaf row.cells))
+                    (\row -> Html.li [ classes [ listRowClass ] ] (List.map listCellHtml row.cells))
                     rows
                 )
 
@@ -1296,9 +1369,7 @@ blockIn context theBlock =
                 (List.map leaf leaves)
 
         Stat config items ->
-            Html.div
-                [ classes ([ SStat.component ] ++ opt SStat.directionToClass config.direction) ]
-                (List.map statItemHtml items)
+            statsHtml config items
 
         Steps config steps ->
             Html.ul
@@ -1325,7 +1396,9 @@ blockIn context theBlock =
                 [ classes
                     ([ STimeline.component ]
                         ++ opt STimeline.directionToClass config.direction
-                        ++ List.map STimeline.modifierToClass config.modifiers
+                        ++ List.map
+                            (STimeline.modifierToClass << Tree.timelineModifierToSchema)
+                            config.modifiers
                     )
                 ]
                 (List.map timelineItemHtml items)
@@ -1365,13 +1438,84 @@ cardHtml config parts =
             ++ [ Html.div
                     [ classes [ cardBodyPart ] ]
                     (maybeHtml (\t -> Html.h2 [ classes [ cardTitlePart ] ] [ Html.text t ]) parts.title
-                        ++ List.map leaf parts.body
+                        ++ List.map cardChildHtml parts.body
                         ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map leaf parts.actions) ]
                     )
                ]
         )
         |> withHover3d config.hover3d
         |> withAura config.aura
+
+
+{-| One child of a `card-body`.
+
+Each block-shaped child goes through the very same helper `blockIn` uses for
+the bare block, so "a chart in a card" and "a chart in a section" are the same
+markup. There is no `CardCard` to render: a card cannot hold a card.
+
+-}
+cardChildHtml : CardChild msg -> Html msg
+cardChildHtml child =
+    case child of
+        CardLeaf value ->
+            leaf value
+
+        CardChart config data ->
+            chartHtml config data
+
+        CardTable config rows ->
+            tableHtml config rows
+
+        CardStat config items ->
+            statsHtml config items
+
+        CardForm fieldsets ->
+            formHtml fieldsets
+
+
+formHtml : List (Fieldset msg) -> Html msg
+formHtml fieldsets =
+    Html.form
+        [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ]
+        (List.map fieldsetHtml fieldsets)
+
+
+statsHtml : StatConfig -> List (StatItem msg) -> Html msg
+statsHtml config items =
+    Html.div
+        [ classes (SStat.component :: statDirectionClasses config.direction) ]
+        (List.map statItemHtml items)
+
+
+{-| `stats-vertical lg:stats-horizontal` is daisyUI's own responsive idiom:
+`.stats` is `grid-flow-col overflow-x-auto`, so a fixed horizontal row of tiles
+scrolls sideways on a phone instead of wrapping. The `lg` class is built from
+the schema class (see `tokenStatsHorizontalLg`), never typed out.
+-}
+statDirectionClasses : StatDirection -> List String
+statDirectionClasses direction =
+    case direction of
+        Fixed value ->
+            opt SStat.directionToClass value
+
+        Responsive ->
+            [ SStat.directionToClass SStat.Vertical, tokenStatsHorizontalLg ]
+
+
+listCellHtml : ListCell msg -> Html msg
+listCellHtml cell =
+    let
+        marks =
+            flag cell.grow (SList.modifierToClass SList.ColGrow)
+                ++ flag cell.wrap (SList.modifierToClass SList.ColWrap)
+    in
+    if List.isEmpty marks then
+        leaf cell.content
+
+    else
+        -- `list-col-grow` / `list-col-wrap` mark one cell of a `list-row`, so
+        -- they need an element of their own around that cell's content.
+        Html.div [ classes marks ] [ leaf cell.content ]
 
 
 carouselSnapModifier : CarouselSnap -> SCarousel.Modifier
@@ -1611,10 +1755,20 @@ tabHtml tab =
 
 timelineItemHtml : TimelineItem msg -> Html msg
 timelineItemHtml item =
+    let
+        -- `timeline-box` sits on one *side* of one item, never on the
+        -- `timeline` container, so it is a flag per side here.
+        boxed on =
+            flag on (STimeline.modifierToClass STimeline.Box)
+    in
     Html.li []
-        (maybeHtml (\s -> Html.div [ classes [ timelineStartPart ] ] [ Html.text s ]) item.start
+        (maybeHtml
+            (\s -> Html.div [ classes (timelineStartPart :: boxed item.startBox) ] [ Html.text s ])
+            item.start
             ++ maybeHtml (\m -> Html.div [ classes [ timelineMiddlePart ] ] [ leaf m ]) item.middle
-            ++ maybeHtml (\e -> Html.div [ classes [ timelineEndPart ] ] [ Html.text e ]) item.end
+            ++ maybeHtml
+                (\e -> Html.div [ classes (timelineEndPart :: boxed item.endBox) ] [ Html.text e ])
+                item.end
         )
 
 
@@ -1656,7 +1810,9 @@ leafWith extra theLeaf =
                     )
                     :: Attr.type_ "checkbox"
                     :: Attr.checked config.checked
-                    :: onCheckAttrs config.onCheck
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onCheckAttrs config.onCheck
+                       )
                 )
                 []
                 |> withTooltip config.tooltip
@@ -1692,13 +1848,18 @@ leafWith extra theLeaf =
                         ++ extra
                     )
                     :: Attr.type_ "file"
-                    :: onInputAttrs config.onInput
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onInputAttrs config.onInput
+                       )
                 )
                 []
                 |> withTooltip config.tooltip
 
         Filter data ->
             filterHtml extra data
+
+        Heading level text ->
+            headingHtml extra level text
 
         HoverGallery srcs ->
             Html.figure
@@ -1807,7 +1968,9 @@ leafWith extra theLeaf =
                     :: Attr.type_ "radio"
                     :: Attr.name data.name
                     :: Attr.checked data.checked
-                    :: onCheckAttrs config.onCheck
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onCheckAttrs config.onCheck
+                       )
                 )
                 []
                 |> withTooltip config.tooltip
@@ -1825,7 +1988,9 @@ leafWith extra theLeaf =
                     :: Attr.min (String.fromFloat data.min)
                     :: Attr.max (String.fromFloat data.max)
                     :: Attr.value (String.fromFloat data.value)
-                    :: onInputAttrs config.onInput
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onInputAttrs config.onInput
+                       )
                 )
                 []
                 |> withTooltip config.tooltip
@@ -1888,7 +2053,10 @@ leafWith extra theLeaf =
                     )
                     :: Attr.placeholder config.placeholder
                     :: Attr.value config.value
-                    :: onInputAttrs config.onInput
+                    :: Attr.required config.required
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onInputAttrs config.onInput
+                       )
                 )
                 []
                 |> withTooltip config.tooltip
@@ -1906,10 +2074,29 @@ leafWith extra theLeaf =
                     )
                     :: Attr.type_ "checkbox"
                     :: Attr.checked data.checked
-                    :: onCheckAttrs config.onCheck
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onCheckAttrs config.onCheck
+                       )
                 )
                 []
                 |> withTooltip config.tooltip
+
+
+headingHtml : List String -> HeadingLevel -> String -> Html msg
+headingHtml extra level text =
+    let
+        ( tag, sizeAndWeight ) =
+            case level of
+                H1 ->
+                    ( Html.h1, [ tokenHeading1, tokenFontBold ] )
+
+                H2 ->
+                    ( Html.h2, [ tokenHeading2, tokenFontBold ] )
+
+                H3 ->
+                    ( Html.h3, [ tokenHeading3, tokenFontSemibold ] )
+    in
+    tag [ classes (sizeAndWeight ++ extra) ] [ Html.text text ]
 
 
 avatarHtml : List String -> AvatarConfig msg -> ImageSrc -> Html msg
@@ -1970,15 +2157,7 @@ filterHtml : List String -> FilterData msg -> Html msg
 filterHtml extra data =
     Html.form
         [ classes (SFilter.component :: extra) ]
-        (flagHtml data.reset
-            (Html.input
-                [ classes [ filterResetPart, SButton.component ]
-                , Attr.type_ "radio"
-                , Attr.name data.name
-                , Attr.attribute "aria-label" "×"
-                ]
-                []
-            )
+        (maybeHtml (filterResetHtml data.name) data.reset
             ++ List.map
                 (\option ->
                     Html.input
@@ -1995,6 +2174,34 @@ filterHtml extra data =
         )
 
 
+{-| The `filter`'s reset control.
+
+`ResetPart` is the `filter-reset` part, which is how daisyUI writes a filter
+that is not inside a real `<form>`. `ResetButton` is the plain `btn` the
+`<form>` idiom uses, where the browser's own form reset does the work — no part
+class is involved, so the part cannot leak onto a control that is not one.
+
+-}
+filterResetHtml : String -> FilterReset -> Html msg
+filterResetHtml name reset =
+    let
+        marks =
+            case reset of
+                ResetPart ->
+                    [ filterResetPart, SButton.component ]
+
+                ResetButton modifiers ->
+                    SButton.component :: List.map SButton.modifierToClass modifiers
+    in
+    Html.input
+        [ classes marks
+        , Attr.type_ "radio"
+        , Attr.name name
+        , Attr.attribute "aria-label" "Reset"
+        ]
+        []
+
+
 inputHtml : List String -> InputConfig msg -> Html msg
 inputHtml extra config =
     Html.input
@@ -2005,14 +2212,51 @@ inputHtml extra config =
                 ++ opt SInput.sizeToClass config.size
                 ++ extra
             )
-            :: Attr.type_ "text"
+            :: Attr.type_ (inputTypeAttr config.inputType)
             :: Attr.placeholder config.placeholder
             :: Attr.value config.value
-            :: onInputAttrs config.onInput
+            :: Attr.required config.required
+            :: (optAttr Attr.pattern config.pattern
+                    ++ optAttr Attr.minlength config.minLength
+                    ++ optAttr Attr.maxlength config.maxLength
+                    ++ ariaLabelAttrs config.ariaLabel config.tooltip
+                    ++ onInputAttrs config.onInput
+               )
         )
         []
         |> withIndicator config.indicator
         |> withTooltip config.tooltip
+
+
+{-| The `type` attribute of an `input`. Every value is an HTML input type, not
+a class.
+-}
+inputTypeAttr : InputType -> String
+inputTypeAttr inputType =
+    case inputType of
+        InputText ->
+            "text"
+
+        InputEmail ->
+            "email"
+
+        InputPassword ->
+            "password"
+
+        InputNumber ->
+            "number"
+
+        InputUrl ->
+            "url"
+
+        InputTel ->
+            "tel"
+
+        InputSearch ->
+            "search"
+
+        InputDate ->
+            "date"
 
 
 joinItemHtml : JoinItem msg -> Html msg
@@ -2062,27 +2306,58 @@ megamenuItemHtml item =
 
 ratingHtml : List String -> RatingConfig msg -> RatingData -> Html msg
 ratingHtml extra config data =
+    let
+        half =
+            List.member RatingHalf config.modifiers
+
+        shape =
+            Maybe.withDefault SMask.Star2 config.shape
+
+        -- daisyUI's half-star rating alternates `mask-half-1` / `mask-half-2`
+        -- across the radios; a whole-star one has no half modifier at all.
+        halfOf i =
+            if not half then
+                []
+
+            else if modBy 2 i == 1 then
+                [ SMask.modifierToClass SMask.Half1 ]
+
+            else
+                [ SMask.modifierToClass SMask.Half2 ]
+
+        star i =
+            Html.input
+                (classes ([ SMask.component, SMask.styleToClass shape ] ++ halfOf i)
+                    :: Attr.type_ "radio"
+                    :: Attr.name data.name
+                    :: Attr.checked (i == data.value)
+                    :: (ariaLabelAttrs config.ariaLabel config.tooltip
+                            ++ onClickAttrs (Maybe.map (\f -> f i) config.onRate)
+                       )
+                )
+                []
+
+        -- `rating-hidden` belongs on the rating's own first, blank radio: it is
+        -- the "no stars" choice, not a modifier of the container.
+        clear =
+            Html.input
+                (classes [ SRating.modifierToClass SRating.Hidden ]
+                    :: Attr.type_ "radio"
+                    :: Attr.name data.name
+                    :: Attr.checked (data.value == 0)
+                    :: onClickAttrs (Maybe.map (\f -> f 0) config.onRate)
+                )
+                []
+    in
     Html.div
         [ classes
             ([ SRating.component ]
                 ++ opt SRating.sizeToClass config.size
-                ++ List.map SRating.modifierToClass config.modifiers
+                ++ List.map (SRating.modifierToClass << Tree.ratingModifierToSchema) config.modifiers
                 ++ extra
             )
         ]
-        (List.map
-            (\i ->
-                Html.input
-                    (classes [ SMask.component, SMask.styleToClass SMask.Star2 ]
-                        :: Attr.type_ "radio"
-                        :: Attr.name data.name
-                        :: Attr.checked (i == data.value)
-                        :: onClickAttrs (Maybe.map (\f -> f i) config.onRate)
-                    )
-                    []
-            )
-            (List.range 1 data.count)
-        )
+        (flagHtml data.clearable clear ++ List.map star (List.range 1 data.count))
         |> withTooltip config.tooltip
 
 
@@ -2097,10 +2372,7 @@ selectHtml extra config data =
                 ++ extra
             )
          ]
-            -- A `select` outside a `Field` has no label to be named by, so its
-            -- tooltip text — the only description the tree lets it carry —
-            -- doubles as its accessible name.
-            ++ optAttr (\t -> Attr.attribute "aria-label" t.text) config.tooltip
+            ++ ariaLabelAttrs config.ariaLabel config.tooltip
             ++ onInputAttrs config.onSelect
         )
         (List.map
@@ -2130,23 +2402,44 @@ statusHtml extra config =
 
 themeSelectHtml : List String -> ThemeSelectData msg -> Html msg
 themeSelectHtml extra data =
-    Html.div
-        [ classes ([ tokenFlex, tokenFlexWrap, tokenGapSm ] ++ extra) ]
-        (List.map
-            (\theme ->
-                Html.input
-                    (classes (SThemeController.component :: themePresentationClasses data.presentation)
-                        :: Attr.type_ (themePresentationInputType data.presentation)
-                        :: Attr.name "daisy-theme"
-                        :: Attr.value (Tree.themeToString theme)
-                        :: Attr.attribute "aria-label" (Tree.themeToString theme)
-                        :: Attr.checked (theme == data.current)
-                        :: onClickAttrs (Maybe.map (\f -> f theme) data.onSelect)
-                    )
-                    []
-            )
-            data.themes
-        )
+    let
+        control theme =
+            Html.input
+                (classes (SThemeController.component :: themePresentationClasses data.presentation)
+                    :: Attr.type_ (themePresentationInputType data.presentation)
+                    :: Attr.name "daisy-theme"
+                    :: Attr.value (Tree.themeToString theme)
+                    :: Attr.attribute "aria-label" (Tree.themeToString theme)
+                    :: Attr.checked (theme == data.current)
+                    :: onClickAttrs (Maybe.map (\f -> f theme) data.onSelect)
+                )
+                []
+    in
+    case data.presentation of
+        ThemeAsDropdown ->
+            -- daisyUI's documented "Theme Controller using a dropdown": a `btn`
+            -- trigger and a `dropdown-content` list of `theme-controller`
+            -- radios. This is the only presentation that stays one control
+            -- wide no matter how many themes it offers.
+            Html.div
+                [ classes (SDropdown.component :: extra) ]
+                [ Html.div
+                    [ Attr.tabindex 0
+                    , Attr.attribute "role" "button"
+                    , classes [ SButton.component ]
+                    ]
+                    [ Html.text "Theme" ]
+                , Html.ul
+                    [ Attr.tabindex -1
+                    , classes [ dropdownContentPart, tokenBgBase, tokenPaddingSm ]
+                    ]
+                    (List.map (\theme -> Html.li [] [ control theme ]) data.themes)
+                ]
+
+        _ ->
+            Html.div
+                [ classes ([ tokenFlex, tokenFlexWrap, tokenGapSm ] ++ extra) ]
+                (List.map control data.themes)
 
 
 themePresentationClasses : ThemePresentation -> List String
@@ -2167,6 +2460,13 @@ themePresentationClasses presentation =
         ThemeAsSwap ->
             [ SSwap.component ]
 
+        ThemeAsDropdown ->
+            [ SButton.component
+            , SButton.sizeToClass SButton.Sm
+            , SButton.modifierToClass SButton.Block
+            , SButton.styleToClass SButton.Ghost
+            ]
+
 
 themePresentationInputType : ThemePresentation -> String
 themePresentationInputType presentation =
@@ -2185,6 +2485,9 @@ themePresentationInputType presentation =
 
         ThemeAsSwap ->
             "checkbox"
+
+        ThemeAsDropdown ->
+            "radio"
 
 
 
@@ -2475,8 +2778,11 @@ fabHtml fab =
         ([ Html.div
             [ Attr.tabindex 0, Attr.attribute "role" "button" ]
             [ leaf fab.main ]
-         , Html.div [ classes [ fabMainActionPart ] ] [ leaf fab.main ]
          ]
+            -- `fab-main-action` goes on the button itself, which is where every
+            -- daisyUI fab example puts it; it is a separate leaf from the
+            -- trigger above, not the same one drawn twice.
+            ++ maybeHtml (leafWith [ fabMainActionPart ]) fab.mainAction
             ++ List.map (\a -> Html.div [] [ leaf a ]) fab.actions
             ++ maybeHtml (\c -> Html.div [ classes [ fabClosePart ] ] [ leaf c ]) fab.close
         )
@@ -2549,7 +2855,7 @@ seriesChart interpolation data =
             toPoints data
     in
     C.chart
-        [ CA.height chartHeight, CA.width chartWidth, CA.margin chartMargin ]
+        [ CA.height chartViewboxHeight, CA.width chartWidth, CA.margin chartMargin ]
         [ C.yLabels [ CA.withGrid ]
         , C.xLabels
             [ CA.amount (List.length data.xLabels)
@@ -2586,7 +2892,7 @@ barChart stacked data =
                 data.series
     in
     C.chart
-        [ CA.height chartHeight, CA.width chartWidth, CA.margin chartMargin ]
+        [ CA.height chartViewboxHeight, CA.width chartWidth, CA.margin chartMargin ]
         [ C.yLabels [ CA.withGrid ]
         , C.binLabels .label [ CA.moveDown 18 ]
         , C.bars []
@@ -2610,14 +2916,42 @@ chartMargin =
     { top = 10, bottom = 26, left = 42, right = 14 }
 
 
+{-| elm-charts has no way to pin axis-label font size to real pixels: it sets
+no `width`/`height` attribute on the `<svg>` (only a `viewBox`), so the
+browser stretches it to the container's width and derives the height from
+`chartWidth : chartViewboxHeight`, and every SVG length -- including the
+inherited label font-size -- is a viewBox _user unit_, scaled by
+`containerPx / chartWidth`. The library's own default (`CA.width 300`) assumes
+a ~300px-wide container; in a `min-h-64`/`Cols1` full-width block (~1120px
+measured) that scale is ~1.4x on top of the library's own already-large
+default label font, which read as roughly 3x too big. Widening the viewBox
+here shrinks that scale back down for the common full-width case, at the
+cost of shrinking it further for the already-fine half-width (`Cols2`,
+~536px) and single-column-on-mobile (~311px) cases. `800 x 300` (still the
+same 8:3 ratio `tokenChartHeight`'s `min-h-64` assumes) was picked by
+screenshotting `/` and `/analytics` at both container widths, plus mobile,
+and choosing the narrowest viewBox that brought the full-width labels down
+to a normal size without shrinking the mobile labels past legible. This only
+changes internal SVG scaling, not layout: the actual rendered chart height is
+still `containerPx * 3 / 8` either way.
+-}
+chartWidth : Float
+chartWidth =
+    800
+
+
+chartViewboxHeight : Float
+chartViewboxHeight =
+    300
+
+
+{-| The donut's fixed pixel height (see `donutChart`): kept independent of
+`chartViewboxHeight` above so widening that viewBox for readable line/bar/area
+labels doesn't also inflate the donut, which has no labels to fix.
+-}
 chartHeight : Float
 chartHeight =
     240
-
-
-chartWidth : Float
-chartWidth =
-    640
 
 
 {-| elm-charts has no pie or donut element, so this one is hand-rolled SVG. It

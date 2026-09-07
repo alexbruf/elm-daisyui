@@ -16,6 +16,7 @@ well as the pair.
 
 -}
 
+import Daisy.Chart as Chart
 import Daisy.Render as Render
 import Daisy.Schema.Accordion as SAccordion
 import Daisy.Schema.Alert as SAlert
@@ -213,6 +214,20 @@ decoratedButtonFuzzer =
 
 inputConfigFuzzer : Fuzzer (InputConfig Msg)
 inputConfigFuzzer =
+    Fuzz.map2
+        (\base ( inputType, required, aria ) ->
+            { base | inputType = inputType, required = required, ariaLabel = aria }
+        )
+        plainInputConfigFuzzer
+        (Fuzz.triple
+            (Fuzz.oneOfValues allInputTypes)
+            Fuzz.bool
+            (Fuzz.maybe (Fuzz.constant "Contact email"))
+        )
+
+
+plainInputConfigFuzzer : Fuzzer (InputConfig Msg)
+plainInputConfigFuzzer =
     Fuzz.map5
         (\color style size ind tip ->
             { defaultInputConfig | color = color, style = style, size = size, indicator = ind, tooltip = tip }
@@ -224,16 +239,39 @@ inputConfigFuzzer =
         (Fuzz.maybe tooltipFuzzer)
 
 
+{-| Every [`InputType`](Daisy-Tree#InputType). The type is closed, and
+`Daisy.Tree` exposes no `allInputTypes`, so the list lives here.
+-}
+allInputTypes : List InputType
+allInputTypes =
+    [ InputText
+    , InputEmail
+    , InputPassword
+    , InputNumber
+    , InputUrl
+    , InputTel
+    , InputSearch
+    , InputDate
+    ]
+
+
 selectConfigFuzzer : Fuzzer (SelectConfig Msg)
 selectConfigFuzzer =
-    Fuzz.map4
-        (\color style size tip ->
-            { defaultSelectConfig | color = color, style = style, size = size, tooltip = tip }
+    Fuzz.map5
+        (\color style size tip aria ->
+            { defaultSelectConfig
+                | color = color
+                , style = style
+                , size = size
+                , tooltip = tip
+                , ariaLabel = aria
+            }
         )
         (maybeOf SSelect.allColors)
         (maybeOf SSelect.allStyles)
         (maybeOf SSelect.allSizes)
         (Fuzz.maybe tooltipFuzzer)
+        (Fuzz.maybe (Fuzz.constant "Date range"))
 
 
 leafFuzzers : List ( String, Fuzzer (Leaf Msg) )
@@ -253,9 +291,13 @@ leafFuzzers =
     , ( "badge", Fuzz.map (\c -> Badge c "9") badgeConfigFuzzer )
     , ( "button", Fuzz.map (\c -> Button c "Go") decoratedButtonFuzzer )
     , ( "checkbox"
-      , Fuzz.map2 (\color size -> Checkbox { defaultCheckboxConfig | color = color, size = size })
+      , Fuzz.map3
+            (\color size aria ->
+                Checkbox { defaultCheckboxConfig | color = color, size = size, ariaLabel = aria }
+            )
             (maybeOf SCheckbox.allColors)
             (maybeOf SCheckbox.allSizes)
+            (Fuzz.maybe (Fuzz.constant "Agree"))
       )
     , ( "divider"
       , Fuzz.map3
@@ -267,11 +309,20 @@ leafFuzzers =
             (maybeOf SDivider.allPlacements)
       )
     , ( "file-input"
-      , Fuzz.map3
-            (\color style size -> FileInput { defaultFileInputConfig | color = color, style = style, size = size })
+      , Fuzz.map4
+            (\color style size aria ->
+                FileInput
+                    { defaultFileInputConfig
+                        | color = color
+                        , style = style
+                        , size = size
+                        , ariaLabel = aria
+                    }
+            )
             (maybeOf SFileInput.allColors)
             (maybeOf SFileInput.allStyles)
             (maybeOf SFileInput.allSizes)
+            (Fuzz.maybe (Fuzz.constant "Avatar"))
       )
     , ( "image", Fuzz.map (\mask -> Image { defaultImageConfig | mask = Just mask } "a.png") maskFuzzer )
     , ( "input", Fuzz.map Input inputConfigFuzzer )
@@ -328,29 +379,44 @@ leafFuzzers =
             (maybeOf SProgress.allColors)
       )
     , ( "radio"
-      , Fuzz.map2
-            (\color size -> Radio { defaultRadioConfig | color = color, size = size } { name = "r", checked = True })
+      , Fuzz.map3
+            (\color size aria ->
+                Radio
+                    { defaultRadioConfig | color = color, size = size, ariaLabel = aria }
+                    { name = "r", checked = True }
+            )
             (maybeOf SRadio.allColors)
             (maybeOf SRadio.allSizes)
+            (Fuzz.maybe (Fuzz.constant "Plan"))
       )
     , ( "range"
-      , Fuzz.map3
-            (\color size direction ->
-                Range { defaultRangeConfig | color = color, size = size, direction = direction }
+      , Fuzz.map4
+            (\color size direction aria ->
+                Range
+                    { defaultRangeConfig
+                        | color = color
+                        , size = size
+                        , direction = direction
+                        , ariaLabel = aria
+                    }
                     { min = 0, max = 100, value = 50 }
             )
             (maybeOf SRange.allColors)
             (maybeOf SRange.allSizes)
             (maybeOf SRange.allDirections)
+            (Fuzz.maybe (Fuzz.constant "Volume"))
       )
     , ( "rating"
-      , Fuzz.map2
-            (\size modifiers ->
-                Rating { defaultRatingConfig | size = size, modifiers = modifiers }
-                    { name = "r", count = 3, value = 2 }
+      , Fuzz.map4
+            (\size modifiers shape clearable ->
+                Rating
+                    { defaultRatingConfig | size = size, modifiers = modifiers, shape = shape }
+                    { name = "r", count = 3, value = 2, clearable = clearable }
             )
             (maybeOf SRating.allSizes)
-            (subsetOf SRating.allModifiers)
+            (subsetOf allRatingModifiers)
+            (maybeOf SMask.allStyles)
+            Fuzz.bool
       )
     , ( "select"
       , Fuzz.map (\c -> Select c { options = [ "a", "b" ], selected = Just "a" }) selectConfigFuzzer
@@ -370,25 +436,50 @@ leafFuzzers =
             (subsetOf SSwap.allModifiers)
       )
     , ( "textarea"
-      , Fuzz.map3
-            (\color style size ->
-                Textarea { defaultTextareaConfig | color = color, style = style, size = size }
+      , Fuzz.map4
+            (\color style size required ->
+                Textarea
+                    { defaultTextareaConfig
+                        | color = color
+                        , style = style
+                        , size = size
+                        , required = required
+                    }
             )
             (maybeOf STextarea.allColors)
             (maybeOf STextarea.allStyles)
             (maybeOf STextarea.allSizes)
+            Fuzz.bool
       )
     , ( "toggle"
-      , Fuzz.map2
-            (\color size -> Toggle { defaultToggleConfig | color = color, size = size } { checked = True })
+      , Fuzz.map3
+            (\color size aria ->
+                Toggle
+                    { defaultToggleConfig | color = color, size = size, ariaLabel = aria }
+                    { checked = True }
+            )
             (maybeOf SToggle.allColors)
             (maybeOf SToggle.allSizes)
+            (Fuzz.maybe (Fuzz.constant "Dark mode"))
       )
     ]
 
 
 
 -- BLOCK FUZZERS -------------------------------------------------------------
+
+
+{-| One `card-body` child of each shape, so the fuzzer covers the block-shaped
+ones as well as the leaves.
+-}
+cardChildren : List (CardChild Msg)
+cardChildren =
+    [ CardLeaf (Text "body")
+    , CardChart Chart.Line { series = [], xLabels = [] }
+    , CardTable defaultTableConfig [ { header = True, cells = [ Text "Name" ] } ]
+    , CardStat defaultStatConfig [ emptyStatItem "Downloads" "31K" ]
+    , CardForm [ { legend = Just "Account", fields = [ field "Email" (Input defaultInputConfig) ] } ]
+    ]
 
 
 blockFuzzers : List ( String, Fuzzer (Block Msg) )
@@ -417,7 +508,7 @@ blockFuzzers =
                     { style = style, size = size, modifiers = modifiers, aura = aura, hover3d = True }
                     { figure = Just (Image defaultImageConfig "a.png")
                     , title = Just "Title"
-                    , body = [ Text "body" ]
+                    , body = cardChildren
                     , actions = [ Button defaultButtonConfig "Buy" ]
                     }
             )
@@ -425,6 +516,15 @@ blockFuzzers =
             (maybeOf SCard.allSizes)
             (subsetOf SCard.allModifiers)
             (Fuzz.maybe auraFuzzer)
+      )
+    , ( "card body children"
+      , Fuzz.map
+            (\style ->
+                Card
+                    { defaultCardConfig | style = style }
+                    { emptyCardParts | title = Just "Title", body = cardChildren }
+            )
+            (maybeOf SCard.allStyles)
       )
     , ( "carousel"
       , Fuzz.map3
@@ -461,9 +561,18 @@ blockFuzzers =
             (subsetOf SCollapse.allModifiers)
       )
     , ( "list"
-      , Fuzz.map
-            (\modifiers -> ListBlock { modifiers = modifiers } [ { cells = [ Text "row" ] } ])
-            (subsetOf SList.allModifiers)
+      , Fuzz.map2
+            (\grow wrap ->
+                ListBlock
+                    [ { cells =
+                            [ listCell (Text "row")
+                            , { content = Text "cell", grow = grow, wrap = wrap }
+                            ]
+                      }
+                    ]
+            )
+            Fuzz.bool
+            Fuzz.bool
       )
     , ( "menu"
       , Fuzz.map3
@@ -500,7 +609,11 @@ blockFuzzers =
                       }
                     ]
             )
-            (maybeOf SStat.allDirections)
+            (Fuzz.oneOf
+                (Fuzz.constant Responsive
+                    :: List.map (Fixed >> Fuzz.constant) (Nothing :: List.map Just SStat.allDirections)
+                )
+            )
       )
     , ( "steps"
       , Fuzz.map2
@@ -532,17 +645,21 @@ blockFuzzers =
             (maybeOf STab.allPlacements)
       )
     , ( "timeline"
-      , Fuzz.map2
-            (\direction modifiers ->
+      , Fuzz.map4
+            (\direction modifiers startBox endBox ->
                 Timeline { direction = direction, modifiers = modifiers }
                     [ { start = Just "1984"
+                      , startBox = startBox
                       , middle = Just (Badge defaultBadgeConfig "ok")
                       , end = Just "First Macintosh"
+                      , endBox = endBox
                       }
                     ]
             )
             (maybeOf STimeline.allDirections)
-            (subsetOf STimeline.allModifiers)
+            (subsetOf allTimelineModifiers)
+            Fuzz.bool
+            Fuzz.bool
       )
     ]
 
@@ -614,6 +731,7 @@ pageFuzzer =
                     Just
                         { config = { modifiers = fabModifiers }
                         , main = Button defaultButtonConfig "+"
+                        , mainAction = Just (Button defaultButtonConfig "Main")
                         , actions = [ Button defaultButtonConfig "A" ]
                         , close = Just (Button defaultButtonConfig "x")
                         }

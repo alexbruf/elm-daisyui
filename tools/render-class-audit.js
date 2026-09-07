@@ -17,6 +17,13 @@
 //      fixtures/schema.json. A literal daisyUI class would be a class name that
 //      bypassed the generated schema.
 //   4. Every free literal that looks like a CSS class is one of the tokens.
+//      A bare Tailwind variant prefix ("lg:") is not a class, so it is exempt:
+//      it exists only so a responsive class can be *built* from a schema class
+//      (`tokenLgPrefix ++ SStat.directionToClass SStat.Horizontal`) instead of
+//      being retyped as a literal. A token defined that way is a "derived"
+//      token: it has no literal of its own, and rule 1 accepts it as long as
+//      its prefix is a variant prefix constant and its suffix is a
+//      `Daisy.Schema.*` call.
 //
 // "Free" means: what is left of a line after removing `Html.text "..."`,
 // `Attr.<fn> "..."`, `Attr.attribute "..." "..."`, `Attr.style "..." "..."`,
@@ -51,6 +58,9 @@ function daisyClasses() {
   return all;
 }
 
+/** A bare Tailwind variant prefix, e.g. `lg:`. Not a class on its own. */
+const VARIANT_PREFIX = /^(?:sm|md|lg|xl|2xl):$/;
+
 /** Top-level `name = "literal"` constants, as a Map name -> value. */
 function stringConstants(lines) {
   const constants = new Map();
@@ -61,6 +71,28 @@ function stringConstants(lines) {
     if (body) constants.set(head[1], body[1]);
   }
   return constants;
+}
+
+/**
+ * Top-level `name =` constants whose body is `<prefix> ++ <Schema call>`, where
+ * `<prefix>` is a constant holding a Tailwind variant prefix. These build a
+ * responsive class out of a generated schema class, so they carry no class
+ * literal at all. Returns a Map name -> prefix constant name.
+ */
+function derivedConstants(lines, constants) {
+  const derived = new Map();
+  for (let i = 0; i < lines.length - 1; i++) {
+    const head = /^([a-z][A-Za-z0-9_]*) =$/.exec(lines[i]);
+    if (!head) continue;
+    const body = /^ {4}([a-z][A-Za-z0-9_]*) \+\+ (S[A-Z][A-Za-z0-9]*\.[a-z][A-Za-z0-9_]*\b.*)$/.exec(
+      lines[i + 1]
+    );
+    if (!body) continue;
+    const prefix = constants.get(body[1]);
+    if (prefix === undefined || !VARIANT_PREFIX.test(prefix)) continue;
+    derived.set(head[1], body[1]);
+  }
+  return derived;
 }
 
 /** The names listed in `tokens : List String`. */
@@ -138,6 +170,7 @@ function main() {
   const lines = source.split("\n");
   const daisy = daisyClasses();
   const constants = stringConstants(lines);
+  const derived = derivedConstants(lines, constants);
   const problems = [];
 
   const names = tokenNames(lines);
@@ -150,6 +183,11 @@ function main() {
   const tokenValues = new Set();
   for (const name of names && !names.error ? names : []) {
     if (!constants.has(name)) {
+      if (derived.has(name)) {
+        // A variant prefix applied to a generated schema class: no literal to
+        // check, and by construction the class half cannot be retyped.
+        continue;
+      }
       problems.push(`tokens lists ${name}, which is not a top-level string constant`);
       continue;
     }
@@ -167,6 +205,7 @@ function main() {
     if (attributeLines.has(index)) return;
     for (const literal of literalsIn(stripAttributeContexts(line))) {
       if (literal === "" || literal === " ") continue;
+      if (VARIANT_PREFIX.test(literal)) continue;
       if (daisy.has(literal)) {
         problems.push(
           `${RENDER_PATH}:${index + 1}: literal "${literal}" is a daisyUI class; ` +
@@ -188,6 +227,7 @@ function main() {
   }
   console.log(
     `render-class-audit: OK (${tokenValues.size} layout tokens, ` +
+      `${derived.size} derived from a schema class, ` +
       `${daisy.size} daisyUI classes, no class literal in Render.elm)`
   );
 }

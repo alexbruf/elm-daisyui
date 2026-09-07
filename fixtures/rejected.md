@@ -38,14 +38,9 @@ Regenerate `tests/Corpus/Rejected.elm` from this table with
 | fab--00 | inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta` |
 | fab--05 | inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta` |
 | fab--06 | inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta` |
-| fab--07 | inexpressible: `fab-main-action` on the button itself; the renderer emits it on the wrapper around `Fab.main` |
 | fab--08 | inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta` |
-| fab--09 | inexpressible: `fab-main-action` on the button itself; the renderer emits it on the wrapper around `Fab.main` |
-| fab--10 | inexpressible: `fab-main-action` on the button itself; the renderer emits it on the wrapper around `Fab.main` |
-| filter--00 | inexpressible: the reset control is a plain `btn btn-square`; `FilterData.reset` always emits the `filter-reset` part |
-| filter--02 | inexpressible: the reset control is a plain `btn btn-square`; `FilterData.reset` always emits the `filter-reset` part |
+| fab--09 | inexpressible: the fab's main action is a `btn-primary`; `btn-primary` is reserved for `Page.cta` |
 | footer--02 | inexpressible: a `btn-primary` inside a `join`; `btn-primary` is reserved for `Page.cta`, which the shell places outside any join |
-| hero--03 | inexpressible: a `fieldset` inside a `card` inside a hero; `CardParts.body` holds leaves, and a `Form` is a block |
 | indicator--03 | inexpressible: `indicator` on the `tab` element itself; the renderer always emits its own `indicator` wrapper around the anchor |
 | indicator--04 | inexpressible: `indicator` on the `avatar` element itself; the renderer wraps the avatar in its own `indicator` element |
 | indicator--06 | inexpressible: a button as the `indicator-item`; `IndicatorPayload` is a badge or a status |
@@ -56,8 +51,6 @@ Regenerate `tests/Corpus/Rejected.elm` from this table with
 | indicator--15 | inexpressible: two `indicator` placement classes on one element (a corner); the schema declares `placement` as pick-at-most-one |
 | indicator--17 | inexpressible: two `indicator` placement classes on one element (a corner); the schema declares `placement` as pick-at-most-one |
 | input--15 | inexpressible: `validator` on one input inside a `join`; `Field.validate` marks the whole control, which here is the join |
-| list--01 | inexpressible: `list-col-grow` / `list-col-wrap` mark one cell of a row, but `ListConfig.modifiers` puts list modifiers on the `list` container |
-| list--02 | inexpressible: `list-col-grow` / `list-col-wrap` mark one cell of a row, but `ListConfig.modifiers` puts list modifiers on the `list` container |
 | menu--05 | inexpressible: a tooltip on a menu item; `tooltip` is a field on leaf configs and `MenuItem` is not a leaf |
 | menu--06 | inexpressible: a tooltip on a menu item; `tooltip` is a field on leaf configs and `MenuItem` is not a leaf |
 | menu--16 | inexpressible: `menu-dropdown-show` on an item's toggle and submenu, but `MenuConfig.modifiers` puts menu modifiers on the `menu` container |
@@ -66,11 +59,6 @@ Regenerate `tests/Corpus/Rejected.elm` from this table with
 | navbar--05 | inexpressible: `avatar` and `btn` on one element; `Leaf.Avatar` always renders its own `avatar` element |
 | navbar--07 | inexpressible: a horizontal `menu` inside a `navbar`; `Section.Navbar` holds leaves and `Menu` is a block (a known gap recorded in docs/placement.md) |
 | navbar--08 | inexpressible: a `navbar` carrying `collapse-title`; `collapse` parts belong to `Block.Collapse` and a section cannot sit inside a block |
-| rating--00 | inexpressible: the star shape (`mask-star`, `mask-heart`); the renderer fixes rating items to `mask mask-star-2` and `RatingConfig` has no shape field |
-| rating--01 | inexpressible: the star shape (`mask-star`, `mask-heart`); the renderer fixes rating items to `mask mask-star-2` and `RatingConfig` has no shape field |
-| rating--03 | inexpressible: the star shape (`mask-star`, `mask-heart`); the renderer fixes rating items to `mask mask-star-2` and `RatingConfig` has no shape field |
-| rating--06 | inexpressible: `rating-hidden` on the first radio and `mask-half-1` / `mask-half-2` on the items; `RatingConfig.modifiers` puts rating modifiers on the `rating` container |
-| rating--07 | inexpressible: `rating-hidden` on the first radio and `mask-half-1` / `mask-half-2` on the items; `RatingConfig.modifiers` puts rating modifiers on the `rating` container |
 | stack--02 | inexpressible: `card` blocks inside a `stack`; `Block.Stacked` holds leaves, and a block cannot contain another block |
 | stack--03 | inexpressible: `card` blocks inside a `stack`; `Block.Stacked` holds leaves, and a block cannot contain another block |
 | stack--04 | inexpressible: `card` blocks inside a `stack`; `Block.Stacked` holds leaves, and a block cannot contain another block |
@@ -81,21 +69,7 @@ Regenerate `tests/Corpus/Rejected.elm` from this table with
 | theme-controller--02 | inexpressible: a `theme-controller` swap with `swap-on` / `swap-off` faces; `ThemeSelect` renders the controller as one input per theme, with no faces |
 | theme-controller--05 | inexpressible: `theme-controller` and `toggle` on separate elements; `ThemeSelect` emits both classes on one input |
 | theme-controller--07 | inexpressible: a sized `radio theme-controller`; `ThemeSelectData` has no size field |
-| theme-controller--08 | inexpressible: a `theme-controller` carrying `join-item` / `btn` classes; `ThemeSelect` is a leaf of its own and cannot be a join item or a dropdown entry |
-| theme-controller--09 | inexpressible: a `theme-controller` carrying `join-item` / `btn` classes; `ThemeSelect` is a leaf of its own and cannot be a join item or a dropdown entry |
-| timeline--00 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--01 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--02 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--03 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--04 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--05 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--06 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--07 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--08 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--09 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--10 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--11 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
-| timeline--12 | inexpressible: `timeline-box` on one side of an item, but `TimelineConfig.modifiers` puts timeline modifiers on the `timeline` container |
+| theme-controller--08 | inexpressible: a `theme-controller` carrying `join-item`; `ThemeSelect` is a leaf of its own and cannot be a `JoinItem` |
 | toast--01 | inexpressible: a horizontal and a vertical `toast` placement on one element (a corner); the schema declares `placement` as pick-at-most-one |
 | toast--02 | inexpressible: a horizontal and a vertical `toast` placement on one element (a corner); the schema declares `placement` as pick-at-most-one |
 | toast--03 | inexpressible: a horizontal and a vertical `toast` placement on one element (a corner); the schema declares `placement` as pick-at-most-one |
