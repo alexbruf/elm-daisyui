@@ -13,7 +13,7 @@ import type { DaisyOptions } from "./fixtures";
 // so we look the allocation up first (`list --json`) and only allocate if
 // it doesn't exist yet.
 function resolvePreviewPort(): number {
-  const project = "elm-daisy";
+  const project = "elm-daisyui";
   const service = "e2e-preview";
   try {
     const listOut = execSync(`devports list --project ${project} --json`, {
@@ -105,7 +105,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: [["list"]],
+  // `list` for the terminal. On CI an HTML report is added as well, because
+  // .github/workflows/ci.yml uploads e2e/playwright-report (together with the
+  // traces in e2e/test-results) as an artifact when the pipeline fails.
+  reporter: process.env.CI
+    ? [["list"] as const, ["html", { open: "never" }] as const]
+    : [["list"] as const],
   use: {
     baseURL: BASE_URL,
     channel: "chrome",

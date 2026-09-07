@@ -21,11 +21,21 @@ playwright test`, otherwise `vite preview` serves a stale or missing
 
 ## Port
 
-The preview server's port is allocated once via `devports allocate elm-daisy
+The preview server's port is allocated once via `devports allocate elm-daisyui
 e2e-preview --type app -q` (see https://github.com/bendechrai/devports) so it
 won't collide with other local dev servers on this machine. If `devports`
 isn't on `PATH` (e.g. a minimal CI image), the config falls back to Vite's
 own default preview port, `4173`.
+
+## Base path
+
+The specs navigate with absolute paths (`/`, `/analytics`, `/settings`), which
+is what the demo serves locally: `demo/vite.config.js` defaults Vite's `base`
+to `/` and only `.github/workflows/pages.yml` overrides it (to `/elm-daisyui/`,
+for the project site). `vite preview` reads the same config, so the built
+`demo/dist` the `webServer` serves is a `/`-based build. Nothing here needs to
+know about the prefix; see CLAUDE.md's "GitHub Pages" section for the
+mechanism.
 
 ## Viewport x theme project matrix
 

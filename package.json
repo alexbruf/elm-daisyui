@@ -1,5 +1,5 @@
 {
-  "name": "elm-daisy-tools",
+  "name": "elm-daisyui-tools",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,7 @@
     "gen-cally-css": "bun tools/gen-cally-css.js",
     "render-audit": "bun tools/render-class-audit.js",
     "css-coverage": "bun tools/css-coverage.js",
+    "docs-site": "bun tools/build-docs-site.js",
     "e2e": "cd e2e && bunx playwright test",
     "demo:build": "cd demo && bun install && bun run build",
     "review": "bun run gen-review-classes && elm-review && cd demo && elm-review --config ../review"
@@ -18,5 +19,8 @@
   "dependencies": {
     "node-html-parser": "^9.0.3",
     "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "marked": "^18.0.11"
   }
 }

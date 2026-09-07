@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: tools/ci.sh
+    runs-on: ubuntu-latest
+    # The pipeline ends with 293 Playwright tests against the built demos.
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # bun only (CLAUDE.md); never npm/npx. The four npm packages below are
+      # the ones that ship the `elm`, `elm-test`, `elm-review` and
+      # `elm-format` binaries. Versions are pinned to the toolchain the
+      # repository is developed against: `elm@latest` is now the 0.19.2
+      # pre-release, and this is an Elm 0.19.1 package.
+      - name: Install the Elm toolchain
+        run: |
+          bun add -g elm@0.19.1-6 elm-test@0.19.1-revision17 elm-review@2.13.5 elm-format@0.8.8
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
+      - name: Report toolchain versions
+        run: |
+          bun --version
+          elm --version
+          elm-test --version
+          elm-review --version
+          elm-format --help | head -n 1
+
+      # The Elm package cache. `elm make` populates it from
+      # package.elm-lang.org, so a warm cache saves the download for every
+      # dependency of the library, the demo and the review config.
+      - name: Cache the Elm package cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.elm
+          key: elm-${{ runner.os }}-${{ hashFiles('elm.json', 'demo/elm.json', 'review/elm.json') }}
+          restore-keys: |
+            elm-${{ runner.os }}-
+
+      # vendor/daisyui is the oracle: tools/gen-schema.js reads its docs
+      # frontmatter and tools/extract-corpus.js its example bodies, and the
+      # `bun run build` inside it is what writes the class.json files the
+      # schema diff is checked against. It is gitignored, so CI has to make it.
+      - name: Vendor daisyUI at the pinned SHA
+        run: bash tools/vendor.sh
+
+      - name: Install tool dependencies
+        run: bun install
+
+      - name: Install demo dependencies
+        working-directory: demo
+        run: bun install
+
+      - name: Install e2e dependencies
+        working-directory: e2e
+        run: bun install
+
+      # e2e/playwright.config.ts pins `channel: "chrome"`, so install Google
+      # Chrome itself rather than the bundled Chromium.
+      - name: Install Chrome for Playwright
+        working-directory: e2e
+        run: bunx playwright install --with-deps chrome
+
+      # gen-schema diff -> elm make -> package docs -> elm-review -> elm-test
+      # -> render audit -> should-not-compile -> gen-cally-css -> demo build
+      # (which also generates dist/docs/) -> css-coverage -> Playwright.
+      # Any failure stops the pipeline.
+      - name: Run the full pipeline
+        run: bash tools/ci.sh
+
+      - name: Upload the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
+          if-no-files-found: ignore

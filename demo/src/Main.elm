@@ -28,6 +28,13 @@ Conventions the Tier C specs rely on:
     make the assertion racy, so `paneName` reports the last message the
     application acted on rather than the last one the runtime delivered.
 
+  - **Base path.** The demo is served from `/` locally and from
+    `/elm-daisyui/` on GitHub Pages. Vite's `base` reaches the bundle as
+    `import.meta.env.BASE_URL` and `demo/src/main.js` passes it in as the
+    `basePath` flag; `BasePath.strip` takes it off an incoming `Url` before
+    routing and `BasePath.join` puts it back on every `href` and `pushUrl`.
+    The three routes themselves stay base-free.
+
   - **Today.** `Leaf.Calendar` needs a `today`, and the theme screenshots have
     to be byte-identical from one run to the next, so it is the fixed date
     `2026-09-07` rather than a `Time.now` task. A real application would read
@@ -38,6 +45,7 @@ signature and `Daisy.Render.page` produces the body.
 
 -}
 
+import BasePath
 import Browser
 import Browser.Navigation as Nav
 import Daisy.Render
@@ -56,7 +64,7 @@ import Url
 -- MAIN ----------------------------------------------------------------------
 
 
-main : Program () Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -78,17 +86,39 @@ type Route
     | SettingsRoute
 
 
-routeFromUrl : Url.Url -> Route
-routeFromUrl url =
-    case normalisePath url.path of
+{-| What `demo/src/main.js` hands over. `basePath` is Vite's `BASE_URL`: `"/"`
+for the dev server, `vite preview` and Playwright, `"/elm-daisyui/"` for the
+GitHub Pages build.
+-}
+type alias Flags =
+    { basePath : String }
+
+
+routeFromUrl : String -> Url.Url -> Route
+routeFromUrl basePath url =
+    Maybe.withDefault AdminRoute (routeFor basePath url)
+
+
+{-| The route a URL names, or `Nothing` for a path this application does not
+own — `<base>docs/`, the generated documentation site that
+`tools/build-docs-site.js` writes beside the demo. `UrlRequested` needs the
+difference: a link to a non-route has to be a real page load, not a `pushUrl`
+that would land back on the dashboard.
+-}
+routeFor : String -> Url.Url -> Maybe Route
+routeFor basePath url =
+    case normalisePath (BasePath.strip basePath url.path) of
+        "/" ->
+            Just AdminRoute
+
         "/analytics" ->
-            AnalyticsRoute
+            Just AnalyticsRoute
 
         "/settings" ->
-            SettingsRoute
+            Just SettingsRoute
 
         _ ->
-            AdminRoute
+            Nothing
 
 
 normalisePath : String -> String
@@ -139,6 +169,7 @@ themeByName name =
 
 type alias Model =
     { key : Nav.Key
+    , basePath : String
     , route : Route
     , theme : Theme
     , lastMsg : String
@@ -156,10 +187,11 @@ type alias Model =
     }
 
 
-init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init _ url key =
+init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
     ( { key = key
-      , route = routeFromUrl url
+      , basePath = flags.basePath
+      , route = routeFromUrl flags.basePath url
       , theme = themeFromUrl url
       , lastMsg = "none"
       , toastVisible = False
@@ -340,16 +372,21 @@ step : Msg -> Model -> ( Model, Cmd Msg )
 step msg model =
     case msg of
         UrlRequested (Browser.Internal url) ->
-            ( model, Nav.pushUrl model.key (Url.toString url) )
+            case routeFor model.basePath url of
+                Just _ ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
+
+                Nothing ->
+                    ( model, Nav.load (Url.toString url) )
 
         UrlRequested (Browser.External href) ->
             ( model, Nav.load href )
 
         UrlChanged url ->
-            ( { model | route = routeFromUrl url }, Cmd.none )
+            ( { model | route = routeFromUrl model.basePath url }, Cmd.none )
 
         NavigateTo path ->
-            ( model, Nav.pushUrl model.key path )
+            ( model, Nav.pushUrl model.key (BasePath.join model.basePath path) )
 
         ThemeChanged theme ->
             ( { model | theme = theme }, Cmd.none )
@@ -456,7 +493,8 @@ pageFor model =
     case model.route of
         AdminRoute ->
             Demo.Admin.page
-                { theme = model.theme
+                { basePath = model.basePath
+                , theme = model.theme
                 , lastMsg = model.lastMsg
                 , toastVisible = model.toastVisible
                 , onNavigate = NavigateTo
@@ -467,7 +505,8 @@ pageFor model =
 
         AnalyticsRoute ->
             Demo.Analytics.page
-                { theme = model.theme
+                { basePath = model.basePath
+                , theme = model.theme
                 , lastMsg = model.lastMsg
                 , dateRange = model.dateRange
                 , dateRangeCaption = model.dateRangeCaption
@@ -482,7 +521,8 @@ pageFor model =
 
         SettingsRoute ->
             Demo.Settings.page
-                { theme = model.theme
+                { basePath = model.basePath
+                , theme = model.theme
                 , lastMsg = model.lastMsg
                 , workspaceName = model.workspaceName
                 , contactEmail = model.contactEmail

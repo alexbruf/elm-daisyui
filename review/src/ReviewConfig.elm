@@ -1,6 +1,6 @@
 module ReviewConfig exposing (config)
 
-{-| elm-review configuration for elm-daisy (SPEC.md step 5 / CLAUDE.md
+{-| elm-review configuration for elm-daisyui (SPEC.md step 5 / CLAUDE.md
 "Tooling rules"). Three custom rules, each with its own module and rule
 tests under review/src and review/tests:
 

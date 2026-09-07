@@ -3,10 +3,13 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "elm-daisy-tools",
+      "name": "elm-daisyui-tools",
       "dependencies": {
         "node-html-parser": "^9.0.3",
         "yaml": "^2.9.0",
+      },
+      "devDependencies": {
+        "marked": "^18.0.11",
       },
     },
   },
@@ -26,6 +29,8 @@
     "domutils": ["domutils@3.2.2", "", { "dependencies": { "dom-serializer": "^2.0.0", "domelementtype": "^2.3.0", "domhandler": "^5.0.3" } }, "sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw=="],
 
     "entities": ["entities@8.0.0", "", {}, "sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA=="],
+
+    "marked": ["marked@18.0.11", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-HnslJfsZkRPBDJRHvVtAaWlZHEpSu7u8LgQuJCELjRKuWR+hpq4A7sLq3p8HaI9ypVoXDXxV34CsQJEe1+J5Aw=="],
 
     "node-html-parser": ["node-html-parser@9.0.3", "", { "dependencies": { "css-select": "^5.1.0", "entities": "^8.0.0" } }, "sha512-iaQ9rokcYNp99IY0h82q04Wtc27SObRT+OEytdJh0bFv2IN0fypnU63KUNVavkPSiwsmIELG1eUenajGhzrvpg=="],
 

@@ -5,7 +5,12 @@ import '../app.css'
 import { Elm } from './Main.elm'
 
 const node = document.getElementById('app')
-const flags = null
+
+// Vite's `base` (see vite.config.js): `/` locally and under Playwright,
+// `/elm-daisyui/` for the GitHub Pages build. The router strips it off the
+// incoming URL and puts it back on every href and pushUrl — see
+// demo/src/BasePath.elm.
+const flags = { basePath: import.meta.env.BASE_URL }
 
 Elm.Main.init({ node, flags })
 

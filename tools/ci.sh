@@ -2,12 +2,17 @@
 # tools/ci.sh — run the full CI pipeline in the exact order fixed by
 # CLAUDE.md / SPEC.md "Constraints":
 #
-#   gen-schema diff -> elm make -> elm-review -> elm-test -> render-audit
-#   -> should-not-compile -> gen-cally-css -> demo build -> css-coverage
-#   -> Playwright
+#   gen-schema diff -> elm make -> package-docs -> elm-review -> elm-test
+#   -> render-audit -> should-not-compile -> gen-cally-css -> demo build
+#   -> css-coverage -> Playwright
 #
 # render-audit is the static half of RenderPurityTest and so runs with it,
 # right after elm-test.
+#
+# package-docs is the publish gate: `elm publish` builds the documentation and
+# refuses a package whose exposed modules are missing a module comment or an
+# @docs entry, and it refuses unformatted source. It sits with elm-make
+# because it is the same compiler pass over the same files.
 #
 # Any failure stops the pipeline (set -e). bun/bunx only, never npm/npx.
 #
@@ -26,6 +31,7 @@ cd "$REPO_ROOT"
 STEP_NAMES=(
   gen-schema
   elm-make
+  package-docs
   elm-review
   elm-test
   render-audit
@@ -42,6 +48,16 @@ step_gen-schema() {
 
 step_elm-make() {
   elm make src/Daisy/Render.elm --output=/dev/null
+}
+
+step_package-docs() {
+  # Everything `elm publish` checks before it will accept a version, minus the
+  # git tag: the docs build (every exposed module documented) and formatting.
+  local docs
+  docs="$(mktemp -t elm-daisyui-docs-XXXXXX.json)"
+  elm make --docs="$docs"
+  rm -f "$docs"
+  elm-format --validate src
 }
 
 step_elm-review() {

@@ -16,6 +16,7 @@ Like every `Demo.*` module this imports no `Html`.
 
 -}
 
+import BasePath
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Button as SButton
 import Daisy.Schema.Card as SCard
@@ -46,7 +47,8 @@ import Daisy.Tree as Tree
 {-| What the settings page needs from the router.
 -}
 type alias Config msg =
-    { theme : Theme
+    { basePath : String
+    , theme : Theme
     , lastMsg : String
     , workspaceName : String
     , contactEmail : String
@@ -96,7 +98,7 @@ page config =
         { shell = Plain
         , sections =
             Sections5
-                navSection
+                (navSection config)
                 headerSection
                 (formsSection config)
                 warningSection
@@ -117,25 +119,29 @@ page config =
 section instead. These are real `Link` leaves with an `href`, so
 `Browser.application` intercepts the click as a `UrlRequest`.
 -}
-navSection : Section msg
-navSection =
-    Navbar navbarParts
+navSection : Config msg -> Section msg
+navSection config =
+    Navbar (navbarParts config)
 
 
-navbarParts : NavbarParts msg
-navbarParts =
+navbarParts : Config msg -> NavbarParts msg
+navbarParts config =
     { start = [ Text "Acme Console" ]
     , center = []
     , end =
-        [ navLink "Overview" "/"
-        , navLink "Analytics" "/analytics"
+        [ navLink config "Overview" "/"
+        , navLink config "Analytics" "/analytics"
         ]
     }
 
 
-navLink : String -> String -> Leaf msg
-navLink label url =
-    Link { defaultLink | href = url } label
+{-| A cross-demo link. The `href` carries the deployment's base path in front
+of the demo's own route (`/` locally, `/elm-daisyui/` on GitHub Pages), which
+is what `BasePath.join` adds.
+-}
+navLink : Config msg -> String -> String -> Leaf msg
+navLink config label url =
+    Link { defaultLink | href = BasePath.join config.basePath url } label
 
 
 defaultLink : Tree.LinkConfig msg

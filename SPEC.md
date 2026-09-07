@@ -32,7 +32,7 @@ Exclusivity rule derived from the schema: within one component, groups `color`, 
 ## Deliverables
 
 ```
-elm-daisy/
+elm-daisyui/
   elm.json
   src/
     Daisy/Schema.elm        generated, do not hand edit
@@ -40,7 +40,7 @@ elm-daisy/
     Daisy/Render.elm        Tree -> Html msg (step 4)
     Daisy/Chart.elm         chart config types; renderer calls elm-charts (step 4)
   demo/
-    elm.json                separate app, depends on ../elm-daisy
+    elm.json                separate app, depends on ../elm-daisyui
     src/Demo/Admin.elm      dashboard: sidebar, navbar, stats, chart, table
     src/Demo/Analytics.elm  chart-heavy: line, bar, donut, stat cards
     src/Demo/Settings.elm   form-heavy: fieldsets, toggles, selects, modal confirm

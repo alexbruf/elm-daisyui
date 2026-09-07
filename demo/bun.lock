@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "elm-daisy-demo",
+      "name": "elm-daisyui-demo",
       "dependencies": {
         "@tailwindcss/vite": "^4.3.3",
         "daisyui": "5.7.28",

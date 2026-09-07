@@ -22,6 +22,7 @@ router's model this page reads plus the constructors it fires.
 
 -}
 
+import BasePath
 import Daisy.Chart as DChart
 import Daisy.Schema.Alert as SAlert
 import Daisy.Schema.Badge as SBadge
@@ -54,7 +55,8 @@ import Daisy.Tree as Tree
 {-| What the admin page needs from the router.
 -}
 type alias Config msg =
-    { theme : Theme
+    { basePath : String
+    , theme : Theme
     , lastMsg : String
     , toastVisible : Bool
     , onNavigate : String -> msg
@@ -101,16 +103,49 @@ sidebar : Config msg -> MenuSpec msg
 sidebar config =
     { config = { defaultMenu | size = Just SMenu.Lg }
     , items =
-        [ navItem "Overview" "/" (config.onNavigate "/") True
-        , navItem "Analytics" "/analytics" (config.onNavigate "/analytics") False
-        , navItem "Settings" "/settings" (config.onNavigate "/settings") False
+        [ navItem "Overview" (href config "/") (config.onNavigate "/") True
+        , navItem "Analytics" (href config "/analytics") (config.onNavigate "/analytics") False
+        , navItem "Settings" (href config "/settings") (config.onNavigate "/settings") False
+        , docsItem config
         ]
     }
+
+
+{-| The generated documentation site, which lives beside the demo in
+`dist/docs/` rather than being an Elm route. It is a plain link with no
+`onClick`: `Main.step` sees the `UrlRequest` for a path that is not one of the
+three routes and answers with `Browser.Navigation.load`, so the browser leaves
+the single-page app instead of routing inside it.
+-}
+docsItem : Config msg -> MenuItem msg
+docsItem config =
+    MenuItem
+        { label = "Docs"
+        , icon = Nothing
+        , badge = Nothing
+        , active = False
+        , disabled = False
+        , focus = False
+        , title = False
+        , href = Just (href config "/docs/")
+        , onClick = Nothing
+        , submenu = []
+        }
 
 
 defaultMenu : Tree.MenuConfig
 defaultMenu =
     Tree.defaultMenuConfig
+
+
+{-| A route as it must appear in an `href`: the demo's own path with the
+deployment's base path in front of it (`/` locally, `/elm-daisyui/` on GitHub
+Pages). The `onClick` beside it keeps the base-free route, because `Main`
+prefixes it on the way into `pushUrl`.
+-}
+href : Config msg -> String -> String
+href config path =
+    BasePath.join config.basePath path
 
 
 {-| A sidebar entry. It carries both a real `href` (so it is a focusable link

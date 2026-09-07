@@ -1,0 +1,97 @@
+name: Deploy demos and docs to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and never cancel one that is already running.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build demo/dist (demos + docs site)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # `vite-plugin-elm` shells out to `elm make`, so the build needs the
+      # compiler — and only the compiler. It does not need elm-test,
+      # elm-review, elm-format or vendor/daisyui: everything the demo build
+      # reads is committed (src/Daisy/*, demo/cally-*.css, demo/app.css, and
+      # the markdown the docs site is generated from) and daisyUI itself comes
+      # from npm.
+      - name: Install the Elm compiler
+        run: |
+          bun add -g elm@0.19.1-6
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
+
+      # `demo`'s build script ends with `bun ../tools/build-docs-site.js`,
+      # which imports `marked` from the repository root's node_modules.
+      - name: Install tool dependencies
+        run: bun install
+
+      - name: Cache the Elm package cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.elm
+          key: elm-pages-${{ runner.os }}-${{ hashFiles('demo/elm.json') }}
+          restore-keys: |
+            elm-pages-${{ runner.os }}-
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      # A project site is served from https://<owner>.github.io/<repo>/, so
+      # every asset URL and every router path needs that prefix. `base_path`
+      # is "/elm-daisyui" here (and "" for a user/organisation site), and
+      # demo/vite.config.js reads VITE_BASE. Vite passes the value on to the
+      # bundle as `import.meta.env.BASE_URL`, which demo/src/main.js hands to
+      # Elm as the `basePath` flag; see demo/src/BasePath.elm.
+      #
+      # The build also copies dist/index.html to dist/404.html, because Pages
+      # has no SPA fallback and serves 404.html for any path with no file —
+      # which is every deep link into this router; and it renders the
+      # repository's markdown into dist/docs/ (tools/build-docs-site.js),
+      # which reads the same VITE_BASE for its own links.
+      - name: Build the demos and the docs site
+        working-directory: demo
+        env:
+          VITE_BASE: ${{ steps.pages.outputs.base_path }}/
+        run: |
+          bun install
+          bun run build
+
+      - name: Upload the Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: demo/dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

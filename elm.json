@@ -1,6 +1,6 @@
 {
     "type": "package",
-    "name": "alexbruf/elm-daisy",
+    "name": "alexbruf/elm-daisyui",
     "summary": "Typed, closed composition layer over daisyUI classes",
     "license": "BSD-3-Clause",
     "version": "1.0.0",

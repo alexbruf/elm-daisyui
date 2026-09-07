@@ -44,3 +44,12 @@
 @source "../src/Daisy/Schema";
 @source "../src/Daisy/Schema.elm";
 @source "./src";
+
+/*
+ * The static docs site (`tools/build-docs-site.js`, written into
+ * `dist/docs/` right after `vite build`) is styled by this same stylesheet,
+ * but it does not exist yet when Tailwind scans. Its layout utilities are
+ * therefore safelisted here; every daisyUI component class it uses (`navbar`,
+ * `menu`, `btn`, `prose`, `bg-base-100`) is already emitted for the demo.
+ */
+@source inline("{max-w-none,p-8,shadow-sm}");

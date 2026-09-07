@@ -1,10 +1,10 @@
 {
-  "name": "elm-daisy-demo",
+  "name": "elm-daisyui-demo",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && bun ../tools/build-docs-site.js dist",
     "preview": "vite preview"
   },
   "dependencies": {
