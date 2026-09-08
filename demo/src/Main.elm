@@ -215,6 +215,7 @@ type alias Model =
     , digest : Bool
     , anonymize : Bool
     , generatorUrl : String
+    , savedThemes : List Tree.CustomTheme
     , themeSeed : Int
     , chartRange : Demo.Admin.ChartRange
     , hoveredCharts : List ( ChartId, Int )
@@ -290,6 +291,7 @@ init flags url key =
       , digest = True
       , anonymize = False
       , generatorUrl = generatorFallback
+      , savedThemes = []
       , themeSeed = 0
       , chartRange = Demo.Admin.Year
       , hoveredCharts = []
@@ -374,6 +376,7 @@ type Msg
     | ModalConfirmed
     | ModalCancelled
     | ThemeEdited ThemeGenerator.ThemeEdit
+    | ThemeSaved
     | ThemeExported
     | ThemeLinkReady String
     | ChartRangeChanged Demo.Admin.ChartRange
@@ -482,6 +485,9 @@ msgName msg =
 
         ThemeEdited _ ->
             "ThemeEdited"
+
+        ThemeSaved ->
+            "ThemeSaved"
 
         ThemeExported ->
             "ThemeExported"
@@ -611,6 +617,36 @@ step msg model =
             in
             ( { model | theme = Custom edited, themeSeed = model.themeSeed + 1 }
             , Ports.encodeTheme (ThemeGenerator.exportJson edited)
+            )
+
+        ThemeSaved ->
+            -- daisyUI's "Hold to add theme" writes the theme into the browser's
+            -- local storage. This keeps it in the model instead: no port, no
+            -- storage, and the list is empty again on reload — which is the
+            -- honest version of the same button for a demo whose whole point is
+            -- that the theme reaches the page as inline custom properties.
+            --
+            -- A theme already in the list is not added twice: `My themes` is a
+            -- set of names, and `Demo.Themes.rename` gives every edit the same
+            -- one until the name field says otherwise.
+            let
+                current : Tree.CustomTheme
+                current =
+                    editedTheme model.theme
+
+                already : Bool
+                already =
+                    List.any (\t -> t.name == current.name) model.savedThemes
+            in
+            ( { model
+                | savedThemes =
+                    if already then
+                        model.savedThemes
+
+                    else
+                        model.savedThemes ++ [ current ]
+              }
+            , Cmd.none
             )
 
         ThemeExported ->
@@ -774,11 +810,13 @@ pageFor model =
             ThemeGenerator.page
                 { basePath = model.basePath
                 , edited = editedTheme model.theme
+                , saved = model.savedThemes
                 , lastMsg = model.lastMsg
                 , generatorUrl = model.generatorUrl
                 , hoveredSales = hoveredIn SalesVolumeChart model
                 , onSalesHover = ChartHovered SalesVolumeChart
                 , onNavigate = NavigateTo
                 , onEdit = ThemeEdited
+                , onSaveTheme = ThemeSaved
                 , onExport = ThemeExported
                 }

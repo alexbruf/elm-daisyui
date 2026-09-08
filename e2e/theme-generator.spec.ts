@@ -203,17 +203,20 @@ test("the shape controls reach daisyUI's own measurements", async ({ page }) => 
     .poll(() => tile.evaluate((el) => getComputedStyle(el).borderStartEndRadius))
     .toBe("32px");
   // The chosen step is the marked one, and it is the only one in its group.
-  // `btn-neutral`, not `btn-active`: `.btn-active`'s background is a
-  // `color-mix()` the composition chose, which is 4.28:1 in `valentine`, while
-  // `--color-neutral` / `--color-neutral-content` is a pair daisyUI declares in
-  // every theme.
-  await expect(boxes2remStep).toHaveClass(/btn-neutral/);
+  //
+  // The mark is a *stroke*, not a fill: daisyUI's own generator leaves the tile
+  // alone and draws the current corner in `--color-primary`
+  // (`border-base-content/20 bg-base-300` on every other step). It used to be a
+  // `join` of `btn`s with the marked one `btn-neutral`, which is a filled black
+  // slab — a different control from the one daisyUI ships, and the single
+  // loudest thing in that column.
+  await expect(tile).toHaveClass(/border-primary/);
   const markedBoxSteps = await page
     .getByRole("radio", { name: /^Boxes / })
     .evaluateAll(
       (els) =>
         els.filter((el) =>
-          el.parentElement!.classList.contains("btn-neutral"),
+          el.nextElementSibling!.classList.contains("border-primary"),
         ).length,
     );
   expect(markedBoxSteps, "one step of `Boxes` is marked").toBe(1);
@@ -348,7 +351,12 @@ test("the palette shows every theme surface with its content colour on it", asyn
     "bg-warning",
     "bg-error",
   ];
-  const palette = page.locator(".card", { hasText: "Palette" }).first();
+  // The palette is no longer a card: the whole editor rail is
+  // `CardSurface.SurfaceBare` now, so it is found by its heading instead.
+  const palette = page
+    .locator("div", { has: page.getByText("Palette", { exact: true }) })
+    .filter({ has: page.locator(".bg-primary") })
+    .last();
   for (const surface of surfaces) {
     await expect(palette.locator(`.${surface}`)).toHaveCount(1);
   }
@@ -399,9 +407,11 @@ test("the theme list loads a built-in, and Randomize replaces it", async ({
   // theme and clicking one loads it. That rail is a `Block.Menu`, so the rows
   // are buttons (a `MenuItem` with an `onClick` and no `href` is a `<button>`,
   // see `Daisy.Render.clickableHtml`), and the loaded one is marked.
-  const rail = page.locator(".menu").first();
+  // Two menus now, `My themes` and `daisyUI themes`, with a `divider` between
+  // them exactly as daisyUI's rail has.
+  const rail = page.locator(".menu");
   const marked = () =>
-    rail.locator("li > .bg-base-200").first().innerText();
+    rail.locator("li > .bg-base-content\\/5").first().innerText();
 
   // `acme` is marked, because `acme`'s declarations are not any built-in's.
   // It is derived from the theme, not remembered — see

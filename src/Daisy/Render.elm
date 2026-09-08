@@ -195,6 +195,9 @@ tokens =
     , tokenPadding
     , tokenPaddingCard
     , tokenPaddingLg
+    , tokenPaddingTop
+    , tokenPaddingEnd
+    , tokenPaddingBlockSm
     , tokenItemsStart
     , tokenItemsCenter
     , tokenItemsEnd
@@ -202,6 +205,8 @@ tokens =
     , tokenJustifyBetween
     , tokenJustifyCenter
     , tokenGrow
+    , tokenBasis0
+    , tokenMinW0
     , tokenShrink0
     , tokenRelative
     , tokenAbsolute
@@ -231,10 +236,14 @@ tokens =
     , tokenOverflowHidden
     , tokenBorderBottom
     , tokenBorderRight
+    , tokenBorderTop
     , tokenBorderTop2
     , tokenBorderEnd2
     , tokenBorderBox
     , tokenBorderEdge
+    , tokenBorderDashed
+    , tokenBorderTint
+    , tokenBorderPrimary
     , tokenFixed
     , tokenInset0
     , tokenZOverlay
@@ -246,7 +255,13 @@ tokens =
     , tokenBgBase
     , tokenBgGround
     , tokenBgBase300
+    , tokenTintActive
     , tokenTextBaseContent
+    , tokenTextPrimary
+    , tokenTextInfo
+    , tokenTextSuccess
+    , tokenTextWarning
+    , tokenTextError
     , tokenBgPrimary
     , tokenTextPrimaryContent
     , tokenBgSecondary
@@ -265,12 +280,15 @@ tokens =
     , tokenTextErrorContent
     , tokenShadowSm
     , tokenRoundedMd
+    , tokenRoundedField
     , tokenRoundedLg
     , tokenRoundedFull
+    , tokenTextTiny
     , tokenTextXs
     , tokenTextSm
     , tokenTextBase
     , tokenTextMuted
+    , tokenItalic
     , tokenText2xl
     , tokenFontMedium
     , tokenFontBold
@@ -535,6 +553,30 @@ tokenPaddingLg =
     "p-6"
 
 
+{-| The top and trailing gutter of a `Leaf.RadiusTiles` frame: the corner is
+inset from two sides and flush with the other two, which is what makes the tile
+read as the corner of a box rather than as a floating square.
+-}
+tokenPaddingTop : String
+tokenPaddingTop =
+    "pt-2"
+
+
+{-| See `tokenPaddingTop`.
+-}
+tokenPaddingEnd : String
+tokenPaddingEnd =
+    "pe-3"
+
+
+{-| The vertical gutter of a `ListStyle.ListRules` row: 8px above and below,
+which is daisyUI's own compact row in its generator preview.
+-}
+tokenPaddingBlockSm : String
+tokenPaddingBlockSm =
+    "py-2"
+
+
 tokenItemsStart : String
 tokenItemsStart =
     "items-start"
@@ -572,6 +614,25 @@ of a `Leaf.UserChip` between the portrait and the edge.
 tokenGrow : String
 tokenGrow =
     "grow"
+
+
+{-| An equal share of a `RowLayout.RowEven`: with `flex-basis: 0` every child
+starts from nothing, so `grow` divides the row between them rather than adding
+to whatever each one happened to measure. It is what a seven-track grid would
+do, without a `grid-cols-7` utility.
+-}
+tokenBasis0 : String
+tokenBasis0 =
+    "basis-0"
+
+
+{-| The other half of an equal share. A flex item's `min-width` is `auto`, so a
+child never shrinks below its own content however small its basis is; seven day
+cells came out wider than the card that held them. See `tokenBasis0`.
+-}
+tokenMinW0 : String
+tokenMinW0 =
+    "min-w-0"
 
 
 {-| The flex child that must keep its natural width.
@@ -842,10 +903,47 @@ tokenBorderRight =
     "border-r"
 
 
+{-| The hairline rule daisyUI's own generator draws between the rows of a
+compact list — a `table` row, a checkbox row, an order row. One side of a box
+on chrome the renderer owns, like `tokenBorderBottom` and `tokenBorderRight`.
+-}
+tokenBorderTop : String
+tokenBorderTop =
+    "border-t"
+
+
+{-| That rule, dashed. daisyUI's generator preview separates every compact row
+with a dashed hairline rather than a solid one, and `border-dashed` only ever
+reaches an element the renderer already gave a `border-*` side to.
+-}
+tokenBorderDashed : String
+tokenBorderDashed =
+    "border-dashed"
+
+
+{-| The stroke of a `Leaf.RadiusTiles` corner: `--color-base-content` at 20%,
+which is what daisyUI's own radius tile draws. It is not a text colour — the
+tile holds no text — and it is the only use site.
+-}
+tokenBorderTint : String
+tokenBorderTint =
+    "border-base-content/20"
+
+
+{-| The stroke of the _selected_ `Leaf.RadiusTiles` corner. daisyUI marks the
+current radius by drawing its corner in `--color-primary` and leaving the tile
+itself alone; the alternative the renderer used before was a filled
+`btn-neutral` slab, which is not the control daisyUI ships. A border colour on
+a decorative box with one use site, never a foreground for text.
+-}
+tokenBorderPrimary : String
+tokenBorderPrimary =
+    "border-primary"
+
+
 {-| The top half of a `Leaf.RadiusTiles` corner. The tile draws two sides of a
 box at the radius the step sets, which is how daisyUI's own generator shows a
-radius rather than naming it. Both sides are left at `currentColor`, so the arc
-is the button's own foreground and a marked step needs no colour utility.
+radius rather than naming it.
 -}
 tokenBorderTop2 : String
 tokenBorderTop2 =
@@ -984,9 +1082,64 @@ tokenBgBase300 =
     "bg-base-300"
 
 
+{-| The tint on a `MenuActiveStyle.TintedActive` row: `--color-base-content` at
+10%, which is what daisyUI's own theme list paints.
+
+It replaced `bg-base-200`, and the reason is the whole point of a _tint_: a
+menu on the page ground **is** `bg-base-200`, so a base-200 active row was
+invisible on exactly the page this renderer draws it for (the theme
+generator's rail, and the `light` theme, where base-100 and base-200 are 100%
+and 98% lightness). A translucent base-content step is visible over any
+surface, which is why daisyUI picked it.
+
+-}
+tokenTintActive : String
+tokenTintActive =
+    "bg-base-content/5"
+
+
 tokenTextBaseContent : String
 tokenTextBaseContent =
     "text-base-content"
+
+
+{-| The six `Daisy.Tree.IconTone` colours. Each is a foreground utility, and
+each may only ever land on the `<svg>` of a `Leaf.Icon` — `iconHtml` is the one
+call site, and an icon holds no text node, so none of them can become the
+colour of a word. daisyUI's own theme generator paints the same glyphs the same
+way.
+-}
+tokenTextPrimary : String
+tokenTextPrimary =
+    "text-primary"
+
+
+{-| See `tokenTextPrimary`.
+-}
+tokenTextInfo : String
+tokenTextInfo =
+    "text-info"
+
+
+{-| See `tokenTextPrimary`.
+-}
+tokenTextSuccess : String
+tokenTextSuccess =
+    "text-success"
+
+
+{-| See `tokenTextPrimary`.
+-}
+tokenTextWarning : String
+tokenTextWarning =
+    "text-warning"
+
+
+{-| See `tokenTextPrimary`.
+-}
+tokenTextError : String
+tokenTextError =
+    "text-error"
 
 
 tokenBgPrimary : String
@@ -1091,6 +1244,15 @@ tokenRoundedMd =
     "rounded-md"
 
 
+{-| `--radius-field`, the corner a theme gives its buttons and inputs. The
+`Leaf.RadiusTiles` frame carries it so the picker's own tiles are shaped by the
+theme being picked, exactly as daisyUI's are.
+-}
+tokenRoundedField : String
+tokenRoundedField =
+    "rounded-field"
+
+
 {-| The fixed 8px corner of the small painted surfaces the renderer draws
 itself: a `stat-figure`'s tile, a `Leaf.UserChip`'s panel.
 
@@ -1110,6 +1272,16 @@ tokenRoundedLg =
 tokenRoundedFull : String
 tokenRoundedFull =
     "rounded-full"
+
+
+{-| 10px: the weekday letter under the day number of a two-line
+`ButtonConfig.sublabel`, and the caption under a `Leaf.Divider`. One step below
+`text-xs`, which is the smallest step daisyUI's own generator uses for a
+sublabel.
+-}
+tokenTextTiny : String
+tokenTextTiny =
+    "text-[0.625rem]"
 
 
 {-| The caption step, 12px: the second line of a `Leaf.UserChip`, a chart
@@ -1155,6 +1327,23 @@ invented here.
 tokenTextMuted : String
 tokenTextMuted =
     "text-base-content/60"
+
+
+{-| The italic of a `Leaf.RadiusTiles` subtitle ("card, modal, alert"). Shape,
+not colour, and one use site.
+
+daisyUI writes that line `text-base-content/40`; ours is `tokenTextMuted`
+(60%), the step daisyUI's own `.stat-desc` paints. 40% of base-content is under
+4.5:1 on base-200 in most themes and axe reports it `serious`, and unlike
+`.menu-title` or `.tab` this line is the _renderer's_ choice, not a daisyUI
+component rule — so there is nothing to attribute it to. The subtitle is
+separated from the label above it by size and slant instead of by a second
+opacity step.
+
+-}
+tokenItalic : String
+tokenItalic =
+    "italic"
 
 
 {-| 24px: the `A` a `Leaf.ColorChips` chip draws in its `-content` colour. The
@@ -2225,7 +2414,7 @@ brandHtml b =
 
 brandIconConfig : IconConfig
 brandIconConfig =
-    { size = IconLg, label = Nothing }
+    { size = IconLg, tone = Nothing, label = Nothing }
 
 
 {-| The page's title bar: the name on the left, the `breadcrumbs` trail and any
@@ -2318,7 +2507,7 @@ shellDrawerButton =
         -- The name is on the glyph, not on the `<label>`: a `<label>` has no
         -- implicit ARIA role, so `aria-label` on it is `aria-prohibited-attr`
         -- (serious) — the label takes its name from its content instead.
-        [ iconHtml [] { size = IconMd, label = Just "Toggle navigation" } Icon.Menu ]
+        [ iconHtml [] { size = IconMd, tone = Nothing, label = Just "Toggle navigation" } Icon.Menu ]
 
 
 ctaHtml : Cta msg -> Html msg
@@ -2516,9 +2705,17 @@ of `tokenGridCols1` decides the width.
 -}
 gridItemHtml : Theme -> GridItem msg -> Html msg
 gridItemHtml theme item =
+    let
+        cell : List (Html msg)
+        cell =
+            [ Html.div
+                [ classes (cellColumnsTokens item.columns) ]
+                (cellChildren theme item.columns item.blocks)
+            ]
+    in
     Html.div
-        [ classes (spanToken item.span :: cellColumnsTokens item.columns) ]
-        (cellChildren theme item.columns item.blocks)
+        [ classes [ spanToken item.span, tokenFlex, tokenFlexCol, tokenGap ] ]
+        (List.map (blockIn theme Anywhere) item.lead ++ cell)
 
 
 {-| A cell's blocks, either as themselves or dealt into columns.
@@ -2757,8 +2954,8 @@ blockIn theme context theBlock =
         Form fieldsets ->
             formHtml theme fieldsets
 
-        ListBlock rows ->
-            listHtml theme rows
+        ListBlock config rows ->
+            listHtml theme config rows
 
         Menu config items ->
             menuHtml [] { config = config, items = items }
@@ -2912,31 +3109,70 @@ accordionItemHtml theme config item =
 
 cardHtml : Theme -> CardConfig -> CardParts msg -> Html msg
 cardHtml theme config parts =
-    Html.div
-        [ classes
-            ([ SCard.component ]
-                ++ opt SCard.styleToClass config.style
-                ++ opt SCard.sizeToClass config.size
-                ++ List.map SCard.modifierToClass config.modifiers
-                -- daisyUI's `.card` paints neither a background nor a shadow:
-                -- every docs example adds `bg-base-100 shadow-sm` beside it,
-                -- which is what makes a card read as a panel raised off the
-                -- `bg-base-200` content ground rather than a bordered region of
-                -- the same paper.
-                ++ [ tokenBgBase, tokenShadowSm ]
-            )
-        ]
-        (maybeHtml (\f -> Html.figure [] [ leafOf theme f ]) parts.figure
-            ++ [ Html.div
-                    [ classes (cardBodyPart :: cardPaddingTokens config.padding) ]
-                    (cardHeaderHtml theme parts
-                        ++ List.map (cardChildHtml theme) parts.body
-                        ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map (leafOf theme) parts.actions) ]
+    case config.surface of
+        SurfacePanel ->
+            Html.div
+                [ classes
+                    ([ SCard.component ]
+                        ++ opt SCard.styleToClass config.style
+                        ++ opt SCard.sizeToClass config.size
+                        ++ List.map SCard.modifierToClass config.modifiers
+                        -- daisyUI's `.card` paints neither a background nor a shadow:
+                        -- every docs example adds `bg-base-100 shadow-sm` beside it,
+                        -- which is what makes a card read as a panel raised off the
+                        -- `bg-base-200` content ground rather than a bordered region of
+                        -- the same paper.
+                        ++ [ tokenBgBase, tokenShadowSm ]
                     )
-               ]
+                ]
+                (maybeHtml (\f -> Html.figure [] [ leafOf theme f ]) parts.figure
+                    ++ [ Html.div
+                            [ classes (cardBodyPart :: cardPaddingTokens config.padding) ]
+                            (cardHeaderHtml theme SurfacePanel parts
+                                ++ List.map (cardChildHtml theme) parts.body
+                                ++ [ Html.div [ classes [ cardActionsPart ] ] (List.map (leafOf theme) parts.actions) ]
+                            )
+                       ]
+                )
+                |> withHover3d config.hover3d
+                |> withAura config.aura
+
+        SurfaceBare ->
+            bareCardHtml theme parts
+
+
+{-| A `CardSurface.SurfaceBare` card: the same parts, no panel and no `card-*`
+class at all.
+
+Not one `card` class is emitted, which is the point — a part may not appear
+outside its component, so a bare card cannot carry `card-body`, `card-title` or
+`card-actions` either. What is left is the layout the renderer already owns: a
+`flex flex-col gap-4` column, the same header row helper (drawing a plain
+`<h3>` instead of a `card-title`), the same children, and the action row as a
+wrapping flex row. `style`, `size`, `padding`, `modifiers`, `aura` and `hover3d`
+are panel properties and are deliberately ignored here rather than half-applied.
+
+This is daisyUI's own generator editor rail: `bg-base-100 flex flex-col gap-4
+p-6` of controls with `divider` headings between them, no cards anywhere.
+
+-}
+bareCardHtml : Theme -> CardParts msg -> Html msg
+bareCardHtml theme parts =
+    Html.div
+        [ classes [ tokenFlex, tokenFlexCol, tokenGap ] ]
+        (maybeHtml (\f -> Html.div [] [ leafOf theme f ]) parts.figure
+            ++ cardHeaderHtml theme SurfaceBare parts
+            ++ List.map (cardChildHtml theme) parts.body
+            ++ (if List.isEmpty parts.actions then
+                    []
+
+                else
+                    [ Html.div
+                        [ classes [ tokenFlex, tokenFlexWrap, tokenItemsCenter, tokenGapSm ] ]
+                        (List.map (leafOf theme) parts.actions)
+                    ]
+               )
         )
-        |> withHover3d config.hover3d
-        |> withAura config.aura
 
 
 {-| `CardPadding` as a class list. `PaddingDefault` adds nothing, so daisyUI's
@@ -2965,15 +3201,23 @@ way, because a grid of panels wants the numbers inside them to be the loudest
 thing on the page.
 
 -}
-cardHeaderHtml : Theme -> CardParts msg -> List (Html msg)
-cardHeaderHtml theme parts =
+cardHeaderHtml : Theme -> CardSurface -> CardParts msg -> List (Html msg)
+cardHeaderHtml theme surface parts =
     let
+        titleClasses =
+            case surface of
+                SurfacePanel ->
+                    [ cardTitlePart, tokenTextBase, tokenFontMedium ]
+
+                SurfaceBare ->
+                    [ tokenFlex, tokenItemsCenter, tokenGapSm, tokenTextBase, tokenFontSemibold ]
+
         titleHtml =
             maybeHtml
                 (\t ->
                     Html.h2
-                        [ classes [ cardTitlePart, tokenTextBase, tokenFontMedium ] ]
-                        (maybeHtml (iconHtml [] defaultIconConfig) parts.titleIcon
+                        [ classes titleClasses ]
+                        (maybeHtml (iconHtml [] mutedIconConfig) parts.titleIcon
                             ++ [ Html.text t ]
                         )
                 )
@@ -3035,14 +3279,64 @@ cardChildHtml theme child =
         CardTable config rows ->
             tableHtml theme config rows
 
-        CardList rows ->
-            listHtml theme rows
+        CardList config rows ->
+            listHtml theme config rows
+
+        CardRow layout leaves ->
+            -- A `card-body` is a column, so a row of leaves inside one needs an
+            -- element of its own: the chips over a filter list, a rating beside
+            -- its review count, the seven cells of a week strip.
+            cardRowHtml theme layout leaves
 
         CardStat config items ->
             statsHtml theme InCard config items
 
         CardForm fieldsets ->
             formHtml theme fieldsets
+
+
+{-| One `CardChild.CardRow`. See [`RowLayout`](Daisy-Tree#RowLayout) for what
+each shape is for.
+-}
+cardRowHtml : Theme -> RowLayout -> List (Leaf msg) -> Html msg
+cardRowHtml theme layout leaves =
+    let
+        -- Every child gets an element of its own. `Leaf.Text` renders as a bare
+        -- text node, which is not a flex item at all: two of them in a row ran
+        -- together into one string, and `justify-between` had one child to
+        -- space out. Wrapping is also where a `RowEven` share can go, since a
+        -- text node cannot carry a class either.
+        cell : List String -> Leaf msg -> Html msg
+        cell own child =
+            Html.div [ classes own ] [ leafOf theme child ]
+    in
+    case layout of
+        RowWrap ->
+            Html.div
+                [ classes [ tokenFlex, tokenFlexWrap, tokenItemsCenter, tokenGapSm ] ]
+                (List.map (cell []) leaves)
+
+        RowSpread ->
+            Html.div
+                [ classes [ tokenFlex, tokenItemsCenter, tokenJustifyBetween, tokenGapSm ] ]
+                (List.map (cell []) leaves)
+
+        -- No gap, and the child is stretched to its share rather than left at
+        -- its own width: a `btn` sizes itself from its padding and content, so
+        -- seven of them in a 224px card came out 33px each inside 29px shares
+        -- and clipped. daisyUI's own week strip is `grid grid-cols-7` with no
+        -- gap either.
+        RowEven ->
+            Html.div
+                [ classes [ tokenFlex, tokenItemsCenter ] ]
+                (List.map
+                    (\child ->
+                        Html.div
+                            [ classes [ tokenGrow, tokenBasis0, tokenMinW0 ] ]
+                            [ leafIn theme [ tokenWFull ] child ]
+                    )
+                    leaves
+                )
 
 
 alertHtml : Theme -> AlertConfig -> List (Leaf msg) -> Html msg
@@ -3083,7 +3377,7 @@ statsHtml theme context config items =
                 ++ surfaceFor context
             )
         ]
-        (List.map (statItemHtml theme) items)
+        (List.map (statItemHtml theme config.figureStyle) items)
 
 
 surfaceFor : BlockContext -> List String
@@ -3116,14 +3410,64 @@ for the same reason `CardTable` does: "a list of rows in a panel" is the shape
 half of a dashboard's cards have, and a `card-body` is a column that cannot hold
 a `Block`.
 -}
-listHtml : Theme -> List (ListRow msg) -> Html msg
-listHtml theme rows =
-    Html.ul
-        [ classes [ SList.component ] ]
+listHtml : Theme -> ListConfig -> List (ListRow msg) -> Html msg
+listHtml theme config rows =
+    case config.style of
+        ListPanel ->
+            Html.ul
+                [ classes [ SList.component ] ]
+                (List.map
+                    (\row -> Html.li [ classes [ listRowClass ] ] (List.map (listCellHtml theme) row.cells))
+                    rows
+                )
+
+        ListRules ->
+            ruledListHtml theme rows
+
+
+{-| `ListStyle.ListRules`: the compact ruled rows daisyUI's theme generator
+draws instead of its own `list` component.
+
+There is **no** `list` or `list-row` class here, on purpose: daisyUI's markup
+in that preview carries none either. A row is the renderer's own
+`flex items-center justify-between gap-2 py-2` with a dashed hairline under it,
+which is the density a 258px card needs — `list-row`'s gutter is a fixed `1rem`
+that no size class changes, and 16px of padding around 16px text wrapped every
+row onto two lines. A `grow` cell still grows; a `wrap` cell has nothing to
+mark, because a ruled row has no `list-col-*` grid to opt out of.
+
+-}
+ruledListHtml : Theme -> List (ListRow msg) -> Html msg
+ruledListHtml theme rows =
+    Html.div
+        [ classes [ tokenFlex, tokenFlexCol ] ]
         (List.map
-            (\row -> Html.li [ classes [ listRowClass ] ] (List.map (listCellHtml theme) row.cells))
+            (\row ->
+                Html.div
+                    [ classes
+                        [ tokenFlex
+                        , tokenItemsCenter
+                        , tokenJustifyBetween
+                        , tokenGapSm
+                        , tokenPaddingBlockSm
+                        , tokenBorderBottom
+                        , tokenBorderDashed
+                        , tokenBorderEdge
+                        ]
+                    ]
+                    (List.map (ruledCellHtml theme) row.cells)
+            )
             rows
         )
+
+
+ruledCellHtml : Theme -> ListCell msg -> Html msg
+ruledCellHtml theme cell =
+    if cell.grow then
+        Html.div [ classes [ tokenGrow, tokenTruncate ] ] [ leafOf theme cell.content ]
+
+    else
+        Html.div [ classes [ tokenShrink0 ] ] [ leafOf theme cell.content ]
 
 
 listCellHtml : Theme -> ListCell msg -> Html msg
@@ -3272,14 +3616,19 @@ fieldHtml theme f =
         LabelStart ->
             Html.label
                 [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
-                (Html.span [ classes [ labelClass ] ] [ Html.text labelText ]
-                    :: control
-                    :: hint
+                (maybeHtml (\t -> Html.span [ classes [ labelClass ] ] [ Html.text t ]) f.label
+                    ++ (control :: hint)
                 )
 
+        -- Control first, label after it, **on one line**. "The label comes
+        -- after the control" is what a checkbox or a toggle beside its wording
+        -- is, and daisyUI writes exactly that: `<label class="flex items-center
+        -- gap-2"><input class="toggle"> <span>Show all day events</span>
+        -- </label>`. A column here put the wording under the switch, which is
+        -- neither placement anybody asks for.
         LabelEnd ->
             Html.label
-                [ classes [ tokenFlex, tokenFlexCol, tokenGapSm ] ]
+                [ classes [ tokenFlex, tokenFlexWrap, tokenItemsCenter, tokenGapSm ] ]
                 (control
                     :: Html.span [ classes [ labelClass ] ] [ Html.text labelText ]
                     :: hint
@@ -3353,7 +3702,7 @@ menuActiveTokens style =
             [ SMenu.modifierToClass SMenu.Active ]
 
         TintedActive ->
-            [ tokenBgGround, tokenFontMedium ]
+            [ tokenTintActive, tokenFontMedium ]
 
 
 {-| The one glyph a menu row may carry, drawn at the same size whichever it is.
@@ -3435,7 +3784,10 @@ dashboard templates do to it:
     and a scrollable region is a tab stop of its own (`e2e/keyboard.spec.ts`).
     A delta that does not fit goes under the number instead of off the side.
   - `stat-figure` is a painted tile — `bg-base-200` and a fixed 8px corner around
-    the glyph — instead of a bare icon floating at the edge.
+    the glyph — instead of a bare icon floating at the edge, unless the config
+    says `StatFigureStyle.FigureBare`: a `radial-progress` is already a shape,
+    and a dial inside a grey square reads as two nested boxes (daisyUI's own
+    generator draws it bare).
   - the tile's own gutter is 20px (`tokenPaddingCard`), not daisyUI's
     `1rem`/`1.5rem`. 24px of inline padding either side of a 269px metric cell
     is 48px of the 221px a number, its delta and a figure have to share; every
@@ -3443,20 +3795,24 @@ dashboard templates do to it:
     same figure a `card-body` uses (`CardPadding.PaddingDashboard`).
 
 -}
-statItemHtml : Theme -> StatItem msg -> Html msg
-statItemHtml theme item =
+statItemHtml : Theme -> StatFigureStyle -> StatItem msg -> Html msg
+statItemHtml theme figureStyle item =
     Html.div
         [ classes [ statPart, tokenPaddingCard ] ]
         (maybeHtml
             (\f ->
                 Html.div
                     [ classes
-                        [ statFigurePart
-                        , tokenSelfStart
-                        , tokenBgGround
-                        , tokenRoundedLg
-                        , tokenPaddingSm
-                        ]
+                        (statFigurePart
+                            :: tokenSelfStart
+                            :: (case figureStyle of
+                                    FigureTile ->
+                                        [ tokenBgGround, tokenRoundedLg, tokenPaddingSm ]
+
+                                    FigureBare ->
+                                        []
+                               )
+                        )
                     ]
                     [ leafOf theme f ]
             )
@@ -3487,10 +3843,27 @@ statItemHtml theme item =
                         , tokenGapSm
                         ]
                     ]
-                    (Html.text item.value :: maybeHtml (leafOf theme) item.trend)
+                    (Html.text item.value
+                        :: maybeHtml
+                            (\suffix ->
+                                Html.span [ classes [ tokenTextSm ] ] [ Html.text suffix ]
+                            )
+                            item.valueSuffix
+                        ++ maybeHtml (leafOf theme) item.trend
+                    )
                ]
             ++ maybeHtml
-                (\d -> Html.div [ classes [ statDescPart, tokenTextSm ] ] [ Html.text d ])
+                (\d ->
+                    Html.div
+                        [ classes [ statDescPart, tokenTextSm, tokenFlex, tokenItemsCenter, tokenGapXs ] ]
+                        (maybeHtml
+                            (\( tone, icon ) ->
+                                iconHtml [] { defaultIconConfig | size = IconSm, tone = Just tone } icon
+                            )
+                            item.descIcon
+                            ++ [ Html.text d ]
+                        )
+                )
                 item.desc
             ++ [ Html.div [ classes [ statActionsPart ] ] (List.map (leafOf theme) item.actions) ]
         )
@@ -3751,10 +4124,30 @@ leafIn theme extra theLeaf =
                         ++ opt SDivider.colorToClass config.color
                         ++ opt SDivider.directionToClass config.direction
                         ++ opt SDivider.placementToClass config.placement
+                        ++ (if config.caption then
+                                [ tokenTextXs ]
+
+                            else
+                                []
+                           )
                         ++ extra
                     )
                 ]
-                [ Html.text (Maybe.withDefault "" label) ]
+                (case ( config.icon, label ) of
+                    ( Nothing, Nothing ) ->
+                        -- A bare rule. daisyUI's `.divider` reserves a gap for
+                        -- its content, so an empty element in the middle is a
+                        -- visible break in the line.
+                        []
+
+                    _ ->
+                        [ Html.span
+                            [ classes [ tokenFlex, tokenItemsCenter, tokenGapSm ] ]
+                            (maybeHtml (iconHtml [] mutedIconConfig) config.icon
+                                ++ [ Html.text (Maybe.withDefault "" label) ]
+                            )
+                        ]
+                )
                 |> withTooltip config.tooltip
 
         Embed config embedView ->
@@ -3807,8 +4200,14 @@ leafIn theme extra theLeaf =
 
         Join config items ->
             Html.div
-                [ classes ([ SJoin.component ] ++ opt SJoin.directionToClass config.direction ++ extra) ]
-                (List.map joinItemHtml items)
+                [ classes
+                    ([ SJoin.component ]
+                        ++ opt SJoin.directionToClass config.direction
+                        ++ flag config.stretch tokenWFull
+                        ++ extra
+                    )
+                ]
+                (List.map (joinItemHtml config.stretch) items)
                 |> withTooltip config.tooltip
 
         Kbd config label ->
@@ -4219,7 +4618,7 @@ iconHtml extra config icon =
             :: SvgA.fill "none"
             :: SvgA.stroke "currentColor"
             :: SvgA.strokeWidth "1.5"
-            :: svgClasses (iconSizeToken config.size :: extra)
+            :: svgClasses (iconSizeToken config.size :: iconToneTokens config.tone ++ extra)
             :: iconLabelAttrs config.label
         )
         (List.map
@@ -4230,6 +4629,34 @@ iconHtml extra config icon =
             )
             (Icons.paths icon)
         )
+
+
+{-| A `Daisy.Tree.IconTone` as its one named token. This is the only call site
+of the five semantic foreground tokens: they reach an `<svg>` and nothing else.
+-}
+iconToneTokens : Maybe IconTone -> List String
+iconToneTokens tone =
+    case tone of
+        Nothing ->
+            []
+
+        Just ToneMuted ->
+            [ tokenTextMuted ]
+
+        Just ToneInfo ->
+            [ tokenTextInfo ]
+
+        Just ToneSuccess ->
+            [ tokenTextSuccess ]
+
+        Just ToneWarning ->
+            [ tokenTextWarning ]
+
+        Just ToneError ->
+            [ tokenTextError ]
+
+        Just TonePrimary ->
+            [ tokenTextPrimary ]
 
 
 iconSizeToken : IconSize -> String
@@ -4284,8 +4711,21 @@ badgeHtml extra config label =
                 ++ extra
             )
         ]
-        (maybeHtml (iconHtml [] buttonIconConfig) config.icon ++ [ Html.text label ])
+        (maybeHtml (iconHtml [] buttonIconConfig) config.icon
+            ++ [ Html.text label ]
+            ++ maybeHtml (iconHtml [] badgeTrailingIconConfig) config.trailingIcon
+        )
         |> withTooltip config.tooltip
+
+
+{-| A badge's _trailing_ glyph: the `x` on a removable tag chip, one step below
+the leading icon because it follows a word rather than introducing one. daisyUI's
+own generator draws it at `size-3` inside a `badge`; `IconSm` is the nearest
+step the closed `IconSize` offers.
+-}
+badgeTrailingIconConfig : IconConfig
+badgeTrailingIconConfig =
+    { size = IconSm, tone = Nothing, label = Nothing }
 
 
 buttonHtml : List String -> ButtonConfig msg -> String -> Html msg
@@ -4304,11 +4744,46 @@ buttonHtml extra config label =
                     ++ onClickAttrs config.onClick
                )
         )
-        (maybeHtml (iconHtml [] buttonIconConfig) config.icon ++ [ Html.text label ])
+        (maybeHtml (iconHtml [] buttonIconConfig) config.icon
+            ++ buttonLabelHtml config.sublabel label
+        )
         |> withIndicator config.indicator
         |> withTooltip config.tooltip
         |> withDropdown config.dropdown
         |> withAura config.aura
+
+
+{-| A button's label, on one line or two.
+
+`ButtonConfig.sublabel` is the second line daisyUI's own generator puts under
+the number of a date cell — `14` over `W` — and there is no other way to say it:
+a `btn` is a flex _row_, so two text nodes come out side by side. The renderer
+turns the button into a column and draws the sublabel one type step down and
+de-emphasised. The accessible name is still both lines, in order, because both
+are text inside the button.
+
+-}
+buttonLabelHtml : Maybe String -> String -> List (Html msg)
+buttonLabelHtml sublabel label =
+    case sublabel of
+        Nothing ->
+            [ Html.text label ]
+
+        Just second ->
+            [ Html.span
+                [ classes [ tokenFlex, tokenFlexCol, tokenItemsCenter ] ]
+                [ Html.span [ classes [ tokenTextSm, tokenFontSemibold ] ] [ Html.text label ]
+                , Html.span [ classes [ tokenTextTiny, tokenFontSemibold ] ] [ Html.text second ]
+                ]
+            ]
+
+
+{-| A card title's glyph: daisyUI's generator draws it at `size-5` and dimmed,
+so the words carry the row and the picture only marks it.
+-}
+mutedIconConfig : IconConfig
+mutedIconConfig =
+    { size = IconMd, tone = Just ToneMuted, label = Nothing }
 
 
 {-| A leading button icon: one step down from the standalone default, so it fits
@@ -4317,7 +4792,7 @@ a `btn-xs` row action, and `aria-hidden`, because the button's own label (or its
 -}
 buttonIconConfig : IconConfig
 buttonIconConfig =
-    { size = IconSm, label = Nothing }
+    { size = IconSm, tone = Nothing, label = Nothing }
 
 
 filterHtml : List String -> FilterData msg -> Html msg
@@ -4402,16 +4877,27 @@ inputHtml extra config =
                         ++ onInputAttrs config.onInput
                    )
     in
-    (case config.icon of
-        Nothing ->
-            Html.input (controlAttrs componentClasses) []
+    (if config.icon == Nothing && config.prefix == Nothing && config.trailingIcon == Nothing then
+        Html.input (controlAttrs componentClasses) []
 
-        Just icon ->
-            Html.label
-                [ classes componentClasses ]
-                [ iconHtml [ tokenTextMuted ] buttonIconConfig icon
-                , Html.input (controlAttrs [ tokenGrow ]) []
-                ]
+     else
+        -- daisyUI's own wrapper form: the `input` class goes on a `<label>`
+        -- that flexes its children, and the control inside it is bare. That is
+        -- how a leading glyph, an inline caption and a trailing glyph share the
+        -- field's box without any of them being positioned by hand.
+        Html.label
+            [ classes (componentClasses ++ [ tokenFlex, tokenItemsCenter, tokenGapSm ]) ]
+            (maybeHtml (iconHtml [ tokenTextMuted ] buttonIconConfig) config.icon
+                ++ maybeHtml
+                    (\text ->
+                        Html.span
+                            [ classes [ tokenShrink0, tokenTextXs, tokenTextMuted ] ]
+                            [ Html.text text ]
+                    )
+                    config.prefix
+                ++ [ Html.input (controlAttrs [ tokenGrow ]) [] ]
+                ++ maybeHtml (iconHtml [ tokenTextMuted ] buttonIconConfig) config.trailingIcon
+            )
     )
         |> withIndicator config.indicator
         |> withTooltip config.tooltip
@@ -4451,21 +4937,26 @@ inputTypeAttr inputType =
             "color"
 
 
-joinItemHtml : JoinItem msg -> Html msg
-joinItemHtml item =
+joinItemHtml : Bool -> JoinItem msg -> Html msg
+joinItemHtml stretch item =
+    let
+        joinClasses : List String
+        joinClasses =
+            joinItemClass :: flag stretch tokenGrow
+    in
     case item of
         JoinButton config label ->
-            buttonHtml [ joinItemClass ] config label
+            buttonHtml joinClasses config label
 
         JoinInput config ->
-            inputHtml [ joinItemClass ] config
+            inputHtml joinClasses config
 
         JoinSelect config data ->
-            selectHtml [ joinItemClass ] config data
+            selectHtml joinClasses config data
 
         JoinText value ->
             Html.span
-                [ classes [ joinItemClass, tokenPaddingSm, tokenTextSm ] ]
+                [ classes (joinClasses ++ [ tokenPaddingSm, tokenTextSm ]) ]
                 [ Html.text value ]
 
 
@@ -4774,28 +5265,65 @@ colorChipHtml chip =
 
 {-| daisyUI's radius picker: five steps, each drawn as the corner it sets.
 
-A `join` of `btn`-sized `<label>`s over `sr-only` radios, which is a real radio
-group — exclusive by name, arrow-key navigable, announced as one control — with
-a picture instead of a word on each step. The picture is two sides of a box at
-that step's `border-radius`, written as an inline declaration because a radius
-is a value out of a five-member set and no utility spells `--radius-box`'s
-steps.
+Five `<label>`s over `sr-only` radios, which is a real radio group — exclusive
+by name, arrow-key navigable, announced as one control — with a picture instead
+of a word on each step. The picture is two sides of a box at that step's
+`border-radius`, written as an inline declaration because a radius is a value
+out of a five-member set and no utility spells `--radius-box`'s steps.
 
-Both sides are left at `currentColor`, so the arc is the button's own
-foreground: the marked step is `btn-neutral` and its corner comes out
-`--color-neutral-content` with no colour utility anywhere. `btn-neutral` and not
-`btn-active` for the reason `Demo.ThemeGenerator` gives — `.btn-active`'s
-background is a `color-mix()` the composition chose, 4.28:1 in `valentine`.
+The look is daisyUI's own, read off its generator: a `rounded-field bg-base-200`
+frame with the corner inset from two sides, the corner itself filled
+`bg-base-300` and stroked `--color-base-content/20`, and the **current** step
+stroked `--color-primary` with no fill. It used to be a `join` of `btn`s with
+the marked step `btn-neutral`, which is a filled black slab — a different
+control, and the thing that made this column read as ours rather than theirs.
+Neither stroke is a text colour and neither has a second use site; see
+`tokenBorderTint` and `tokenBorderPrimary`.
 
 -}
 radiusTilesHtml : List String -> RadiusTilesConfig msg -> RadiusTilesData -> Html msg
 radiusTilesHtml extra config data =
     Html.div
-        [ classes (SJoin.component :: extra)
-        , Attr.attribute "role" "radiogroup"
-        , Attr.attribute "aria-label" (Maybe.withDefault data.group config.ariaLabel)
-        ]
-        (List.map (radiusTileHtml config data) Tree.allRadii)
+        [ classes ([ tokenFlex, tokenFlexCol, tokenGapSm ] ++ extra) ]
+        (radiusTilesHeading config
+            ++ [ Html.div
+                    [ classes [ tokenFlex, tokenGapSm ]
+                    , Attr.attribute "role" "radiogroup"
+                    , Attr.attribute "aria-label" (Maybe.withDefault data.group config.ariaLabel)
+                    ]
+                    (List.map (radiusTileHtml config data) Tree.allRadii)
+               ]
+        )
+
+
+{-| The two-line heading over a radius group: what it shapes ("Boxes") and, one
+step smaller, fainter and italic, which components that is ("card, modal,
+alert"). daisyUI's generator writes both, and the second is the only thing that
+says what `--radius-box` actually reaches. It is part of the _control_ rather
+than a `Leaf.Text` beside it, because a `<label>` around five radios would make
+clicking the heading press the first of them.
+-}
+radiusTilesHeading : RadiusTilesConfig msg -> List (Html msg)
+radiusTilesHeading config =
+    case ( config.label, config.caption ) of
+        ( Nothing, Nothing ) ->
+            []
+
+        _ ->
+            [ Html.div
+                [ classes [ tokenFlex, tokenFlexCol ] ]
+                (maybeHtml
+                    (\text -> Html.span [ classes [ tokenTextXs, tokenTextMuted ] ] [ Html.text text ])
+                    config.label
+                    ++ maybeHtml
+                        (\text ->
+                            Html.span
+                                [ classes [ tokenTextTiny, tokenTextMuted, tokenItalic ] ]
+                                [ Html.text text ]
+                        )
+                        config.caption
+                )
+            ]
 
 
 radiusTileHtml : RadiusTilesConfig msg -> RadiusTilesData -> Radius -> Html msg
@@ -4811,13 +5339,15 @@ radiusTileHtml config data option =
     in
     Html.label
         [ classes
-            ([ joinItemClass
-             , SButton.component
-             , SButton.sizeToClass SButton.Sm
-             , tokenCursorPointer
-             ]
-                ++ flag current (SButton.colorToClass SButton.Neutral)
-            )
+            [ tokenRoundedField
+            , tokenBgGround
+            , tokenRelative
+            , tokenOverflowHidden
+            , tokenCursorPointer
+            , tokenPaddingTop
+            , tokenPaddingEnd
+            ]
+        , Attr.title value
         ]
         [ Html.input
             (classes [ tokenSrOnly ]
@@ -4831,11 +5361,18 @@ radiusTileHtml config data option =
             []
         , Html.div
             [ classes
-                [ tokenTileWidth
-                , tokenTileHeight
-                , tokenBorderTop2
-                , tokenBorderEnd2
-                ]
+                ([ tokenTileWidth
+                 , tokenTileHeight
+                 , tokenBorderTop2
+                 , tokenBorderEnd2
+                 ]
+                    ++ (if current then
+                            [ tokenBorderPrimary ]
+
+                        else
+                            [ tokenBorderTint, tokenBgBase300 ]
+                       )
+                )
             , inlineStyle [ declaration "border-start-end-radius" value ]
             , Attr.attribute "aria-hidden" "true"
             ]
@@ -5082,7 +5619,7 @@ the same shape `shellDrawerButton` uses.
 -}
 themeTriggerIconConfig : IconConfig
 themeTriggerIconConfig =
-    { size = IconMd, label = Just "Theme" }
+    { size = IconMd, tone = Nothing, label = Just "Theme" }
 
 
 themePresentationClasses : ThemePresentation -> List String

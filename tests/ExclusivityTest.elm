@@ -172,7 +172,7 @@ badgeConfigFuzzer : Fuzzer BadgeConfig
 badgeConfigFuzzer =
     Fuzz.map5
         (\icon color style size tip ->
-            { icon = icon, color = color, style = style, size = size, tooltip = tip }
+            { icon = icon, trailingIcon = Nothing, color = color, style = style, size = size, tooltip = tip }
         )
         (Fuzz.maybe (Fuzz.oneOfValues DIcon.allIcons))
         (maybeOf SBadge.allColors)
@@ -298,8 +298,9 @@ honest if an icon ever grows a group.
 -}
 iconConfigFuzzer : Fuzzer IconConfig
 iconConfigFuzzer =
-    Fuzz.map2 (\size label -> { size = size, label = label })
+    Fuzz.map3 (\size tone label -> { size = size, tone = tone, label = label })
         (Fuzz.oneOfValues [ IconSm, IconMd, IconLg ])
+        (maybeOf allIconTones)
         (Fuzz.maybe (Fuzz.constant "Notifications"))
 
 
@@ -576,6 +577,8 @@ leafFuzzers =
             (\current aria handled ->
                 RadiusTiles
                     { ariaLabel = aria
+                    , label = Nothing
+                    , caption = Nothing
                     , onSelect =
                         if handled then
                             Just RadiusPicked
@@ -705,7 +708,7 @@ blockFuzzers =
       , Fuzz.map4
             (\style size modifiers aura ->
                 Card
-                    { style = style, size = size, padding = PaddingDashboard, modifiers = modifiers, aura = aura, hover3d = True }
+                    { style = style, size = size, surface = SurfacePanel, padding = PaddingDashboard, modifiers = modifiers, aura = aura, hover3d = True }
                     { figure = Just (Image defaultImageConfig "a.png")
                     , title = Just "Title"
                     , titleIcon = Just DIcon.ChartBar
@@ -775,7 +778,7 @@ blockFuzzers =
     , ( "list"
       , Fuzz.map2
             (\grow wrap ->
-                ListBlock
+                ListBlock defaultListConfig
                     [ { cells =
                             [ listCell (Text "row")
                             , { content = Text "cell", grow = grow, wrap = wrap }
@@ -829,10 +832,11 @@ blockFuzzers =
     , ( "stat"
       , Fuzz.map
             (\direction ->
-                Stat { direction = direction }
+                Stat { direction = direction, figureStyle = FigureTile }
                     [ { figure = Just (Loading defaultLoadingConfig)
                       , title = "Downloads"
                       , value = "31K"
+                      , valueSuffix = Nothing
                       , trend =
                             Just
                                 (Badge
@@ -844,6 +848,7 @@ blockFuzzers =
                                     "+10.8%"
                                 )
                       , desc = Just "Jan 1st"
+                      , descIcon = Nothing
                       , actions = [ Button defaultButtonConfig "Details" ]
                       }
                     ]

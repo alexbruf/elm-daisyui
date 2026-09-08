@@ -2506,3 +2506,177 @@ Nothing left `RenderPurityTest`'s `forbidden` list. `tokenBorderBox` (`border`)
 gained a second use site, `LabelPlacement.LabelRow`'s bordered row, which is the
 same kind of thing the entry was let out for: chrome the renderer owns, with the
 colour coming from the existing `tokenBorderEdge`.
+
+## Generator close-up pass (2026-09-08)
+
+The `/theme` page against <https://daisyui.com/theme-generator/> at 2x, region by
+region. Everything below is measured off their DOM (dumped at 1440, light) or off
+the built demo, never guessed.
+
+### 1. What was wrong, in one list
+
+| region | theirs | ours, before |
+| --- | --- | --- |
+| theme list | `Themes` heading + `…` button, "Hold to add theme", plain `menu` (33px rows), rule between the two groups, current row tinted | a `menu-title` row called "Themes", `menu-xs` (26px rows), no rule, no add button, **no visible tint** |
+| editor | no cards at all: `flex flex-col gap-4` on the page, `divider divider-start` headings | five `card`s with `card-title`s |
+| name | `input input-ghost input-sm` with `Name` inline and a pencil | a `Field` label above a plain `input` |
+| Random / CSS | `grid grid-cols-2 gap-2` of two full-width buttons with a dice and a `{ }` | a `join` of two shrink-to-fit `btn-sm`s |
+| radius tiles | `rounded-field bg-base-200` frame, corner `border-base-content/20 bg-base-300`, current corner `border-primary` | a `join` of `btn`s with the current one `btn-neutral` (a filled black slab) |
+| preview | `Components Demo` title + a three-way layout switch above the three columns | nothing above the columns |
+| Preview card | chips **above** the rows, dashed hairlines, `py-2` rows, solid `badge-xs` | chips in `card-actions` at the bottom, `list-row` at 1rem |
+| week strip | seven two-line cells, day over weekday letter | seven one-line `join`ed buttons |
+| sales chart | 16 thin `bg-base-content` bars | 7 fat `--color-primary` bars |
+| Page Score | `91` + small `/100`, success shield, bare `radial-progress` | `91/100`, no glyph, dial in a `bg-base-200` tile |
+| Recent orders | dashed rules, **solid** badges, trending glyph | `table-sm`, `badge-soft`, cart glyph |
+| media player | `Backward` / `Play` / `Forward`, `13:39` above the thumb, times under it, four square keys | three identical chevrons, one line of `13:39 / 120:00` |
+| alerts | solid, `-outline`, `-dash`, `-soft` | four solid |
+
+### 2. Nine typed additions, and why each one was the only way to say it
+
+Every one is closed, every one is a *config* field or a small closed type — no
+constructor of `Leaf` or `Block` was added, and no caller gained a class.
+
+1. **`CardConfig.surface : CardSurface = SurfacePanel | SurfaceBare`.** A bare
+   card draws the same `CardParts` — figure, title row, children, actions — with
+   no panel and **not one `card-*` class**: no `card`, no `bg-base-100`, no
+   `card-body`, no `card-title`, no `card-actions`. That last part matters: a
+   part may not appear outside its component, so a bare card cannot smuggle one
+   out. It is what daisyUI's editor rail is, and the only alternative was a
+   container invented in the caller.
+2. **`InputConfig.prefix : Maybe String` and `.trailingIcon : Maybe Icon`.** The
+   existing `icon` field already moved the `input` class onto a `<label>` and
+   put a glyph inside it; these are the other two slots of the same wrapper, and
+   they are what `Name` **acme** ✎ is. The control keeps its own `aria-label`.
+3. **`DividerConfig.icon : Maybe Icon` and `.caption : Bool`.** Their section
+   headings are `<h3 class="divider divider-start text-xs">` with a dimmed glyph
+   in front of the words. An empty divider (no icon, no label) now renders with
+   **no child at all**, because `.divider` reserves a gap for its content and an
+   empty element in the middle is a visible break in the rule.
+4. **`ButtonConfig.sublabel : Maybe String`.** A `btn` is a flex *row*, so two
+   text nodes come out side by side; the week strip needs the day number over
+   the weekday letter. The renderer turns the button into a column and draws the
+   sublabel one step down. The accessible name is still both lines, in order.
+5. **`BadgeConfig.trailingIcon : Maybe Icon`.** `Shoes ×`, not `× Shoes`.
+6. **`ListConfig` / `ListStyle = ListPanel | ListRules`**, on `Block.ListBlock`
+   and `CardChild.CardList`. `ListRules` is *not* the `list` component:
+   daisyUI's compact rows in that preview carry no `list` class at all, they are
+   `py-2` rows with a dashed hairline. `list-row`'s gutter is a fixed `1rem`
+   that no size class changes, which is what made every row a third taller than
+   theirs and wrapped the longer names.
+7. **`CardChild.CardRow RowLayout (List (Leaf msg))`**, with
+   `RowLayout = RowWrap | RowSpread | RowEven`. A `card-body` is a column, so a
+   row of leaves inside one needs an element. `RowEven` is the seven-cell week
+   strip: `grid-cols-7` in their markup, `flex-basis: 0` + `grow` + `min-w-0`
+   here, with the child stretched to its share — a seven-track grid is not a
+   token and is not going to become one. Every child is wrapped, because
+   `Leaf.Text` renders as a bare text node and a text node is not a flex item:
+   two of them ran together into one string and `justify-between` had nothing to
+   space out.
+8. **`StatConfig.figureStyle : StatFigureStyle = FigureTile | FigureBare`, plus
+   `StatItem.valueSuffix` and `.descIcon`.** `91` + a small `/100`, a
+   success-coloured shield beside "All good", and a `radial-progress` with
+   nothing behind it — a dial inside the renderer's `bg-base-200` chip reads as
+   two nested boxes.
+9. **`GridItem.lead : List (Block msg)`, and `Tree.spanLead`.** A title bar
+   belongs to the *cell*, above its columns. Without it the only place for
+   "Components Demo" was inside column one, which is where it landed.
+
+Two smaller ones: `JoinConfig.stretch : Bool` (a join that fills its rail and
+divides it between its items — the `Random | CSS` pair) and
+`RadiusTilesConfig.label` / `.caption`, so the two-line heading over a radius
+group belongs to the *control*. It has to: a `<label>` around five radios would
+make clicking the heading press the first of them.
+
+### 3. `Daisy.Tree.IconTone`, and the entry that left `forbidden`
+
+`Leaf.Icon` gained `IconConfig.tone : Maybe IconTone`, closed at six
+(`ToneMuted`, `ToneInfo`, `ToneSuccess`, `ToneWarning`, `ToneError`,
+`TonePrimary`), rendered from one named token each.
+
+That means `text-primary` left `tests/RenderPurityTest.elm`'s `forbidden` list,
+and it is the sixth entry ever to do so. The rule that list encodes is "no
+sprinkled *text* colour", and the reason is mechanical rather than aesthetic: a
+foreground utility on an arbitrary element escapes `e2e/contrast.spec.ts`'s
+classifier, which decides "daisyUI's own pair" from the two colours and can only
+attribute a colour it can see. An `IconTone` cannot become the colour of a word:
+`Daisy.Render.iconToneTokens` is the single call site of all six, it is reached
+only from `iconHtml`, and a `Leaf.Icon` renders an `<svg>` with no text node —
+which `collectContrast` skips outright. There is no `IconTone` on `Leaf.Text`,
+`Leaf.Heading`, a `Field` label or a card title, and a second call site would
+have to argue with this note.
+
+daisyUI's own generator paints exactly these glyphs this way: `text-success` on
+the "All good" shield and on a plan's tick, `text-error` on its cross,
+`text-primary` on a `timeline-middle` marker.
+
+### 4. `Daisy.Icon`: 25 -> 38
+
+Thirteen heroicons 2.2.0 outline drawings, copied verbatim as ever:
+`sparkles`, `code-bracket`, `shield-check`, `ellipsis-horizontal`, `play`,
+`backward`, `forward`, `speaker-wave`, `arrows-right-left`, `arrow-path`,
+`squares-2x2`, `list-bullet`, `lock-closed`.
+
+Three of daisyUI's own glyphs have no heroicons equivalent and are substituted,
+which is stated rather than hidden: their magic wand is `Sparkles`, their dice
+(`Random`) is `ArrowPath`, their headphone key is `ListBullet`.
+
+### 5. `Daisy.Render.tokens`: 127 -> 145
+
+Eighteen entries, each with a named constant and one job:
+
+- `tokenTintActive` (`bg-base-content/5`) — the `TintedActive` row. It replaced
+  `bg-base-200`, and that was a real defect rather than a preference: a menu on
+  the page ground **is** `bg-base-200`, so under `?theme=light` (base-100 100%,
+  base-200 98%) the current row was invisible. Why 5% and not daisyUI's 10% is a
+  measurement, in `docs/e2e-findings.md` section 6.
+- `tokenTextPrimary`, `tokenTextInfo`, `tokenTextSuccess`, `tokenTextWarning`,
+  `tokenTextError` — the five `IconTone` colours (the sixth is the existing
+  `tokenTextMuted`). Section 3 above.
+- `tokenRoundedField` (`rounded-field`), `tokenBorderTint`
+  (`border-base-content/20`), `tokenBorderPrimary` (`border-primary`),
+  `tokenPaddingTop` (`pt-2`), `tokenPaddingEnd` (`pe-3`) — the five halves of
+  daisyUI's radius tile. Neither border colour is a text colour and neither has
+  a second use site.
+- `tokenBorderTop` (`border-t`), `tokenBorderDashed` (`border-dashed`),
+  `tokenPaddingBlockSm` (`py-2`) — a `ListStyle.ListRules` row.
+- `tokenBasis0` (`basis-0`), `tokenMinW0` (`min-w-0`) — a `RowLayout.RowEven`
+  share. `min-width: auto` is why a flex child never shrinks below its own
+  content, which is why seven day cells came out wider than the card.
+- `tokenTextTiny` (`text-[0.625rem]`), `tokenItalic` (`italic`) — the two halves
+  of a radius group's subtitle.
+
+`text-primary` is the only entry that left `forbidden`; nothing else on that
+list moved.
+
+### 6. What still differs, and why
+
+- **The columns are 19.2px narrower.** Unchanged from the previous pass: a
+  twelve-track band gives 2 : 3 : 7 = 218.7 : 336 : 805.3px against daisyUI's
+  191 : 272 : 879, and 3 x 277 + 2 x 16 = 863px of preview falls between `Span7`
+  and `Span8`. Section 4 of "The generator's editor column" has the arithmetic.
+  Everything below is a consequence of it.
+- **The revenue caption is "+21% vs. last month", not "21% more than last
+  month".** `.stat-desc` is `white-space: nowrap` (daisyUI's rule), and their
+  sentence needs 192px inside our 184px tile. An overflowing `.stats` is
+  `overflow-x: auto`, so it becomes a scrollable region and therefore a tab stop
+  of its own, which `e2e/keyboard.spec.ts` catches.
+- **The tabs block is `tabs-box`, not `tabs-lift`.** Measured; see
+  `docs/e2e-findings.md` section 6.
+- **The `13:39` bubble is an ordinary tooltip, not `tooltip-open`.** daisyUI
+  reserves `mt-6` above their progress bar for it. A daisyUI tooltip is
+  positioned outside its anchor's box, so with no reserved room it lands on
+  whatever is above — in a `gap-4` `card-body`, the subtitle, which it covered
+  outright. `Daisy.Tree` has no per-block margin and is not getting one.
+- **The selected day cell is `btn-neutral`, not `btn-primary`.**
+  `Daisy.Tree.ButtonColor` omits `Primary` on purpose: the only `btn-primary` on
+  a page is `Page.cta`, and `tools/should-not-compile/Reject/TwoCtas.elm` pins
+  it. A black cell instead of an indigo one is the price of that invariant.
+- **The event row has no second description line and no `bg-base-300` block.**
+  A `ListRow`'s cells are leaves laid out in a row; "a title with a two-line
+  description under it" is a shape neither `ListRow` nor `CardRow` has, and
+  inventing one for a single card in one preview is not worth a constructor.
+  It is in `fixtures/rejected.md`'s territory rather than the tree's.
+- **"Hold to add theme" is a click, not a hold.** Theirs writes to the browser's
+  local storage; ours is one `ThemeSaved` message that copies the theme being
+  edited into `My themes` **in the model** — no port, no storage, gone on
+  reload. The wording is kept because the button's job is kept.

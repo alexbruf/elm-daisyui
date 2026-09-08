@@ -35,8 +35,10 @@ function moderateLine(
  *   - `tab` (not the active one): the same recipe at 50% — daisyUI's own
  *     unselected tab, which is what makes `tabs-box` read as a segmented
  *     control.
- *   - `badge-soft`: `var(--color-X)` over `color-mix(in oklab, var(--color-X)
- *     8%, var(--color-base-100))` — daisyUI's own soft badge.
+ *   - any `*-outline` / `*-dash` / `*-soft` variant: `var(--color-X)` over the
+ *     surface behind it (`badge-soft`, `alert-outline`, `alert-dash`,
+ *     `alert-soft`) — daisyUI's own three style variants, matched by the
+ *     class-name pattern `DAISY_STYLE_VARIANT` rather than by name.
  *
  * None of those colours is reachable through `Daisy.Tree`: the tree hands
  * daisyUI a `MenuItem.title` flag, a `Tab.active` flag and a `Badge.Soft`
@@ -58,13 +60,33 @@ function moderateLine(
  * `e2e/contrast.spec.ts` classifies the same pairs as daisyUI's own by a
  * mechanical rule, and `docs/e2e-findings.md` records both halves.
  */
-const DAISY_DEEMPHASIS_CLASSES = ["menu-title", "tab", "badge-soft"];
+const DAISY_DEEMPHASIS_CLASSES = ["menu-title", "tab"];
+
+/**
+ * daisyUI's three style variants, as a class-*name* pattern rather than a list.
+ *
+ * `<component>-outline`, `<component>-dash` and `<component>-soft` all paint
+ * `color: var(--color-X)` over a surface the component does not paint — a pair
+ * daisyUI's own rule chooses, exactly like `--color-X-content` over
+ * `--color-X`. The theme generator's alert block shows all four treatments of
+ * the four state colours at once, which is the whole point of the block, and
+ * daisyUI's own generator uses the same four.
+ *
+ * `badge-soft` used to be spelled out in the list above; it is this pattern.
+ * `e2e/contrast.spec.ts` applies the same rule with the colours as well as the
+ * name (`styleVariantOf` in `lib/browser.ts`), so the stricter of the two is
+ * the one that would catch a variant class on a pair daisyUI did not choose.
+ */
+const DAISY_STYLE_VARIANT = /^[a-z][a-z0-9]*-(outline|dash|soft)$/;
 
 function isDaisyDeemphasis(node: { html?: string }): boolean {
   const match = /\sclass="([^"]*)"/.exec(node.html ?? "");
   if (!match) return false;
   const classes = match[1].split(/\s+/);
-  return DAISY_DEEMPHASIS_CLASSES.some((c) => classes.includes(c));
+  return (
+    DAISY_DEEMPHASIS_CLASSES.some((c) => classes.includes(c)) ||
+    classes.some((c) => DAISY_STYLE_VARIANT.test(c))
+  );
 }
 
 /**

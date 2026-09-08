@@ -298,6 +298,7 @@ badgeLeaves =
     List.map (\c -> Badge c "9") badgeConfigs
         ++ [ Badge { defaultBadgeConfig | tooltip = Just (tooltip "tip") } "9"
            , Badge { defaultBadgeConfig | icon = Just DIcon.ArrowTrendingUp } "9"
+           , Badge { defaultBadgeConfig | trailingIcon = Just DIcon.X, style = Just SBadge.Soft } "Shoes"
            ]
 
 
@@ -311,6 +312,7 @@ buttonConfigs =
            , { defaultButtonConfig | onClick = Just Clicked }
            , { defaultButtonConfig | icon = Just DIcon.Download }
            , { defaultButtonConfig | icon = Just DIcon.Eye, ariaLabel = Just "View order" }
+           , { defaultButtonConfig | sublabel = Just "W" }
            ]
 
 
@@ -335,6 +337,14 @@ dividerLeaves =
     List.map (\v -> Divider { defaultDividerConfig | color = Just v } (Just "or")) SDivider.allColors
         ++ List.map (\v -> Divider { defaultDividerConfig | direction = Just v } Nothing) SDivider.allDirections
         ++ List.map (\v -> Divider { defaultDividerConfig | placement = Just v } Nothing) SDivider.allPlacements
+        ++ [ Divider
+                { defaultDividerConfig
+                    | placement = Just SDivider.Start
+                    , icon = Just DIcon.Swatch
+                    , caption = True
+                }
+                (Just "Change Colors")
+           ]
 
 
 {-| One `Leaf.Embed` at each of the three heights, all drawing
@@ -404,6 +414,9 @@ iconLeaves =
         ++ List.map
             (\size -> Icon { defaultIconConfig | size = size } DIcon.Bell)
             [ IconSm, IconMd, IconLg ]
+        ++ List.map
+            (\tone -> Icon { defaultIconConfig | tone = Just tone } DIcon.Check)
+            allIconTones
         ++ [ Icon { defaultIconConfig | label = Just "Notifications" } DIcon.Bell ]
 
 
@@ -444,6 +457,16 @@ inputLeaves =
                     , inputType = InputSearch
                     , placeholder = "Search"
                     , ariaLabel = Just "Search"
+                }
+           , -- The theme generator's name field: an inline caption before the
+             -- control and a glyph after it, both inside the same `<label>`.
+             Input
+                { defaultInputConfig
+                    | style = Just SInput.Ghost
+                    , prefix = Just "Name"
+                    , trailingIcon = Just DIcon.Pencil
+                    , value = "acme"
+                    , ariaLabel = Just "Theme name"
                 }
            , -- `type="color"`, the native picker the theme generator edits a
              -- `--color-*` variable with.
@@ -488,6 +511,11 @@ joinLeaves =
                 ]
         )
         SJoin.allDirections
+        ++ [ Join { defaultJoinConfig | stretch = True }
+                [ JoinButton defaultButtonConfig "Random"
+                , JoinButton { defaultButtonConfig | color = Just Neutral } "CSS"
+                ]
+           ]
 
 
 kbdLeaves : List (Leaf Msg)
@@ -690,9 +718,17 @@ radiusTileLeaves =
         allRadii
         ++ [ RadiusTiles
                 { ariaLabel = Just "Corner radius of boxes"
+                , label = Nothing
+                , caption = Nothing
                 , onSelect = Just RadiusPicked
                 }
                 { group = "Boxes", current = RadiusLg }
+           , RadiusTiles
+                { defaultRadiusTilesConfig
+                    | label = Just "Boxes"
+                    , caption = Just "card, modal, alert"
+                }
+                { group = "Boxes", current = RadiusSm }
            ]
 
 
@@ -862,6 +898,7 @@ cardBlocks =
     List.map (\v -> Card { defaultCardConfig | style = Just v } cardParts) SCard.allStyles
         ++ List.map (\v -> Card { defaultCardConfig | size = Just v } cardParts) SCard.allSizes
         ++ List.map (\v -> Card { defaultCardConfig | padding = v } cardParts) allCardPaddings
+        ++ List.map (\v -> Card { defaultCardConfig | surface = v } cardParts) allCardSurfaces
         ++ [ Card { defaultCardConfig | modifiers = SCard.allModifiers } cardParts
            , Card { defaultCardConfig | hover3d = True } cardParts
            , Card defaultCardConfig cardBlockChildren
@@ -908,11 +945,33 @@ cardBlockChildren =
                   }
                 ]
             , CardTable defaultTableConfig tableRows
-            , CardList listRows
+            , CardList defaultListConfig listRows
+            , CardList { defaultListConfig | style = ListRules } listRows
             , CardStat defaultStatConfig statItems
+            , CardStat { defaultStatConfig | figureStyle = FigureBare } scoreStatItems
             , CardForm formFieldsets
             ]
+                ++ List.map (\layout -> CardRow layout [ Text "a", Text "b" ]) allRowLayouts
     }
+
+
+{-| A `stat` in the shape daisyUI's theme generator gives its "Page Score":
+a suffixed value, a tone-coloured caption glyph and a bare figure.
+-}
+scoreStatItems : List (StatItem Msg)
+scoreStatItems =
+    let
+        base : StatItem Msg
+        base =
+            emptyStatItem "Page Score" "91"
+    in
+    [ { base
+        | valueSuffix = Just "/100"
+        , desc = Just "All good"
+        , descIcon = Just ( ToneSuccess, DIcon.ShieldCheck )
+        , figure = Just (RadialProgress { value = 91, label = "91", size = RadialCompact, ariaLabel = Just "Page score" })
+      }
+    ]
 
 
 carouselBlocks : List (Block Msg)
@@ -1012,7 +1071,7 @@ collapseBlocks =
 
 listBlocks : List (Block Msg)
 listBlocks =
-    [ ListBlock listRows ]
+    List.map (\style -> ListBlock { defaultListConfig | style = style } listRows) allListStyles
 
 
 {-| One `list-row` with a plain cell, a growing one and a wrapping one. Shared
@@ -1111,8 +1170,8 @@ stackedBlocks =
 
 statBlocks : List (Block Msg)
 statBlocks =
-    List.map (\v -> Stat { direction = Fixed (Just v) } statItems) SStat.allDirections
-        ++ [ Stat { direction = Responsive } statItems ]
+    List.map (\v -> Stat { direction = Fixed (Just v), figureStyle = FigureTile } statItems) SStat.allDirections
+        ++ [ Stat { direction = Responsive, figureStyle = FigureTile } statItems ]
 
 
 statItems : List (StatItem Msg)
@@ -1120,8 +1179,10 @@ statItems =
     [ { figure = Just (Loading defaultLoadingConfig)
       , title = "Downloads"
       , value = "31K"
+      , valueSuffix = Nothing
       , trend = Just (Badge { defaultBadgeConfig | color = Just SBadge.Success, style = Just SBadge.Soft, size = Just SBadge.Sm } "+10.8%")
       , desc = Just "Jan 1st"
+      , descIcon = Nothing
       , actions = [ Button defaultButtonConfig "Details" ]
       }
     ]

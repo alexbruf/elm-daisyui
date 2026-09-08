@@ -30,7 +30,7 @@ src/Daisy/Css.elm        the package's one stylesheet, as a String: the four `da
                          (bar grow-in, line draw-in, tooltip/band transitions), all inside
                          `@media (prefers-reduced-motion: no-preference)`. An Elm value because the Elm
                          registry publishes `src/` only, so a bare .css file never reaches a consumer.
-src/Daisy/Icon.elm       closed 25-value icon set. Pure data: no path, no markup, no class
+src/Daisy/Icon.elm       closed 38-value icon set. Pure data: no path, no markup, no class
 demo/                    Vite + Tailwind 4 + daisyUI + vite-plugin-elm app (4 demos + router)
 demo/src/Ports.elm       the demo's whole JS surface: copyToClipboard, encodeTheme/themeEncoded
 demo/src/Demo/Themes.elm the demo's own custom theme, `acme` (Theme.Custom), and the ?theme= lookup
@@ -168,7 +168,7 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
 
 ## Render conventions
 
-- All spacing/layout Tailwind tokens live in one constant table `Daisy.Render.tokens : List String` (gap, grid-cols, padding, height per size, icon size, and the two surface tokens `bg-base-200` / `shadow-sm`). RenderPurityTest asserts every emitted class is in `Schema.allClasses` or `tokens`, and `tools/render-class-audit.js` asserts every entry is a named `token*` constant with no daisyUI class in it. Before adding one, check `tests/RenderPurityTest.elm`'s `forbidden` list — `rounded-box`, `shadow-md`/`-xl` and `opacity-50` are there on purpose and that list is not to be edited to make room (`border` left it in the generator-chips pass as `tokenBorderBox`, one use site). 127 entries today: the 58 of the Nexus pass, the 18 colour tokens `Leaf.Swatch` paints a palette
+- All spacing/layout Tailwind tokens live in one constant table `Daisy.Render.tokens : List String` (gap, grid-cols, padding, height per size, icon size, and the two surface tokens `bg-base-200` / `shadow-sm`). RenderPurityTest asserts every emitted class is in `Schema.allClasses` or `tokens`, and `tools/render-class-audit.js` asserts every entry is a named `token*` constant with no daisyUI class in it. Before adding one, check `tests/RenderPurityTest.elm`'s `forbidden` list — `rounded-box`, `shadow-md`/`-xl` and `opacity-50` are there on purpose and that list is not to be edited to make room (`border` left it in the generator-chips pass as `tokenBorderBox`, one use site; `text-primary` left it in the generator close-up pass as one of the six `Daisy.Tree.IconTone` colours, whose single call site is `iconToneTokens` and which can therefore only ever land on an `<svg>` — see `docs/tree-decisions.md`, "Generator close-up pass", section 3). 145 entries today: the 58 of the Nexus pass, the 18 colour tokens `Leaf.Swatch` paints a palette
   chip from, and the 24 of the charts-and-fidelity pass — `lg:grid-cols-12` plus twelve
   `lg:col-span-*` (the `GridSection.Spans` band) and `xl:grid-cols-3` (`CellColumns.CellThree`),
   `p-5` (`CardPadding.PaddingDashboard`), `self-start`
@@ -176,7 +176,13 @@ Elm forbids two types in one module sharing constructor names, so the schema is 
   `overflow-hidden` (clipping the chart tooltip's header row) and the four `daisy-anim-*` classes
   whose rules are `Daisy.Css`'s, plus the 5 of the live-review pass — `h-24`
   (`ChartSize.ChartCompact`) and `truncate` / `max-w-0` / `whitespace-nowrap`, the three halves of
-  `TableCell.truncate`, all emitted from `Daisy.Render.tableCellAttrs`. Nothing left `forbidden` in that pass: `border` (all four sides on
+  `TableCell.truncate`, all emitted from `Daisy.Render.tableCellAttrs`, and the 18
+  of the generator close-up pass — `bg-base-content/5` (`TintedActive`'s tint), the five
+  `IconTone` foregrounds, the five halves of daisyUI's radius tile
+  (`rounded-field`, `border-base-content/20`, `border-primary`, `pt-2`, `pe-3`), the
+  three of a `ListStyle.ListRules` row (`border-t`, `border-dashed`, `py-2`), the two
+  of a `RowLayout.RowEven` share (`basis-0`, `min-w-0`) and the two of a radius
+  subtitle (`text-[0.625rem]`, `italic`). Nothing left `forbidden` in that pass: `border` (all four sides on
   an arbitrary element) stays, because a one-sided rule on chrome the renderer owns with one use
   site is a different thing (`bg-primary` + `text-primary-content` and so on, one pair per `SwatchColor`, each with
   exactly one use site in `swatchClasses`). Those are the only *colour* tokens — everywhere else

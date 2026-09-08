@@ -245,7 +245,10 @@ export type ContrastHit = {
  * daisyUI paints `.badge-soft`, `.btn-soft` and `.alert-soft`), or
  * `--color-base-content` over `--color-base-300` — a surface the renderer's
  * token table cannot paint, so both sides came from a daisyUI component rule
- * (`.chat-bubble`). Those pairs are what daisyUI's `contrast.test.js` owns; a
+ * (`.chat-bubble`), or one of daisyUI's three *style variants*
+ * (`*-outline`, `*-dash`, `*-soft`: `var(--color-X)` as the foreground over a
+ * base surface, decided from the class-name shape and nothing else — see
+ * `styleVariantOf`). Those pairs are what daisyUI's `contrast.test.js` owns; a
  * failure outside them is ours.
  */
 export function collectContrast(): ContrastHit[] {
@@ -359,6 +362,44 @@ export function collectContrast(): ContrastHit[] {
    */
   const base300 = opaqueOf(rootStyle.getPropertyValue("--color-base-300").trim());
 
+  /**
+   * daisyUI's three *style variants* — `*-outline`, `*-dash`, `*-soft` — as one
+   * mechanical rule rather than a list of components.
+   *
+   * All three paint the same pair: `color: var(--color-X)` on a surface the
+   * component does not paint at all (`-outline` and `-dash` are transparent
+   * over whatever is behind them; `-soft` adds an 8% `color-mix()` of the same
+   * colour). The rule that picks both sides is daisyUI's own
+   * (`.alert-outline { color: var(--color-X) }`), exactly as `.alert-info`'s
+   * `--color-info-content` over `--color-info` is, so the pair belongs to
+   * daisyUI's `contrast.test.js` and not to this spec.
+   *
+   * It is decided from three things, all of them mechanical:
+   *
+   *   1. the element (or the nearest ancestor that has one) carries a class
+   *      matching `<component>-outline|dash|soft` — a name shape, never a
+   *      selector list;
+   *   2. its foreground is *exactly* one of the theme's `--color-X`;
+   *   3. its background is one of the three base surfaces, or the `-soft` mix
+   *      of that same X (the `softBackgrounds` table below).
+   *
+   * A `-content` colour over the wrong surface, a colour the composition mixed
+   * itself, or an ordinary element that merely sits on base-100 still fails.
+   */
+  const VARIANT = /^[a-z][a-z0-9]*-(outline|dash|soft)$/;
+  function styleVariantOf(el: Element): string | null {
+    for (let n: Element | null = el; n; n = n.parentElement) {
+      const list = n.classList;
+      if (!list) continue;
+      for (const c of Array.from(list)) if (VARIANT.test(c)) return c;
+    }
+    return null;
+  }
+  const surfaces = ["base-100", "base-200", "base-300"]
+    .map((n) => opaqueOf(rootStyle.getPropertyValue("--color-" + n).trim()))
+    .filter((c): c is number[] => c !== null);
+  const brandForegrounds = pairs.map((p) => ({ name: p.name, fg: p.bg }));
+
   const softBackgrounds = pairs.flatMap((p) =>
     [8, 10].map((pct) => ({
       name: p.name,
@@ -464,6 +505,18 @@ export function collectContrast(): ContrastHit[] {
           pairing =
             "--color-" + s.name + " over color-mix(" + s.pct + "%, base-100)";
           break;
+        }
+      }
+    }
+    if (!daisyPalettePair) {
+      const variant = styleVariantOf(el);
+      if (variant && surfaces.some((s) => near(bg, s, 3))) {
+        for (const b of brandForegrounds) {
+          if (near(fgOpaque, b.fg, 3)) {
+            daisyPalettePair = true;
+            pairing = "." + variant + ": --color-" + b.name + " over a base surface";
+            break;
+          }
         }
       }
     }

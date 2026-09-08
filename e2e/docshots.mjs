@@ -45,7 +45,10 @@ const demos = [
 for (const [route, name] of demos) {
   await shoot(route, "light", path.join(out, `demo-${name}.png`));
 }
-for (const [route, name] of demos.slice(0, 3)) {
+// The report set covers all four demos, the generator included: it is the page
+// the "Generator close-up pass" changed most, and light/dark/nord is where a
+// theme-dependent regression on it would show.
+for (const [route, name] of demos) {
   for (const theme of ["light", "dark", "nord"]) {
     await shoot(route, theme, path.join(out, "report", `${name}-${theme}.png`));
   }

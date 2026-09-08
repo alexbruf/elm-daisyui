@@ -531,7 +531,7 @@ metric icon title value trend desc =
     -- stop of its own (`e2e/keyboard.spec.ts`), which the arrow glyph inside
     -- the delta badge was enough to trigger. One tile looks identical either
     -- way; only the flow direction changes.
-    Stat { direction = Tree.Fixed (Just SStat.Vertical) }
+    Stat { direction = Tree.Fixed (Just SStat.Vertical), figureStyle = Tree.FigureTile }
         [ { base | trend = Just trend, desc = Just desc, figure = Just (figureIcon icon) } ]
 
 
@@ -647,7 +647,7 @@ acquisitionCard config =
                   -- horizontal pair is `grid-flow-col overflow-x-auto`, so
                   -- at 375 it becomes a scrollable region no keyboard can
                   -- reach — axe's `scrollable-region-focusable`, serious.
-                  CardStat { direction = Tree.Responsive }
+                  CardStat { direction = Tree.Responsive, figureStyle = Tree.FigureTile }
                     [ headline "Advertise" "$148" (up "4.78%") "spend per customer"
                     , headline "Customers" "427" (up "3.15%") "acquired this month"
                     ]

@@ -15,24 +15,24 @@ module Daisy.Tree exposing
     , NavbarParts, emptyNavbarParts
     , FooterConfig, defaultFooterConfig
     , GridSection(..), GridConfig, defaultGridConfig, GridColumns(..)
-    , GridItem, Span(..), allSpans, CellColumns(..), allCellColumns, span, spanColumn, spanGrid
+    , GridItem, Span(..), allSpans, CellColumns(..), allCellColumns, span, spanColumn, spanGrid, spanLead
     , StackConfig, defaultStackConfig, Align(..)
     , Block(..)
     , AccordionConfig, defaultAccordionConfig, AccordionItem
     , AlertConfig, defaultAlertConfig
-    , CardConfig, defaultCardConfig, CardPadding(..), allCardPaddings, CardParts, emptyCardParts, CardChild(..)
+    , CardConfig, defaultCardConfig, CardSurface(..), allCardSurfaces, RowLayout(..), allRowLayouts, CardPadding(..), allCardPaddings, CardParts, emptyCardParts, CardChild(..)
     , CarouselConfig, defaultCarouselConfig, CarouselItem, CarouselSnap(..)
     , ChatMessage
     , CollapseConfig, defaultCollapseConfig, CollapseParts
     , DiffParts
     , Fieldset, FieldsetColumns(..), allFieldsetColumns, fieldset, Field, LabelPlacement(..), field
-    , ListRow, ListCell, listCell
+    , ListConfig, defaultListConfig, ListStyle(..), allListStyles, ListRow, ListCell, listCell
     , MenuConfig, defaultMenuConfig, MenuActiveStyle(..), allMenuActiveStyles, MenuItem(..), MenuGlyph(..), allMenuGlyphs, MenuBadge, MenuSpec, menuItem
     , MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
     , NavConfig, defaultNavConfig
     , PaginationConfig, defaultPaginationConfig, PaginationData
     , StackedConfig, defaultStackedConfig, StackedAlign(..)
-    , StatConfig, defaultStatConfig, StatDirection(..), StatItem, emptyStatItem
+    , StatConfig, defaultStatConfig, StatDirection(..), StatFigureStyle(..), allStatFigureStyles, StatItem, emptyStatItem
     , StepsConfig, defaultStepsConfig, Step
     , TableConfig, defaultTableConfig, Row, TableCell, tableCell
     , TabsConfig, defaultTabsConfig, Tab, TabsSpec
@@ -49,7 +49,7 @@ module Daisy.Tree exposing
     , ThemeContext, Surface(..), allSurfaces
     , FileInputConfig, defaultFileInputConfig
     , FilterData, FilterReset(..)
-    , IconConfig, defaultIconConfig, IconSize(..)
+    , IconConfig, defaultIconConfig, IconSize(..), IconTone(..), allIconTones
     , ImageConfig, defaultImageConfig
     , InputConfig, defaultInputConfig, InputType(..)
     , JoinConfig, defaultJoinConfig, JoinItem(..)
@@ -150,7 +150,7 @@ format has.
 @docs NavbarParts, emptyNavbarParts
 @docs FooterConfig, defaultFooterConfig
 @docs GridSection, GridConfig, defaultGridConfig, GridColumns
-@docs GridItem, Span, allSpans, CellColumns, allCellColumns, span, spanColumn, spanGrid
+@docs GridItem, Span, allSpans, CellColumns, allCellColumns, span, spanColumn, spanGrid, spanLead
 @docs StackConfig, defaultStackConfig, Align
 
 
@@ -159,19 +159,19 @@ format has.
 @docs Block
 @docs AccordionConfig, defaultAccordionConfig, AccordionItem
 @docs AlertConfig, defaultAlertConfig
-@docs CardConfig, defaultCardConfig, CardPadding, allCardPaddings, CardParts, emptyCardParts, CardChild
+@docs CardConfig, defaultCardConfig, CardSurface, allCardSurfaces, RowLayout, allRowLayouts, CardPadding, allCardPaddings, CardParts, emptyCardParts, CardChild
 @docs CarouselConfig, defaultCarouselConfig, CarouselItem, CarouselSnap
 @docs ChatMessage
 @docs CollapseConfig, defaultCollapseConfig, CollapseParts
 @docs DiffParts
 @docs Fieldset, FieldsetColumns, allFieldsetColumns, fieldset, Field, LabelPlacement, field
-@docs ListRow, ListCell, listCell
+@docs ListConfig, defaultListConfig, ListStyle, allListStyles, ListRow, ListCell, listCell
 @docs MenuConfig, defaultMenuConfig, MenuActiveStyle, allMenuActiveStyles, MenuItem, MenuGlyph, allMenuGlyphs, MenuBadge, MenuSpec, menuItem
 @docs MockupBrowserParts, MockupPhoneParts, MockupWindowParts, CodeLine
 @docs NavConfig, defaultNavConfig
 @docs PaginationConfig, defaultPaginationConfig, PaginationData
 @docs StackedConfig, defaultStackedConfig, StackedAlign
-@docs StatConfig, defaultStatConfig, StatDirection, StatItem, emptyStatItem
+@docs StatConfig, defaultStatConfig, StatDirection, StatFigureStyle, allStatFigureStyles, StatItem, emptyStatItem
 @docs StepsConfig, defaultStepsConfig, Step
 @docs TableConfig, defaultTableConfig, Row, TableCell, tableCell
 @docs TabsConfig, defaultTabsConfig, Tab, TabsSpec
@@ -192,7 +192,7 @@ format has.
 @docs ThemeContext, Surface, allSurfaces
 @docs FileInputConfig, defaultFileInputConfig
 @docs FilterData, FilterReset
-@docs IconConfig, defaultIconConfig, IconSize
+@docs IconConfig, defaultIconConfig, IconSize, IconTone, allIconTones
 @docs ImageConfig, defaultImageConfig
 @docs InputConfig, defaultInputConfig, InputType
 @docs JoinConfig, defaultJoinConfig, JoinItem
@@ -1310,6 +1310,7 @@ no layout decision for the caller to make.
 type alias GridItem msg =
     { span : Span
     , columns : CellColumns
+    , lead : List (Block msg)
     , blocks : List (Block msg)
     }
 
@@ -1347,7 +1348,7 @@ allCellColumns =
 -}
 span : Span -> Block msg -> GridItem msg
 span width block =
-    { span = width, columns = CellOne, blocks = [ block ] }
+    { span = width, columns = CellOne, lead = [], blocks = [ block ] }
 
 
 {-| A [`GridItem`](#GridItem) holding a column of blocks.
@@ -1357,7 +1358,7 @@ span width block =
 -}
 spanColumn : Span -> List (Block msg) -> GridItem msg
 spanColumn width blocks =
-    { span = width, columns = CellOne, blocks = blocks }
+    { span = width, columns = CellOne, lead = [], blocks = blocks }
 
 
 {-| A [`GridItem`](#GridItem) whose blocks are laid out as a grid of their own.
@@ -1367,7 +1368,23 @@ spanColumn width blocks =
 -}
 spanGrid : Span -> CellColumns -> List (Block msg) -> GridItem msg
 spanGrid width columns blocks =
-    { span = width, columns = columns, blocks = blocks }
+    { span = width, columns = columns, lead = [], blocks = blocks }
+
+
+{-| A [`GridItem`](#GridItem) whose own columns carry a title bar above them.
+
+`lead` is drawn full width at the top of the cell, before the cell's blocks are
+dealt into its columns. It is what a _preview region_ has: daisyUI's theme
+generator puts "Components Demo" and a layout switch above the three columns of
+its demo, not inside the first of them, and with no `lead` the only way to say
+that is to make the title a block of column one — which is where it lands.
+
+    spanLead Span7 CellThree [ titleBar ] previewCards
+
+-}
+spanLead : Span -> CellColumns -> List (Block msg) -> List (Block msg) -> GridItem msg
+spanLead width columns lead blocks =
+    { span = width, columns = columns, lead = lead, blocks = blocks }
 
 
 {-| How many of twelve tracks a [`GridItem`](#GridItem) takes.
@@ -1457,7 +1474,7 @@ type Block msg
     | Collapse CollapseConfig (CollapseParts msg)
     | Diff (DiffParts msg)
     | Form (List (Fieldset msg))
-    | ListBlock (List (ListRow msg))
+    | ListBlock ListConfig (List (ListRow msg))
     | Menu MenuConfig (List (MenuItem msg))
     | MockupBrowser (MockupBrowserParts msg)
     | MockupCode (List CodeLine)
@@ -1520,11 +1537,44 @@ decoration properties.
 type alias CardConfig =
     { style : Maybe SCard.Style
     , size : Maybe SCard.Size
+    , surface : CardSurface
     , padding : CardPadding
     , modifiers : List SCard.Modifier
     , aura : Maybe AuraConfig
     , hover3d : Bool
     }
+
+
+{-| Whether a card is drawn as a panel at all.
+
+`SurfacePanel` is daisyUI's `card`: the `bg-base-100 shadow-sm` box every one
+of its docs examples adds beside the class, raised off the `bg-base-200`
+content ground.
+
+`SurfaceBare` draws the same title row, body and action row with **no** panel —
+no `card`, no background, no shadow, no border, no `card-body` gutter. It is
+the shape daisyUI's own theme-generator editor rail has: a `flex flex-col
+gap-4` of controls straight on the page ground, with the section headings as
+`divider`s rather than as card titles. Without it the only way to put a
+control group on the page ground is to invent a container in the caller, which
+is the thing `Daisy.Tree` exists to prevent.
+
+It is a closed pair on the _config_, not a new `Block`, because everything else
+about the two is identical: the same `CardParts`, the same children, the same
+`title` / `headerActions` row. A bare card emits no `card-*` part class, so a
+part still never appears outside its component.
+
+-}
+type CardSurface
+    = SurfacePanel
+    | SurfaceBare
+
+
+{-| Both [`CardSurface`](#CardSurface) values.
+-}
+allCardSurfaces : List CardSurface
+allCardSurfaces =
+    [ SurfacePanel, SurfaceBare ]
 
 
 {-| The inside gutter of a `card-body`.
@@ -1557,6 +1607,7 @@ defaultCardConfig : CardConfig
 defaultCardConfig =
     { style = Nothing
     , size = Nothing
+    , surface = SurfacePanel
     , padding = PaddingDefault
     , modifiers = []
     , aura = Nothing
@@ -1613,7 +1664,8 @@ type CardChild msg
     | CardChart ChartConfig ChartSize ChartData (Maybe (ChartInteraction msg))
     | CardChat (List (ChatMessage msg))
     | CardTable TableConfig (List (Row msg))
-    | CardList (List (ListRow msg))
+    | CardList ListConfig (List (ListRow msg))
+    | CardRow RowLayout (List (Leaf msg))
     | CardStat StatConfig (List (StatItem msg))
     | CardForm (List (Fieldset msg))
 
@@ -1641,6 +1693,33 @@ type CarouselSnap
     = SnapStart
     | SnapCenter
     | SnapEnd
+
+
+{-| How a [`CardChild.CardRow`](#CardChild) shares its width out.
+
+A `card-body` is a column, so a row of leaves inside one needs an element —
+and there are exactly three shapes daisyUI's own preview uses for it:
+
+  - `RowWrap` — shrink to fit, wrap when they do not: two tag chips, a rating
+    beside its review count, four square player keys.
+  - `RowSpread` — first hard left, last hard right: an elapsed time and a total.
+  - `RowEven` — equal shares, never wrapping: the seven cells of a week strip,
+    which is `grid-cols-7` in daisyUI's markup and `flex-basis: 0` + `grow`
+    here, because a seven-track grid is not a token and is not going to become
+    one.
+
+-}
+type RowLayout
+    = RowWrap
+    | RowSpread
+    | RowEven
+
+
+{-| Every [`RowLayout`](#RowLayout) value.
+-}
+allRowLayouts : List RowLayout
+allRowLayouts =
+    [ RowWrap, RowSpread, RowEven ]
 
 
 {-| Groups of the daisyUI `carousel` component.
@@ -1805,6 +1884,45 @@ field label control =
 
 
 {-| One `list-row`.
+-}
+type alias ListConfig =
+    { style : ListStyle }
+
+
+{-| How a list of rows is drawn.
+
+`ListPanel` is daisyUI's `list` component: `list-row` grid rows with its own
+1rem gutter and 1rem gap, which is the density a settings panel wants.
+
+`ListRules` is the compact form daisyUI's _theme generator_ preview uses, and
+it is deliberately not the `list` component at all — their markup there carries
+no `list` class: it is a column of rows, each `py-2` with a dashed hairline
+under it. `list-row`'s padding is a fixed `1rem` that no size class changes, so
+a `list` inside a 258px preview card is 16px of gutter around 16px text, which
+is what wrapped every row onto two lines. Naming the two shapes is the only way
+to have both without a caller reaching for a utility.
+
+-}
+type ListStyle
+    = ListPanel
+    | ListRules
+
+
+{-| Both [`ListStyle`](#ListStyle) values.
+-}
+allListStyles : List ListStyle
+allListStyles =
+    [ ListPanel, ListRules ]
+
+
+{-| daisyUI's `list`, at its own density.
+-}
+defaultListConfig : ListConfig
+defaultListConfig =
+    { style = ListPanel }
+
+
+{-| One row of a list.
 -}
 type alias ListRow msg =
     { cells : List (ListCell msg) }
@@ -2069,7 +2187,30 @@ defaultStackedConfig =
 {-| Groups of the daisyUI `stat` component. The container class is `stats`.
 -}
 type alias StatConfig =
-    { direction : StatDirection }
+    { direction : StatDirection
+    , figureStyle : StatFigureStyle
+    }
+
+
+{-| How a `stat-figure` is drawn.
+
+`FigureTile` is the renderer's own `bg-base-200 rounded-lg p-2` chip, which is
+what a dashboard metric wants behind a small glyph. `FigureBare` draws the
+figure with nothing behind it — daisyUI's own generator puts a
+`radial-progress` in the `stat-figure` slot, and a dial inside a grey square
+reads as two nested boxes.
+
+-}
+type StatFigureStyle
+    = FigureTile
+    | FigureBare
+
+
+{-| Both [`StatFigureStyle`](#StatFigureStyle) values.
+-}
+allStatFigureStyles : List StatFigureStyle
+allStatFigureStyles =
+    [ FigureTile, FigureBare ]
 
 
 {-| How a `stats` container lays its tiles out.
@@ -2089,7 +2230,7 @@ type StatDirection
 -}
 defaultStatConfig : StatConfig
 defaultStatConfig =
-    { direction = Fixed Nothing }
+    { direction = Fixed Nothing, figureStyle = FigureTile }
 
 
 {-| One tile: the `stat`, `stat-figure`, `stat-title`, `stat-value`,
@@ -2105,8 +2246,10 @@ type alias StatItem msg =
     { figure : Maybe (Leaf msg)
     , title : String
     , value : String
+    , valueSuffix : Maybe String
     , trend : Maybe (Leaf msg)
     , desc : Maybe String
+    , descIcon : Maybe ( IconTone, Icon )
     , actions : List (Leaf msg)
     }
 
@@ -2118,8 +2261,10 @@ emptyStatItem title value =
     { figure = Nothing
     , title = title
     , value = value
+    , valueSuffix = Nothing
     , trend = Nothing
     , desc = Nothing
+    , descIcon = Nothing
     , actions = []
     }
 
@@ -2438,6 +2583,7 @@ a `ButtonConfig.icon` is.
 -}
 type alias BadgeConfig =
     { icon : Maybe Icon
+    , trailingIcon : Maybe Icon
     , color : Maybe SBadge.Color
     , style : Maybe SBadge.Style
     , size : Maybe SBadge.Size
@@ -2449,7 +2595,13 @@ type alias BadgeConfig =
 -}
 defaultBadgeConfig : BadgeConfig
 defaultBadgeConfig =
-    { icon = Nothing, color = Nothing, style = Nothing, size = Nothing, tooltip = Nothing }
+    { icon = Nothing
+    , trailingIcon = Nothing
+    , color = Nothing
+    , style = Nothing
+    , size = Nothing
+    , tooltip = Nothing
+    }
 
 
 {-| The colour of a `Button` leaf.
@@ -2520,6 +2672,7 @@ button has no accessible name at all, which axe reports as a critical
 type alias ButtonConfig msg =
     { color : Maybe ButtonColor
     , icon : Maybe Icon
+    , sublabel : Maybe String
     , ariaLabel : Maybe String
     , style : Maybe SButton.Style
     , size : Maybe SButton.Size
@@ -2542,6 +2695,7 @@ defaultButtonConfig : ButtonConfig msg
 defaultButtonConfig =
     { color = Nothing
     , icon = Nothing
+    , sublabel = Nothing
     , ariaLabel = Nothing
     , style = Nothing
     , size = Nothing
@@ -2817,6 +2971,8 @@ type alias DividerConfig =
     { color : Maybe SDivider.Color
     , direction : Maybe SDivider.Direction
     , placement : Maybe SDivider.Placement
+    , icon : Maybe Icon
+    , caption : Bool
     , tooltip : Maybe Tooltip
     }
 
@@ -2825,7 +2981,13 @@ type alias DividerConfig =
 -}
 defaultDividerConfig : DividerConfig
 defaultDividerConfig =
-    { color = Nothing, direction = Nothing, placement = Nothing, tooltip = Nothing }
+    { color = Nothing
+    , direction = Nothing
+    , placement = Nothing
+    , icon = Nothing
+    , caption = False
+    , tooltip = Nothing
+    }
 
 
 {-| The box a [`Leaf.Embed`](#Leaf) is drawn in.
@@ -3007,15 +3169,46 @@ reports that as a critical `button-name` violation.
 -}
 type alias IconConfig =
     { size : IconSize
+    , tone : Maybe IconTone
     , label : Maybe String
     }
+
+
+{-| The colour of a [`Leaf.Icon`](#Leaf).
+
+A glyph is the one place a semantic _foreground_ is safe to name. `Leaf.Icon`
+renders an `<svg>` and nothing else — it holds no text node — so a tone can
+never become the colour of a word, which is what keeps `text-primary` and
+friends off `Daisy.Render.tokens` everywhere else. daisyUI's own theme
+generator paints exactly these glyphs this way: `text-success` on the "All
+good" shield and on a plan's tick, `text-error` on its cross, `text-primary` on
+a `timeline-middle` marker.
+
+Closed, and rendered from one named token each, so the caller names a role and
+never a class.
+
+-}
+type IconTone
+    = ToneMuted
+    | ToneInfo
+    | ToneSuccess
+    | ToneWarning
+    | ToneError
+    | TonePrimary
+
+
+{-| Every [`IconTone`](#IconTone) value.
+-}
+allIconTones : List IconTone
+allIconTones =
+    [ ToneMuted, ToneInfo, ToneSuccess, ToneWarning, ToneError, TonePrimary ]
 
 
 {-| A decorative icon at the middle size: `size-5`, `aria-hidden`.
 -}
 defaultIconConfig : IconConfig
 defaultIconConfig =
-    { size = IconMd, label = Nothing }
+    { size = IconMd, tone = Nothing, label = Nothing }
 
 
 {-| The `mask` and `hover-3d` properties of an image, plus its alt text.
@@ -3074,6 +3267,8 @@ type alias InputConfig msg =
     , style : Maybe SInput.Style
     , size : Maybe SInput.Size
     , icon : Maybe Icon
+    , prefix : Maybe String
+    , trailingIcon : Maybe Icon
     , placeholder : String
     , value : String
     , inputType : InputType
@@ -3096,6 +3291,8 @@ defaultInputConfig =
     , style = Nothing
     , size = Nothing
     , icon = Nothing
+    , prefix = Nothing
+    , trailingIcon = Nothing
     , placeholder = ""
     , value = ""
     , inputType = InputText
@@ -3114,6 +3311,7 @@ defaultInputConfig =
 -}
 type alias JoinConfig =
     { direction : Maybe SJoin.Direction
+    , stretch : Bool
     , tooltip : Maybe Tooltip
     }
 
@@ -3122,7 +3320,7 @@ type alias JoinConfig =
 -}
 defaultJoinConfig : JoinConfig
 defaultJoinConfig =
-    { direction = Nothing, tooltip = Nothing }
+    { direction = Nothing, stretch = False, tooltip = Nothing }
 
 
 {-| What a `join` may group. A closed list, so `Leaf` stays non-recursive.
@@ -3352,6 +3550,8 @@ option the control offers is one of the five and there is no sixth to parse.
 -}
 type alias RadiusTilesConfig msg =
     { ariaLabel : Maybe String
+    , label : Maybe String
+    , caption : Maybe String
     , onSelect : Maybe (Radius -> msg)
     }
 
@@ -3361,7 +3561,7 @@ type alias RadiusTilesConfig msg =
 -}
 defaultRadiusTilesConfig : RadiusTilesConfig msg
 defaultRadiusTilesConfig =
-    { ariaLabel = Nothing, onSelect = Nothing }
+    { ariaLabel = Nothing, label = Nothing, caption = Nothing, onSelect = Nothing }
 
 
 {-| The radio-group name of a [`Leaf.RadiusTiles`](#Leaf) and the step it is on.

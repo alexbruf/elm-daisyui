@@ -58,9 +58,11 @@ import Daisy.Schema.Button as SButton
 import Daisy.Schema.Card as SCard
 import Daisy.Schema.Chat as SChat
 import Daisy.Schema.Checkbox as SCheckbox
+import Daisy.Schema.Divider as SDivider
 import Daisy.Schema.Input as SInput
 import Daisy.Schema.Menu as SMenu
 import Daisy.Schema.Progress as SProgress
+import Daisy.Schema.Rating as SRating
 import Daisy.Schema.Select as SSelect
 import Daisy.Schema.Stat as SStat
 import Daisy.Schema.Status as SStatus
@@ -68,6 +70,7 @@ import Daisy.Schema.Steps as SSteps
 import Daisy.Schema.Tab as STab
 import Daisy.Schema.Table as STable
 import Daisy.Schema.Timeline as STimeline
+import Daisy.Schema.Toggle as SToggle
 import Daisy.Themes as Themes
 import Daisy.Tree as Tree
     exposing
@@ -84,6 +87,7 @@ import Daisy.Tree as Tree
         , Fieldset
         , InputType(..)
         , JoinItem(..)
+        , LabelPlacement(..)
         , Leaf(..)
         , ListRow
         , MenuGlyph(..)
@@ -121,12 +125,14 @@ theme generator" anchor points at.
 type alias Config msg =
     { basePath : String
     , edited : CustomTheme
+    , saved : List CustomTheme
     , lastMsg : String
     , generatorUrl : String
     , hoveredSales : Maybe Int
     , onSalesHover : Maybe Int -> msg
     , onNavigate : String -> msg
     , onEdit : ThemeEdit -> msg
+    , onSaveTheme : msg
     , onExport : msg
     }
 
@@ -827,6 +833,11 @@ defaultRange =
     Tree.defaultRangeConfig
 
 
+defaultRating : Tree.RatingConfig msg
+defaultRating =
+    Tree.defaultRatingConfig
+
+
 baseCard : Tree.CardConfig
 baseCard =
     Tree.defaultCardConfig
@@ -854,6 +865,19 @@ different reference.
 previewCard : Tree.CardConfig
 previewCard =
     { baseCard | style = Just SCard.Border, size = Just SCard.Sm }
+
+
+{-| The editor rail's and the theme list's own "card", which is no card at all.
+
+daisyUI's editor column is `bg-base-100 flex flex-col gap-4 p-6` straight on the
+page, with `divider`s where a card would have had a title — read off the same
+page as `previewCard`'s class list. `CardSurface.SurfaceBare` is that: the same
+`CardParts`, no panel, and not one `card-*` class emitted.
+
+-}
+bareCard : Tree.CardConfig
+bareCard =
+    { baseCard | surface = Tree.SurfaceBare }
 
 
 
@@ -885,9 +909,9 @@ generatorSection : Config msg -> Section msg
 generatorSection config =
     Grid
         (Tree.Spans
-            [ Tree.span Tree.Span2 (themesMenu config)
+            [ Tree.spanColumn Tree.Span2 (themesColumn config)
             , Tree.spanColumn Tree.Span3 (editorColumn config)
-            , Tree.spanGrid Tree.Span7 Tree.CellThree (previewCards config)
+            , Tree.spanLead Tree.Span7 Tree.CellThree [ previewHeader ] (previewCards config)
             ]
         )
 
@@ -896,41 +920,122 @@ generatorSection config =
 -- (a) THE THEME LIST ----------------------------------------------------------
 
 
-{-| daisyUI's left rail: `My themes` above `daisyUI themes`, every name a row
-with a palette glyph, the current one marked. A bare `Block.Menu`, not a card —
-theirs is a list on the page ground too.
+{-| daisyUI's left rail, block for block: a bold `Themes` heading with a `…`
+menu button beside it, the "Hold to add theme" button under it, then `My
+themes` and `daisyUI themes` as two lists with a rule between them.
+
+Measured on <https://daisyui.com/theme-generator/>: the heading is
+`font-semibold` at the body step in `--color-base-content`, the `…` is a
+`btn btn-ghost btn-square btn-sm`, the list is a plain `menu` (not `menu-xs` —
+their rows are 33px, ours were 26px), the rows are `gap-3 px-2` with a
+four-dot palette tile, and the current one is tinted `bg-base-content/10`.
+
+The tint is why `MenuActiveStyle.TintedActive` changed in this pass: it used to
+be `bg-base-200`, and a menu on the page ground **is** `bg-base-200`, so with
+`?theme=light` (base-100 100%, base-200 98%) the current row was invisible. See
+`Daisy.Render.tokenTintActive`.
 
 Clicking a row **is** the "start from" control — it fires the same `StartFrom`
-edit the `<select>` used to, which is why that select is gone. `Block.Menu` is
-the component daisyUI uses there too, and `MenuActiveStyle.TintedActive` is the
-quiet marked row it draws.
+edit the `<select>` used to, which is why that select is gone.
 
 The glyph is daisyUI's own four-colour tile: that theme's `base-100` with its
 `base-content`, `primary`, `secondary` and `accent` on it. It is a
 `MenuGlyph.MenuThemeDots`, which carries a whole `Theme` rather than an
 [`Icon`](Daisy-Icon) — a row of the list _is_ a theme, and none of its four
 colours can be a class, because the class would paint the theme being edited
-instead of the theme the row is offering. `Daisy.Render` reads the values out of
-the generated `Daisy.Themes` and writes them inline, exactly as it writes a
-`Theme.Custom` onto the page root.
-
-There is no "Hold to add theme" button. daisyUI's saves a theme into the
-browser's local storage, which is a `Cmd` and a port; this page keeps `acme` at
-the top of `My themes` and edits it in place.
+instead of the theme the row is offering.
 
 -}
-themesMenu : Config msg -> Block msg
-themesMenu config =
-    Menu
-        { defaultMenu | size = Just SMenu.Xs }
-        (groupTitle "Themes"
-            :: groupTitle "My themes"
-            :: themeRow config (Custom DemoThemes.acme)
-            :: groupTitle "daisyUI themes"
-            :: List.map (themeRow config) Tree.allThemes
+themesColumn : Config msg -> List (Block msg)
+themesColumn config =
+    [ themesHeader config
+    , myThemesMenu config
+    , listRule
+    , daisyThemesMenu config
+    ]
+
+
+{-| The heading row and the add button, on the page ground rather than in a
+card: `CardSurface.SurfaceBare`.
+-}
+themesHeader : Config msg -> Block msg
+themesHeader config =
+    Card bareCard
+        { emptyCard
+            | title = Just "Themes"
+            , headerActions = [ themeListOptionsButton ]
+            , body = [ CardLeaf (holdToAddButton config) ]
+        }
+
+
+{-| daisyUI's `…` button beside the heading. Theirs opens a two-item dropdown
+("Remove my themes", "Reset daisyUI themes"), both of which write to the
+browser's local storage; ours has nothing to remove that a reload would not,
+so it is the same control with no menu behind it.
+-}
+themeListOptionsButton : Leaf msg
+themeListOptionsButton =
+    Button
+        { defaultButton
+            | icon = Just Icon.EllipsisHorizontal
+            , ariaLabel = Just "Theme list options"
+            , style = Just SButton.Ghost
+            , size = Just SButton.Sm
+            , modifiers = [ SButton.Square ]
+        }
+        ""
+
+
+{-| daisyUI's "**Hold** to add theme".
+
+Theirs is held rather than clicked because the press writes to local storage;
+ours is a plain click, and what it saves is a copy of the theme being edited
+into `My themes` **in the model** — one `ThemeSaved` message, no port, no
+storage. The label keeps their wording because the button keeps their job.
+
+The glyph is `Icon.Sparkles` (heroicons `sparkles`); daisyUI draws a magic wand
+of its own, which is not in the closed twenty-five-turned-thirty-eight set.
+
+-}
+holdToAddButton : Config msg -> Leaf msg
+holdToAddButton config =
+    Button
+        { defaultButton
+            | icon = Just Icon.Sparkles
+            , style = Just SButton.Soft
+            , size = Just SButton.Sm
+            , onClick = Just config.onSaveTheme
+        }
+        "Hold to add theme"
+
+
+{-| The rule daisyUI draws between the two groups. Two menus with a divider
+between them, rather than one menu with a divider row: a `menu` holds `<li>`s,
+and a horizontal rule is not one of them.
+-}
+listRule : Block msg
+listRule =
+    Prose [ Divider Tree.defaultDividerConfig Nothing ]
+
+
+myThemesMenu : Config msg -> Block msg
+myThemesMenu config =
+    Menu defaultMenu
+        (groupTitle "My themes"
+            :: List.map (themeRow config << Custom) (config.saved ++ [ DemoThemes.acme ])
         )
 
 
+daisyThemesMenu : Config msg -> Block msg
+daisyThemesMenu config =
+    Menu defaultMenu
+        (groupTitle "daisyUI themes" :: List.map (themeRow config) Tree.allThemes)
+
+
+{-| daisyUI's list is a plain `menu`: no `menu-xs`. Their rows measure 33px,
+which is `menu`'s own step, and `menu-xs` made ours 26px — the single biggest
+reason the two rails did not line up.
+-}
 defaultMenu : Tree.MenuConfig
 defaultMenu =
     { baseMenu | activeStyle = Tree.TintedActive }
@@ -979,49 +1084,59 @@ themeRow config theme =
 
 editorColumn : Config msg -> List (Block msg)
 editorColumn config =
-    [ nameCard config
-    , changeColorsCard config
-    , radiusCard config
-    , sizeCard config
-    , paletteCard config
+    [ nameBlock config
+    , changeColorsBlock config
+    , radiusBlock config
+    , sizeBlock config
+    , paletteBlock config
     ]
 
 
-{-| The top of daisyUI's editor: the theme's `Name`, then `Random` and `CSS`
-side by side.
+{-| The top of daisyUI's editor: the theme's `Name` with a pencil beside it,
+then `Random` and `CSS` as two halves of the rail's width.
+
+No card. Theirs is `<label class="input input-ghost input-sm flex items-center
+gap-2 font-semibold"><span class="text-xs opacity-60">Name</span><input/><svg
+pencil/></label>` followed by `<div class="grid grid-cols-2 gap-2">` of two
+buttons — which is `InputConfig.prefix` / `InputConfig.trailingIcon` and a
+`JoinConfig.stretch` here, and `CardSurface.SurfaceBare` around both.
+
+The "Open in daisyUI theme generator" link moved out of the middle of the
+editor and onto this row as `actions`, where it reads as a footnote to the name
+rather than as a control between two sections.
+
 -}
-nameCard : Config msg -> Block msg
-nameCard config =
-    Card previewCard
+nameBlock : Config msg -> Block msg
+nameBlock config =
+    Card bareCard
         { emptyCard
             | body =
-                [ CardForm
-                    [ { legend = Nothing
-                      , columns = Tree.OneColumn
-                      , fields = [ Tree.field "Name" (nameInput config) ]
-                      }
-                    ]
+                [ CardLeaf (nameInput config)
                 , CardLeaf
-                    (Join Tree.defaultJoinConfig
+                    (Join
+                        { defaultJoin | stretch = True }
                         [ JoinButton
                             { defaultButton
-                                | icon = Just Icon.Plus
-                                , size = Just SButton.Sm
+                                | icon = Just Icon.ArrowPath
                                 , onClick = Just (config.onEdit Randomize)
                             }
                             "Random"
                         , JoinButton
                             { defaultButton
-                                | color = Just Neutral
-                                , size = Just SButton.Sm
+                                | icon = Just Icon.CodeBracket
+                                , color = Just Neutral
                                 , onClick = Just config.onExport
                             }
                             "CSS"
                         ]
                     )
                 ]
-            , actions = [ generatorLink config ]
         }
+
+
+defaultJoin : Tree.JoinConfig
+defaultJoin =
+    Tree.defaultJoinConfig
 
 
 {-| The theme's own name, editable.
@@ -1037,6 +1152,10 @@ nameInput config =
     Input
         { defaultInput
             | size = Just SInput.Sm
+            , style = Just SInput.Ghost
+            , prefix = Just "Name"
+            , trailingIcon = Just Icon.Pencil
+            , ariaLabel = Just "Theme name"
             , value = Tree.themeNameToString config.edited.name
             , onInput = Just (config.onEdit << SetName)
         }
@@ -1060,14 +1179,40 @@ variable the chip edits (`primary`, `primary-content`), which is what
 `e2e/theme-generator.spec.ts` asks for by label.
 
 -}
-changeColorsCard : Config msg -> Block msg
-changeColorsCard config =
-    Card previewCard
+changeColorsBlock : Config msg -> Block msg
+changeColorsBlock config =
+    Card bareCard
         { emptyCard
-            | title = Just "Change Colors"
-            , titleIcon = Just Icon.Swatch
-            , body = [ CardLeaf (ColorChips (colorGroups config)) ]
+            | body =
+                [ CardLeaf (sectionHeader Icon.Swatch "Change Colors")
+                , CardLeaf (ColorChips (colorGroups config))
+                ]
         }
+
+
+{-| daisyUI's section heading in that rail: `<h3 class="divider divider-start
+text-xs"><span class="flex gap-1.5"><svg/> Change Colors</span></h3>`.
+
+A rule that runs off to the right of a labelled glyph — which is `Leaf.Divider`
+with `Placement.Start`, the `icon` this pass added to `DividerConfig`, and
+`caption = True` for the `text-xs` step. It replaces five `card-title`s: a
+card title says "this is a panel", and the rail is not panels.
+
+-}
+sectionHeader : Icon.Icon -> String -> Leaf msg
+sectionHeader icon label =
+    Divider
+        { defaultDivider
+            | placement = Just SDivider.Start
+            , icon = Just icon
+            , caption = True
+        }
+        (Just label)
+
+
+defaultDivider : Tree.DividerConfig
+defaultDivider =
+    Tree.defaultDividerConfig
 
 
 {-| daisyUI's own grouping, in its order: the four base slots as one group, then
@@ -1142,57 +1287,51 @@ chip config slot glyph background foreground =
     }
 
 
-{-| daisyUI's `Radius` block: three rows of five tiles, labelled `Boxes`,
-`Fields` and `Selectors`.
+{-| daisyUI's `Radius` block: three groups of five tiles, each headed by what
+it shapes and, in faint italic under it, which components that reaches.
 
 Each row is a `Leaf.RadiusTiles` — a real radio group whose five steps are drawn
-as the corner each one sets, which is what daisyUI's own generator shows. The
-tile is two sides of a box at that `border-radius`, so the control says what it
-does without naming a length; the length is still the step's accessible name
-(`Boxes 2rem`), prefixed by the group so `2rem` here and `2rem` in the next
-group are two different controls.
+as the corner each one sets. The _look_ is daisyUI's, and it changed in this
+pass: a `rounded-field bg-base-200` frame with the corner inset from two sides,
+the corner stroked `--color-base-content/20` over `bg-base-300`, and the
+current step stroked `--color-primary` with no fill. It used to be a `join` of
+`btn`s with the marked step `btn-neutral` — a filled black slab, which is a
+different control from the one daisyUI ships.
 
-`Daisy.Render` marks the current step `btn-neutral` and leaves the tile's border
-at `currentColor`, so the marked corner comes out `--color-neutral-content` and
-no colour is chosen by this page at all. `btn-neutral` and not `btn-active`:
-`.btn-active` derives its background from the button's own colour with a
-`color-mix()`, so the pair it paints is one the _composition_ chose — 4.28:1 in
-`valentine`, which `e2e/contrast.spec.ts` refuses. `--color-neutral` over
-`--color-neutral-content` is a pair daisyUI itself declares, in every theme.
+The two-line heading is part of the leaf (`RadiusTilesConfig.label` /
+`.caption`) rather than a `Leaf.Text` beside it, because a `<label>` around
+five radios would make clicking the heading press the first of them.
 
 -}
-radiusCard : Config msg -> Block msg
-radiusCard config =
-    Card previewCard
+radiusBlock : Config msg -> Block msg
+radiusBlock config =
+    Card bareCard
         { emptyCard
-            | title = Just "Radius"
-            , body =
-                [ CardLeaf (groupLabel "Boxes")
-                , CardLeaf (radiusChoice config "Boxes" RadiusBox config.edited.radius.box)
-                , CardLeaf (groupLabel "Fields")
-                , CardLeaf (radiusChoice config "Fields" RadiusField config.edited.radius.field)
-                , CardLeaf (groupLabel "Selectors")
-                , CardLeaf (radiusChoice config "Selectors" RadiusSelector config.edited.radius.selector)
+            | body =
+                [ CardLeaf (sectionHeader Icon.Squares2x2 "Radius")
+                , CardLeaf (radiusChoice config "Boxes" "card, modal, alert" RadiusBox config.edited.radius.box)
+                , CardLeaf (radiusChoice config "Fields" "button, input, select, tab" RadiusField config.edited.radius.field)
+                , CardLeaf (radiusChoice config "Selectors" "checkbox, toggle, badge" RadiusSelector config.edited.radius.selector)
                 ]
         }
 
 
-{-| daisyUI's `Sizes`, `Border` and `Effects` blocks, in one panel.
+{-| daisyUI's `Sizes`, `Border` and `Effects` blocks, under one heading.
 -}
-sizeCard : Config msg -> Block msg
-sizeCard config =
-    Card previewCard
+sizeBlock : Config msg -> Block msg
+sizeBlock config =
+    Card bareCard
         { emptyCard
-            | title = Just "Sizes and effects"
-            , body =
-                [ CardLeaf (groupLabel "Field base size (rem)")
+            | body =
+                [ CardLeaf (sectionHeader Icon.Cog "Sizes and effects")
+                , CardLeaf (groupLabel "Field base size (rem)")
                 , CardLeaf (sizeChoice config "Field base size" SizeField config.edited.size.field)
                 , CardLeaf (groupLabel "Selector base size (rem)")
                 , CardLeaf (sizeChoice config "Selector base size" SizeSelector config.edited.size.selector)
                 , CardLeaf (groupLabel "Border width (px)")
                 , CardLeaf (borderChoice config)
                 , CardForm
-                    [ { legend = Just "Effects"
+                    [ { legend = Nothing
                       , columns = Tree.OneColumn
                       , fields =
                             [ Tree.field "Dark color scheme" (schemeToggle config)
@@ -1257,10 +1396,12 @@ withoutUnit length =
         |> String.replace "px" ""
 
 
-radiusChoice : Config msg -> String -> RadiusTarget -> Radius -> Leaf msg
-radiusChoice config group target current =
+radiusChoice : Config msg -> String -> String -> RadiusTarget -> Radius -> Leaf msg
+radiusChoice config group caption target current =
     RadiusTiles
         { ariaLabel = Just (group ++ " radius")
+        , label = Just group
+        , caption = Just caption
         , onSelect = Just (\radius -> config.onEdit (SetRadius target (Tree.radiusToString radius)))
         }
         { group = group, current = current }
@@ -1331,21 +1472,12 @@ renderer paints the chip from a named token pair per
 [`SwatchColor`](Daisy-Tree#SwatchColor), and the caller only names the slot.
 
 -}
-paletteCard : Config msg -> Block msg
-paletteCard config =
-    Card previewCard
+paletteBlock : Config msg -> Block msg
+paletteBlock config =
+    Card bareCard
         { emptyCard
-            | title = Just "Palette"
-            , titleIcon = Just Icon.Eye
-
-            -- Beside the title, not above the swatches. A `Leaf.ThemeDots` is
-            -- an 18px tile, and a `card-body` is a stretch column: as a body
-            -- child it became a full-width white strip with four dots stranded
-            -- at its left edge. `headerActions` is a shrink-to-fit row, which
-            -- is the shape the tile was drawn for (it is what a theme-list row
-            -- carries).
-            , headerActions = [ ThemeDots (Custom config.edited) ]
-            , body = List.map swatchRow swatches
+            | body = CardLeaf (sectionHeader Icon.Eye "Palette") :: List.map swatchRow swatches
+            , actions = [ ThemeDots (Custom config.edited) ]
         }
 
 
@@ -1385,6 +1517,55 @@ generatorLink config =
 
 
 -- (c) THE COMPONENTS DEMO -----------------------------------------------------
+
+
+{-| The title bar over the preview columns: `Components Demo` on the left and a
+three-way layout switch on the right.
+
+daisyUI's is a `tabs tabs-box tabs-sm` of three icon-only tabs. `Daisy.Tree`'s
+`Tab` carries a `String` label and no glyph, so this is the same three-button
+segmented control said the way the tree can say it: a `join` of three
+icon-only `btn-sm`s, the first marked. It is **decorative** — daisyUI's
+switches between three preview pages this demo does not have — so none of the
+three carries an `onClick`, and each one's accessible name says which layout it
+stands for.
+
+It reaches the page through `Tree.spanLead`, which is what this pass added to
+`GridItem`: a title bar belongs to the _cell_, above its three columns, and
+without it the only place to put it was inside column one.
+
+-}
+previewHeader : Block msg
+previewHeader =
+    Card bareCard
+        { emptyCard
+            | title = Just "Components Demo"
+            , headerActions =
+                [ Join Tree.defaultJoinConfig
+                    [ layoutButton True Icon.Squares2x2 "Components demo"
+                    , layoutButton False Icon.ListBullet "Component variants"
+                    , layoutButton False Icon.Swatch "Colour palette"
+                    ]
+                ]
+        }
+
+
+layoutButton : Bool -> Icon.Icon -> String -> JoinItem msg
+layoutButton current icon label =
+    JoinButton
+        { defaultButton
+            | icon = Just icon
+            , ariaLabel = Just label
+            , size = Just SButton.Sm
+            , modifiers = [ SButton.Square ]
+            , color =
+                if current then
+                    Just Neutral
+
+                else
+                    Nothing
+        }
+        ""
 
 
 {-| daisyUI's own preview grid, card for card and in its order.
@@ -1427,12 +1608,21 @@ previewCards config =
 
 
 {-| Their first card: a `Preview` header with a `more` link, two removable tag
-badges, then four checkbox rows each with a count badge.
+badges **above** the rows, then four checkbox rows each with a count badge.
 
-The rows are a `CardList`: a `list-row` holds a checkbox, a growing label and a
-badge, which is exactly the shape `ListCell` was built for — and the reason
-`CardChild` gained `CardList` in this pass, since a `card-body` is a column that
-cannot hold a `Block`.
+Read off their DOM: the chips are `badge badge-soft` with a `size-3` cross
+inside, and they sit in a row of their own directly under the title — not in
+`card-actions` at the bottom, which is where this had them. That row is
+`CardChild.CardRow`, added in this pass, because a `card-body` is a column and
+two badges side by side need an element.
+
+The rows are a `CardList` at `ListStyle.ListRules`: daisyUI's markup there
+carries no `list` class at all — each row is `py-2` with a dashed hairline
+under it — and `list-row`'s fixed `1rem` gutter is what made ours a third
+taller than theirs.
+
+The count badge is `badge-xs` and **solid** (`badge-neutral`, `badge-warning`),
+as theirs is.
 
 -}
 filterPreviewCard : Block msg
@@ -1443,16 +1633,20 @@ filterPreviewCard =
             , titleIcon = Just Icon.Eye
             , headerActions = [ Link defaultLink "more" ]
             , body =
-                [ CardList
+                [ CardRow Tree.RowWrap [ tagBadge "Shoes", tagBadge "Bags" ]
+                , CardList { defaultList | style = Tree.ListRules }
                     [ checkRow "Hoodies" True (Just SBadge.Neutral) "25"
                     , checkRow "Bags" True (Just SBadge.Neutral) "3"
                     , checkRow "Shoes" False (Just SBadge.Warning) "0"
                     , checkRow "Accessories" False (Just SBadge.Neutral) "4"
                     ]
                 ]
-            , actions =
-                [ tagBadge "Shoes", tagBadge "Bags" ]
         }
+
+
+defaultList : Tree.ListConfig
+defaultList =
+    Tree.defaultListConfig
 
 
 checkRow : String -> Bool -> Maybe SBadge.Color -> String -> Tree.ListRow msg
@@ -1473,17 +1667,36 @@ checkRow label checked tone count =
     }
 
 
+{-| A removable tag chip: `badge badge-soft` with the `x` after the word, which
+is `BadgeConfig.trailingIcon` — a leading `icon` would put the cross in front
+of the label, which is not the control daisyUI draws.
+-}
 tagBadge : String -> Leaf msg
 tagBadge label =
-    Badge { defaultBadge | style = Just SBadge.Soft, size = Just SBadge.Sm } label
+    Badge
+        { defaultBadge
+            | style = Just SBadge.Soft
+            , size = Just SBadge.Sm
+            , trailingIcon = Just Icon.X
+        }
+        label
 
 
 {-| Their second card: a week strip, an event search field, an all-day toggle
 and one highlighted event.
 
-The strip is a `join` of seven `btn-sm` buttons with the current day
-`btn-neutral` — daisyUI's is a row of date cells with the weekday letter under
-the number, which needs two lines inside one cell and so is one line here.
+Three things changed to theirs in this pass:
+
+  - the strip is seven **two-line** cells — the day number over the weekday
+    letter — with the current day filled `--color-primary`. That second line is
+    `ButtonConfig.sublabel`: a `btn` is a flex row, so two text nodes come out
+    side by side and there was no way to say it before.
+  - the search field carries a leading magnifying glass (`InputConfig.icon`),
+    and the toggle sits on one line with its own label
+    (`LabelPlacement.LabelEnd`) rather than under a label above it.
+  - the event is a `bg-base-300` block spanning the card, with a title, a
+    two-line description and a `1h` neutral badge. daisyUI draws it edge to
+    edge under a dashed rule; ours is the same row inside the body.
 
 -}
 weekCard : Config msg -> Block msg
@@ -1491,23 +1704,23 @@ weekCard config =
     Card previewCard
         { emptyCard
             | body =
-                [ CardLeaf
-                    (Join Tree.defaultJoinConfig
-                        (List.map (dayButton config) weekDays)
-                    )
+                [ CardRow Tree.RowEven (List.map (dayButton config) weekDays)
                 , CardForm
                     [ { legend = Nothing
                       , columns = Tree.OneColumn
                       , fields =
-                            [ Tree.field "Search for events" (previewInput "Search for events")
-                            , Tree.field "Show all day events" (Toggle defaultToggle { checked = True })
+                            [ unlabelledField (searchInput "Search for events")
+                            , inlineField "Show all day events"
+                                (Toggle
+                                    { defaultToggle | color = Just SToggle.Primary, size = Just SToggle.Sm }
+                                    { checked = True }
+                                )
                             ]
                       }
                     ]
-                , CardList
+                , CardList { defaultList | style = Tree.ListRules }
                     [ { cells =
-                            [ Tree.listCell (Icon { defaultIcon | size = Tree.IconSm } Icon.Calendar)
-                            , { content = Text "Team Sync Meeting", grow = True, wrap = False }
+                            [ { content = Text "Team Sync Meeting", grow = True, wrap = False }
                             , Tree.listCell
                                 (Badge { defaultBadge | color = Just SBadge.Neutral, size = Just SBadge.Sm } "1h")
                             ]
@@ -1517,23 +1730,69 @@ weekCard config =
         }
 
 
-weekDays : List ( String, Bool )
+{-| A control on the same line as its label, which is what daisyUI does with
+every toggle in that preview.
+-}
+inlineField : String -> Leaf msg -> Field msg
+inlineField label control =
+    let
+        base : Field msg
+        base =
+            Tree.field label control
+    in
+    { base | labelPlacement = LabelEnd }
+
+
+{-| A field whose control names itself. daisyUI's event search is a field with
+a magnifying glass and a placeholder and no label above it; the accessible name
+comes from the input's own `aria-label`, so the visible label would be a second
+copy of the same words.
+-}
+unlabelledField : Leaf msg -> Field msg
+unlabelledField control =
+    let
+        base : Field msg
+        base =
+            Tree.field "" control
+    in
+    { base | label = Nothing }
+
+
+searchInput : String -> Leaf msg
+searchInput placeholder =
+    Input
+        { defaultInput
+            | size = Just SInput.Sm
+            , icon = Just Icon.Search
+            , placeholder = placeholder
+            , ariaLabel = Just placeholder
+        }
+
+
+weekDays : List ( String, String, Bool )
 weekDays =
-    [ ( "12", False )
-    , ( "13", False )
-    , ( "14", True )
-    , ( "15", False )
-    , ( "16", False )
-    , ( "17", False )
-    , ( "18", False )
+    [ ( "12", "M", False )
+    , ( "13", "T", False )
+    , ( "14", "W", True )
+    , ( "15", "T", False )
+    , ( "16", "F", False )
+    , ( "17", "S", False )
+    , ( "18", "S", False )
     ]
 
 
-dayButton : Config msg -> ( String, Bool ) -> JoinItem msg
-dayButton _ ( label, today ) =
-    JoinButton
+dayButton : Config msg -> ( String, String, Bool ) -> Leaf msg
+dayButton _ ( label, weekday, today ) =
+    Button
         { defaultButton
             | size = Just SButton.Xs
+            , sublabel = Just weekday
+            , style =
+                if today then
+                    Nothing
+
+                else
+                    Just SButton.Ghost
             , color =
                 if today then
                     Just Neutral
@@ -1544,6 +1803,26 @@ dayButton _ ( label, today ) =
         label
 
 
+{-| Their tabs block, and the one thing on this page that is deliberately _not_
+daisyUI's own class.
+
+Theirs is `tabs tabs-lift`. `tabs-lift` puts a border on the **active** tab and
+none on the others, so with `box-sizing: border-box` that tab's content box is
+2px narrower than the identical inactive one beside it — measured here as
+`scrollWidth 63px in a 59px box`, which `e2e/overflow.spec.ts` reads as content
+escaping its box, correctly.
+
+daisyUI never hits it because their tab carries no text: their generator writes
+`<input type="radio" role="tab" class="tab" aria-label="Tab 2">`, a control
+whose label is an attribute. `Daisy.Tree.Tab` is `{ label, content, ... }` — a
+tab has a name and a panel — so its name is a text node, and a text node in a
+2px-narrower box overflows. Expressing daisyUI's version would mean a tab that
+cannot hold its own panel.
+
+So it stays `tabs-box`, which puts the same border on every tab and reads as
+the same segmented control. `docs/e2e-findings.md` records the measurement.
+
+-}
 tabsCard : Block msg
 tabsCard =
     Card previewCard
@@ -1595,15 +1874,12 @@ productCard =
             , headerActions =
                 [ Badge { defaultBadge | color = Just SBadge.Accent, size = Just SBadge.Sm } "SALE" ]
             , body =
-                [ CardLeaf
-                    (Rating Tree.defaultRatingConfig
+                [ CardRow Tree.RowWrap
+                    [ Rating { defaultRating | size = Just SRating.Xs }
                         { name = "preview-rating", count = 5, value = 5, clearable = False }
-                    )
-                , CardLeaf (Heading Tree.H3 "$120")
-                ]
-            , actions =
-                [ Badge { defaultBadge | style = Just SBadge.Soft, size = Just SBadge.Sm } "420 reviews"
-                , Button { defaultButton | size = Just SButton.Sm } "Add to cart"
+                    , Text "420 reviews"
+                    ]
+                , CardRow Tree.RowWrap [ Heading Tree.H3 "$120" ]
                 ]
         }
 
@@ -1632,6 +1908,7 @@ searchCard config =
                         [ JoinInput
                             { defaultInput
                                 | size = Just SInput.Sm
+                                , icon = Just Icon.Search
                                 , inputType = InputSearch
                                 , placeholder = "Search"
                                 , ariaLabel = Just "Search the preview"
@@ -1659,15 +1936,13 @@ signUpCard config =
                     [ { legend = Nothing
                       , columns = Tree.OneColumn
                       , fields =
-                            [ Tree.field "Username" (previewInput "Username")
+                            [ Tree.field "Username" (iconInput Icon.User "Username")
                             , Tree.field "Password" (passwordInput config)
                             , Tree.field "Plan" (planSelect config)
-                            , Tree.field "Notes" (Textarea Tree.defaultTextareaConfig)
-                            , Tree.field "Avatar" (FileInput Tree.defaultFileInputConfig)
-                            , Tree.field "Accept terms without reading" (Toggle defaultToggle { checked = False })
-                            , Tree.field "Subscribe to spam emails" (Toggle defaultToggle { checked = False })
-                            , Tree.field "Weekly" (Radio Tree.defaultRadioConfig { name = "preview-cadence", checked = True })
-                            , Tree.field "Include drafts" (Checkbox Tree.defaultCheckboxConfig)
+                            , inlineField "Accept terms without reading"
+                                (Toggle { defaultToggle | size = Just SToggle.Xs } { checked = False })
+                            , inlineField "Subscribe to spam emails"
+                                (Toggle { defaultToggle | size = Just SToggle.Xs } { checked = False })
                             ]
                       }
                     ]
@@ -1679,9 +1954,15 @@ signUpCard config =
         }
 
 
-previewInput : String -> Leaf msg
-previewInput placeholder =
-    Input { defaultInput | size = Just SInput.Sm, placeholder = placeholder }
+iconInput : Icon.Icon -> String -> Leaf msg
+iconInput icon placeholder =
+    Input
+        { defaultInput
+            | size = Just SInput.Sm
+            , icon = Just icon
+            , placeholder = placeholder
+            , ariaLabel = Just placeholder
+        }
 
 
 passwordInput : Config msg -> Leaf msg
@@ -1689,8 +1970,10 @@ passwordInput _ =
     Input
         { defaultInput
             | size = Just SInput.Sm
+            , icon = Just Icon.LockClosed
             , inputType = InputPassword
             , placeholder = "password"
+            , ariaLabel = Just "Password"
         }
 
 
@@ -1721,17 +2004,28 @@ salesVolumeCard config =
                 , CardLeaf (Text "Sales volume reached $12,450 this week, showing a 15% increase from the previous period.")
                 ]
             , actions =
-                [ Button { defaultButton | style = Just SButton.Outline, size = Just SButton.Sm } "Charts"
+                [ Button { defaultButton | size = Just SButton.Sm } "Charts"
                 , Button { defaultButton | color = Just Neutral, size = Just SButton.Sm } "Details"
                 ]
         }
 
 
+{-| daisyUI's sparkline, value for value: sixteen thin bars in
+`--color-base-content`, rising left to right, with no axis and no legend.
+
+`DChart.Neutral` and not `Primary`: theirs is `*:bg-base-content`, a strip of
+ink rather than a coloured series, and `ChartSize.ChartCompact` is the `h-24`
+that matches the `flex h-24 items-end` their markup uses.
+
+-}
 previewSeries : DChart.ChartData
 previewSeries =
-    { xLabels = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ]
+    { xLabels = List.map String.fromInt (List.range 1 16)
     , series =
-        [ DChart.series "Volume" DChart.Primary [ 12, 19, 15, 27, 24, 31, 29 ] ]
+        [ DChart.series "Volume"
+            DChart.Neutral
+            [ 10, 20, 10, 25, 22, 15, 20, 35, 40, 45, 30, 35, 60, 65, 80, 90 ]
+        ]
     }
 
 
@@ -1754,21 +2048,33 @@ pageScoreCard =
     Card previewCard
         { emptyCard
             | body =
-                [ CardStat { direction = Tree.Fixed (Just SStat.Vertical) }
+                [ CardStat
+                    { direction = Tree.Fixed (Just SStat.Vertical)
+                    , figureStyle = Tree.FigureBare
+                    }
                     [ pageScoreStat ]
                 ]
         }
 
 
+{-| Their score card, now theirs in three more ways: the number is `91` with a
+small `/100` after it (`StatItem.valueSuffix`), the caption carries a
+success-coloured shield-check (`StatItem.descIcon`), and the dial sits in a
+**bare** `stat-figure` (`StatFigureStyle.FigureBare`) instead of the renderer's
+`bg-base-200` tile — a dial inside a grey square reads as two nested boxes, and
+daisyUI draws it with nothing behind it.
+-}
 pageScoreStat : Tree.StatItem msg
 pageScoreStat =
     let
         base : Tree.StatItem msg
         base =
-            Tree.emptyStatItem "Page Score" "91/100"
+            Tree.emptyStatItem "Page Score" "91"
     in
     { base
-        | desc = Just "All good"
+        | valueSuffix = Just "/100"
+        , desc = Just "All good"
+        , descIcon = Just ( Tree.ToneSuccess, Icon.ShieldCheck )
         , figure =
             Just
                 (RadialProgress
@@ -1782,18 +2088,21 @@ pageScoreStat =
 
 
 {-| Their orders card: one row per order, the name on the left and its state as
-a soft `badge-xs` on the right.
+a **solid** `badge-xs` on the right, rows separated by a dashed hairline.
 
-A `table table-sm`, not the `CardList` this was. daisyUI's own rows are 8px of
-padding and 12px text under a hairline, and `list-row`'s padding is a fixed
-`1rem` with a `1rem` gap that no size class changes — so a `list` here was 16px
-of padding and 16px text in a 258px card, which is what wrapped every name onto
-two lines. `table-sm` **is** daisyUI's compact row (`padding-block: .5rem`,
-`font-size: .75rem`, a `base-content/5` rule between rows), so this is their
-density expressed as their class rather than as a padding override of ours.
+Their DOM: `<div class="border-t-base-content/5 flex items-center
+justify-between gap-2 border-t border-dashed py-2">Charlie Chapman <span
+class="badge badge-xs badge-info">Send</span></div>`. So this is a `CardList` at
+`ListStyle.ListRules` — not the `table table-sm` it was, and not the `list`
+before that.
 
-The name cell is `truncate`, so a longer name than these five ends in an
-ellipsis instead of wrapping.
+The badges lost `badge-soft` in the same pass. A soft badge is `var(--color-X)`
+over a `color-mix()` of the same colour with `--color-base-100`, which is a pair
+the _composition_ derives; solid is the plain `--color-X` / `--color-X-content`
+pair, which is the pair this page exists to show and which the contrast
+classifier attributes to daisyUI rather than to us.
+
+The title carries daisyUI's own trending-up glyph rather than a cart.
 
 -}
 recentOrdersCard : Block msg
@@ -1801,11 +2110,9 @@ recentOrdersCard =
     Card previewCard
         { emptyCard
             | title = Just "Recent orders"
-            , titleIcon = Just Icon.ShoppingCart
+            , titleIcon = Just Icon.ArrowTrendingUp
             , body =
-                [ CardTable
-                    { defaultTable | size = Just STable.Sm }
-                    (List.map orderRow orders)
+                [ CardList { defaultList | style = Tree.ListRules } (List.map orderRow orders)
                 ]
         }
 
@@ -1820,13 +2127,12 @@ orders =
     ]
 
 
-orderRow : ( String, ( SBadge.Color, String ) ) -> Tree.Row msg
+orderRow : ( String, ( SBadge.Color, String ) ) -> Tree.ListRow msg
 orderRow ( name, ( tone, state ) ) =
-    { header = False
-    , cells =
-        [ { leading = Nothing, content = Text name, truncate = True }
-        , Tree.tableCell
-            (Badge { defaultBadge | color = Just tone, style = Just SBadge.Soft, size = Just SBadge.Xs } state)
+    { cells =
+        [ { content = Text name, grow = True, wrap = False }
+        , Tree.listCell
+            (Badge { defaultBadge | color = Just tone, size = Just SBadge.Xs } state)
         ]
     }
 
@@ -1836,7 +2142,7 @@ revenueCard =
     Card previewCard
         { emptyCard
             | body =
-                [ CardStat { direction = Tree.Fixed (Just SStat.Vertical) }
+                [ CardStat { direction = Tree.Fixed (Just SStat.Vertical), figureStyle = Tree.FigureTile }
                     [ revenueStat ]
                 ]
         }
@@ -1850,18 +2156,16 @@ revenueStat =
             Tree.emptyStatItem "September Revenue" "$32,400"
     in
     { base
-        | desc = Just "vs. last month"
-        , trend =
-            Just
-                (Badge
-                    { defaultBadge
-                        | icon = Just Icon.ArrowTrendingUp
-                        , color = Just SBadge.Success
-                        , style = Just SBadge.Soft
-                        , size = Just SBadge.Sm
-                    }
-                    "21%"
-                )
+      -- daisyUI's line is "21% more than last month". `.stat-desc` is
+      -- `white-space: nowrap` (their rule, not ours), and that sentence needs
+      -- 192px inside a 184px tile — our preview card is 258px where theirs is
+      -- 277px, the 19.2px the twelve-column split cannot close (see section 4
+      -- of "The generator's editor column"). An overflowing `.stats` is
+      -- `overflow-x: auto`, so it becomes a scrollable region and therefore a
+      -- tab stop of its own, which `e2e/keyboard.spec.ts` catches. Same
+      -- sentence, fewer words.
+        | desc = Just "+21% vs. last month"
+        , descIcon = Just ( Tree.ToneSuccess, Icon.ArrowTrendingUp )
     }
 
 
@@ -1948,7 +2252,7 @@ adminPanelCard =
             | title = Just "Admin panel"
             , titleIcon = Just Icon.Cog
             , body =
-                [ CardList
+                [ CardList defaultList
                     [ panelRow Icon.Document "Databases" (Just "7")
                     , panelRow Icon.ShoppingCart "Products" Nothing
                     , panelRow Icon.Bell "Messages" (Just "29")
@@ -1977,54 +2281,82 @@ panelRow icon label count =
     }
 
 
-{-| Their media player: transport buttons, a title and subtitle, a progress bar
-with its elapsed and total times, and a row of square controls.
+{-| Their media player, as their DOM has it: three square `btn-neutral`
+transport keys with the middle one a size larger, the title and its subtitle
+under them, then a progress bar with a `13:39` tooltip badge above the thumb and
+the elapsed and total times under it, then four square icon buttons.
+
+Every glyph is now the right one: `Backward`, `Play`, `Forward`, then
+`SpeakerWave`, `ArrowsRightLeft` (shuffle), `ArrowPath` (repeat) and
+`SpeakerWave` again for the headphone key — thirteen icons entered the closed
+set in this pass and heroicons has no headphone outline.
+
 -}
 playerCard : Block msg
 playerCard =
     Card previewCard
         { emptyCard
-            | title = Just "PM Zoomcall ASMR"
-            , body =
-                [ CardLeaf (Text "Project Manager talking for 2 hours")
-                , CardLeaf
-                    (Join Tree.defaultJoinConfig
-                        [ transportButton Icon.ChevronRight
-                        , transportButton Icon.Check
-                        , transportButton Icon.ChevronRight
-                        ]
-                    )
+            | body =
+                [ CardRow Tree.RowWrap
+                    [ transportButton SButton.Sm Icon.Backward "Previous track"
+                    , transportButton SButton.Lg Icon.Play "Play"
+                    , transportButton SButton.Sm Icon.Forward "Next track"
+                    ]
+                , CardRow Tree.RowWrap [ Text "PM Zoomcall ASMR" ]
+                , CardRow Tree.RowWrap [ Text "Project Manager talking for 2 hours" ]
                 , CardLeaf
                     (Progress
-                        { defaultProgress | color = Just SProgress.Neutral }
+                        { defaultProgress
+                            | color = Just SProgress.Neutral
+                            , tooltip = Just (Tree.tooltip "13:39")
+                        }
                         { value = Just 11, max = 100 }
                     )
-                , CardLeaf (Text "13:39 / 120:00")
+                , CardRow Tree.RowSpread [ Text "13:39", Text "120:00" ]
+                , CardRow Tree.RowWrap (List.map transportLeaf playerControls)
                 ]
-            , actions = List.map transportLeaf [ Icon.Bell, Icon.Search, Icon.Sun, Icon.User ]
         }
 
 
-transportButton : Icon.Icon -> JoinItem msg
-transportButton icon =
-    JoinButton
+
+{- daisyUI draws the `13:39` bubble over the progress thumb with
+   `tooltip tooltip-open`, inside a `relative mt-6` box that reserves the room
+   for it. A daisyUI tooltip is absolutely positioned *outside* its anchor's
+   box, so with no reserved room it lands on whatever is above — in a `gap-4`
+   `card-body` that is the subtitle, which it covered outright. `Daisy.Tree`
+   has no per-block margin and is not getting one, so the bubble is an ordinary
+   `Tooltip`: the same text, on the same control, revealed by a pointer.
+-}
+
+
+playerControls : List ( Icon.Icon, String )
+playerControls =
+    [ ( Icon.SpeakerWave, "Volume" )
+    , ( Icon.ArrowsRightLeft, "Shuffle" )
+    , ( Icon.ArrowPath, "Repeat" )
+    , ( Icon.ListBullet, "Queue" )
+    ]
+
+
+transportButton : SButton.Size -> Icon.Icon -> String -> Leaf msg
+transportButton size icon label =
+    Button
         { defaultButton
             | icon = Just icon
-            , ariaLabel = Just "Transport control"
+            , ariaLabel = Just label
             , color = Just Neutral
-            , size = Just SButton.Sm
+            , size = Just size
             , modifiers = [ SButton.Square ]
         }
         ""
 
 
-transportLeaf : Icon.Icon -> Leaf msg
-transportLeaf icon =
+transportLeaf : ( Icon.Icon, String ) -> Leaf msg
+transportLeaf ( icon, label ) =
     Button
         { defaultButton
             | icon = Just icon
-            , ariaLabel = Just ("Player control " ++ Icon.name icon)
-            , style = Just SButton.Outline
+            , ariaLabel = Just ("Player control " ++ label)
             , size = Just SButton.Sm
             , modifiers = [ SButton.Square ]
         }
@@ -2044,13 +2376,20 @@ terminalBlock =
         ]
 
 
-{-| Their four alerts.
+{-| Their four alerts, in daisyUI's own four variants: `alert-info` solid,
+`alert-outline alert-success`, `alert-dash alert-warning`, `alert-soft
+alert-error`. Read straight off their DOM, and the point of the block is that a
+theme's four state colours are shown in four different treatments at once.
 
-Solid `alert-<color>`, not daisyUI's own outline/dash/soft mix: a soft alert is
-`var(--color-X)` text over a `color-mix()` of the same colour with
-`--color-base-100` — a pair _it_ derives, which axe reports as a contrast
-failure on a light ground. A solid alert is the plain `--color-X` /
-`--color-X-content` pair, which is the pair this page exists to show.
+This used to be four **solid** alerts, because the outline/dash/soft three
+paint `var(--color-X)` as a foreground over a base surface — a pair neither
+daisyUI's `contrast.test.js` nor our classifier attributed to daisyUI, so axe
+and `e2e/contrast.spec.ts` failed them as ours. They are daisyUI's: the rule
+that paints them is `.alert-outline { color: var(--color-X) }` and nothing the
+tree, the renderer or this page chooses is involved. Both classifiers were
+extended in this pass to say so, mechanically, from the class-name pattern
+`*-outline` / `*-dash` / `*-soft` plus "foreground is exactly `--color-X` over a
+base surface". `docs/e2e-findings.md` records it.
 
 -}
 alertsCard : Block msg
@@ -2058,17 +2397,17 @@ alertsCard =
     Card previewCard
         { emptyCard
             | body =
-                [ CardAlert (alertConfig SAlert.Info) [ Text "There are 9 new messages" ]
-                , CardAlert (alertConfig SAlert.Success) [ Text "Verification process completed" ]
-                , CardAlert (alertConfig SAlert.Warning) [ Text "Click to verify your email" ]
-                , CardAlert (alertConfig SAlert.Error) [ Text "Access denied" ]
+                [ CardAlert (alertConfig SAlert.Info Nothing) [ Text "There are 9 new messages" ]
+                , CardAlert (alertConfig SAlert.Success (Just SAlert.Outline)) [ Text "Verification process completed" ]
+                , CardAlert (alertConfig SAlert.Warning (Just SAlert.Dash)) [ Text "Click to verify your email" ]
+                , CardAlert (alertConfig SAlert.Error (Just SAlert.Soft)) [ Text "Access denied" ]
                 ]
         }
 
 
-alertConfig : SAlert.Color -> Tree.AlertConfig
-alertConfig color =
-    { color = Just color, style = Nothing, direction = Nothing }
+alertConfig : SAlert.Color -> Maybe SAlert.Style -> Tree.AlertConfig
+alertConfig color style =
+    { color = Just color, style = style, direction = Nothing }
 
 
 {-| Their reading list, as the second block that is not a card.
@@ -2095,7 +2434,15 @@ timelineItem ( label, done ) =
     , startBox = False
     , middle =
         Just
-            (Icon Tree.defaultIconConfig
+            (Icon
+                { defaultIcon
+                    | tone =
+                        if done then
+                            Just Tree.TonePrimary
+
+                        else
+                            Nothing
+                }
                 (if done then
                     Icon.Check
 
@@ -2122,7 +2469,7 @@ pricingCard =
             , body =
                 [ CardLeaf (Heading Tree.H2 "$200")
                 , CardLeaf (Text "per month")
-                , CardList
+                , CardList { defaultList | style = Tree.ListRules }
                     [ planRow "20 Tokens per day" True
                     , planRow "10 Projects" True
                     , planRow "API Access" True
@@ -2145,7 +2492,18 @@ planRow : String -> Bool -> Tree.ListRow msg
 planRow feature included =
     { cells =
         [ Tree.listCell
-            (Icon { defaultIcon | size = Tree.IconSm }
+            (Icon
+                { defaultIcon
+                    | size = Tree.IconSm
+                    , tone =
+                        Just
+                            (if included then
+                                Tree.ToneSuccess
+
+                             else
+                                Tree.ToneError
+                            )
+                }
                 (if included then
                     Icon.Check
 
@@ -2175,7 +2533,8 @@ scrolls, which is what daisyUI built it to do.
 exportSection : Config msg -> Section msg
 exportSection config =
     Stack { align = AlignStretch }
-        [ MockupCode (cssLines config)
+        [ Prose [ generatorLink config ]
+        , MockupCode (cssLines config)
         , Prose [ Text ("last-msg: " ++ config.lastMsg) ]
         ]
 

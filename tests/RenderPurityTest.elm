@@ -142,10 +142,31 @@ The fifth went in the colour-chip pass (2026-09-07):
     of thing: chrome the renderer owns, drawn around an element the renderer
     chose, with the caller naming a placement rather than a class.
 
-`text-primary` did **not** follow it and stays forbidden: it is a _foreground_
-utility over an arbitrary element, which is exactly the sprinkled colour this
-list exists to prevent, and no swatch needs it — a chip's foreground is
-`text-primary-content`, the colour daisyUI itself pairs with that surface.
+The sixth went in the generator close-up pass (2026-09-08):
+
+  - `text-primary` is `tokenTextPrimary`, one of the six
+    [`Daisy.Tree.IconTone`](Daisy-Tree#IconTone) colours, and the entry that
+    made this list say what it actually means. The rule it encoded is "no
+    sprinkled _text_ colour": a foreground utility on an arbitrary element
+    escapes `e2e/contrast.spec.ts`'s classifier, because that classifier
+    decides "daisyUI's own pair" from the two colours and can only see a colour
+    it can attribute. An `IconTone` cannot become the colour of a word:
+    `Daisy.Render.iconToneTokens` is the single call site of all six, it is
+    reached only from `iconHtml`, and a `Leaf.Icon` renders an `<svg>` with no
+    text node in it — which `collectContrast` skips outright (`el.closest("svg")`).
+
+    So the five siblings (`text-info`, `text-success`, `text-warning`,
+    `text-error`, plus `tokenTextMuted`, which was already a token) are the
+    same kind of thing and are named the same way. daisyUI's own theme
+    generator paints these exact glyphs this way — `text-success` on the "All
+    good" shield and on a plan's tick, `text-error` on its cross,
+    `text-primary` on a `timeline-middle` marker — and the alternative was
+    three demo blocks that could not say what they meant.
+
+    What is **not** allowed, and what the list still prevents, is a `text-*`
+    utility on anything else. There is no `IconTone` on `Leaf.Text`,
+    `Leaf.Heading`, a `Field` label or a card title, and adding one would need
+    a second call site that this note refuses in advance.
 
 `opacity-50` also stays: de-emphasis is `tokenTextMuted`
 (`text-base-content/60`), which is the colour daisyUI's own `.stat-title` and
@@ -171,7 +192,6 @@ forbidden =
     , "w-32"
     , "h-32"
     , "bg-white"
-    , "text-primary"
     , "grid-cols-5"
     , "grid-cols-6"
     , "max-w-md"

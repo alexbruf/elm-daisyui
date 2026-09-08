@@ -165,9 +165,34 @@ the renderer against.
 Per-item state lives on the item, not the container: `menu-active` is a `Bool` on a `MenuItem`,
 `tab-active` on a `Tab`, `step-*` colours on a `Step`.
 
+A few configs also carry a **shape** the caller could otherwise only get by writing a container of
+its own. All of them are closed types, and none of them is a class:
+
+| field | type | what it says |
+| --- | --- | --- |
+| `CardConfig.surface` | `SurfacePanel \| SurfaceBare` | whether the card is a panel at all. `SurfaceBare` draws the same `CardParts` with no `card-*` class anywhere — the shape a column of controls on the page ground has. |
+| `ListConfig.style` | `ListPanel \| ListRules` | daisyUI's `list` component, or the compact rows-with-a-dashed-rule shape its own dashboards use (which carries no `list` class). |
+| `CardChild.CardRow` | `RowWrap \| RowSpread \| RowEven` | a row of leaves inside a `card-body`, which is a column. `RowEven` gives every child an equal share and never wraps. |
+| `StatConfig.figureStyle` | `FigureTile \| FigureBare` | whether a `stat-figure` gets the renderer's painted chip behind it. |
+| `JoinConfig.stretch` | `Bool` | a `join` that fills its rail and divides it between its items. |
+| `GridItem.lead` | `List (Block msg)` | blocks drawn full width above a cell's own columns — a title bar for a region. Use `Tree.spanLead`. |
+
+```elm
+-- an editor rail: no panels, `divider` headings, controls straight on the page
+Tree.spanColumn Tree.Span3
+    [ Card { defaultCardConfig | surface = SurfaceBare }
+        { emptyCardParts
+            | body =
+                [ CardLeaf (Divider { defaultDividerConfig | placement = Just Divider.Start, icon = Just Icon.Swatch, caption = True } (Just "Change Colors"))
+                , CardLeaf (ColorChips groups)
+                ]
+        }
+    ]
+```
+
 ## Icons
 
-`Daisy.Icon` is a closed set of 25 drawings — heroicons 2.2.0 outline, MIT, (c) Tailwind Labs —
+`Daisy.Icon` is a closed set of 38 drawings — heroicons 2.2.0 outline, MIT, (c) Tailwind Labs —
 copied into the package at build time. It is pure data: the path data lives in an internal module
 that is not exposed, so nothing a caller writes can become markup. An icon is not a daisyUI
 component and emits no daisyUI class, exactly like `Leaf.Heading` and `Leaf.Image`; only its size
@@ -211,6 +236,20 @@ MenuItem { base | glyph = Just (MenuIcon Icon.Home) }
 -- a theme-picker row, painted from that theme's own colours
 MenuItem { base | glyph = Just (MenuThemeDots Nord) }
 ```
+
+A glyph may also carry a **tone**, and it is the only place in this package where a semantic
+foreground can be named:
+
+```elm
+-- daisyUI's own "All good" shield
+Icon { defaultIconConfig | size = IconSm, tone = Just ToneSuccess } Icon.ShieldCheck
+```
+
+`IconTone` is closed at six (`ToneMuted`, `ToneInfo`, `ToneSuccess`, `ToneWarning`, `ToneError`,
+`TonePrimary`) and each value renders from one named token. It exists on `IconConfig` and nowhere
+else on purpose: a `Leaf.Icon` renders an `<svg>` with no text node in it, so a tone can never
+become the colour of a word — which is what keeps `text-*` off every other element. There is no
+tone on `Leaf.Text`, `Leaf.Heading`, a `Field` label or a card title.
 
 Import `Daisy.Icon` **qualified**. Three of its constructors (`Calendar`, `Menu`, `Check`) also name
 a `Daisy.Tree` constructor, so `exposing (..)` on both at once is ambiguous.

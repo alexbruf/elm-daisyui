@@ -100,6 +100,19 @@ type Icon
     | Moon
     | Sun
     | Swatch
+    | Sparkles
+    | CodeBracket
+    | ShieldCheck
+    | EllipsisHorizontal
+    | Play
+    | Backward
+    | Forward
+    | SpeakerWave
+    | ArrowsRightLeft
+    | ArrowPath
+    | Squares2x2
+    | ListBullet
+    | LockClosed
 
 
 {-| Every [`Icon`](#Icon), in declaration order. Fixtures and coverage tests
@@ -133,6 +146,19 @@ allIcons =
     , Moon
     , Sun
     , Swatch
+    , Sparkles
+    , CodeBracket
+    , ShieldCheck
+    , EllipsisHorizontal
+    , Play
+    , Backward
+    , Forward
+    , SpeakerWave
+    , ArrowsRightLeft
+    , ArrowPath
+    , Squares2x2
+    , ListBullet
+    , LockClosed
     ]
 
 
@@ -226,3 +252,42 @@ name icon =
 
         Swatch ->
             "swatch"
+
+        Sparkles ->
+            "sparkles"
+
+        CodeBracket ->
+            "code-bracket"
+
+        ShieldCheck ->
+            "shield-check"
+
+        EllipsisHorizontal ->
+            "ellipsis-horizontal"
+
+        Play ->
+            "play"
+
+        Backward ->
+            "backward"
+
+        Forward ->
+            "forward"
+
+        SpeakerWave ->
+            "speaker-wave"
+
+        ArrowsRightLeft ->
+            "arrows-right-left"
+
+        ArrowPath ->
+            "arrow-path"
+
+        Squares2x2 ->
+            "squares-2x2"
+
+        ListBullet ->
+            "list-bullet"
+
+        LockClosed ->
+            "lock-closed"

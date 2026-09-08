@@ -380,7 +380,7 @@ overflow-x-auto` — which is why this used to be four separate blocks in a
 statsSection : Config msg -> Section msg
 statsSection config =
     gridSection Tree.Cols1
-        [ Stat { direction = Responsive }
+        [ Stat { direction = Responsive, figureStyle = Tree.FigureTile }
             [ statItem Icon.Users "Sessions" "486,204" "9.1% week over week"
             , statItem Icon.ArrowTrendingUp "Conversion" "3.24%" "0.31 points above plan"
             , statItem Icon.CurrencyDollar "Cost per acquisition" "$14.80" "$1.20 cheaper than Q2"

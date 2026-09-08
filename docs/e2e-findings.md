@@ -275,3 +275,76 @@ have since been fixed in `Daisy.Tree` — see "Expressibility refinements
   badge on the last control of a wrapped `navbar-end` hung ~3px past the
   viewport at 768, so `Daisy.Render.navbarHtml` now uses the same `p-4` gutter
   as the content column.
+
+## 5. `contrast` and `a11y`: daisyUI's three style variants (2026-09-08)
+
+daisyUI's own theme generator shows its four state colours in four different
+treatments at once: `alert-info` **solid**, `alert-outline alert-success`,
+`alert-dash alert-warning`, `alert-soft alert-error`. That is the point of the
+block — a theme's four colours in every shape the library paints them.
+
+Ours used four solid alerts instead, and the note in
+`Demo.ThemeGenerator.alertsCard` said why: the other three paint
+`color: var(--color-X)` over the surface behind them, and the classifier in
+`e2e/lib/browser.ts` had no way to attribute that pair to daisyUI, so both
+`contrast.spec.ts` and axe reported them as ours.
+
+They are daisyUI's. The rule that picks *both* colours is
+`.alert-outline { color: var(--color-X) }` — the composition names a style, and
+daisyUI names the paint — exactly as `.alert-info`'s `--color-info-content` over
+`--color-info` is. Both classifiers were extended, mechanically:
+
+- **`e2e/lib/browser.ts`, `collectContrast`.** A hit is daisyUI's own pair when
+  three things hold: the element (or the nearest ancestor that has one) carries
+  a class matching `/^[a-z][a-z0-9]*-(outline|dash|soft)$/`; its foreground is
+  *exactly* one of the theme's `--color-X`; and its background is one of the
+  three base surfaces. Everything is measured through the same 1x1 canvas as the
+  rest of the file, so `oklch()` in the theme and `rgb()` from
+  `getComputedStyle` compare as sRGB bytes. A `-content` colour over the wrong
+  surface, a `color-mix()` the composition derived, or an ordinary element that
+  merely sits on base-100 still fails.
+- **`e2e/a11y.spec.ts`.** axe reports a node, not a pair, so the waiver there is
+  the class-name half of the same rule: `DAISY_STYLE_VARIANT`, the same regular
+  expression. `badge-soft` used to be spelled out in
+  `DAISY_DEEMPHASIS_CLASSES` and is now covered by the pattern instead, so the
+  list is back to the two classes that are genuinely *de-emphasis*
+  (`menu-title`, `tab`).
+
+There is deliberately **no selector list** in either half: a component name is
+whatever precedes the variant suffix, and a class that does not end in one of
+the three suffixes is not covered however it is spelled.
+
+## 6. Two measurements the generator close-up pass made (2026-09-08)
+
+- **`tabs-lift` cannot carry a text label without overflowing.** daisyUI's
+  generator uses `tabs tabs-lift` for its tab block; `tabs-lift` borders the
+  **active** tab and no other, so with `box-sizing: border-box` that tab's
+  content box is 2px narrower than the identical inactive one next to it.
+  Measured on the built demo: `scrollWidth 63px in a clientWidth 59px box`,
+  which `overflow.spec.ts` reports, correctly. daisyUI never hits it because
+  their tab carries no text — their markup is
+  `<input type="radio" role="tab" class="tab" aria-label="Tab 2">`, a control
+  whose name is an attribute. `Daisy.Tree.Tab` is `{ label, content, ... }` (a
+  tab has a name *and* a panel), so its name is a text node and a text node in a
+  2px-narrower box overflows. The block stays `tabs-box`, which borders every
+  tab equally.
+- **`MenuActiveStyle.TintedActive` is `bg-base-content/5`, not daisyUI's 10%.**
+  Their theme list sits on `bg-base-100`; ours sits on the page's `bg-base-200`
+  ground, so the tint composites over a surface that is already one step down.
+  Worst `--color-base-content` ratio over all 36 themes, measured:
+
+  | tint | over base-100 | over base-200 |
+  | --- | --- | --- |
+  | 10% | 4.55:1 | **4.16:1** (`valentine`) |
+  | 5%  | 5.00:1 | 4.52:1 |
+
+  10% over base-200 fails `contrast.spec.ts`, and rightly: unlike `--color-X`
+  under `--color-X-content`, this pair is one the *renderer* composes, so it is
+  ours to keep readable. 5% clears it on both surfaces and is still a visible
+  step (98% base-200 tinted 5% lands near 93% lightness, next to daisyUI's 90%).
+
+  The same measurement is why the `Leaf.RadiusTiles` subtitle is
+  `text-base-content/60` where daisyUI's is `/40`: 40% of base-content is under
+  4.5:1 on base-200 in most themes and axe reports it `serious`. The subtitle is
+  separated from its label by size and slant instead of by a second opacity
+  step.

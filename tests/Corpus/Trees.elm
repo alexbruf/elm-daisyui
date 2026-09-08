@@ -680,13 +680,15 @@ statEntries =
             { figure = Nothing
             , title = "Total Page Views"
             , value = "89,400"
+            , valueSuffix = Nothing
             , trend = Nothing
             , desc = Just "21% more than last month"
+            , descIcon = Nothing
             , actions = []
             }
 
         stats direction figure =
-            block (Stat { direction = Fixed direction } [ { item | figure = figure } ])
+            block (Stat { direction = Fixed direction, figureStyle = FigureTile } [ { item | figure = figure } ])
     in
     [ ( "stat--00", stats Nothing Nothing )
     , ( "stat--01"
@@ -1944,7 +1946,7 @@ leafEntries =
     , ( "kbd--06", kbd defaultKbdConfig )
     , ( "list--00"
       , block
-            (ListBlock
+            (ListBlock defaultListConfig
                 [ { cells =
                         [ listCell (Text "Dio Lupa")
                         , listCell (Button { btn | style = Just SButton.Ghost, modifiers = [ SButton.Square ] } "▶")
@@ -1955,7 +1957,7 @@ leafEntries =
       )
     , ( "list--01"
       , block
-            (ListBlock
+            (ListBlock defaultListConfig
                 [ { cells =
                         [ listCell (Text "Dio Lupa")
                         , { content = Text "Remaining Reason", grow = True, wrap = False }
@@ -1967,7 +1969,7 @@ leafEntries =
       )
     , ( "list--02"
       , block
-            (ListBlock
+            (ListBlock defaultListConfig
                 [ { cells =
                         [ listCell (Text "Dio Lupa")
                         , { content = Text "Remaining Reason", grow = False, wrap = True }
